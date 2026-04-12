@@ -8,12 +8,12 @@ import { useSheetStore } from "@/lib/sheet-store"
 type AttributeKey = keyof Pick<SheetData, "agility" | "strength" | "finesse" | "instinct" | "presence" | "knowledge">
 
 const ATTRIBUTE_CONFIG: Array<{ name: string; key: AttributeKey; skills: string[] }> = [
-  { name: "鏁忔嵎", key: "agility", skills: ["鍐插埡", "璺宠穬", "鏈哄姩"] },
-  { name: "鍔涢噺", key: "strength", skills: ["涓捐捣", "鐚涘嚮", "鎿掓姳"] },
-  { name: "鐏靛阀", key: "finesse", skills: ["鎺у埗", "闅愯棌", "宸ф墜"] },
-  { name: "鏈兘", key: "instinct", skills: ["鎰熺煡", "瀵熻", "瀵艰埅"] },
-  { name: "椋庡害", key: "presence", skills: ["榄呭姏", "琛ㄦ紨", "娆洪獥"] },
-  { name: "鐭ヨ瘑", key: "knowledge", skills: ["鍥炲繂", "鍒嗘瀽", "鐞嗚В"] },
+  { name: "敏捷", key: "agility", skills: ["冲刺", "跳跃", "机动"] },
+  { name: "力量", key: "strength", skills: ["举起", "猛击", "擒抱"] },
+  { name: "灵巧", key: "finesse", skills: ["控制", "隐藏", "巧手"] },
+  { name: "本能", key: "instinct", skills: ["感知", "察觉", "导航"] },
+  { name: "风度", key: "presence", skills: ["魅力", "表演", "欺骗"] },
+  { name: "知识", key: "knowledge", skills: ["回忆", "分析", "理解"] },
 ]
 
 function isAttributeValue(val: unknown): val is AttributeValue {
@@ -124,10 +124,10 @@ export function AttributesSection() {
                       type="button"
                       onClick={() => handleSpellcastingToggle(attr.key)}
                       className={`ml-1 text-[14px] font-bold cursor-pointer transition-colors hover:scale-110 ${isSpellcasting ? "text-white" : "text-gray-600 print:hidden"}`}
-                      title="鏂芥硶灞炴€ф爣璁?"
-                      aria-label="鏂芥硶灞炴€ф爣璁?"
+                      title="施法属性标记"
+                      aria-label="施法属性标记"
                     >
-                      鉁?
+                      ✦
                     </button>
                   )
                 })()}
