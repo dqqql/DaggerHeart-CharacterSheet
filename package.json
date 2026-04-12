@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npm run optimize:images && next build && rm -f out/*.txt && node scripts/extract-css.js",
-    "build:local": "npm run optimize:images && LOCAL_BUILD=true next build && rm -f out/*.txt && mv out/index.html \"out/车卡器入口.html\" && node scripts/extract-css.js",
+    "build": "node scripts/build-static.js",
+    "build:local": "node scripts/build-static.js --local",
+    "package:offline": "node scripts/package-offline.js",
     "extract-css": "node scripts/extract-css.js",
     "start": "next start",
     "lint": "next lint",
@@ -109,5 +110,6 @@
     "tailwindcss": "^3.4.17",
     "typescript": "^5",
     "vitest": "^3.2.4"
-  }
+  },
+  "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319"
 }

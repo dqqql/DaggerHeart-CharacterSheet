@@ -251,7 +251,7 @@ export function aggregatePresetEquipmentEffects(
 export function getProfessionBaseEvasion(
   data: Pick<SheetData, "cards">,
 ): number | null {
-  const professionEvasion = data.cards?.[0]?.professionSpecial?.["起始闪避"]
+  const professionEvasion: unknown = data.cards?.[0]?.professionSpecial?.["起始闪避"]
   if (typeof professionEvasion === "number") {
     return professionEvasion
   }
