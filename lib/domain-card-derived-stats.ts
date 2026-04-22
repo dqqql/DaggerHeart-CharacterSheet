@@ -325,10 +325,15 @@ function getDamageThresholdContext(data: ThresholdInput) {
   if (bareBonesActive) {
     const tier = getCharacterTier(data.level)
     const thresholds = BARE_BONES_THRESHOLDS[tier] || BARE_BONES_THRESHOLDS[1]
+    const levelBonus = parseLevelNumber(data.level)
     minorBase = thresholds.minor
     majorBase = thresholds.major
     minorBaseSources.push({ label: DOMAIN_CARD_LABELS.bareBones, value: thresholds.minor })
     majorBaseSources.push({ label: DOMAIN_CARD_LABELS.bareBones, value: thresholds.major })
+    if (levelBonus !== 0) {
+      minorBonusSources.push({ label: "等级", value: levelBonus })
+      majorBonusSources.push({ label: "等级", value: levelBonus })
+    }
   } else {
     const [minorPart = "", majorPart = ""] = (data.armorThreshold || "").split("/")
 
