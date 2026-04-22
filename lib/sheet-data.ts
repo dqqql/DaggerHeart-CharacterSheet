@@ -149,6 +149,15 @@ export interface ArmorTemplateData {
   electronicCoins?: number
 }
 
+export interface DomainCardAutomationState {
+  appliedPermanentCardIds: string[]
+  vitalityChoices?: Array<"hp" | "stress" | "threshold">
+  masterOfTheCraft?: {
+    mode: "two-plus-two" | "one-plus-three"
+    indices: number[]
+  }
+}
+
 // ===== 冒险笔记相关类型定义 =====
 
 export interface AdventureNotesCharacterProfile {
@@ -290,6 +299,8 @@ export interface SheetData {
   checkedUpgrades?: CheckedUpgrades
   minorThreshold?: string
   majorThreshold?: string
+  minorThresholdManualModifier?: string
+  majorThresholdManualModifier?: string
   armorValue?: string
   armorValueManualModifier?: string
   armorBonus?: string
@@ -367,6 +378,7 @@ export interface SheetData {
 
   // ===== 预设装备自动计算迁移版本 =====
   presetEquipmentCalcVersion?: number
+  domainCardAutomation?: DomainCardAutomationState
 
   // ===== 临时索引签名，兼容动态key访问，后续逐步收敛类型安全 =====
   // [key: string]: any // 已废弃，彻底类型安全后移除

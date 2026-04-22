@@ -47,6 +47,8 @@ export const defaultSheetData: SheetData = {
 
     minorThreshold: "",
     majorThreshold: "",
+    minorThresholdManualModifier: "",
+    majorThresholdManualModifier: "",
 
     inventory: ["", "", "", "", ""],
     characterBackground: "",
@@ -171,4 +173,7 @@ export const defaultSheetData: SheetData = {
     },
 
     presetEquipmentCalcVersion: 1,
+    domainCardAutomation: {
+        appliedPermanentCardIds: [],
+    },
 };

@@ -8,11 +8,14 @@ import { armorItems, type ArmorItem } from "@/data/list/armor";
 import { showFadeNotification } from "@/components/ui/fade-notification";
 import { parseToNumber } from "./number-utils";
 import {
-    calculateArmorValueBreakdown,
-    calculateEvasionBreakdown,
     convertDisplayedAttributeToStoredBase,
-    convertDisplayedEvasionToManualModifier,
 } from "@/lib/preset-equipment";
+import {
+    calculateArmorValueBreakdown,
+    calculateDamageThresholdBreakdown,
+    calculateEvasionBreakdown,
+    convertDisplayedEvasionToManualModifier,
+} from "@/lib/domain-card-derived-stats";
 
 // 施法属性映射关系
 const SPELLCASTING_ATTRIBUTE_MAP: Record<string, keyof SheetData> = {
@@ -141,6 +144,10 @@ const syncDerivedCombatStats = (data: SheetData): SheetData => {
     const armorValueBreakdown = calculateArmorValueBreakdown(nextData);
     nextData.armorValue = armorValueBreakdown.display;
     nextData.armorMax = parseToNumber(armorValueBreakdown.display, 0);
+
+    const thresholdBreakdown = calculateDamageThresholdBreakdown(nextData);
+    nextData.minorThreshold = thresholdBreakdown.minor.display;
+    nextData.majorThreshold = thresholdBreakdown.major.display;
 
     return nextData;
 };

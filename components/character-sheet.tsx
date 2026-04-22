@@ -37,7 +37,7 @@ import {
   calculateEvasionBreakdown,
   convertDisplayedArmorValueToManualModifier,
   convertDisplayedEvasionToManualModifier,
-} from "@/lib/preset-equipment"
+} from "@/lib/domain-card-derived-stats"
 
 interface StatSourcePopoverProps {
   title: string
