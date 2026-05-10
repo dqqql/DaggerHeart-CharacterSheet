@@ -860,6 +860,11 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
     let processedCount = 0;
 
     for (const [cardId, card] of state.cards) {
+      // SRD mode removes builtin static card art from the default bundle.
+      if (card.source === CardSource.BUILTIN) {
+        continue;
+      }
+
       // 跳过已有图片URL的卡牌
       if (card.imageUrl) continue;
 
@@ -880,15 +885,15 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
 
   _inferCardImageUrl: (card: ExtendedStandardCard): string | null => {
     try {
+      if (card.source === CardSource.BUILTIN) {
+        return null;
+      }
+
       // 获取batch名称
       let batchName: string | null = null;
 
-      // 如果是内置卡片，优先使用 builtin-cards
-      if (card.source === 'builtin') {
-        batchName = 'builtin-cards';
-      }
-      // 如果已经有 batchName，直接使用（但内置卡片除外）
-      else if (card.batchName && typeof card.batchName === 'string') {
+      // 如果已经有 batchName，直接使用
+      if (card.batchName && typeof card.batchName === 'string') {
         batchName = card.batchName;
       }
       // 如果没有 batchName 但有 batchId，通过 getBatchName 获取名称

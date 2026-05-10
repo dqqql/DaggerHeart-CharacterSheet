@@ -22,6 +22,7 @@ export interface ImageRecord {
 export class CardImageDB extends Dexie {
   editorImages!: Table<ImageRecord, string>;
   images!: Table<ImageRecord, string>;
+  officialImages!: Table<ImageRecord, string>;
 
   constructor() {
     super('CardImageDB');
@@ -29,6 +30,12 @@ export class CardImageDB extends Dexie {
     this.version(1).stores({
       editorImages: 'key, createdAt',  // Editor temporary images
       images: 'key, createdAt'         // Real batch images
+    });
+
+    this.version(2).stores({
+      editorImages: 'key, createdAt',
+      images: 'key, createdAt',
+      officialImages: 'key, createdAt'
     });
   }
 }

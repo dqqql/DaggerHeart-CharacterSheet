@@ -2,6 +2,7 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import type { StandardCard } from "@/card/card-types";
 import { useUnifiedCardStore } from "@/card/stores/unified-card-store";
+import { getOfficialImageUrl, isBuiltinCard } from "@/lib/official-image-pack";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -98,6 +99,16 @@ export async function getCardImageUrlAsync(
   // 如果出错或没有卡片，返回默认图片
   if (isError || !card) {
     return `${basePath}/image/empty-card.webp`;
+  }
+
+  // Builtin cards now prefer the locally imported official image pack.
+  if (isBuiltinCard(card) && card.id) {
+    try {
+      const blobUrl = await getOfficialImageUrl(card.id);
+      if (blobUrl) return blobUrl;
+    } catch (error) {
+      console.error(`[getCardImageUrlAsync] Failed to load official image:`, error);
+    }
   }
 
   // Check if card has local image in IndexedDB

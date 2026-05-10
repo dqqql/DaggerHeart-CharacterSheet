@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useMemo, useRef } from "react"
 import CharacterSheet from "@/components/character-sheet"
 import CharacterSheetPageTwo from "@/components/character-sheet-page-two"
 import CharacterSheetPageThree from "@/components/character-sheet-page-ranger-companion"
@@ -27,6 +27,16 @@ import { PageDisplay } from "@/components/layout/page-display"
 import { BottomDock } from "@/components/layout/bottom-dock"
 import { PrintPageRenderer } from "@/components/print/print-page-renderer"
 import { SaveSwitcher } from "@/components/ui/save-switcher"
+import { Button } from "@/components/ui/button"
+import { AnnouncementModal } from "@/components/modals/announcement-modal"
+import { useAnnouncementStore } from "@/lib/announcement-store"
+import { getAnnouncements } from "@/lib/announcements"
+import {
+  clearOfficialImagePackData,
+  importOfficialImagePack,
+  type OfficialImagePackImportProgress,
+} from "@/lib/official-image-pack"
+import { useOfficialImagePackStore } from "@/lib/official-image-pack-store"
 
 // EyeIcon和EyeOffIcon已移除 - 现在使用PageVisibilityDropdown
 
@@ -67,6 +77,56 @@ const ImageIcon = () => (
     <polyline points="21 15 16 10 5 21"></polyline>
   </svg>
 )
+
+function getOfficialImagePackProgressView(progress: OfficialImagePackImportProgress) {
+  const ratio = progress.total > 0 ? progress.processed / progress.total : 0
+
+  switch (progress.phase) {
+    case "loading-zip":
+      return {
+        label: "正在读取压缩包",
+        detail: "准备解压导入文件",
+        percent: 8,
+      }
+    case "validating":
+      return {
+        label: "正在校验卡图包",
+        detail: "检查 manifest 和图片目录",
+        percent: 18,
+      }
+    case "extracting-images":
+      return {
+        label: "正在解压图片",
+        detail:
+          progress.total > 0
+            ? `${progress.processed} / ${progress.total} 张`
+            : "正在提取图片资源",
+        percent: Math.round(18 + ratio * 52),
+      }
+    case "writing-images":
+      return {
+        label: "正在写入本地缓存",
+        detail:
+          progress.total > 0
+            ? `${progress.processed} / ${progress.total} 张`
+            : "正在写入 IndexedDB",
+        percent: Math.round(70 + ratio * 26),
+      }
+    case "finalizing":
+      return {
+        label: "正在完成导入",
+        detail: "马上就好",
+        percent: 100,
+      }
+    default:
+      return {
+        label: "正在导入卡图",
+        detail: "请稍候",
+        percent: progress.percent,
+      }
+  }
+}
+
 import { useCharacterManagement } from "@/hooks/use-character-management"
 import { useExportHandlers } from "@/hooks/use-export-handlers"
 import PrintHelper from "./print-helper"
@@ -163,6 +223,18 @@ export default function Home() {
   const { pinnedCards } = usePinnedCardsStore();
   // 卡牌操作方法
   const { deleteCard, moveCard, updateCard } = useCardActions();
+  const setTextMode = useTextModeStore((state) => state.setTextMode)
+  const {
+    metadata: officialImagePackMetadata,
+    hydrated: officialImagePackHydrated,
+    setMetadata: setOfficialImagePackMetadata,
+    clearMetadata: clearOfficialImagePackMetadata,
+  } = useOfficialImagePackStore()
+  const {
+    lastSeenAnnouncementId,
+    hydrated: announcementHydrated,
+    markAnnouncementSeen,
+  } = useAnnouncementStore()
   // 文字模式状态
   const { isTextMode, toggleTextMode } = useTextModeStore();
   // 双页模式状态
@@ -188,6 +260,10 @@ export default function Home() {
   const [currentTabValue, setCurrentTabValue] = useState("page1")
   const [showShortcutHint, setShowShortcutHint] = useState(false)
   const [isCardDrawerOpen, setIsCardDrawerOpen] = useState(false)
+  const [announcementModalOpen, setAnnouncementModalOpen] = useState(false)
+  const [isImportingOfficialImagePack, setIsImportingOfficialImagePack] = useState(false)
+  const [officialImagePackImportProgress, setOfficialImagePackImportProgress] =
+    useState<OfficialImagePackImportProgress | null>(null)
 
   // 添加卡牌相关状态
   const [pendingCardIndex, setPendingCardIndex] = useState<number | null>(null)
@@ -209,9 +285,16 @@ export default function Home() {
   
   // 打印容器引用
   const printContainerRef = useRef<HTMLDivElement>(null)
+  const officialImagePackInputRef = useRef<HTMLInputElement>(null)
 
   // 额外需要的MAX_CHARACTERS常量
   const MAX_CHARACTERS = 10
+  const announcements = useMemo(() => getAnnouncements(), [])
+  const latestAnnouncementId = announcements[0]?.id ?? null
+  const hasOfficialImagePack = !!officialImagePackMetadata?.available
+  const officialImagePackProgressView = officialImagePackImportProgress
+    ? getOfficialImagePackProgressView(officialImagePackImportProgress)
+    : null
 
   // 使用导出功能Hook
   const {
@@ -249,6 +332,129 @@ export default function Home() {
 
     return () => window.removeEventListener('resize', checkIsMobile)
   }, [])
+
+  useEffect(() => {
+    if (!officialImagePackHydrated) {
+      return
+    }
+
+    if (!hasOfficialImagePack) {
+      setTextMode(true)
+    }
+  }, [hasOfficialImagePack, officialImagePackHydrated, setTextMode])
+
+  useEffect(() => {
+    if (!isClient || !announcementHydrated || !latestAnnouncementId) {
+      return
+    }
+
+    if (lastSeenAnnouncementId !== latestAnnouncementId) {
+      setAnnouncementModalOpen(true)
+    }
+  }, [
+    announcementHydrated,
+    isClient,
+    lastSeenAnnouncementId,
+    latestAnnouncementId,
+  ])
+
+  const handleOpenOfficialImagePackPicker = () => {
+    if (isImportingOfficialImagePack) {
+      return
+    }
+
+    officialImagePackInputRef.current?.click()
+  }
+
+  const handleOfficialImagePackFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0]
+    event.target.value = ""
+
+    if (!file) {
+      return
+    }
+
+    setIsImportingOfficialImagePack(true)
+    setOfficialImagePackImportProgress({
+      phase: "loading-zip",
+      processed: 0,
+      total: 0,
+      percent: 0,
+    })
+
+    try {
+      const result = await importOfficialImagePack(file, {
+        onProgress: setOfficialImagePackImportProgress,
+      })
+      setOfficialImagePackMetadata(result.metadata)
+
+      showFadeNotification({
+        message: `卡图包导入成功，共导入 ${result.metadata.imageCount} 张图片`,
+        type: "success",
+      })
+
+      if (result.warnings.length > 0) {
+        window.alert(`卡图包已导入，但有以下提示：\n\n${result.warnings.join("\n")}`)
+      }
+    } catch (error) {
+      console.error("[OfficialImagePack] Import failed:", error)
+      window.alert(
+        `卡图包导入失败：${error instanceof Error ? error.message : "未知错误"}`,
+      )
+    } finally {
+      setIsImportingOfficialImagePack(false)
+      setOfficialImagePackImportProgress(null)
+    }
+  }
+
+  const handleClearOfficialImagePack = async () => {
+    if (!hasOfficialImagePack || isImportingOfficialImagePack) {
+      return
+    }
+
+    const confirmed = window.confirm("确认清除当前本地官方卡图缓存吗？")
+    if (!confirmed) {
+      return
+    }
+
+    try {
+      await clearOfficialImagePackData()
+      clearOfficialImagePackMetadata()
+      setTextMode(true)
+
+      showFadeNotification({
+        message: "本地官方卡图已清除，已切回文字模式",
+        type: "success",
+      })
+    } catch (error) {
+      console.error("[OfficialImagePack] Clear failed:", error)
+      window.alert(
+        `清除卡图失败：${error instanceof Error ? error.message : "未知错误"}`,
+      )
+    }
+  }
+
+  const handleModeToggle = () => {
+    if (!hasOfficialImagePack && isTextMode) {
+      showFadeNotification({
+        message: "当前为 SRD 版本，请先导入卡图包后再切换图片模式",
+        type: "info",
+      })
+      return
+    }
+
+    toggleTextMode()
+  }
+
+  const handleAnnouncementAcknowledge = () => {
+    if (latestAnnouncementId) {
+      markAnnouncementSeen(latestAnnouncementId)
+    }
+
+    setAnnouncementModalOpen(false)
+  }
 
   const closeCharacterManagementModal = () => {
     setCharacterManagementModalOpen(false)
@@ -612,12 +818,21 @@ export default function Home() {
           {/* 角色卡区域 - 带相对定位 */}
           <div>
             {/* 页面标题 - 打印时隐藏 */}
-            <div className={`print:hidden mb-3 text-center transition-all duration-300 ${isDualPageMode && !isMobile ? 'w-[425mm] min-w-[425mm]' : 'w-[210mm]'}`}>
-              <SaveSwitcher
-                characterList={characterList}
-                currentCharacterId={currentCharacterId}
-                onRenameCharacter={renameCharacterHandler}
-              />
+            <div className={`print:hidden mb-3 transition-all duration-300 ${isDualPageMode && !isMobile ? 'w-[425mm] min-w-[425mm]' : 'w-[210mm]'}`}>
+              <div className="flex items-center justify-center gap-3">
+                <SaveSwitcher
+                  characterList={characterList}
+                  currentCharacterId={currentCharacterId}
+                  onRenameCharacter={renameCharacterHandler}
+                />
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setAnnouncementModalOpen(true)}
+                >
+                  公告
+                </Button>
+              </div>
             </div>
 
             {/* 页面显示组件 */}
@@ -640,10 +855,30 @@ export default function Home() {
           </div>
 
           {/* 文字模式切换开关 - 胶囊型，在容器外右下角 */}
-          <div className={`print:hidden mt-3 flex justify-end gap-3 transition-all duration-300 ${isDualPageMode && !isMobile ? 'w-[425mm] min-w-[425mm]' : 'w-[210mm]'}`}>
+          <div className={`print:hidden mt-3 flex flex-col gap-3 transition-all duration-300 ${isDualPageMode && !isMobile ? 'w-[425mm] min-w-[425mm]' : 'w-[210mm]'}`}>
+            <div className="flex items-start justify-between gap-3 rounded-2xl border border-slate-200 bg-white/85 px-4 py-3 shadow-sm backdrop-blur">
+              <div className="min-w-0">
+                <div className="text-sm font-semibold text-slate-800">
+                  {hasOfficialImagePack ? "卡图包已导入" : "当前为 SRD 纯文字模式"}
+                </div>
+                <div className="text-xs text-slate-500">
+                  {hasOfficialImagePack
+                    ? `版本 ${officialImagePackMetadata?.version}，共 ${officialImagePackMetadata?.imageCount} 张`
+                    : "导入官方卡图包后可启用图片模式"}
+                </div>
+                {officialImagePackMetadata?.warnings?.[0] && (
+                  <div className="mt-1 text-xs text-amber-600">
+                    {officialImagePackMetadata.warnings[0]}
+                  </div>
+                )}
+              </div>
             <div
-              className="bg-gray-200 dark:bg-gray-700 rounded-full p-0.5 shadow-md cursor-pointer transition-all duration-200 hover:shadow-lg scale-90"
-              onClick={toggleTextMode}
+              className={`rounded-full p-0.5 shadow-md transition-all duration-200 hover:shadow-lg scale-90 ${
+                hasOfficialImagePack
+                  ? 'cursor-pointer bg-gray-200 dark:bg-gray-700'
+                  : 'cursor-not-allowed bg-slate-200 opacity-80'
+              }`}
+              onClick={handleModeToggle}
             >
               <div className="flex items-center">
                 <div
@@ -672,6 +907,57 @@ export default function Home() {
                 </div>
               </div>
             </div>
+
+            </div>
+
+            <div className="flex flex-wrap justify-end gap-2">
+              <Button
+                size="sm"
+                onClick={handleOpenOfficialImagePackPicker}
+                disabled={isImportingOfficialImagePack}
+              >
+                {isImportingOfficialImagePack && officialImagePackProgressView
+                  ? `导入中 ${officialImagePackProgressView.percent}%`
+                  : "导入卡图"}
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleClearOfficialImagePack}
+                disabled={!hasOfficialImagePack || isImportingOfficialImagePack}
+              >
+                清除卡图
+              </Button>
+            </div>
+
+            {isImportingOfficialImagePack && officialImagePackProgressView && (
+              <div className="rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 shadow-sm">
+                <div className="flex items-center justify-between gap-3 text-sm text-sky-900">
+                  <div className="flex items-center gap-2">
+                    <div className="h-2 w-2 animate-pulse rounded-full bg-sky-500" />
+                    <span className="font-medium">{officialImagePackProgressView.label}</span>
+                  </div>
+                  <span className="tabular-nums">{officialImagePackProgressView.percent}%</span>
+                </div>
+                <div className="mt-2 h-2 overflow-hidden rounded-full bg-sky-100">
+                  <div
+                    className="h-full rounded-full bg-sky-500 transition-all duration-300"
+                    style={{ width: `${officialImagePackProgressView.percent}%` }}
+                  />
+                </div>
+                <div className="mt-2 text-xs text-sky-700">
+                  {officialImagePackProgressView.detail}
+                </div>
+              </div>
+            )}
+
+            <input
+              ref={officialImagePackInputRef}
+              type="file"
+              accept=".zip"
+              className="hidden"
+              onChange={handleOfficialImagePackFileChange}
+            />
           </div>
         </div>
       </div>
@@ -710,6 +996,13 @@ export default function Home() {
       )}
 
       {/* 建卡指引组件 - 移到父组件 */}
+      <AnnouncementModal
+        announcements={announcements}
+        open={announcementModalOpen}
+        onOpenChange={setAnnouncementModalOpen}
+        onAcknowledge={handleAnnouncementAcknowledge}
+      />
+
       <CharacterCreationGuide isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
 
       {/* 存档管理模态框 */}
