@@ -185,7 +185,7 @@ export const guideSteps: GuideStep[] = [
                         : "未知";
                 }
             }
-            return `现在记录角色的基础数据：\n在角色表顶部的指定位置记录您的等级。现在请将等级记录为 <strong>1级</strong>。\n闪避值代表您角色避免伤害的能力。您角色的起始闪避值由其职业决定。<strong>您的初始闪避是 ${evasion}</strong>。\n生命值 (HP) 是您身体健康的抽象衡量标准，您的起始最大生命值由职业决定。<strong>您的初始最大生命值是 ${hp}</strong>。`;
+            return `现在记录角色的基础数据：\n在角色表顶部的指定位置记录您的等级。现在请将等级记录为 <strong>1级</strong>。\n闪避值代表您角色避免伤害的能力。您角色的起始闪避值由其职业决定。<strong>您的初始闪避值是 ${evasion}</strong>。\n生命点是您身体健康的抽象衡量标准，您的起始最大生命点由职业决定。<strong>您的初始最大生命点是 ${hp}</strong>。`;
         },
         validation: (formData, allCards) => { // allCards might be unused
             if (!formData) return false;
@@ -213,7 +213,7 @@ export const guideSteps: GuideStep[] = [
     },
     {
         id: "step7",
-        title: "记录压力与希望",
+        title: "记录压力点与希望点",
         content: (formData: any, allCardsList: StandardCard[]): string => {
             const professionId = formData?.profession;
             let hopeFeature = "未知";
@@ -235,7 +235,7 @@ export const guideSteps: GuideStep[] = [
                 }
             }
 
-            return `压力反映了您承受危险情境的精神和情感压力以及身体消耗的能力。每个PC开始时有<strong>6个压力栏位</strong>。\n希望是一种元货币，可以用于激活经历或者帮助队友。不同职业会有专属的希望特性,可以在希望槽下方查看。${professionName}的希望特性是：\n<strong>${hopeFeature}</strong>\n\n所有角色开始游戏时有2点希望。`;
+            return `压力点反映了您承受危险情境的精神和情感压力以及身体消耗的能力。每个PC开始时有<strong>6个压力栏位</strong>。\n希望点是一种元货币，可以用于激活经历或者帮助队友。不同职业会有专属的希望特性，可以在希望点区域下方查看。${professionName}的希望特性是：\n<strong>${hopeFeature}</strong>\n\n所有角色开始游戏时有 2 希望点。`;
         },
         validation: (formData) => {
             return true;
@@ -255,7 +255,7 @@ export const guideSteps: GuideStep[] = [
         content: (formData: any): string => {
             const isArmorSelected = formData?.armorName && formData?.armorBaseScore !== undefined && formData?.armorThreshold !== undefined && String(formData.armorName).trim() !== '';
             if (!isArmorSelected) {
-                return "现在请选择您的初始护甲。请从<strong>T1</strong>护甲表中选择并装备一套护甲，然后填写在装备-护甲栏位上。已装备护甲为您提供护甲值和护甲伤害阈值。\n<strong>护甲值</strong>代表您的护甲可以承受多少次攻击。<strong>伤害阈值</strong>是护甲提供的减伤等级,决定了需要造成多少伤害才能真正伤害到您。";
+                return "现在请选择您的初始护甲。请从<strong>T1</strong>护甲表中选择并装备一套护甲，然后填写在装备-护甲栏位上。已装备护甲会提供基础护甲值和基础阈值。\n<strong>基础护甲值</strong>代表您的护甲在维修前可以承受多少次攻击。<strong>基础阈值</strong>是护甲提供的基础减伤等级，决定了需要造成多少伤害才能真正伤害到您。";
             }
             // 处理护甲值
             const armorValue = formData?.armorBaseScore !== undefined && formData?.armorBaseScore !== null
@@ -273,7 +273,7 @@ export const guideSteps: GuideStep[] = [
                     armorThresholdDisplay = formData.armorThreshold;
                 }
             }
-            return `<strong>您的护甲值是 ${armorValue} </strong>，意味着您的护甲在维修前可以承受 ${armorValue} 次攻击，请<strong>填写</strong>在角色卡左上角的<strong>护甲值</strong>栏位中。\n已装备护甲提供基本的护甲阈值，您的等级会提供额外的等级加成，加成和当前等级相同（如一级+1）。<strong>您的护甲伤害阈值是 ${armorThresholdDisplay}</strong >。 \n请<strong>填写</strong>在'生命值与压力'下方的<strong>伤害阈值</strong>栏位中。`;
+            return `<strong>您的基础护甲值是 ${armorValue}</strong>，意味着您的护甲在维修前可以承受 ${armorValue} 次攻击，请<strong>填写</strong>在角色卡左上角的<strong>基础护甲值</strong>栏位中。\n已装备护甲提供基础阈值，您的等级会提供额外的等级加成，加成和当前等级相同（如一级 +1）。<strong>您的护甲伤害阈值是 ${armorThresholdDisplay}</strong>。\n请<strong>填写</strong>在“生命点与压力点”下方的<strong>伤害阈值</strong>栏位中。`;
         },
         validation: (formData) => {
             return isFilled(formData.armorName)
@@ -302,7 +302,7 @@ export const guideSteps: GuideStep[] = [
                 }
             }
 
-            return `将以下物品添加到角色表的\"物品栏\"字段中： \n1.一支火把、50 英尺长的绳索、基本补给品。 \n2.一瓶次级治疗药水（回复 1d4 点生命值）<strong>或</strong>一瓶次级耐力药水（清除 1d4 点压力）。\n3.职业特殊起始物品：<strong>${startingItems} </strong> \n4. 其他GM批准您携带的物品。\n5. 在角色卡右下角<strong>金币栏</strong>中，<strong>添加一把金币。</strong>`;
+            return `将以下物品添加到角色表的\"物品栏\"字段中： \n1.一支火把、50 英尺长的绳索、基本补给品。 \n2.一瓶次级治疗药水（回复 1d4 生命点）<strong>或</strong>一瓶次级耐力药水（清除 1d4 压力点）。\n3.职业特殊起始物品：<strong>${startingItems} </strong> \n4. 其他GM批准您携带的物品。\n5. 在角色卡右下角<strong>金币栏</strong>中，<strong>添加一把金币。</strong>`;
         },
         validation: () => true,
     },
@@ -378,7 +378,7 @@ export const guideSteps: GuideStep[] = [
     {
         id: "step14",
         title: "完成创建",
-        content: "最后，检查你的角色卡上所有<strong>装备，卡牌，职业技能</strong>提供的加值和减值，它们可能会对你的闪避值，护甲值，属性或是HP等作出额外调整。将这些调整也记录在角色卡上。\n\n确定所有调整值都已经处理完成之后，你就完成了你的角色卡创建，别忘了给它取一个好听的名字！点击\"导出页面\"可以保存这个角色，推荐导出为\"PDF\"或者\"HTML\"格式，方便其他人查阅。",
+        content: "最后，检查你的角色卡上所有<strong>装备，卡牌，职业技能</strong>提供的加值和减值，它们可能会对你的闪避值、护甲值、属性或生命点等作出额外调整。将这些调整也记录在角色卡上。\n\n确定所有调整值都已经处理完成之后，你就完成了你的角色卡创建，别忘了给它取一个好听的名字！点击\"导出页面\"可以保存这个角色，推荐导出为\"PDF\"或者\"HTML\"格式，方便其他人查阅。",
         validation: () => true,
     },
 ]

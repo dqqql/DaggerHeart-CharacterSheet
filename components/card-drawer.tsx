@@ -222,7 +222,7 @@ export function CardDrawer({ cards, inventoryCards, isOpen: externalIsOpen, onCl
                     }
                   `}
                 >
-                  {isMobile ? '聚焦' : '聚焦卡组'}
+                  {isMobile ? '配置' : '配置卡组'}
                   <Badge variant="secondary" className="ml-2">
                     {cards.filter(c => c && c.name).length}
                   </Badge>
@@ -239,7 +239,7 @@ export function CardDrawer({ cards, inventoryCards, isOpen: externalIsOpen, onCl
                     }
                   `}
                 >
-                  {isMobile ? '库存' : '库存卡组'}
+                  {isMobile ? '宝库' : '宝库卡组'}
                   <Badge variant="secondary" className="ml-2">
                     {inventoryCards.filter(c => c && c.name).length}
                   </Badge>
@@ -306,7 +306,7 @@ export function CardDrawer({ cards, inventoryCards, isOpen: externalIsOpen, onCl
                                 e.stopPropagation()
                                 onMoveCard(realIndex, isInventory, !isInventory)
                               }}
-                              title={isInventory ? "移动到聚焦卡组" : "移动到库存卡组"}
+                              title={isInventory ? "移动到配置卡组" : "移动到宝库卡组"}
                             >
                               ⇄
                             </button>

@@ -93,7 +93,7 @@ export function InventoryWeaponSection({
 
     // 显示交换成功通知
     showFadeNotification({
-      message: targetType === 'primary' ? '已设为主手武器' : '已设为副手武器',
+      message: targetType === 'primary' ? '已设为主武器' : '已设为副武器',
       type: 'success',
       duration: 2000
     })
@@ -192,7 +192,7 @@ export function InventoryWeaponSection({
             className="mr-1 h-3 w-3 cursor-pointer"
           />
           <label htmlFor={primaryField} className="text-[8px] cursor-pointer group-hover:text-blue-600 transition-colors">
-            设为主手
+            设为主武器
           </label>
         </div>
         <div className="flex items-center group">
@@ -204,7 +204,7 @@ export function InventoryWeaponSection({
             className="mr-1 h-3 w-3 cursor-pointer"
           />
           <label htmlFor={secondaryField} className="text-[8px] cursor-pointer group-hover:text-blue-600 transition-colors">
-            设为副手
+            设为副武器
           </label>
         </div>
       </div>

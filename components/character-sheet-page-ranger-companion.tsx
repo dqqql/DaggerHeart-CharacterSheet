@@ -145,7 +145,7 @@ const CharacterSheetPageThree: React.FC = () => {
     // 闪避输入框（与第一页一致）
     const renderEvasion = () => (
         <div className="flex flex-col items-center">
-            <div className="text-ms font-bold">闪避</div>
+            <div className="text-ms font-bold">闪避值</div>
             <input
                 type="text"
                 name="companionEvasion"
@@ -249,15 +249,15 @@ const CharacterSheetPageThree: React.FC = () => {
                                 <span className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">伤害骰</span>
                                 {renderAttackDice()}
                             </div>
-                            <p className="text-2xs text-gray-600 dark:text-gray-400 leading-snug">如果你命令你的伙伴攻击，他们会获得通常适用于你的增益（例如游侠的“专注”效果）。成功时，他们的伤害掷骰使用你的熟练度和他们的伤害骰。</p>
+                            <p className="text-2xs text-gray-600 dark:text-gray-400 leading-snug">如果你命令你的伙伴攻击，他们会获得通常适用于你的增益（例如游侠的“专注”效果）。成功时，他们的伤害掷骰使用你的熟练值和他们的伤害骰。</p>
                         </div>
                     </div>
                     {/* Stress */}
                     <div>
-                        <h4 className={sectionBannerClass}>压力</h4>
+                        <h4 className={sectionBannerClass}>压力点</h4>
                         <div className="p-1.5 border border-gray-300 dark:border-gray-700 border-t-0 rounded-b-lg">
                             <div className="flex items-center mb-1 gap-2">
-                                <span className="text-xs mr-1 font-semibold text-gray-700 dark:text-gray-300">压力：</span>
+                                <span className="text-xs mr-1 font-semibold text-gray-700 dark:text-gray-300">压力点：</span>
                                 {renderStressBoxes()}
                                 <span className="text-xs text-gray-500 ml-2">最大</span>
                                 <input
@@ -271,8 +271,8 @@ const CharacterSheetPageThree: React.FC = () => {
                                     style={{ width: '2.5rem' }}
                                 />
                             </div>
-                                    <p className="text-2xs text-gray-600 dark:text-gray-400 mb-1 leading-snug">每当你的伙伴将要受到伤害时，他们标记一点压力。当他们的压力槽满时，他们会脱离场景（躲藏、逃跑等）。动物伙伴暂时不可用，它将在下一次长休时返回，并清除一点压力。</p>
-                            <p className="text-2xs text-gray-600 dark:text-gray-400 mb-1 leading-snug">每当你对自己使用“清除压力”的休整动作时，也会自动为你的伙伴清除同样多的压力。</p>
+                                    <p className="text-2xs text-gray-600 dark:text-gray-400 mb-1 leading-snug">每当你的伙伴将要受到伤害时，他们标记 1 压力点。当他们的压力槽满时，他们会脱离场景（躲藏、逃跑等）。游侠伙伴暂时不可用，它将在下一次长休时返回，并清除 1 压力点。</p>
+                            <p className="text-2xs text-gray-600 dark:text-gray-400 mb-1 leading-snug">每当你对自己使用“清除压力点”的休整动作时，也会自动为你的伙伴清除同样多的压力点。</p>
                         </div>
                     </div>
                 </div>
@@ -285,12 +285,12 @@ const CharacterSheetPageThree: React.FC = () => {
                             <div className="space-y-1">
                                 {renderTrainingOption("聪慧：一项经历获得 +1。", "intelligent", 3)}
                                 {renderTrainingOption("黑暗中的光芒：你的角色获得额外一个希望槽。", "radiantInDarkness", 1)}
-                                {renderTrainingOption("生物慰藉：每次短休一次，当你花时间在一个安静的时刻给予你的伙伴爱和关注时，你们都可以清除一点压力或获得一点希望。", "creatureComfort", 1)}
-                                {renderTrainingOption("装甲：当你的伙伴受到伤害时，你可以自己标记一格护甲槽代替伙伴标记一点压力。", "armored", 1)}
+                                {renderTrainingOption("生物慰藉：每次短休一次，当你花时间在一个安静的时刻给予你的伙伴爱和关注时，你们都可以清除 1 压力点或获得 1 希望点。", "creatureComfort", 1)}
+                                {renderTrainingOption("装甲：当你的伙伴受到伤害时，你可以自己标记 1 护甲槽代替伙伴标记 1 压力点。", "armored", 1)}
                                 {renderTrainingOption("凶猛：增加你伙伴的伤害骰（如d6到d8）或范围（如近战到临近）一个等级。", "vicious", 3)}
                                 {renderTrainingOption("坚韧：增加一个额外的压力槽。", "resilient", 3)}
-                                        {renderTrainingOption("羁绊：当你标记最后一个生命槽时，你的伙伴会冲到你身边安慰你。掷出等同于他们可用压力槽数量的d6，并标记这些压力。如果掷出6，他们会让你振作起来。清除你的最后一个生命槽并返回场景。", "bonded", 1)}
-                                {renderTrainingOption("警觉：伙伴的闪避+2。", "aware", 3)}
+                                        {renderTrainingOption("羁绊：当你标记最后一个生命槽时，你的伙伴会冲到你身边安慰你。掷出等同于他们可用压力槽数量的 d6，并标记这些压力点。如果掷出 6，他们会让你振作起来。清除你的最后一个生命槽并返回场景。", "bonded", 1)}
+                                {renderTrainingOption("警觉：伙伴的闪避值 +2。", "aware", 3)}
                             </div>
                         </div>
                     </div>

@@ -54,7 +54,7 @@ export function HPMaxEditor({ onClose }: HPMaxEditorProps) {
   return (
     <div className="w-24">
       <div className="flex items-center justify-between mb-1.5">
-        <span className="text-xs font-semibold text-gray-700">HP上限</span>
+        <span className="text-xs font-semibold text-gray-700">生命点上限</span>
         <button
           onClick={onClose}
           className="p-0.5 hover:bg-gray-100 rounded transition-colors"

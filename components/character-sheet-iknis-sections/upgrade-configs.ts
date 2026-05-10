@@ -81,7 +81,7 @@ export const UPGRADE_CONFIGS: UpgradeConfig[] = [
     }
   },
   {
-    title: "震慑：当你的攻击骰出关键成功时，目标必须标记一点压力",
+    title: "震慑：当你的攻击骰出关键成功时，目标必须标记 1 压力点",
     checkboxes: 2,
     cost: {
       fragments: { '扳机': 6 },
@@ -113,7 +113,7 @@ export const PRECOMPILED_TIER2_CONFIGS: UpgradeConfig[] = [
     }
   },
   {
-    title: "触发：在成功命中后，你可以标记两点压力让目标多标记一点生命值",
+    title: "触发：在成功命中后，你可以标记 2 压力点让目标多标记 1 生命点",
     tier: "预编译：二阶",
     cost: {
       fragments: { '扳机': 33, '水晶': 13 },
@@ -125,7 +125,7 @@ export const PRECOMPILED_TIER2_CONFIGS: UpgradeConfig[] = [
 
 export const PRECOMPILED_TIER3_CONFIGS: UpgradeConfig[] = [
   {
-    title: "阻塞：+3护甲值；-1闪避",
+    title: "阻塞：+3护甲值；-1闪避值",
     tier: "预编译：三阶",
     cost: {
       fragments: { '水晶': 27 },
@@ -156,7 +156,7 @@ export const PRECOMPILED_TIER3_CONFIGS: UpgradeConfig[] = [
 
 export const PRECOMPILED_TIER4_CONFIGS: UpgradeConfig[] = [
   {
-    title: "追踪：你可以标记2点压力以重新进行一次攻击检定",
+    title: "追踪：你可以标记 2 压力点以重新进行一次攻击检定",
     tier: "预编译：四阶",
     cost: {
       fragments: { '齿轮': 75, '镜头': 67 },

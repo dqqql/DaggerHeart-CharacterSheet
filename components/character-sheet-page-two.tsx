@@ -285,7 +285,7 @@ export default function CharacterSheetPageTwo() {
         }
       }
 
-      if (label.includes("熟练度+1")) {
+      if (label.includes("熟练值+1")) {
         const currentProficiency = Array.isArray(safeFormData.proficiency)
           ? safeFormData.proficiency
           : Array(6).fill(false)
@@ -297,7 +297,7 @@ export default function CharacterSheetPageTwo() {
             newProficiency[currentCount] = true
             setFormData({ proficiency: newProficiency })
             showFadeNotification({
-              message: `熟练度 +1，当前为 ${currentCount + 1}/6`,
+              message: `熟练值 +1，当前为 ${currentCount + 1}/6`,
               type: "success",
               position: "middle",
             })
@@ -307,7 +307,7 @@ export default function CharacterSheetPageTwo() {
           newProficiency[currentCount - 1] = false
           setFormData({ proficiency: newProficiency })
           showFadeNotification({
-            message: `熟练度 -1，当前为 ${currentCount - 1}/6`,
+            message: `熟练值 -1，当前为 ${currentCount - 1}/6`,
             type: "success",
             position: "middle",
           })
@@ -525,8 +525,8 @@ export default function CharacterSheetPageTwo() {
           <div className="mt-3 grid grid-cols-3 gap-3 text-m">
             <UpgradeSection
               tier={1}
-              title="T2 等级 2-4"
-              description="当你到达 2 级时：获得一项额外 +2 经历，熟练度标记 +1。"
+              title="位阶2 等级 2-4"
+              description="当你到达 2 级时：获得一项额外 +2 经历，熟练值 +1。"
               formData={safeFormData}
               isUpgradeChecked={isUpgradeChecked}
               handleUpgradeCheck={handleUpgradeCheck}
@@ -539,8 +539,8 @@ export default function CharacterSheetPageTwo() {
 
             <UpgradeSection
               tier={2}
-              title="T3 等级 5-7"
-              description="当你到达 5 级时：获得一项额外 +2 经历，清除所有属性升级标记，熟练度标记 +1。"
+              title="位阶3 等级 5-7"
+              description="当你到达 5 级时：获得一项额外 +2 经历，清除所有属性升级标记，熟练值 +1。"
               formData={safeFormData}
               isUpgradeChecked={isUpgradeChecked}
               handleUpgradeCheck={handleUpgradeCheck}
@@ -553,8 +553,8 @@ export default function CharacterSheetPageTwo() {
 
             <UpgradeSection
               tier={3}
-              title="T4 等级 8-10"
-              description="当你到达 8 级时：获得一项额外 +2 经历，清除所有属性升级标记，熟练度标记 +1。"
+              title="位阶4 等级 8-10"
+              description="当你到达 8 级时：获得一项额外 +2 经历，清除所有属性升级标记，熟练值 +1。"
               formData={safeFormData}
               isUpgradeChecked={isUpgradeChecked}
               handleUpgradeCheck={handleUpgradeCheck}

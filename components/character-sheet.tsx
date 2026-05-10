@@ -803,7 +803,7 @@ export default function CharacterSheet() {
                   <h3 className="text-xs font-bold text-center print:mb-1">装备</h3>
 
                   <div className="flex items-center gap-0.5 mb-1">
-                    <span className="text-[10px]">熟练度</span>
+                    <span className="text-[10px]">熟练值</span>
                     {Array(6)
                       .fill(0)
                       .map((_, i) => (

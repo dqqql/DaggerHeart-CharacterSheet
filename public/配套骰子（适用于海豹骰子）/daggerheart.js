@@ -73,7 +73,7 @@ const CONFIG = {
     hopeChangeDetails: '希望值: {finalValue} ({currentHope}/{maxHope}) = {calculation}',
     fearChangeDetails: '恐惧值: {finalValue} ({currentFear}/{maxFear}) = {calculation}',
     // 压力变化文案(用于大成功)
-    stressDecreased: '压力-1 ({currentStress}/{maxStress})',
+    stressDecreased: '清除 1 压力点 ({currentStress}/{maxStress})',
     stressAtZero: '压力已为0 ({currentStress}/{maxStress})',
     // 希望变化文案（用于大成功）
     criticalSuccessHopeDetails: '希望值: {finalValue} ({currentHope}/{maxHope}) = {calculation}',
@@ -1967,7 +1967,7 @@ class ResponseFormatter {
             .replace('{maxStress}', rollResult.stressUpdate.maxStress));
         } else {
           // 没有设置压力上限时，只显示当前压力值
-          attributeChanges.push(`压力-1 (${rollResult.stressUpdate.currentStress})`);
+          attributeChanges.push(`清除 1 压力点 (${rollResult.stressUpdate.currentStress})`);
         }
       } else if (rollResult.stressUpdate.currentStress === 0) {
         if (rollResult.stressUpdate.maxStress > 0) {
@@ -2150,7 +2150,7 @@ const commandHandlers = {
       if (isDdrMode) {
         // ddr 模式: .test -r 希望骰点数 恐惧骰点数
         if (args.length !== 3) {
-          seal.replyToSender(ctx, msg, '参数错误！用法：.test -r 希望骰点数 恐惧骰点数\n例如：.test -r 10 5 (测试反应掷骰，不获得希望)');
+          seal.replyToSender(ctx, msg, '参数错误！用法：.test -r 希望骰点数 恐惧骰点数\n例如：.test -r 10 5 (测试反应掷骰，不获得希望点)');
           return seal.ext.newCmdExecuteResult(false);
         }
         hopeRoll = parseInt(args[1]);
@@ -2593,16 +2593,16 @@ cmdDuality.help = `.dd [n/m] [修饰符...] [原因] // 二元骰检定
   n/m - 希望骰n面/恐惧骰m面 (如12/20, 20/, /20)
 修饰符支持:
   ±属性名 - 使用属性值(如+敏捷 +力量 +agi +str)
-  ±经历名 - 使用具名经历值(消耗1点希望，如+锻造 +魔法学)
-  ±经历[N]/exp[N] - 使用匿名经历(消耗1点希望，N默认为2，如经历、经历3、3经历)
+  ±经历名 - 使用具名经历值(消耗 1 希望点，如+锻造 +魔法学)
+  ±经历[N]/exp[N] - 使用匿名经历(消耗 1 希望点，N默认为2，如经历、经历3、3经历)
   ±[N]优势/adv - 优势骰(N个d6取最高,默认1)
   ±[N]劣势/dis - 劣势骰(N个d6取最低,默认1)  
   ±[N]dM - 额外骰子(N个M面骰,默认1)
   ±N - 常量修饰符
-  @玩家名 - 请求玩家帮助(消耗其1点希望，获得1个优势骰)
+  @玩家名 - 请求玩家帮助(消耗其 1 希望点，获得1个优势骰)
 示例:
   .dd +敏捷 攀爬检定
-  .dd @Alice @Bob +力量 推门 (Alice和Bob各消耗1希望，获得2个帮助优势)
+  .dd @Alice @Bob +力量 推门 (Alice和Bob各消耗 1 希望点，获得2个帮助优势)
   .dd 12/20 +力量+优势 破门 (希望骰12面，恐惧骰20面)
   .dd 20/ +本能+2d6-劣势 复杂检定 (希望骰20面，恐惧骰默认12面)
   .dd /20 +锻造+优势 制作装备 (希望骰默认12面，恐惧骰20面)
@@ -2616,21 +2616,21 @@ cmdDuality.solve = commandHandlers.dualityDice;
 // 创建并注册纯检定命令
 const cmdDualityRollOnly = seal.ext.newCmdItemInfo();
 cmdDualityRollOnly.name = 'ddr';
-cmdDualityRollOnly.help = `.ddr [n/m] [修饰符...] [原因] // 反应二元骰，仅消耗希望不获得希望
+cmdDualityRollOnly.help = `.ddr [n/m] [修饰符...] [原因] // 反应二元骰，仅消耗希望点，不获得希望点
 骰子面数:
   n/m - 希望骰n面/恐惧骰m面 (如12/20, 20/, /20)
 修饰符支持:
   ±属性名 - 使用属性值(如+敏捷 +力量 +agi +str)
-  ±经历名 - 使用具名经历值(消耗1点希望，如+锻造 +魔法学)
-  ±经历[N]/exp[N] - 使用匿名经历(消耗1点希望，N默认为2，如经历、经历3、3经历)
+  ±经历名 - 使用具名经历值(消耗 1 希望点，如+锻造 +魔法学)
+  ±经历[N]/exp[N] - 使用匿名经历(消耗 1 希望点，N默认为2，如经历、经历3、3经历)
   ±[N]优势/adv - 优势骰(N个d6取最高,默认1)
   ±[N]劣势/dis - 劣势骰(N个d6取最低,默认1)  
   ±[N]dM - 额外骰子(N个M面骰,默认1)
   ±N - 常量修饰符
-  @玩家名 - 请求玩家帮助(消耗其1点希望，获得1个优势骰)
+  @玩家名 - 请求玩家帮助(消耗其 1 希望点，获得1个优势骰)
 示例:
   .ddr +敏捷 攀爬检定
-  .ddr @Alice +力量 推门 (Alice消耗1希望，获得1个帮助优势)
+  .ddr @Alice +力量 推门 (Alice消耗 1 希望点，获得1个帮助优势)
   .ddr 12/20 +力量+优势 破门 (希望骰12面，恐惧骰20面)
   .ddr 20/ +锻造 制作检定 (希望骰20面，恐惧骰默认12面)
   .ddr 经历4 临时增强 (使用+4的匿名经历)
@@ -2645,10 +2645,10 @@ cmdTest.name = 'test';
 cmdTest.help = `.test [-r] [希望骰点数] [恐惧骰点数] // 二元骰测试命令
 无参数: .test - 测试单个12面骰投掷
 dd模式: .test 12 8 - 测试希望骰12，恐惧骰8的结果(更新属性)
-ddr模式: .test -r 12 8 - 测试希望骰12，恐惧骰8的结果(不获得希望)
+ddr模式: .test -r 12 8 - 测试希望骰12，恐惧骰8的结果(不获得希望点)
 测试用例:
-  .test 12 12 - 关键成功（希望+1，压力-1）
-  .test 10 5 - 希望结果（希望+1）
+  .test 12 12 - 关键成功（获得 1 希望点，清除 1 压力点）
+  .test 10 5 - 希望结果（获得 1 希望点）
   .test 3 8 - 恐惧结果（GM恐惧+1）
   .test -r 10 5 - 反应掷骰（仅消耗希望不获得）`;
 cmdTest.solve = commandHandlers.testDice;

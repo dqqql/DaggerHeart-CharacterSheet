@@ -7,6 +7,12 @@ import InfiniteScroll from 'react-infinite-scroll-component'; // Added import
 const ITEMS_PER_PAGE = 30; // Define items per page
 
 const LEVELS = ["T1", "T2", "T3", "T4"] as const;
+const LEVEL_LABELS: Record<Level, string> = {
+  T1: "T1",
+  T2: "位阶2",
+  T3: "位阶3",
+  T4: "位阶4",
+};
 const CHECKS = ["敏捷", "灵巧", "知识", "力量", "本能", "风度"] as const;
 const ATTRIBUTES = ["物理", "魔法"] as const;
 const RANGES = ["近战", "邻近", "近距离", "远距离", "极远"] as const;
@@ -195,7 +201,7 @@ export function WeaponSelectionModal({ isOpen, onClose, onSelect, title, weaponS
           {/* 等级 */}
           <select className="border rounded px-1 sm:px-2 py-1 text-xs sm:text-sm min-h-[2rem] sm:min-h-[2.25rem]" value={levelFilter} onChange={e => setLevelFilter(e.target.value as Level | "")}> 
             <option value="">等级(全部)</option>
-            {LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
+            {LEVELS.map(l => <option key={l} value={l}>{LEVEL_LABELS[l]}</option>)}
           </select>
           {/* 类型 - Conditionally render this filter */}
           {weaponSlotType === "inventory" && (
@@ -278,7 +284,7 @@ export function WeaponSelectionModal({ isOpen, onClose, onSelect, title, weaponS
                 >
                   <option value="">选择等级</option>
                   {LEVELS.map(level => (
-                    <option key={level} value={level}>{level}</option>
+                    <option key={level} value={level}>{LEVEL_LABELS[level]}</option>
                   ))}
                 </select>
               </div>
@@ -446,7 +452,7 @@ export function WeaponSelectionModal({ isOpen, onClose, onSelect, title, weaponS
                 <tbody>
                   {isCustom && customName && (
                     <tr className="bg-blue-50">
-                      <td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{customLevel}</td>
+                      <td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{customLevel ? LEVEL_LABELS[customLevel] : ""}</td>
                       <td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{customName}</td>
                       <td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{customWeaponType === 'primary' ? '主武器' : '副武器'}</td>
                       <td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{customAttribute}</td>
@@ -476,7 +482,7 @@ export function WeaponSelectionModal({ isOpen, onClose, onSelect, title, weaponS
                         setCustomDescription("");
                         onSelect(weapon.id, weapon.weaponType);
                       }}
-                    ><td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{weapon.等级}</td><td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{weapon.名称}</td><td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{weapon.weaponType === "primary" ? "主武器" : "副武器"}</td><td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{weapon.伤害类型}</td><td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{weapon.负荷}</td><td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{weapon.范围}</td><td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{weapon.属性}</td><td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{weapon.伤害}</td><td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{weapon.特性名称}</td><td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{weapon.描述}</td></tr>
+                    ><td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{LEVEL_LABELS[weapon.等级]}</td><td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{weapon.名称}</td><td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{weapon.weaponType === "primary" ? "主武器" : "副武器"}</td><td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{weapon.伤害类型}</td><td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{weapon.负荷}</td><td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{weapon.范围}</td><td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{weapon.属性}</td><td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{weapon.伤害}</td><td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{weapon.特性名称}</td><td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{weapon.描述}</td></tr>
                   ))}
                 </tbody>
               </table>

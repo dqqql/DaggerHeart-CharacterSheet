@@ -55,7 +55,7 @@ export function UpgradeSection({
   const isExperienceUpgradeOption = (label: string) => label.includes("经历获得额外")
   const isDomainCardOption = (label: string) => label.includes("领域卡加入卡组")
   const isDodgeUpgradeOption = (label: string) => label.includes("闪避值")
-  const isProficiencyUpgradeOption = (label: string) => label.includes("熟练度+1")
+  const isProficiencyUpgradeOption = (label: string) => label.includes("熟练值+1")
   const isSubclassUpgradeOption = (label: string) => label.includes("升级你的子职业")
 
   // Helper function to determine if an option needs an edit button

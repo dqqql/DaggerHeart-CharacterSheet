@@ -125,7 +125,7 @@ export const CharacterSheetPageFour: React.FC = () => {
 
     return (
         <CharacterSheetCardPrintPage
-            title="聚焦卡组"
+            title="配置卡组"
             cards={focusedCards}
             className="character-sheet-page-four"
         />
@@ -144,7 +144,7 @@ export const CharacterSheetPageFive: React.FC = () => {
 
     return (
         <CharacterSheetCardPrintPage
-            title="库存卡组"
+            title="宝库卡组"
             cards={inventoryCards}
             className="character-sheet-page-five"
         />

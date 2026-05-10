@@ -127,7 +127,7 @@ export function DiceUsageGuideModal({ isOpen, onClose }: DiceUsageGuideModalProp
                       </div>
 
                       <div className="bg-purple-50 border border-purple-200 rounded p-3">
-                        <p className="font-medium text-purple-800 mb-1">2️⃣ 经历修饰符（消耗1希望）</p>
+                        <p className="font-medium text-purple-800 mb-1">2️⃣ 经历修饰符（消耗 1 希望点）</p>
                         <p className="text-purple-700 text-xs mb-1">具名经历：+锻造、+魔法学</p>
                         <p className="text-purple-600 text-xs">匿名经历：+经历、+经历3、+exp5（默认+2）</p>
                       </div>
@@ -150,7 +150,7 @@ export function DiceUsageGuideModal({ isOpen, onClose }: DiceUsageGuideModalProp
 
                       <div className="bg-pink-50 border border-pink-200 rounded p-3">
                         <p className="font-medium text-pink-800 mb-1">6️⃣ 帮助系统</p>
-                        <p className="text-pink-600 text-xs">@Alice、@Bob（请求帮助，消耗对方1希望，获得1优势）</p>
+                        <p className="text-pink-600 text-xs">@Alice、@Bob（请求帮助，消耗对方 1 希望点，获得 1 优势）</p>
                       </div>
                     </div>
                   </div>
@@ -164,7 +164,7 @@ export function DiceUsageGuideModal({ isOpen, onClose }: DiceUsageGuideModalProp
                       </div>
                       <div className="bg-gray-50 p-2 rounded border border-gray-200">
                         <code className="text-xs text-blue-600">.dd @Alice @Bob +力量 推门</code>
-                        <p className="text-xs text-gray-600 mt-1">→ Alice和Bob各消耗1希望提供帮助，获得2个优势骰</p>
+                        <p className="text-xs text-gray-600 mt-1">→ Alice 和 Bob 各消耗 1 希望点提供帮助，获得 2 个优势骰</p>
                       </div>
                       <div className="bg-gray-50 p-2 rounded border border-gray-200">
                         <code className="text-xs text-blue-600">.dd 12/20 +力量+优势 破门</code>
@@ -172,7 +172,7 @@ export function DiceUsageGuideModal({ isOpen, onClose }: DiceUsageGuideModalProp
                       </div>
                       <div className="bg-gray-50 p-2 rounded border border-gray-200">
                         <code className="text-xs text-blue-600">.dd +本能+经历3+劣势 复杂行动</code>
-                        <p className="text-xs text-gray-600 mt-1">→ 使用本能，消耗1希望获得+3经历，但有劣势</p>
+                        <p className="text-xs text-gray-600 mt-1">→ 使用本能，消耗 1 希望点获得 +3 经历，但有劣势</p>
                       </div>
                     </div>
                   </div>
@@ -198,8 +198,8 @@ export function DiceUsageGuideModal({ isOpen, onClose }: DiceUsageGuideModalProp
                   <div>
                     <h4 className="font-medium text-gray-700 mb-2">检定结果</h4>
                     <ul className="list-disc list-inside space-y-1 text-gray-600 ml-2 text-xs">
-                      <li><strong className="text-yellow-600">关键成功：</strong>希望=恐惧 → 希望+1，压力-1</li>
-                      <li><strong className="text-green-600">希望结果：</strong>希望&gt;恐惧 → 希望+1</li>
+                      <li><strong className="text-yellow-600">关键成功：</strong>希望 = 恐惧 → 获得 1 希望点，清除 1 压力点</li>
+                      <li><strong className="text-green-600">希望结果：</strong>希望&gt;恐惧 → 获得 1 希望点</li>
                       <li><strong className="text-red-600">恐惧结果：</strong>希望&lt;恐惧 → GM恐惧+1</li>
                     </ul>
                   </div>
@@ -210,13 +210,13 @@ export function DiceUsageGuideModal({ isOpen, onClose }: DiceUsageGuideModalProp
               <div className="mb-6 border border-gray-200 rounded-lg p-5 bg-white shadow-sm">
                 <h3 className="text-lg font-semibold mb-3 text-gray-800">.ddr - 反应检定</h3>
                 <div className="space-y-2 text-sm text-gray-700">
-                  <p><strong>用途：</strong>反应二元骰，仅消耗希望不获得希望（用于反应性检定）</p>
-                  <p className="text-gray-600">语法与 .dd 完全相同，但结果不会更新希望、压力、恐惧等属性</p>
+                  <p><strong>用途：</strong>反应二元骰，仅消耗希望点，不获得希望点（用于反应性检定）</p>
+                  <p className="text-gray-600">语法与 .dd 完全相同，但结果不会更新希望点、压力点、恐惧等属性</p>
                   <div className="bg-yellow-50 border border-yellow-200 rounded p-3 mt-2">
                     <p className="text-xs text-yellow-800"><strong>⚠️ 与 .dd 的区别：</strong></p>
                     <ul className="list-disc list-inside text-xs text-yellow-700 mt-1 ml-2">
-                      <li>.dd：会根据结果更新希望/压力/恐惧</li>
-                      <li>.ddr：仅消耗希望（使用经历时），不获得希望</li>
+                      <li>.dd：会根据结果更新希望点、压力点、恐惧</li>
+                      <li>.ddr：仅消耗希望点（使用经历时），不获得希望点</li>
                     </ul>
                   </div>
                   <div className="bg-gray-50 p-3 rounded border border-gray-200 mt-2">
@@ -310,11 +310,11 @@ export function DiceUsageGuideModal({ isOpen, onClose }: DiceUsageGuideModalProp
                   <div className="space-y-2">
                     <div className="bg-gray-50 p-2 rounded border border-gray-200">
                       <code className="text-xs text-blue-600">.test 12 12</code>
-                      <p className="text-xs text-gray-600 mt-1">→ 测试关键成功（希望+1，压力-1）</p>
+                      <p className="text-xs text-gray-600 mt-1">→ 测试关键成功（获得 1 希望点，清除 1 压力点）</p>
                     </div>
                     <div className="bg-gray-50 p-2 rounded border border-gray-200">
                       <code className="text-xs text-blue-600">.test -r 10 5</code>
-                      <p className="text-xs text-gray-600 mt-1">→ 测试反应掷骰（不获得希望）</p>
+                      <p className="text-xs text-gray-600 mt-1">→ 测试反应掷骰（不获得希望点）</p>
                     </div>
                   </div>
                 </div>
@@ -398,7 +398,7 @@ export function DiceUsageGuideModal({ isOpen, onClose }: DiceUsageGuideModalProp
                           <td className="py-2 px-3"><code className="bg-green-100 px-1 rounded text-xs">生命值上限</code>, <code className="bg-green-100 px-1 rounded text-xs">血量上限</code></td>
                         </tr>
                         <tr className="border-b border-green-200">
-                          <td className="py-2 px-3 font-medium">压力</td>
+                          <td className="py-2 px-3 font-medium">压力点</td>
                           <td className="py-2 px-3"><code className="bg-green-100 px-1 rounded text-xs">stress</code>, <code className="bg-green-100 px-1 rounded text-xs">s</code></td>
                           <td className="py-2 px-3"><code className="bg-green-100 px-1 rounded text-xs">yl</code></td>
                           <td className="py-2 px-3"><code className="bg-green-100 px-1 rounded text-xs">压力值</code></td>
@@ -410,7 +410,7 @@ export function DiceUsageGuideModal({ isOpen, onClose }: DiceUsageGuideModalProp
                           <td className="py-2 px-3"><code className="bg-green-100 px-1 rounded text-xs">压力上限值</code></td>
                         </tr>
                         <tr className="border-b border-green-200">
-                          <td className="py-2 px-3 font-medium">希望</td>
+                          <td className="py-2 px-3 font-medium">希望点</td>
                           <td className="py-2 px-3"><code className="bg-green-100 px-1 rounded text-xs">hope</code>, <code className="bg-green-100 px-1 rounded text-xs">h</code></td>
                           <td className="py-2 px-3"><code className="bg-green-100 px-1 rounded text-xs">xw</code></td>
                           <td className="py-2 px-3"><code className="bg-green-100 px-1 rounded text-xs">希望值</code></td>
@@ -452,7 +452,7 @@ export function DiceUsageGuideModal({ isOpen, onClose }: DiceUsageGuideModalProp
                           <td className="py-2 px-3"><code className="bg-green-100 px-1 rounded text-xs">回避</code>, <code className="bg-green-100 px-1 rounded text-xs">闪</code>, <code className="bg-green-100 px-1 rounded text-xs">避</code></td>
                         </tr>
                         <tr className="border-b border-green-200">
-                          <td className="py-2 px-3 font-medium">阈值</td>
+                          <td className="py-2 px-3 font-medium">重伤阈值</td>
                           <td className="py-2 px-3"><code className="bg-green-100 px-1 rounded text-xs">major</code>, <code className="bg-green-100 px-1 rounded text-xs">majorthreshold</code>, <code className="bg-green-100 px-1 rounded text-xs">mjr</code></td>
                           <td className="py-2 px-3"><code className="bg-green-100 px-1 rounded text-xs">zsyz</code></td>
                           <td className="py-2 px-3"><code className="bg-green-100 px-1 rounded text-xs">重伤阈值</code>, <code className="bg-green-100 px-1 rounded text-xs">重伤</code>, <code className="bg-green-100 px-1 rounded text-xs">阈值一</code></td>
@@ -474,7 +474,7 @@ export function DiceUsageGuideModal({ isOpen, onClose }: DiceUsageGuideModalProp
                   <p className="text-orange-800 text-sm mb-2">多人协助时，每个帮助者提供1个优势骰：</p>
                   <div className="bg-white/50 p-3 rounded border border-orange-200">
                     <code className="text-xs text-orange-600">.dd @战士 @法师 +风度 说服守卫</code>
-                    <p className="text-xs text-orange-700 mt-1">→ 两位队友协助，获得2个优势骰，各消耗1希望</p>
+                    <p className="text-xs text-orange-700 mt-1">→ 两位队友协助，获得 2 个优势骰，各消耗 1 希望点</p>
                   </div>
                 </div>
               </div>
@@ -555,17 +555,17 @@ export function DiceUsageGuideModal({ isOpen, onClose }: DiceUsageGuideModalProp
 
                 <div className="border border-gray-200 rounded-lg p-4 bg-white">
                   <h3 className="font-semibold text-gray-800 mb-2 text-sm">Q: 如何取消帮助请求？</h3>
-                  <p className="text-sm text-gray-600">A: 帮助请求（@玩家名）发出后立即生效并消耗希望值，无法取消，请在使用前确认。</p>
+                  <p className="text-sm text-gray-600">A: 帮助请求（@玩家名）发出后立即生效并消耗希望点，无法取消，请在使用前确认。</p>
                 </div>
 
                 <div className="border border-gray-200 rounded-lg p-4 bg-white">
                   <h3 className="font-semibold text-gray-800 mb-2 text-sm">Q: 经历值消耗了但忘记用怎么办？</h3>
-                  <p className="text-sm text-gray-600">A: 经历修饰符会自动消耗1点希望，建议在使用经历前先确认希望值是否足够。如果误用，可以手动使用 <code className="bg-gray-100 px-1 rounded text-xs">.st 希望 [值]</code> 调整。</p>
+                  <p className="text-sm text-gray-600">A: 经历修饰符会自动消耗 1 希望点，建议在使用经历前先确认希望点是否足够。如果误用，可以手动使用 <code className="bg-gray-100 px-1 rounded text-xs">.st 希望 [值]</code> 调整。</p>
                 </div>
 
                 <div className="border border-gray-200 rounded-lg p-4 bg-white">
                   <h3 className="font-semibold text-gray-800 mb-2 text-sm">Q: .dd 和 .ddr 有什么区别？</h3>
-                  <p className="text-sm text-gray-600">A: <strong>.dd</strong> 是标准检定，会根据结果更新希望/压力/恐惧；<strong>.ddr</strong> 是反应检定，只在使用经历时消耗希望，不会获得希望或更新其他属性。</p>
+                  <p className="text-sm text-gray-600">A: <strong>.dd</strong> 是标准检定，会根据结果更新希望点、压力点、恐惧；<strong>.ddr</strong> 是反应检定，只在使用经历时消耗希望点，不会获得希望点或更新其他属性。</p>
                 </div>
 
                 <div className="border border-gray-200 rounded-lg p-4 bg-white">

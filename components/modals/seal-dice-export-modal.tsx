@@ -132,10 +132,10 @@ export function SealDiceExportModal({ isOpen, onClose, sheetData }: SealDiceExpo
                 <strong>基础属性：</strong>敏捷、力量、本能、知识、风度、灵巧
               </div>
               <div>
-                <strong>状态值：</strong>生命、压力、希望、护甲、恐惧、闪避
+                <strong>状态值：</strong>生命点、压力点、希望点、护甲、恐惧、闪避值
               </div>
               <div>
-                <strong>阈值：</strong>重伤阈值、严重阈值
+                <strong>伤害阈值：</strong>重伤阈值、严重阈值
               </div>
               <div>
                 <strong>经历：</strong>所有填写的经历及其数值

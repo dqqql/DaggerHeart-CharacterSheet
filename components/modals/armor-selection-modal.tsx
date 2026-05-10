@@ -24,6 +24,12 @@ interface Armor {
 }
 
 const LEVELS = ["T1", "T2", "T3", "T4"] as const;
+const LEVEL_LABELS: Record<Level, string> = {
+  T1: "T1",
+  T2: "位阶2",
+  T3: "位阶3",
+  T4: "位阶4",
+};
 type Level = typeof LEVELS[number];
 
 export function ArmorSelectionModal({ isOpen, onClose, onSelect, title }: ArmorModalProps) {
@@ -125,7 +131,7 @@ export function ArmorSelectionModal({ isOpen, onClose, onSelect, title }: ArmorM
             onChange={e => setLevelFilter(e.target.value as Level | "")}
           >
             <option value="">等级(全部)</option>
-            {LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
+            {LEVELS.map(l => <option key={l} value={l}>{LEVEL_LABELS[l]}</option>)}
           </select>
           <Button
             size="sm"
@@ -191,12 +197,12 @@ export function ArmorSelectionModal({ isOpen, onClose, onSelect, title }: ArmorM
                   >
                     <option value="">选择等级</option>
                     {LEVELS.map(level => (
-                      <option key={level} value={level}>{level}</option>
+                      <option key={level} value={level}>{LEVEL_LABELS[level]}</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">伤害阈值</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">基础阈值</label>
                   <div className="flex gap-1 items-center">
                     <input
                       type="number"
@@ -216,11 +222,11 @@ export function ArmorSelectionModal({ isOpen, onClose, onSelect, title }: ArmorM
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">护甲值</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">基础护甲值</label>
                   <input
                     type="number"
                     className="w-full border rounded px-2 py-2 text-sm min-h-[2.5rem]"
-                    placeholder="护甲值"
+                    placeholder="基础护甲值"
                     value={customArmorValue}
                     onChange={e => setCustomArmorValue(e.target.value ? parseInt(e.target.value) : "")}
                   />
@@ -306,8 +312,8 @@ export function ArmorSelectionModal({ isOpen, onClose, onSelect, title }: ArmorM
                 <tr>
                   <th className="p-1 sm:p-2 text-left whitespace-nowrap text-xs sm:text-sm">名称</th>
                   <th className="p-1 sm:p-2 text-left whitespace-nowrap text-xs sm:text-sm">等级</th>
-                  <th className="p-1 sm:p-2 text-left whitespace-nowrap text-xs sm:text-sm">伤害阈值</th>
-                  <th className="p-1 sm:p-2 text-left whitespace-nowrap text-xs sm:text-sm">护甲值</th>
+                  <th className="p-1 sm:p-2 text-left whitespace-nowrap text-xs sm:text-sm">基础阈值</th>
+                  <th className="p-1 sm:p-2 text-left whitespace-nowrap text-xs sm:text-sm">基础护甲值</th>
                   <th className="p-1 sm:p-2 text-left whitespace-nowrap text-xs sm:text-sm">特性名称</th>
                   <th className="p-1 sm:p-2 text-left whitespace-nowrap text-xs sm:text-sm">描述</th>
                 </tr>
@@ -316,7 +322,7 @@ export function ArmorSelectionModal({ isOpen, onClose, onSelect, title }: ArmorM
                 {isCustom && customName && (
                   <tr className="bg-blue-50">
                     <td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{customName}</td>
-                    <td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{customLevel}</td>
+                    <td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{customLevel ? LEVEL_LABELS[customLevel] : ""}</td>
                     <td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">
                       {customDamageThreshold1 && customDamageThreshold2
                         ? `${customDamageThreshold1}/${customDamageThreshold2}`
@@ -344,7 +350,7 @@ export function ArmorSelectionModal({ isOpen, onClose, onSelect, title }: ArmorM
                     }}
                   >
                     <td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{armor.名称}</td>
-                    <td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{armor.等级}</td>
+                    <td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{LEVEL_LABELS[armor.等级]}</td>
                     <td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{armor.伤害阈值}</td>
                     <td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{armor.护甲值}</td>
                     <td className="p-1 sm:p-2 whitespace-nowrap text-xs sm:text-sm">{armor.特性名称}</td>

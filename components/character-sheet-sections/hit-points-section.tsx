@@ -130,12 +130,12 @@ export function HitPointsSection() {
 
   return (
     <div className="py-1 mb-1 print:mt-1.5">
-      <h3 className="text-xs font-bold text-center mb-2.5">生命值与压力</h3>
+      <h3 className="text-xs font-bold text-center mb-2.5">生命点与压力点</h3>
 
       <div className="flex justify-between items-center gap-1">
         <div className="bg-gray-800 text-white text-[10px] p-1 text-center rounded-md flex-1">
           <div>轻度伤害</div>
-          <div className="text-[8px] mt-0.5 text-gray-300">Mark 1 HP</div>
+          <div className="text-[8px] mt-0.5 text-gray-300">标记 1 生命点</div>
         </div>
         <input
           type="text"
@@ -153,7 +153,7 @@ export function HitPointsSection() {
               sources={thresholdBreakdown.minor.sources}
             />
           </div>
-          <div className="text-[8px] mt-0.5 text-gray-300">Mark 2 HP</div>
+          <div className="text-[8px] mt-0.5 text-gray-300">标记 2 生命点</div>
         </div>
         <input
           type="text"
@@ -171,14 +171,14 @@ export function HitPointsSection() {
               sources={thresholdBreakdown.major.sources}
             />
           </div>
-          <div className="text-[8px] mt-0.5 text-gray-300">Mark 3 HP</div>
+          <div className="text-[8px] mt-0.5 text-gray-300">标记 3 生命点</div>
         </div>
       </div>
 
       <div className="mt-1 space-y-1">
         <div className="flex items-center justify-between group">
           <span className="font-bold mr-2 text-xs">
-            HP
+            生命点
             {safeFormData.cards?.[0]?.professionSpecial?.["起始生命"] && (
               <span className="text-[10px] text-gray-600 ml-1">
                 (职业初始: {safeFormData.cards?.[0]?.professionSpecial?.["起始生命"] ?? "未知"})
@@ -191,7 +191,7 @@ export function HitPointsSection() {
                 onClick={() => handleDecreaseMax("hp")}
                 disabled={(safeFormData.hpMax || 6) <= 1}
                 className="w-6 h-6 sm:w-5 sm:h-5 flex items-center justify-center hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed text-base sm:text-sm text-gray-400 sm:text-gray-800 transition-colors"
-                title="减少 HP 上限"
+                title="减少生命点上限"
               >
                 -
               </button>
@@ -199,7 +199,7 @@ export function HitPointsSection() {
                 onClick={() => handleIncreaseMax("hp")}
                 disabled={(safeFormData.hpMax || 6) >= 18}
                 className="w-6 h-6 sm:w-5 sm:h-5 flex items-center justify-center hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed text-base sm:text-sm text-gray-400 sm:text-gray-800 transition-colors"
-                title="增加 HP 上限"
+                title="增加生命点上限"
               >
                 +
               </button>
@@ -221,7 +221,7 @@ export function HitPointsSection() {
         {renderBoxes("hp", Number(safeFormData.hpMax || safeFormData.cards?.[0]?.professionSpecial?.["起始生命"] || 6), 18)}
 
         <div className="flex items-center justify-between group">
-          <span className="font-bold mr-2 text-xs">压力</span>
+          <span className="font-bold mr-2 text-xs">压力点</span>
           <div className="flex items-center">
             <div className="flex items-center gap-0.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200 print:hidden">
               <button

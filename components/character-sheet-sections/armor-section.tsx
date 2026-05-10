@@ -111,7 +111,7 @@ export function ArmorSection({ onOpenArmorModal }: ArmorSectionProps) {
           )}
         </div>
         <div className="col-span-3">
-          <label className="text-[8px] text-gray-600">护甲值</label>
+          <label className="text-[8px] text-gray-600">基础护甲值</label>
           <input
             type="text"
             name="armorBaseScore"
@@ -122,7 +122,7 @@ export function ArmorSection({ onOpenArmorModal }: ArmorSectionProps) {
           />
         </div>
         <div className="col-span-3">
-          <label className="text-[8px] text-gray-600">阈值</label>
+          <label className="text-[8px] text-gray-600">基础阈值</label>
           <input
             type="text"
             name="armorThreshold"

@@ -24,7 +24,7 @@ export function ProficiencyEditor({ onClose }: ProficiencyEditorProps) {
   return (
     <div className="w-40">
       <div className="flex items-center justify-between mb-1">
-        <span className="text-xs font-semibold text-gray-700">熟练度 ({currentCount}/6)</span>
+        <span className="text-xs font-semibold text-gray-700">熟练值 ({currentCount}/6)</span>
         <button
           onClick={onClose}
           className="p-0.5 hover:bg-gray-100 rounded transition-colors"
@@ -42,7 +42,7 @@ export function ProficiencyEditor({ onClose }: ProficiencyEditorProps) {
             className={`w-5 h-5 rounded-full border-2 border-gray-800 transition-colors ${
               proficiency[i] ? "bg-gray-800" : "bg-white hover:bg-gray-200"
             }`}
-            title={`熟练度 ${i + 1}`}
+            title={`熟练值 ${i + 1}`}
           />
         ))}
       </div>

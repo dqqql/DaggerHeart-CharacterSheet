@@ -180,7 +180,7 @@ registerPages([
   },
   {
     id: 'focused-cards',
-    label: '聚焦卡组',
+    label: '配置卡组',
     component: CharacterSheetPageFour,
     printClass: 'page-four',
     visibility: {
@@ -196,7 +196,7 @@ registerPages([
   },
   {
     id: 'inventory-cards',
-    label: '库存卡组',
+    label: '宝库卡组',
     component: CharacterSheetPageFive,
     printClass: 'page-five',
     visibility: {

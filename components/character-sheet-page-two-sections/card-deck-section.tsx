@@ -282,7 +282,7 @@ export function CardDeckSection({
       // 移动失败，可能是特殊卡位保护或目标卡组已满
       if (isFromFocused && index < 5) {
         showFadeNotification({
-          message: "特殊卡位不能移动到库存卡组",
+          message: "特殊卡位不能移动到宝库卡组",
           type: "error"
         });
       } else {
@@ -428,7 +428,7 @@ export function CardDeckSection({
               }`}
             onClick={() => setActiveDeck('focused')}
           >
-            聚焦卡组 ({getCurrentDeckCards('focused').filter(card => !isEmptyCard(card)).length}/20)
+            配置卡组 ({getCurrentDeckCards('focused').filter(card => !isEmptyCard(card)).length}/20)
           </button>
           <button
             className={`px-3 py-1.5 text-sm font-medium border-b-2 transition-colors ${activeDeck === 'inventory'
@@ -437,7 +437,7 @@ export function CardDeckSection({
               }`}
             onClick={() => setActiveDeck('inventory')}
           >
-            库存卡组 ({getCurrentDeckCards('inventory').filter(card => !isEmptyCard(card)).length}/20)
+            宝库卡组 ({getCurrentDeckCards('inventory').filter(card => !isEmptyCard(card)).length}/20)
           </button>
         </div>
 

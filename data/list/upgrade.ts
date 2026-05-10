@@ -22,14 +22,14 @@ export const upgradeOptionsData = {
     tier1: [
     ],
     tier2: [
-      { label: "升级你的子职业，你不可再使用T3级别的“兼职”选项。", doubleBox: false, boxCount: 1 },
-      { label: "(同时标记两格) 获得熟练度+1。", doubleBox: true, boxCount: 2 },
-      { label: "(同时标记两格) 兼职：获得一个额外的职业、子职业和一个领域。你不可再使用T3级别的“升级子职业”选项。也不可使用其他任何“兼职”选项。", doubleBox: true, boxCount: 2 },
+      { label: "升级你的子职业，你不可再使用位阶3的“兼职”选项。", doubleBox: false, boxCount: 1 },
+      { label: "(同时标记两格) 获得熟练值+1。", doubleBox: true, boxCount: 2 },
+      { label: "(同时标记两格) 兼职：获得一个额外的职业、子职业和一个领域。你不可再使用位阶3的“升级子职业”选项。也不可使用其他任何“兼职”选项。", doubleBox: true, boxCount: 2 },
     ],
     tier3: [
-      { label: "升级你的子职业，你不可再使用T4级别的“兼职”选项。", doubleBox: false, boxCount: 1 },
-      { label: "(同时标记两格) 获得熟练度+1。", doubleBox: true, boxCount: 2 },
-      { label: "(同时标记两格) 兼职：获得一个额外的职业、子职业和一个领域。你不可再使用T4级别的“升级子职业”选项。也不可使用其他任何“兼职”选项。", doubleBox: true, boxCount: 2 },
+      { label: "升级你的子职业，你不可再使用位阶4的“兼职”选项。", doubleBox: false, boxCount: 1 },
+      { label: "(同时标记两格) 获得熟练值+1。", doubleBox: true, boxCount: 2 },
+      { label: "(同时标记两格) 兼职：获得一个额外的职业、子职业和一个领域。你不可再使用位阶4的“升级子职业”选项。也不可使用其他任何“兼职”选项。", doubleBox: true, boxCount: 2 },
     ],
   },
 };
