@@ -1,5 +1,12 @@
 [
   {
+    "id": "2026-05-11-terminology-update",
+    "title": "V1.1.0",
+    "file": "2026-05-11-terminology-update.md",
+    "publishedAt": "2026-05-11",
+    "priority": 1
+  },
+  {
     "id": "2026-05-srd-release",
     "title": "V1.0.0",
     "file": "2026-05-srd-release.md",

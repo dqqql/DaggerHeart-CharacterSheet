@@ -4,7 +4,7 @@ import type { UpgradeConfig } from './types'
 export const UPGRADE_CONFIGS: UpgradeConfig[] = [
   // 基础强化件
   {
-    title: "力量：+1伤害",
+    title: "强力：+1伤害",
     checkboxes: 2,
     cost: {
       fragments: { '齿轮': 3, '镜头': 2 },

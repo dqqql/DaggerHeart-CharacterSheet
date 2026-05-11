@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Check, Plus } from "lucide-react"
+import { Check, Settings } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,7 +26,7 @@ export function PageVisibilityDropdown() {
         disabled
         title="加载中..."
       >
-        <Plus className="h-4 w-4" />
+        <Settings className="h-4 w-4" />
       </button>
     )
   }
@@ -63,7 +63,7 @@ export function PageVisibilityDropdown() {
           )}
           title="管理页面显示"
         >
-          <Plus className="h-4 w-4" />
+          <Settings className="h-4 w-4" />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">

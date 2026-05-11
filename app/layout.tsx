@@ -90,7 +90,7 @@ export default function RootLayout({
     "genre": ["Tabletop RPG", "TTRPG", "DaggerHeart"],
     "keywords": "DaggerHeart, 匕首之心, character sheet, 角色卡, TTRPG, Critical Role, 车卡器",
     "isAccessibleForFree": true,
-    "license": "https://github.com/RidRisR/DaggerHeart-CharacterSheet/blob/main/LICENSE"
+    "license": "https://github.com/dqqql/DaggerHeart-CharacterSheet/blob/main/LICENSE"
   }
 
   return (
@@ -117,12 +117,12 @@ export default function RootLayout({
             <div className="fixed bottom-2 left-2 text-gray-500 text-xs opacity-75 pointer-events-none">
               本作品完全开源且免费
               <br />
-              作者：RidRisR
+              作者：RidRisR，不冻港
               <br />
               翻译及校对：PolearmMaster, 末楔, 里予, 一得, RisRisR
               <br />
               <a
-                href="https://github.com/RidRisR/DaggerHeart-CharacterSheet"
+                href="https://github.com/dqqql/DaggerHeart-CharacterSheet"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="underline pointer-events-auto hover:text-gray-700 transition-colors"
