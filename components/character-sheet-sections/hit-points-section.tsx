@@ -19,6 +19,7 @@ export function HitPointsSection() {
     if (name === "minorThreshold") {
       setSheetData((prev) => ({
         ...prev,
+        minorThreshold: value,
         minorThresholdManualModifier: convertDisplayedDamageThresholdToManualModifier(safeFormData, "minor", value),
       }))
       return
@@ -27,6 +28,7 @@ export function HitPointsSection() {
     if (name === "majorThreshold") {
       setSheetData((prev) => ({
         ...prev,
+        majorThreshold: value,
         majorThresholdManualModifier: convertDisplayedDamageThresholdToManualModifier(safeFormData, "major", value),
       }))
       return

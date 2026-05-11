@@ -296,14 +296,14 @@ export default function CharacterSheet() {
 
       if (name === "evasion") {
         return {
-          ...prev,
+          ...updatedFormData,
           evasionManualModifier: convertDisplayedEvasionToManualModifier(prev, value),
         };
       }
 
       if (name === "armorValue") {
         return {
-          ...prev,
+          ...updatedFormData,
           armorValueManualModifier: convertDisplayedArmorValueToManualModifier(prev, value),
         };
       }

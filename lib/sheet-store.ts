@@ -135,26 +135,56 @@ const AUTO_CALC_ATTRIBUTE_KEYS: Array<keyof Pick<SheetData, "agility" | "strengt
     "knowledge",
 ];
 
-const syncDerivedCombatStats = (data: SheetData): SheetData => {
+type DerivedCombatField = "evasion" | "armorValue" | "minorThreshold" | "majorThreshold";
+
+const getExplicitlyClearedDerivedFields = (updates: Partial<SheetData>): Set<DerivedCombatField> => {
+    const clearedFields = new Set<DerivedCombatField>();
+
+    if (updates.evasion === "" && !updates.evasionManualModifier?.trim()) {
+        clearedFields.add("evasion");
+    }
+
+    if (updates.armorValue === "" && !updates.armorValueManualModifier?.trim()) {
+        clearedFields.add("armorValue");
+    }
+
+    if (updates.minorThreshold === "" && !updates.minorThresholdManualModifier?.trim()) {
+        clearedFields.add("minorThreshold");
+    }
+
+    if (updates.majorThreshold === "" && !updates.majorThresholdManualModifier?.trim()) {
+        clearedFields.add("majorThreshold");
+    }
+
+    return clearedFields;
+};
+
+const syncDerivedCombatStats = (data: SheetData, explicitlyClearedFields: Set<DerivedCombatField> = new Set()): SheetData => {
     const nextData = { ...data };
 
     const evasionBreakdown = calculateEvasionBreakdown(nextData);
-    nextData.evasion = evasionBreakdown.display;
+    nextData.evasion = explicitlyClearedFields.has("evasion") ? "" : evasionBreakdown.display;
 
     const armorValueBreakdown = calculateArmorValueBreakdown(nextData);
-    nextData.armorValue = armorValueBreakdown.display;
-    nextData.armorMax = parseToNumber(armorValueBreakdown.display, 0);
+    nextData.armorValue = explicitlyClearedFields.has("armorValue") ? "" : armorValueBreakdown.display;
+    nextData.armorMax = explicitlyClearedFields.has("armorValue")
+        ? parseToNumber(data.armorValue ?? "", 0)
+        : parseToNumber(armorValueBreakdown.display, 0);
 
     const thresholdBreakdown = calculateDamageThresholdBreakdown(nextData);
-    nextData.minorThreshold = thresholdBreakdown.minor.display;
-    nextData.majorThreshold = thresholdBreakdown.major.display;
+    nextData.minorThreshold = explicitlyClearedFields.has("minorThreshold") ? "" : thresholdBreakdown.minor.display;
+    nextData.majorThreshold = explicitlyClearedFields.has("majorThreshold") ? "" : thresholdBreakdown.major.display;
 
     return nextData;
 };
 
-const finalizeSheetData = (newData: SheetData, oldData: SheetData): SheetData => {
+const finalizeSheetData = (
+    newData: SheetData,
+    oldData: SheetData,
+    explicitlyClearedFields: Set<DerivedCombatField> = new Set(),
+): SheetData => {
     const withSubclassSync = syncSubclassSpellcasting(newData, oldData);
-    return syncDerivedCombatStats(withSubclassSync);
+    return syncDerivedCombatStats(withSubclassSync, explicitlyClearedFields);
 };
 
 interface SheetState {
@@ -226,7 +256,8 @@ export const useSheetStore = create<SheetState>((set) => ({
             const oldData = state.sheetData;
             const rawUpdatedData = typeof updater === 'function' ? updater(oldData) : updater;
             const newData = { ...oldData, ...rawUpdatedData };
-            const finalData = finalizeSheetData(newData, oldData);
+            const explicitlyClearedFields = getExplicitlyClearedDerivedFields(rawUpdatedData);
+            const finalData = finalizeSheetData(newData, oldData, explicitlyClearedFields);
             const shouldResetArmorBoxes = finalData.armorValue !== oldData.armorValue;
 
             return {
