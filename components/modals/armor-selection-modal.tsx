@@ -17,7 +17,7 @@ const LEVELS = ["T1", "T2", "T3", "T4"] as const
 type Level = (typeof LEVELS)[number]
 
 const LEVEL_LABELS: Record<Level, string> = {
-  T1: "T1",
+  T1: "位阶1",
   T2: "位阶2",
   T3: "位阶3",
   T4: "位阶4",
