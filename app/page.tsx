@@ -309,6 +309,17 @@ export default function Home() {
 
     return getTabPages(formData)
   }, [formData])
+  const debugRuntimeStateRef = useRef<{
+    currentCharacterId: string | null
+    currentTabValue: string
+    isTextMode: boolean
+    hasOfficialImagePack: boolean
+    isDualPageMode: boolean
+    isPrintingAll: boolean
+    leftTabValue: string
+    rightTabValue: string
+    visibleTabIds: string[]
+  } | null>(null)
 
   // 使用导出功能Hook
   const {
@@ -440,6 +451,140 @@ export default function Home() {
     rightTabValue,
     sealDiceExportModalOpen,
     showShortcutHint,
+    visibleTabs,
+  ])
+
+  useEffect(() => {
+    const nextState = {
+      currentCharacterId,
+      currentTabValue,
+      isTextMode,
+      hasOfficialImagePack,
+      isDualPageMode,
+      isPrintingAll,
+      leftTabValue,
+      rightTabValue,
+      visibleTabIds: visibleTabs.map((tab) => tab.tabValue || tab.id),
+    }
+
+    if (!debugRuntimeStateRef.current) {
+      debugRuntimeStateRef.current = nextState
+      return
+    }
+
+    const previousState = debugRuntimeStateRef.current
+    const changes: Array<{
+      field: string
+      before: string | boolean | null | string[]
+      after: string | boolean | null | string[]
+    }> = []
+
+    if (previousState.currentCharacterId !== nextState.currentCharacterId) {
+      changes.push({
+        field: "currentCharacterId",
+        before: previousState.currentCharacterId,
+        after: nextState.currentCharacterId,
+      })
+    }
+
+    if (previousState.currentTabValue !== nextState.currentTabValue) {
+      changes.push({
+        field: "currentTabValue",
+        before: previousState.currentTabValue,
+        after: nextState.currentTabValue,
+      })
+    }
+
+    if (previousState.isTextMode !== nextState.isTextMode) {
+      changes.push({
+        field: "isTextMode",
+        before: previousState.isTextMode,
+        after: nextState.isTextMode,
+      })
+    }
+
+    if (
+      previousState.hasOfficialImagePack !== nextState.hasOfficialImagePack
+    ) {
+      changes.push({
+        field: "hasOfficialImagePack",
+        before: previousState.hasOfficialImagePack,
+        after: nextState.hasOfficialImagePack,
+      })
+    }
+
+    if (previousState.isDualPageMode !== nextState.isDualPageMode) {
+      changes.push({
+        field: "isDualPageMode",
+        before: previousState.isDualPageMode,
+        after: nextState.isDualPageMode,
+      })
+    }
+
+    if (previousState.isPrintingAll !== nextState.isPrintingAll) {
+      changes.push({
+        field: "isPrintingAll",
+        before: previousState.isPrintingAll,
+        after: nextState.isPrintingAll,
+      })
+    }
+
+    if (previousState.leftTabValue !== nextState.leftTabValue) {
+      changes.push({
+        field: "leftTabValue",
+        before: previousState.leftTabValue,
+        after: nextState.leftTabValue,
+      })
+    }
+
+    if (previousState.rightTabValue !== nextState.rightTabValue) {
+      changes.push({
+        field: "rightTabValue",
+        before: previousState.rightTabValue,
+        after: nextState.rightTabValue,
+      })
+    }
+
+    if (
+      previousState.visibleTabIds.join("|") !==
+      nextState.visibleTabIds.join("|")
+    ) {
+      changes.push({
+        field: "visibleTabIds",
+        before: previousState.visibleTabIds,
+        after: nextState.visibleTabIds,
+      })
+    }
+
+    if (changes.length > 0) {
+      let formDataSizeKB: number | null = null
+
+      try {
+        formDataSizeKB = Number(
+          (JSON.stringify(formData ?? {}).length / 1024).toFixed(2),
+        )
+      } catch {
+        formDataSizeKB = null
+      }
+
+      recordMemoryDebugEvent("Runtime state changed", {
+        changes,
+        formDataSizeKB,
+        visibleTabCount: visibleTabs.length,
+      })
+    }
+
+    debugRuntimeStateRef.current = nextState
+  }, [
+    currentCharacterId,
+    currentTabValue,
+    formData,
+    hasOfficialImagePack,
+    isDualPageMode,
+    isPrintingAll,
+    isTextMode,
+    leftTabValue,
+    rightTabValue,
     visibleTabs,
   ])
 
@@ -584,8 +729,18 @@ export default function Home() {
     if (!isLoading && currentCharacterId && formData) {
       const saveTimeout = setTimeout(() => {
         try {
+          const serializedFormData = JSON.stringify(formData)
           // 保存到localStorage
-          localStorage.setItem(`dh_character_${currentCharacterId}`, JSON.stringify(formData))
+          localStorage.setItem(`dh_character_${currentCharacterId}`, serializedFormData)
+          recordMemoryDebugEvent("Character auto-saved", {
+            currentCharacterId,
+            currentTabValue,
+            serializedSizeKB: Number(
+              (serializedFormData.length / 1024).toFixed(2),
+            ),
+            isTextMode,
+            isDualPageMode,
+          })
           console.log(`[App] Auto-saved character: ${currentCharacterId}`)
         } catch (error) {
           console.error(`[App] Error auto-saving character ${currentCharacterId}:`, error)
@@ -594,7 +749,14 @@ export default function Home() {
 
       return () => clearTimeout(saveTimeout)
     }
-  }, [formData, currentCharacterId, isLoading])
+  }, [
+    currentCharacterId,
+    currentTabValue,
+    formData,
+    isDualPageMode,
+    isLoading,
+    isTextMode,
+  ])
 
 
 

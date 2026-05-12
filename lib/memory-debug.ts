@@ -62,6 +62,7 @@ interface MemorySample {
   timestamp: string
   performanceMemory: ReturnType<typeof getPerformanceMemorySnapshot>
   domSummary: ReturnType<typeof getDomSummary>
+  appSummary: ReturnType<typeof getLightweightAppSummary>
 }
 
 const SAMPLE_INTERVAL_MS = 15000
@@ -69,6 +70,7 @@ const MAX_SAMPLES = 120
 const MAX_EVENTS = 400
 const MAX_LOG_ARG_LENGTH = 4000
 const MAX_STACK_LENGTH = 12000
+let currentDiagnosticContextGetter: DiagnosticContextGetter = () => ({})
 
 class MemoryDebugRecorder {
   private started = false
@@ -121,6 +123,7 @@ class MemoryDebugRecorder {
 
   setContextGetter(getter: DiagnosticContextGetter) {
     this.getContext = getter
+    currentDiagnosticContextGetter = getter
   }
 
   recordCustomEvent(message: string, details?: unknown) {
@@ -166,6 +169,7 @@ class MemoryDebugRecorder {
         userAgentSpecificMemory: userAgentMemory,
         navigation: getNavigationSummary(),
         resources: getResourceSummary(),
+        memoryAnalysis: getMemoryAnalysis(this.samples),
       },
       dom: {
         summary: getDomSummary(),
@@ -291,6 +295,8 @@ class MemoryDebugRecorder {
     const handleVisibility = () => {
       this.recordEvent("lifecycle", "Page visibility changed", {
         visibilityState: document.visibilityState,
+        performanceMemory: getPerformanceMemorySnapshot(),
+        appSummary: getLightweightAppSummary(),
       })
     }
 
@@ -318,6 +324,7 @@ class MemoryDebugRecorder {
       timestamp: new Date().toISOString(),
       performanceMemory: getPerformanceMemorySnapshot(),
       domSummary: getDomSummary(),
+      appSummary: getLightweightAppSummary(),
     })
 
     if (this.samples.length > MAX_SAMPLES) {
@@ -645,15 +652,27 @@ function getResourceSummary() {
     "resource",
   ) as PerformanceResourceTiming[]
   const initiatorTypeCounts: Record<string, number> = {}
+  let totalTransferSize = 0
+  let totalEncodedBodySize = 0
+  let totalDecodedBodySize = 0
 
   for (const resource of resources) {
     const key = resource.initiatorType || "unknown"
     initiatorTypeCounts[key] = (initiatorTypeCounts[key] || 0) + 1
+    totalTransferSize += resource.transferSize || 0
+    totalEncodedBodySize += resource.encodedBodySize || 0
+    totalDecodedBodySize += resource.decodedBodySize || 0
   }
 
   return {
     totalEntries: resources.length,
     initiatorTypeCounts,
+    totalTransferSize,
+    totalTransferSizeMB: bytesToMB(totalTransferSize),
+    totalEncodedBodySize,
+    totalEncodedBodySizeMB: bytesToMB(totalEncodedBodySize),
+    totalDecodedBodySize,
+    totalDecodedBodySizeMB: bytesToMB(totalDecodedBodySize),
   }
 }
 
@@ -675,6 +694,7 @@ function getTagCounts() {
 function getDomSummary() {
   const images = Array.from(document.images)
   const bodyHtml = document.body?.innerHTML || ""
+  const bodyText = document.body?.innerText || ""
 
   return {
     totalElements: document.querySelectorAll("*").length,
@@ -690,8 +710,157 @@ function getDomSummary() {
       .length,
     iframeCount: document.querySelectorAll("iframe").length,
     bodyHtmlLength: bodyHtml.length,
+    bodyTextLength: bodyText.length,
     tagCounts: getTagCounts(),
   }
+}
+
+function getLightweightAppSummary() {
+  const sheetStoreState = useSheetStore.getState()
+  const textModeState = useTextModeStore.getState()
+  const dualPageState = useDualPageStore.getState()
+  const pinnedCardsState = usePinnedCardsStore.getState()
+  const unifiedCardState = useUnifiedCardStore.getState()
+  const runtimeContext = safeCall(() =>
+    serializeForLog(currentDiagnosticContextGetter()),
+  )
+
+  const sheetDataJson = safeCall(() =>
+    JSON.stringify(sheetStoreState.sheetData ?? {}),
+  )
+  const sheetDataJsonLength =
+    typeof sheetDataJson === "string" ? sheetDataJson.length : null
+
+  return {
+    runtimeContext,
+    sheetDataJsonLength,
+    sheetDataJsonKB:
+      typeof sheetDataJsonLength === "number"
+        ? Number((sheetDataJsonLength / 1024).toFixed(2))
+        : null,
+    pinnedCardsCount: pinnedCardsState.pinnedCards.length,
+    isTextMode: textModeState.isTextMode,
+    isDualPageMode: dualPageState.isDualPageMode,
+    leftPageId: dualPageState.leftPageId,
+    rightPageId: dualPageState.rightPageId,
+    leftTabValue: dualPageState.leftTabValue,
+    rightTabValue: dualPageState.rightTabValue,
+    unifiedCardsSize: unifiedCardState.cards.size,
+    unifiedBatchesSize: unifiedCardState.batches.size,
+    imageServiceCacheSize: unifiedCardState.imageService.cache.size,
+    imageServiceLoadingSize: unifiedCardState.imageService.loadingImages.size,
+    imageServiceFailedSize: unifiedCardState.imageService.failedImages.size,
+  }
+}
+
+function getMemoryAnalysis(samples: MemorySample[]) {
+  if (samples.length === 0) {
+    return {
+      sampleCount: 0,
+    }
+  }
+
+  const firstSample = samples[0]
+  const lastSample = samples[samples.length - 1]
+
+  const peakUsedHeap = pickPeakSample(
+    samples,
+    (sample) => sample.performanceMemory.usedJSHeapSize ?? -1,
+  )
+  const peakTotalHeap = pickPeakSample(
+    samples,
+    (sample) => sample.performanceMemory.totalJSHeapSize ?? -1,
+  )
+  const peakElements = pickPeakSample(
+    samples,
+    (sample) => sample.domSummary.totalElements,
+  )
+  const peakStyles = pickPeakSample(
+    samples,
+    (sample) => sample.domSummary.styleTagCount,
+  )
+  const peakBodyHtml = pickPeakSample(
+    samples,
+    (sample) => sample.domSummary.bodyHtmlLength,
+  )
+  const peakSheetData = pickPeakSample(
+    samples,
+    (sample) => sample.appSummary.sheetDataJsonLength ?? -1,
+  )
+
+  return {
+    sampleCount: samples.length,
+    firstSampleAt: firstSample.timestamp,
+    lastSampleAt: lastSample.timestamp,
+    heapTrendMB: {
+      first: firstSample.performanceMemory.usedJSHeapSizeMB,
+      last: lastSample.performanceMemory.usedJSHeapSizeMB,
+      delta:
+        typeof firstSample.performanceMemory.usedJSHeapSizeMB === "number" &&
+        typeof lastSample.performanceMemory.usedJSHeapSizeMB === "number"
+          ? Number(
+              (
+                lastSample.performanceMemory.usedJSHeapSizeMB -
+                firstSample.performanceMemory.usedJSHeapSizeMB
+              ).toFixed(2),
+            )
+          : null,
+    },
+    peakUsedHeap: peakUsedHeap
+      ? {
+          timestamp: peakUsedHeap.timestamp,
+          usedJSHeapSizeMB: peakUsedHeap.performanceMemory.usedJSHeapSizeMB,
+        }
+      : null,
+    peakTotalHeap: peakTotalHeap
+      ? {
+          timestamp: peakTotalHeap.timestamp,
+          totalJSHeapSizeMB: peakTotalHeap.performanceMemory.totalJSHeapSizeMB,
+        }
+      : null,
+    peakElements: peakElements
+      ? {
+          timestamp: peakElements.timestamp,
+          totalElements: peakElements.domSummary.totalElements,
+        }
+      : null,
+    peakStyleTagCount: peakStyles
+      ? {
+          timestamp: peakStyles.timestamp,
+          styleTagCount: peakStyles.domSummary.styleTagCount,
+        }
+      : null,
+    peakBodyHtmlLength: peakBodyHtml
+      ? {
+          timestamp: peakBodyHtml.timestamp,
+          bodyHtmlLength: peakBodyHtml.domSummary.bodyHtmlLength,
+        }
+      : null,
+    peakSheetDataJsonKB: peakSheetData
+      ? {
+          timestamp: peakSheetData.timestamp,
+          sheetDataJsonKB: peakSheetData.appSummary.sheetDataJsonKB,
+        }
+      : null,
+  }
+}
+
+function pickPeakSample(
+  samples: MemorySample[],
+  getValue: (sample: MemorySample) => number,
+) {
+  let peakSample: MemorySample | null = null
+  let peakValue = Number.NEGATIVE_INFINITY
+
+  for (const sample of samples) {
+    const value = getValue(sample)
+    if (value > peakValue) {
+      peakValue = value
+      peakSample = sample
+    }
+  }
+
+  return peakSample
 }
 
 function getSuspiciousDomCounts() {
