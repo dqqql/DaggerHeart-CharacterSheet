@@ -32,6 +32,13 @@ import { AnnouncementModal } from "@/components/modals/announcement-modal"
 import { useAnnouncementStore } from "@/lib/announcement-store"
 import { getAnnouncements } from "@/lib/announcements"
 import {
+  exportMemoryDebugReport,
+  recordMemoryDebugEvent,
+  setMemoryDebugContextGetter,
+  startMemoryDebugMonitor,
+  stopMemoryDebugMonitor,
+} from "@/lib/memory-debug"
+import {
   clearOfficialImagePackData,
   importOfficialImagePack,
   type OfficialImagePackImportProgress,
@@ -295,6 +302,13 @@ export default function Home() {
   const officialImagePackProgressView = officialImagePackImportProgress
     ? getOfficialImagePackProgressView(officialImagePackImportProgress)
     : null
+  const visibleTabs = useMemo(() => {
+    if (!formData) {
+      return []
+    }
+
+    return getTabPages(formData)
+  }, [formData])
 
   // 使用导出功能Hook
   const {
@@ -307,12 +321,13 @@ export default function Home() {
   } = useExportHandlers({ formData, setIsPrintingAll })
 
   // 客户端挂载检测
+  // Client-only initialization
   useEffect(() => {
     setIsClient(true)
-    // 设置默认页面标题
+    // Set the default page title.
     document.title = "Character Sheet"
 
-    // 显示快捷键提示（3秒后消失）
+    // Show the shortcut hint briefly after mount.
     const timer = setTimeout(() => {
       setShowShortcutHint(true)
       setTimeout(() => setShowShortcutHint(false), 3000)
@@ -322,6 +337,7 @@ export default function Home() {
   }, [])
 
   // 移动设备检测
+  // Detect mobile layout changes.
   useEffect(() => {
     const checkIsMobile = () => {
       setIsMobile(window.innerWidth <= 768 || 'ontouchstart' in window)
@@ -356,6 +372,75 @@ export default function Home() {
     isClient,
     lastSeenAnnouncementId,
     latestAnnouncementId,
+  ])
+
+  useEffect(() => {
+    startMemoryDebugMonitor()
+    return () => {
+      stopMemoryDebugMonitor()
+    }
+  }, [])
+
+  useEffect(() => {
+    setMemoryDebugContextGetter(() => ({
+      isClient,
+      isMobile,
+      isPrintingAll,
+      isGuideOpen,
+      characterManagementModalOpen,
+      sealDiceExportModalOpen,
+      currentTabValue,
+      showShortcutHint,
+      isCardDrawerOpen,
+      announcementModalOpen,
+      isImportingOfficialImagePack,
+      officialImagePackImportProgress,
+      pendingCardIndex,
+      pendingCardIsInventory,
+      cardSelectionModalOpen,
+      currentCharacterId,
+      characterCount: characterList.length,
+      hasOfficialImagePack,
+      officialImagePackMetadata,
+      isTextMode,
+      isDualPageMode,
+      leftPageId,
+      rightPageId,
+      leftTabValue,
+      rightTabValue,
+      visibleTabs: visibleTabs.map((tab) => ({
+        id: tab.id,
+        tabValue: tab.tabValue || tab.id,
+        label: tab.label,
+      })),
+    }))
+  }, [
+    announcementModalOpen,
+    cardSelectionModalOpen,
+    characterList.length,
+    characterManagementModalOpen,
+    currentCharacterId,
+    currentTabValue,
+    hasOfficialImagePack,
+    isCardDrawerOpen,
+    isClient,
+    isDualPageMode,
+    isGuideOpen,
+    isImportingOfficialImagePack,
+    isMobile,
+    isPrintingAll,
+    isTextMode,
+    leftPageId,
+    leftTabValue,
+    officialImagePackImportProgress,
+    officialImagePackMetadata,
+    pendingCardIndex,
+    pendingCardIsInventory,
+    rightPageId,
+    rightTabValue,
+    sealDiceExportModalOpen,
+    showShortcutHint,
+    visibleTabs,
   ])
 
   const handleOpenOfficialImagePackPicker = () => {
@@ -446,6 +531,27 @@ export default function Home() {
     }
 
     toggleTextMode()
+  }
+
+  const handleExportDiagnostics = async () => {
+    try {
+      recordMemoryDebugEvent("User manually exported a debug report", {
+        currentCharacterId,
+        currentTabValue,
+        isPrintingAll,
+      })
+      await exportMemoryDebugReport("manual")
+      showFadeNotification({
+        message: "Debug report exported as JSON. Please send it with the reproduction steps.",
+        type: "success",
+      })
+    } catch (error) {
+      console.error("[MemoryDebug] Export failed:", error)
+      showFadeNotification({
+        message: "Debug report export failed. Please try again and check the console.",
+        type: "error",
+      })
+    }
   }
 
   const handleAnnouncementAcknowledge = () => {
@@ -754,6 +860,7 @@ export default function Home() {
                 setSealDiceExportModalOpen(true)
                 setIsPrintingAll(false)
               }}
+              onExportDiagnostics={handleExportDiagnostics}
               onClose={() => setIsPrintingAll(false)}
             />
 
@@ -976,6 +1083,7 @@ export default function Home() {
         onQuickExportJSON={handleQuickExportJSON}
         onQuickExportPDF={handleQuickExportPDF}
         onQuickExportHTML={handleQuickExportHTML}
+        onExportDiagnostics={handleExportDiagnostics}
         onOpenCharacterManagement={() => setCharacterManagementModalOpen(true)}
         onQuickCreateArchive={handleQuickCreateArchive}
         onQuickImportFromHTML={handleQuickImportFromHTML}

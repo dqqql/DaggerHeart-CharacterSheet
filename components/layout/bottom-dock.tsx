@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Separator } from "@/components/ui/separator"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Download, FolderOpen, Package, Sparkles, FileText, FileJson, FileType, Code, Dice5, Plus, Upload, BookOpen, Layers } from "lucide-react"
+import { Download, FolderOpen, Package, Sparkles, FileText, FileJson, FileType, Code, Dice5, Plus, Upload, BookOpen, Layers, Bug } from "lucide-react"
 import { navigateToPage, cn } from "@/lib/utils"
 import { DualPageToggle } from "@/components/ui/dual-page-toggle"
 
@@ -42,6 +42,7 @@ interface MainModeProps extends BottomDockBaseProps {
   onQuickExportJSON: () => void
   onQuickExportPDF: () => void
   onQuickExportHTML: () => void
+  onExportDiagnostics: () => void
 
   // 存档相关
   onOpenCharacterManagement: () => void
@@ -57,6 +58,7 @@ interface PreviewModeProps extends BottomDockBaseProps {
   onExportHTML: () => void
   onExportJSON: () => void
   onOpenSealDiceExport: () => void
+  onExportDiagnostics: () => void
   onClose: () => void
 }
 
@@ -192,6 +194,11 @@ function MainModeContent(props: MainModeProps) {
               <Code className={cn("mr-2", isMobile ? "h-5 w-5" : "h-4 w-4")} />
               导出HTML
             </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={props.onExportDiagnostics} className={cn(isMobile && "py-3 px-4")}>
+              <Bug className={cn("mr-2", isMobile ? "h-5 w-5" : "h-4 w-4")} />
+              Export Debug Log
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
@@ -316,6 +323,15 @@ function PreviewModeContent(props: PreviewModeProps) {
         )}
       >
         导出到骰子
+      </Button>
+      <Button
+        onClick={props.onExportDiagnostics}
+        className={cn(
+          "bg-amber-600 text-white hover:bg-amber-700 focus:outline-none whitespace-nowrap",
+          isMobile ? "px-6 py-3 text-base" : "px-4 py-2 text-sm"
+        )}
+      >
+        Debug Log
       </Button>
       <Button
         onClick={props.onClose}
