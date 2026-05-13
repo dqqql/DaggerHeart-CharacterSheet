@@ -5,7 +5,7 @@ import { useSheetStore } from "@/lib/sheet-store"
 import { X, ChevronUp, ChevronDown, Check } from "lucide-react"
 import { safeEvaluateExpression } from "@/lib/number-utils"
 import { showFadeNotification } from "@/components/ui/fade-notification"
-import { calculateEvasionBreakdown, convertDisplayedEvasionToManualModifier } from "@/lib/preset-equipment"
+import { calculateEvasionBreakdown, convertDisplayedEvasionToManualModifier } from "@/lib/domain-card-derived-stats"
 
 interface EvasionEditorProps {
   checkKey: string

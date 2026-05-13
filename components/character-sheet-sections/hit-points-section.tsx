@@ -4,7 +4,11 @@ import type React from "react"
 import { useSheetStore, useSafeSheetData } from "@/lib/sheet-store"
 import {
   calculateDamageThresholdBreakdown,
+  getDisplayedHpMax,
+  getDisplayedStressMax,
   convertDisplayedDamageThresholdToManualModifier,
+  convertDisplayedHpMaxToStoredBase,
+  convertDisplayedStressMaxToStoredBase,
 } from "@/lib/domain-card-derived-stats"
 import { StatSourcePopover } from "@/components/ui/stat-source-popover"
 
@@ -12,6 +16,10 @@ export function HitPointsSection() {
   const setSheetData = useSheetStore((state) => state.setSheetData)
   const safeFormData = useSafeSheetData()
   const thresholdBreakdown = calculateDamageThresholdBreakdown(safeFormData)
+  const displayedHpMax = getDisplayedHpMax(safeFormData)
+  const minDisplayedHpMax = getDisplayedHpMax({ ...safeFormData, hpMax: 0 })
+  const displayedStressMax = getDisplayedStressMax(safeFormData)
+  const minDisplayedStressMax = getDisplayedStressMax({ ...safeFormData, stressMax: 0 })
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -52,13 +60,18 @@ export function HitPointsSection() {
     if (intValue > 18) return
 
     setSheetData((prev) => {
-      const newSheetData = { ...prev, [maxField]: intValue }
+      const nextMaxValue =
+        field === "hp"
+          ? convertDisplayedHpMaxToStoredBase(prev, intValue)
+          : convertDisplayedStressMaxToStoredBase(prev, intValue)
+      const newSheetData = { ...prev, [maxField]: nextMaxValue }
       const currentArray = (newSheetData[currentField] as boolean[]) || []
       const checkedCount = currentArray.filter(Boolean).length
+      const cappedMax = intValue
 
-      if (checkedCount > intValue) {
+      if (checkedCount > cappedMax) {
         const newArray = Array(currentArray.length).fill(false)
-        for (let i = 0; i < intValue; i++) {
+        for (let i = 0; i < cappedMax; i++) {
           newArray[i] = true
         }
         newSheetData[currentField] = newArray
@@ -69,23 +82,23 @@ export function HitPointsSection() {
   }
 
   const handleIncreaseMax = (field: "hp" | "stress") => {
-    const maxField = `${field}Max` as "hpMax" | "stressMax"
-    const currentMax = safeFormData[maxField] || 6
+    const currentMax = field === "hp" ? displayedHpMax : displayedStressMax
     if (currentMax < 18) {
       handleMaxChange(field, String(currentMax + 1))
     }
   }
 
   const handleDecreaseMax = (field: "hp" | "stress") => {
-    const maxField = `${field}Max` as "hpMax" | "stressMax"
-    const currentMax = safeFormData[maxField] || 6
-    if (currentMax > 1) {
+    const currentMax = field === "hp" ? displayedHpMax : displayedStressMax
+    const minValue = field === "hp" ? minDisplayedHpMax : minDisplayedStressMax
+    if (currentMax > minValue) {
       handleMaxChange(field, String(currentMax - 1))
     }
   }
 
   const renderBoxes = (field: "hp" | "stress", max: number, total: number) => {
     const fieldArray = Array.isArray(safeFormData[field]) ? (safeFormData[field] as boolean[]) : Array(total).fill(false)
+    const effectiveMax = field === "hp" ? displayedHpMax : displayedStressMax
 
     const handleClick = (index: number) => {
       const newFieldData = [...fieldArray]
@@ -109,7 +122,7 @@ export function HitPointsSection() {
         {Array(total)
           .fill(0)
           .map((_, i) => {
-            const isWithinMax = i < max
+            const isWithinMax = i < effectiveMax
             const isChecked = fieldArray[i] || false
 
             return (
@@ -191,7 +204,7 @@ export function HitPointsSection() {
             <div className="flex items-center gap-0.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200 print:hidden">
               <button
                 onClick={() => handleDecreaseMax("hp")}
-                disabled={(safeFormData.hpMax || 6) <= 1}
+                disabled={displayedHpMax <= minDisplayedHpMax}
                 className="w-6 h-6 sm:w-5 sm:h-5 flex items-center justify-center hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed text-base sm:text-sm text-gray-400 sm:text-gray-800 transition-colors"
                 title="减少生命点上限"
               >
@@ -199,7 +212,7 @@ export function HitPointsSection() {
               </button>
               <button
                 onClick={() => handleIncreaseMax("hp")}
-                disabled={(safeFormData.hpMax || 6) >= 18}
+                disabled={displayedHpMax >= 18}
                 className="w-6 h-6 sm:w-5 sm:h-5 flex items-center justify-center hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed text-base sm:text-sm text-gray-400 sm:text-gray-800 transition-colors"
                 title="增加生命点上限"
               >
@@ -212,7 +225,7 @@ export function HitPointsSection() {
               type="text"
               inputMode="numeric"
               pattern="[0-9]*"
-              value={safeFormData.hpMax ?? ""}
+              value={displayedHpMax}
               onChange={(e) => handleMaxChange("hp", e.target.value)}
               onFocus={(e) => e.target.select()}
               placeholder="6"
@@ -228,7 +241,7 @@ export function HitPointsSection() {
             <div className="flex items-center gap-0.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200 print:hidden">
               <button
                 onClick={() => handleDecreaseMax("stress")}
-                disabled={(safeFormData.stressMax || 6) <= 1}
+                disabled={displayedStressMax <= minDisplayedStressMax}
                 className="w-6 h-6 sm:w-5 sm:h-5 flex items-center justify-center hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed text-base sm:text-sm text-gray-400 sm:text-gray-800 transition-colors"
                 title="减少压力上限"
               >
@@ -236,7 +249,7 @@ export function HitPointsSection() {
               </button>
               <button
                 onClick={() => handleIncreaseMax("stress")}
-                disabled={(safeFormData.stressMax || 6) >= 18}
+                disabled={displayedStressMax >= 18}
                 className="w-6 h-6 sm:w-5 sm:h-5 flex items-center justify-center hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed text-base sm:text-sm text-gray-400 sm:text-gray-800 transition-colors"
                 title="增加压力上限"
               >
@@ -249,7 +262,7 @@ export function HitPointsSection() {
               type="text"
               inputMode="numeric"
               pattern="[0-9]*"
-              value={safeFormData.stressMax ?? ""}
+              value={displayedStressMax}
               onChange={(e) => handleMaxChange("stress", e.target.value)}
               onFocus={(e) => e.target.select()}
               placeholder="6"
@@ -257,7 +270,7 @@ export function HitPointsSection() {
             />
           </div>
         </div>
-        {renderBoxes("stress", Number(safeFormData.stressMax || 6), 18)}
+        {renderBoxes("stress", displayedStressMax, 18)}
       </div>
     </div>
   )

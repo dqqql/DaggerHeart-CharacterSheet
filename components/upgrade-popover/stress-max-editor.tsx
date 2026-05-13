@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useSheetStore } from "@/lib/sheet-store"
 import { ChevronUp, X } from "lucide-react"
 import { isValidNumber, parseToNumber } from "@/lib/number-utils"
+import { convertDisplayedStressMaxToStoredBase, getDisplayedStressMax } from "@/lib/domain-card-derived-stats"
 
 interface StressMaxEditorProps {
   onClose?: () => void
@@ -12,7 +13,8 @@ interface StressMaxEditorProps {
 export function StressMaxEditor({ onClose }: StressMaxEditorProps) {
   const { sheetData } = useSheetStore()
   const updateStressMax = useSheetStore(state => state.updateStressMax)
-  const currentStressMax = sheetData.stressMax ?? 6
+  const currentStressMax = getDisplayedStressMax(sheetData)
+  const minDisplayedStressMax = getDisplayedStressMax({ ...sheetData, stressMax: 0 })
   const [inputValue, setInputValue] = useState(String(currentStressMax))
 
   // 同步外部变化
@@ -29,8 +31,8 @@ export function StressMaxEditor({ onClose }: StressMaxEditorProps) {
     // 失焦时应用更改
     if (isValidNumber(inputValue)) {
       const numValue = parseToNumber(inputValue, 6)
-      const finalValue = Math.min(Math.max(numValue, 1), 12)
-      updateStressMax(finalValue)
+      const finalValue = Math.min(Math.max(numValue, minDisplayedStressMax), 18)
+      updateStressMax(convertDisplayedStressMaxToStoredBase(sheetData, finalValue))
       setInputValue(String(finalValue))
     } else {
       // 如果不是有效数字,恢复到当前值
@@ -42,14 +44,14 @@ export function StressMaxEditor({ onClose }: StressMaxEditorProps) {
     if (!isValidNumber(inputValue)) return
 
     const currentValue = parseToNumber(inputValue, currentStressMax)
-    const newValue = Math.min(currentValue + 1, 12)
+    const newValue = Math.min(currentValue + 1, 18)
 
     setInputValue(String(newValue))
-    updateStressMax(newValue)
+    updateStressMax(convertDisplayedStressMaxToStoredBase(sheetData, newValue))
   }
 
   // 判断是否可以增加
-  const canIncrement = isValidNumber(inputValue) && parseToNumber(inputValue, 0) < 12
+  const canIncrement = isValidNumber(inputValue) && parseToNumber(inputValue, 0) < 18
 
   return (
     <div className="w-28">

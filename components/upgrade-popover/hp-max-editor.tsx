@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useSheetStore } from "@/lib/sheet-store"
 import { ChevronUp, X } from "lucide-react"
 import { isValidNumber, parseToNumber } from "@/lib/number-utils"
+import { convertDisplayedHpMaxToStoredBase, getDisplayedHpMax } from "@/lib/domain-card-derived-stats"
 
 interface HPMaxEditorProps {
   onClose?: () => void
@@ -12,7 +13,8 @@ interface HPMaxEditorProps {
 export function HPMaxEditor({ onClose }: HPMaxEditorProps) {
   const { sheetData } = useSheetStore()
   const updateHPMax = useSheetStore(state => state.updateHPMax)
-  const currentHPMax = sheetData.hpMax ?? 6
+  const currentHPMax = getDisplayedHpMax(sheetData)
+  const minDisplayedHpMax = getDisplayedHpMax({ ...sheetData, hpMax: 0 })
   const [inputValue, setInputValue] = useState(String(currentHPMax))
 
   // 同步外部变化
@@ -29,8 +31,8 @@ export function HPMaxEditor({ onClose }: HPMaxEditorProps) {
     // 失焦时应用更改
     if (isValidNumber(inputValue)) {
       const numValue = parseToNumber(inputValue, 6)
-      const finalValue = Math.min(Math.max(numValue, 1), 18)
-      updateHPMax(finalValue)
+      const finalValue = Math.min(Math.max(numValue, minDisplayedHpMax), 18)
+      updateHPMax(convertDisplayedHpMaxToStoredBase(sheetData, finalValue))
       setInputValue(String(finalValue))
     } else {
       // 如果不是有效数字,恢复到当前值
@@ -45,7 +47,7 @@ export function HPMaxEditor({ onClose }: HPMaxEditorProps) {
     const newValue = Math.min(currentValue + 1, 18)
 
     setInputValue(String(newValue))
-    updateHPMax(newValue)
+    updateHPMax(convertDisplayedHpMaxToStoredBase(sheetData, newValue))
   }
 
   // 判断是否可以增加

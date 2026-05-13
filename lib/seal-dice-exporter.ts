@@ -1,4 +1,5 @@
 import { SheetData, AttributeValue } from './sheet-data'
+import { getDisplayedHpMax, getDisplayedStressMax } from './domain-card-derived-stats'
 
 /**
  * 骰子导出器 - 将角色数据转换为骰子可用的.st命令格式
@@ -88,13 +89,13 @@ export function exportToSealDice(sheetData: SheetData): string {
 
   // 状态数值 - 生命值：存档中的值表示损失，实际值 = 最大值 - 损失值
   const hpDamage = countTrueValues(sheetData.hp)
-  const maxHp = sheetData.hpMax || getMaxCapacity(sheetData.hp) || 6
+  const maxHp = getDisplayedHpMax(sheetData)
   const currentHp = maxHp - hpDamage
   attributes.push(`生命${currentHp}`)
   attributes.push(`生命上限${maxHp}`)
 
   const currentStress = countTrueValues(sheetData.stress)
-  const maxStress = sheetData.stressMax || getMaxCapacity(sheetData.stress) || 6
+  const maxStress = getDisplayedStressMax(sheetData)
   attributes.push(`压力${currentStress}`)
   attributes.push(`压力上限${maxStress}`)
 

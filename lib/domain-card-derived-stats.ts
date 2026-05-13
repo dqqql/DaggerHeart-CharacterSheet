@@ -15,6 +15,12 @@ export interface DamageThresholdBreakdown {
   major: DerivedStatBreakdown
 }
 
+export interface ResourceMaxBreakdown {
+  total: number
+  display: string
+  sources: DerivedStatSourceLine[]
+}
+
 export const DOMAIN_CARD_AUTOMATION_IDS = {
   boneTouched: "bone-touched",
   vitality: "vitality",
@@ -43,6 +49,34 @@ const DOMAIN_CARD_LABELS = {
   armorer: "护甲大师",
   riseUp: "泰然自若",
   valorTouched: "勇气恩泽",
+} as const
+
+const CHARACTER_CARD_IDS = {
+  galapaShell: "Galapa-Shell",
+  giantEndurance: "Giant-Endurance",
+  humanHighStamina: "Human-HighStamina",
+  simiahNimble: "Simiah-Nimble",
+  stalwartFoundation: "Stalwart-Foundation",
+  stalwartSpecialization: "Stalwart-Specialization",
+  stalwartMastery: "Stalwart-Mastery",
+  vengeanceFoundation: "Vengeance-Foundation",
+  nightwalkerMastery: "Nightwalker-Mastery",
+  wingedSentinelMastery: "Winged-Sentinel-Mastery",
+  schoolOfWarFoundation: "School-of-War-Foundation",
+} as const
+
+const CHARACTER_CARD_LABELS = {
+  galapaShell: "龟甲",
+  giantEndurance: "坚韧",
+  humanHighStamina: "精力充沛",
+  simiahNimble: "灵活",
+  stalwartFoundation: "坚毅铁卫基石",
+  stalwartSpecialization: "坚毅铁卫专精",
+  stalwartMastery: "坚毅铁卫大师",
+  vengeanceFoundation: "复仇战卫基石",
+  nightwalkerMastery: "黑夜行者大师",
+  wingedSentinelMastery: "翔翼哨兵大师",
+  schoolOfWarFoundation: "战争学派基石",
 } as const
 
 const BARE_BONES_THRESHOLDS: Record<number, { minor: number; major: number }> = {
@@ -123,6 +157,9 @@ type ThresholdInput = Pick<
   | "domainCardAutomation"
 >
 
+type HpMaxInput = Pick<SheetData, "cards" | "hpMax">
+type StressMaxInput = Pick<SheetData, "cards" | "stressMax">
+
 export function calculateEvasionBreakdown(data: EvasionInput): DerivedStatBreakdown {
   const equipment = aggregatePresetEquipmentEffects(data)
   const professionBase = getProfessionBaseEvasion(data)
@@ -146,6 +183,14 @@ export function calculateEvasionBreakdown(data: EvasionInput): DerivedStatBreakd
     if (untouchableBonus !== 0) {
       automatedSources.push({ label: DOMAIN_CARD_LABELS.untouchable, value: untouchableBonus })
     }
+  }
+
+  if (hasFocusedCard(data.cards, CHARACTER_CARD_IDS.simiahNimble)) {
+    automatedSources.push({ label: CHARACTER_CARD_LABELS.simiahNimble, value: 1 })
+  }
+
+  if (hasFocusedCard(data.cards, CHARACTER_CARD_IDS.nightwalkerMastery)) {
+    automatedSources.push({ label: CHARACTER_CARD_LABELS.nightwalkerMastery, value: 1 })
   }
 
   sources.push(...automatedSources)
@@ -183,7 +228,7 @@ export function calculateArmorValueBreakdown(data: ArmorInput): DerivedStatBreak
 
   const sources: DerivedStatSourceLine[] = []
   if (armorBase !== null) {
-    sources.push({ label: bareBonesActive ? DOMAIN_CARD_LABELS.bareBones : "基础护甲值", value: armorBase })
+    sources.push({ label: bareBonesActive ? DOMAIN_CARD_LABELS.bareBones : "Base Armor", value: armorBase })
   }
 
   for (const source of equipment.sources) {
@@ -265,6 +310,74 @@ export function calculateDamageThresholdBreakdown(data: ThresholdInput): DamageT
   }
 }
 
+export function calculateHpMaxBreakdown(data: HpMaxInput): ResourceMaxBreakdown {
+  const storedBase = typeof data.hpMax === "number" ? data.hpMax : 6
+  const automationSources: DerivedStatSourceLine[] = []
+
+  if (hasFocusedCard(data.cards, CHARACTER_CARD_IDS.giantEndurance)) {
+    automationSources.push({ label: CHARACTER_CARD_LABELS.giantEndurance, value: 1 })
+  }
+
+  if (hasFocusedCard(data.cards, CHARACTER_CARD_IDS.schoolOfWarFoundation)) {
+    automationSources.push({ label: CHARACTER_CARD_LABELS.schoolOfWarFoundation, value: 1 })
+  }
+
+  const total = storedBase + sumSources(automationSources)
+
+  return {
+    total,
+    display: String(total),
+    sources: [
+      { label: "Base HP Max", value: storedBase },
+      ...automationSources,
+    ],
+  }
+}
+
+export function getDisplayedHpMax(data: HpMaxInput): number {
+  return calculateHpMaxBreakdown(data).total
+}
+
+export function convertDisplayedHpMaxToStoredBase(data: HpMaxInput, displayedValue: number): number {
+  const storedBase = typeof data.hpMax === "number" ? data.hpMax : 6
+  const automationBonus = calculateHpMaxBreakdown(data).total - storedBase
+  return Math.max(0, displayedValue - automationBonus)
+}
+
+export function calculateStressMaxBreakdown(data: StressMaxInput): ResourceMaxBreakdown {
+  const storedBase = typeof data.stressMax === "number" ? data.stressMax : 6
+  const automationSources: DerivedStatSourceLine[] = []
+
+  if (hasFocusedCard(data.cards, CHARACTER_CARD_IDS.humanHighStamina)) {
+    automationSources.push({ label: CHARACTER_CARD_LABELS.humanHighStamina, value: 1 })
+  }
+
+  if (hasFocusedCard(data.cards, CHARACTER_CARD_IDS.vengeanceFoundation)) {
+    automationSources.push({ label: CHARACTER_CARD_LABELS.vengeanceFoundation, value: 1 })
+  }
+
+  const total = storedBase + sumSources(automationSources)
+
+  return {
+    total,
+    display: String(total),
+    sources: [
+      { label: "Base Stress Max", value: storedBase },
+      ...automationSources,
+    ],
+  }
+}
+
+export function getDisplayedStressMax(data: StressMaxInput): number {
+  return calculateStressMaxBreakdown(data).total
+}
+
+export function convertDisplayedStressMaxToStoredBase(data: StressMaxInput, displayedValue: number): number {
+  const storedBase = typeof data.stressMax === "number" ? data.stressMax : 6
+  const automationBonus = calculateStressMaxBreakdown(data).total - storedBase
+  return Math.max(0, displayedValue - automationBonus)
+}
+
 export function convertDisplayedEvasionToManualModifier(data: EvasionInput, displayedValue: string): string {
   if (!displayedValue.trim()) {
     return ""
@@ -339,12 +452,12 @@ function getDamageThresholdContext(data: ThresholdInput) {
 
     if (hasNumericInput(minorPart)) {
       minorBase = safeEvaluateExpression(minorPart)
-      minorBaseSources.push({ label: "护甲基础阈值", value: minorBase })
+      minorBaseSources.push({ label: "Base Threshold", value: minorBase })
     }
 
     if (hasNumericInput(majorPart)) {
       majorBase = safeEvaluateExpression(majorPart)
-      majorBaseSources.push({ label: "护甲基础阈值", value: majorBase })
+      majorBaseSources.push({ label: "Base Threshold", value: majorBase })
     }
 
     const levelBonus = parseLevelNumber(data.level)
@@ -381,6 +494,33 @@ function getDamageThresholdContext(data: ThresholdInput) {
 
   if (countFocusedDomainCardsByClass(data.cards, "辉耀") >= 4 && hasFocusedDomainCard(data.cards, DOMAIN_CARD_IDS.splendorTouched)) {
     majorBonusSources.push({ label: DOMAIN_CARD_LABELS.splendorTouched, value: 3 })
+  }
+
+  const ancestryThresholdBonus = hasFocusedCard(data.cards, CHARACTER_CARD_IDS.galapaShell)
+    ? getProficiencyCount(data.proficiency)
+    : 0
+  if (ancestryThresholdBonus !== 0) {
+    minorBonusSources.push({ label: CHARACTER_CARD_LABELS.galapaShell, value: ancestryThresholdBonus })
+    majorBonusSources.push({ label: CHARACTER_CARD_LABELS.galapaShell, value: ancestryThresholdBonus })
+  }
+
+  if (hasFocusedCard(data.cards, CHARACTER_CARD_IDS.stalwartFoundation)) {
+    minorBonusSources.push({ label: CHARACTER_CARD_LABELS.stalwartFoundation, value: 1 })
+    majorBonusSources.push({ label: CHARACTER_CARD_LABELS.stalwartFoundation, value: 1 })
+  }
+
+  if (hasFocusedCard(data.cards, CHARACTER_CARD_IDS.stalwartSpecialization)) {
+    minorBonusSources.push({ label: CHARACTER_CARD_LABELS.stalwartSpecialization, value: 2 })
+    majorBonusSources.push({ label: CHARACTER_CARD_LABELS.stalwartSpecialization, value: 2 })
+  }
+
+  if (hasFocusedCard(data.cards, CHARACTER_CARD_IDS.stalwartMastery)) {
+    minorBonusSources.push({ label: CHARACTER_CARD_LABELS.stalwartMastery, value: 3 })
+    majorBonusSources.push({ label: CHARACTER_CARD_LABELS.stalwartMastery, value: 3 })
+  }
+
+  if (hasFocusedCard(data.cards, CHARACTER_CARD_IDS.wingedSentinelMastery)) {
+    majorBonusSources.push({ label: CHARACTER_CARD_LABELS.wingedSentinelMastery, value: 4 })
   }
 
   return {
@@ -451,16 +591,20 @@ function countFocusedDomainCardsByClass(cards: SheetData["cards"] | undefined, d
 
 function getCharacterTier(level?: string): number {
   const levelNumber = parseLevelNumber(level)
-  if (levelNumber >= 11) {
+  if (levelNumber >= 8) {
     return 4
   }
-  if (levelNumber >= 8) {
+  if (levelNumber >= 5) {
     return 3
   }
-  if (levelNumber >= 5) {
+  if (levelNumber >= 2) {
     return 2
   }
   return 1
+}
+
+function hasFocusedCard(cards: SheetData["cards"] | undefined, cardId: string): boolean {
+  return (cards || []).some((card) => card?.id === cardId)
 }
 
 function parseLevelNumber(level?: string): number {
@@ -490,3 +634,4 @@ function hasNumericInput(value?: string): boolean {
 function sumSources(sources: DerivedStatSourceLine[]): number {
   return sources.reduce((total, source) => total + source.value, 0)
 }
+

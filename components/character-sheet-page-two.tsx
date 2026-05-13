@@ -7,7 +7,13 @@ import { useSheetStore, useSafeSheetData } from "@/lib/sheet-store"
 import { createEmptyCard, isEmptyCard, type StandardCard } from "@/card/card-types"
 import { showFadeNotification } from "@/components/ui/fade-notification"
 import { safeEvaluateExpression } from "@/lib/number-utils"
-import { DOMAIN_CARD_AUTOMATION_IDS } from "@/lib/domain-card-derived-stats"
+import {
+  DOMAIN_CARD_AUTOMATION_IDS,
+  convertDisplayedHpMaxToStoredBase,
+  convertDisplayedStressMaxToStoredBase,
+  getDisplayedHpMax,
+  getDisplayedStressMax,
+} from "@/lib/domain-card-derived-stats"
 import {
   MasterOfTheCraftDialog,
   VitalityChoiceDialog,
@@ -64,6 +70,10 @@ export default function CharacterSheetPageTwo() {
   const updateHPMax = useSheetStore((state) => state.updateHPMax)
   const updateStressMax = useSheetStore((state) => state.updateStressMax)
   const createExperienceValuesSnapshot = useSheetStore((state) => state.createExperienceValuesSnapshot)
+  const displayedHpMax = getDisplayedHpMax(safeFormData)
+  const displayedStressMax = getDisplayedStressMax(safeFormData)
+  const minDisplayedHpMax = getDisplayedHpMax({ ...safeFormData, hpMax: 0 })
+  const minDisplayedStressMax = getDisplayedStressMax({ ...safeFormData, stressMax: 0 })
 
   const [upgradeDomainModalOpen, setUpgradeDomainModalOpen] = useState(false)
   const [upgradeDomainCardIndex, setUpgradeDomainCardIndex] = useState<number>(-1)
@@ -244,18 +254,18 @@ export default function CharacterSheetPageTwo() {
       }
 
       if (label.includes("生命槽")) {
-        const currentHP = safeFormData.hpMax || 6
+        const currentHP = displayedHpMax
         if (newCheckedState) {
           const newValue = Math.min(currentHP + 1, 18)
-          updateHPMax(newValue)
+          updateHPMax(convertDisplayedHpMaxToStoredBase(safeFormData, newValue))
           showFadeNotification({
             message: `生命槽上限 +1，当前为 ${newValue}`,
             type: "success",
             position: "middle",
           })
         } else {
-          const newValue = Math.max(currentHP - 1, 1)
-          updateHPMax(newValue)
+          const newValue = Math.max(currentHP - 1, minDisplayedHpMax)
+          updateHPMax(convertDisplayedHpMaxToStoredBase(safeFormData, newValue))
           showFadeNotification({
             message: `生命槽上限 -1，当前为 ${newValue}`,
             type: "success",
@@ -265,18 +275,18 @@ export default function CharacterSheetPageTwo() {
       }
 
       if (label.includes("压力槽")) {
-        const currentStress = safeFormData.stressMax || 6
+        const currentStress = displayedStressMax
         if (newCheckedState) {
           const newValue = Math.min(currentStress + 1, 18)
-          updateStressMax(newValue)
+          updateStressMax(convertDisplayedStressMaxToStoredBase(safeFormData, newValue))
           showFadeNotification({
             message: `压力槽上限 +1，当前为 ${newValue}`,
             type: "success",
             position: "middle",
           })
         } else {
-          const newValue = Math.max(currentStress - 1, 1)
-          updateStressMax(newValue)
+          const newValue = Math.max(currentStress - 1, minDisplayedStressMax)
+          updateStressMax(convertDisplayedStressMaxToStoredBase(safeFormData, newValue))
           showFadeNotification({
             message: `压力槽上限 -1，当前为 ${newValue}`,
             type: "success",
@@ -383,11 +393,15 @@ export default function CharacterSheetPageTwo() {
       }
 
       const automationState = markPermanentEffectApplied(prev.domainCardAutomation, DOMAIN_CARD_AUTOMATION_IDS.vitality)
+      const nextDisplayedHpMax = choices.includes("hp") ? Math.min(getDisplayedHpMax(prev) + 1, 18) : getDisplayedHpMax(prev)
+      const nextDisplayedStressMax = choices.includes("stress")
+        ? Math.min(getDisplayedStressMax(prev) + 1, 18)
+        : getDisplayedStressMax(prev)
 
       return {
         ...prev,
-        hpMax: choices.includes("hp") ? Math.min((prev.hpMax || 6) + 1, 18) : prev.hpMax,
-        stressMax: choices.includes("stress") ? Math.min((prev.stressMax || 6) + 1, 18) : prev.stressMax,
+        hpMax: convertDisplayedHpMaxToStoredBase(prev, nextDisplayedHpMax),
+        stressMax: convertDisplayedStressMaxToStoredBase(prev, nextDisplayedStressMax),
         domainCardAutomation: {
           ...automationState,
           vitalityChoices: choices,
