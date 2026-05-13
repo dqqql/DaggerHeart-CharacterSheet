@@ -66,10 +66,12 @@ interface MemorySample {
 }
 
 const SAMPLE_INTERVAL_MS = 15000
+const FALLBACK_SAMPLE_INTERVAL_MS = 5000
 const MAX_SAMPLES = 120
 const MAX_EVENTS = 400
 const MAX_LOG_ARG_LENGTH = 4000
 const MAX_STACK_LENGTH = 12000
+const MAX_STRUCTURE_SUMMARY_NODES = 10000
 let currentDiagnosticContextGetter: DiagnosticContextGetter = () => ({})
 
 class MemoryDebugRecorder {
@@ -99,7 +101,7 @@ class MemoryDebugRecorder {
     this.captureSample()
     this.sampleTimer = window.setInterval(() => {
       this.captureSample()
-    }, SAMPLE_INTERVAL_MS)
+    }, getSampleIntervalMs())
   }
 
   stop() {
@@ -296,6 +298,41 @@ class MemoryDebugRecorder {
       this.recordEvent("lifecycle", "Page visibility changed", {
         visibilityState: document.visibilityState,
         performanceMemory: getPerformanceMemorySnapshot(),
+        domSummary: getDomSummary(),
+        appSummary: getLightweightAppSummary(),
+      })
+    }
+
+    const handleFocus = () => {
+      this.recordEvent("lifecycle", "Window focused", {
+        performanceMemory: getPerformanceMemorySnapshot(),
+        domSummary: getDomSummary(),
+        appSummary: getLightweightAppSummary(),
+      })
+    }
+
+    const handleBlur = () => {
+      this.recordEvent("lifecycle", "Window blurred", {
+        performanceMemory: getPerformanceMemorySnapshot(),
+        domSummary: getDomSummary(),
+        appSummary: getLightweightAppSummary(),
+      })
+    }
+
+    const handlePageShow = (event: PageTransitionEvent) => {
+      this.recordEvent("lifecycle", "Page shown", {
+        persisted: event.persisted,
+        performanceMemory: getPerformanceMemorySnapshot(),
+        domSummary: getDomSummary(),
+        appSummary: getLightweightAppSummary(),
+      })
+    }
+
+    const handlePageHide = (event: PageTransitionEvent) => {
+      this.recordEvent("lifecycle", "Page hidden", {
+        persisted: event.persisted,
+        performanceMemory: getPerformanceMemorySnapshot(),
+        domSummary: getDomSummary(),
         appSummary: getLightweightAppSummary(),
       })
     }
@@ -303,6 +340,10 @@ class MemoryDebugRecorder {
     window.addEventListener("error", handleError)
     window.addEventListener("unhandledrejection", handleRejection)
     document.addEventListener("visibilitychange", handleVisibility)
+    window.addEventListener("focus", handleFocus)
+    window.addEventListener("blur", handleBlur)
+    window.addEventListener("pageshow", handlePageShow)
+    window.addEventListener("pagehide", handlePageHide)
 
     this.cleanupFns.push(() =>
       window.removeEventListener("error", handleError),
@@ -312,6 +353,14 @@ class MemoryDebugRecorder {
     )
     this.cleanupFns.push(() =>
       document.removeEventListener("visibilitychange", handleVisibility),
+    )
+    this.cleanupFns.push(() => window.removeEventListener("focus", handleFocus))
+    this.cleanupFns.push(() => window.removeEventListener("blur", handleBlur))
+    this.cleanupFns.push(() =>
+      window.removeEventListener("pageshow", handlePageShow),
+    )
+    this.cleanupFns.push(() =>
+      window.removeEventListener("pagehide", handlePageHide),
     )
   }
 
@@ -393,6 +442,10 @@ function bytesToMB(bytes: number | undefined | null) {
   }
 
   return Number((bytes / (1024 * 1024)).toFixed(2))
+}
+
+function getSampleIntervalMs() {
+  return performance.memory ? SAMPLE_INTERVAL_MS : FALLBACK_SAMPLE_INTERVAL_MS
 }
 
 function limitString(value: string, maxLength = MAX_LOG_ARG_LENGTH) {
@@ -693,8 +746,26 @@ function getTagCounts() {
 
 function getDomSummary() {
   const images = Array.from(document.images)
+  const inputs = Array.from(document.querySelectorAll("input"))
+  const textareas = Array.from(document.querySelectorAll("textarea"))
+  const contentEditables = Array.from(
+    document.querySelectorAll('[contenteditable="true"]'),
+  )
   const bodyHtml = document.body?.innerHTML || ""
   const bodyText = document.body?.innerText || ""
+
+  const inputValueLength = inputs.reduce(
+    (total, input) => total + (input.value?.length || 0),
+    0,
+  )
+  const textareaValueLength = textareas.reduce(
+    (total, textarea) => total + (textarea.value?.length || 0),
+    0,
+  )
+  const contentEditableTextLength = contentEditables.reduce(
+    (total, element) => total + (element.textContent?.length || 0),
+    0,
+  )
 
   return {
     totalElements: document.querySelectorAll("*").length,
@@ -704,13 +775,17 @@ function getDomSummary() {
     scriptCount: document.scripts.length,
     imageCount: images.length,
     loadedImageCount: images.filter((img) => img.complete).length,
-    inputCount: document.querySelectorAll("input").length,
-    textareaCount: document.querySelectorAll("textarea").length,
-    contentEditableCount: document.querySelectorAll('[contenteditable="true"]')
-      .length,
+    inputCount: inputs.length,
+    textareaCount: textareas.length,
+    contentEditableCount: contentEditables.length,
     iframeCount: document.querySelectorAll("iframe").length,
     bodyHtmlLength: bodyHtml.length,
     bodyTextLength: bodyText.length,
+    inputValueLength,
+    textareaValueLength,
+    contentEditableTextLength,
+    totalFieldValueLength:
+      inputValueLength + textareaValueLength + contentEditableTextLength,
     tagCounts: getTagCounts(),
   }
 }
@@ -730,6 +805,8 @@ function getLightweightAppSummary() {
   )
   const sheetDataJsonLength =
     typeof sheetDataJson === "string" ? sheetDataJson.length : null
+  const localStorageSummary = getLocalStorageQuickSummary()
+  const sheetDataStructure = summarizeStructuredData(sheetStoreState.sheetData)
 
   return {
     runtimeContext,
@@ -738,6 +815,7 @@ function getLightweightAppSummary() {
       typeof sheetDataJsonLength === "number"
         ? Number((sheetDataJsonLength / 1024).toFixed(2))
         : null,
+    sheetDataStructure,
     pinnedCardsCount: pinnedCardsState.pinnedCards.length,
     isTextMode: textModeState.isTextMode,
     isDualPageMode: dualPageState.isDualPageMode,
@@ -750,6 +828,9 @@ function getLightweightAppSummary() {
     imageServiceCacheSize: unifiedCardState.imageService.cache.size,
     imageServiceLoadingSize: unifiedCardState.imageService.loadingImages.size,
     imageServiceFailedSize: unifiedCardState.imageService.failedImages.size,
+    localStorageKeyCount: localStorageSummary.totalKeys,
+    localStorageTotalKB: localStorageSummary.totalSizeKB,
+    characterStorageKeyCount: localStorageSummary.characterStorageKeyCount,
   }
 }
 
@@ -783,9 +864,25 @@ function getMemoryAnalysis(samples: MemorySample[]) {
     samples,
     (sample) => sample.domSummary.bodyHtmlLength,
   )
+  const peakBodyText = pickPeakSample(
+    samples,
+    (sample) => sample.domSummary.bodyTextLength,
+  )
+  const peakFieldValueLength = pickPeakSample(
+    samples,
+    (sample) => sample.domSummary.totalFieldValueLength,
+  )
   const peakSheetData = pickPeakSample(
     samples,
     (sample) => sample.appSummary.sheetDataJsonLength ?? -1,
+  )
+  const peakLocalStorage = pickPeakSample(
+    samples,
+    (sample) => sample.appSummary.localStorageTotalKB ?? -1,
+  )
+  const peakSheetDataStrings = pickPeakSample(
+    samples,
+    (sample) => sample.appSummary.sheetDataStructure.totalStringLength ?? -1,
   )
 
   return {
@@ -836,12 +933,82 @@ function getMemoryAnalysis(samples: MemorySample[]) {
           bodyHtmlLength: peakBodyHtml.domSummary.bodyHtmlLength,
         }
       : null,
+    peakBodyTextLength: peakBodyText
+      ? {
+          timestamp: peakBodyText.timestamp,
+          bodyTextLength: peakBodyText.domSummary.bodyTextLength,
+        }
+      : null,
+    peakFieldValueLength: peakFieldValueLength
+      ? {
+          timestamp: peakFieldValueLength.timestamp,
+          totalFieldValueLength:
+            peakFieldValueLength.domSummary.totalFieldValueLength,
+        }
+      : null,
     peakSheetDataJsonKB: peakSheetData
       ? {
           timestamp: peakSheetData.timestamp,
           sheetDataJsonKB: peakSheetData.appSummary.sheetDataJsonKB,
         }
       : null,
+    peakLocalStorageTotalKB: peakLocalStorage
+      ? {
+          timestamp: peakLocalStorage.timestamp,
+          localStorageTotalKB: peakLocalStorage.appSummary.localStorageTotalKB,
+        }
+      : null,
+    peakSheetDataStringLength: peakSheetDataStrings
+      ? {
+          timestamp: peakSheetDataStrings.timestamp,
+          totalStringLength:
+            peakSheetDataStrings.appSummary.sheetDataStructure.totalStringLength,
+        }
+      : null,
+    proxyTrends: {
+      bodyHtmlLength: getTrendValue(
+        firstSample.domSummary.bodyHtmlLength,
+        lastSample.domSummary.bodyHtmlLength,
+      ),
+      bodyTextLength: getTrendValue(
+        firstSample.domSummary.bodyTextLength,
+        lastSample.domSummary.bodyTextLength,
+      ),
+      totalFieldValueLength: getTrendValue(
+        firstSample.domSummary.totalFieldValueLength,
+        lastSample.domSummary.totalFieldValueLength,
+      ),
+      sheetDataJsonKB: getTrendValue(
+        firstSample.appSummary.sheetDataJsonKB,
+        lastSample.appSummary.sheetDataJsonKB,
+      ),
+      localStorageTotalKB: getTrendValue(
+        firstSample.appSummary.localStorageTotalKB,
+        lastSample.appSummary.localStorageTotalKB,
+      ),
+      sheetDataTotalStringLength: getTrendValue(
+        firstSample.appSummary.sheetDataStructure.totalStringLength,
+        lastSample.appSummary.sheetDataStructure.totalStringLength,
+      ),
+      unifiedCardsSize: getTrendValue(
+        firstSample.appSummary.unifiedCardsSize,
+        lastSample.appSummary.unifiedCardsSize,
+      ),
+    },
+  }
+}
+
+function getTrendValue(
+  first: number | null | undefined,
+  last: number | null | undefined,
+) {
+  return {
+    first: typeof first === "number" ? first : null,
+    last: typeof last === "number" ? last : null,
+    delta:
+      typeof first === "number" && typeof last === "number"
+        ? Number((last - first).toFixed(2))
+        : null,
   }
 }
 
@@ -992,6 +1159,119 @@ async function getLocalStorageSnapshot() {
       error: error instanceof Error ? error.message : String(error),
     }
   }
+}
+
+function getLocalStorageQuickSummary() {
+  if (typeof localStorage === "undefined") {
+    return {
+      totalKeys: null,
+      totalSizeKB: null,
+      characterStorageKeyCount: null,
+    }
+  }
+
+  try {
+    const keys = Array.from({ length: localStorage.length }, (_, index) =>
+      localStorage.key(index),
+    ).filter((key): key is string => !!key)
+
+    const totalSize = keys.reduce((total, key) => {
+      return total + (localStorage.getItem(key)?.length || 0)
+    }, 0)
+
+    return {
+      totalKeys: localStorage.length,
+      totalSizeKB: Number((totalSize / 1024).toFixed(2)),
+      characterStorageKeyCount: getAllCharacterStorageKeys().length,
+    }
+  } catch {
+    return {
+      totalKeys: null,
+      totalSizeKB: null,
+      characterStorageKeyCount: null,
+    }
+  }
+}
+
+function summarizeStructuredData(root: unknown) {
+  const summary = {
+    visitedNodes: 0,
+    truncated: false,
+    maxDepth: 0,
+    objectCount: 0,
+    arrayCount: 0,
+    stringCount: 0,
+    totalStringLength: 0,
+    numberCount: 0,
+    booleanCount: 0,
+    nullCount: 0,
+  }
+
+  const seen = new WeakSet<object>()
+
+  const visit = (value: unknown, depth: number) => {
+    if (summary.visitedNodes >= MAX_STRUCTURE_SUMMARY_NODES) {
+      summary.truncated = true
+      return
+    }
+
+    summary.visitedNodes += 1
+    summary.maxDepth = Math.max(summary.maxDepth, depth)
+
+    if (value === null || value === undefined) {
+      summary.nullCount += 1
+      return
+    }
+
+    if (typeof value === "string") {
+      summary.stringCount += 1
+      summary.totalStringLength += value.length
+      return
+    }
+
+    if (typeof value === "number") {
+      summary.numberCount += 1
+      return
+    }
+
+    if (typeof value === "boolean") {
+      summary.booleanCount += 1
+      return
+    }
+
+    if (typeof value !== "object") {
+      return
+    }
+
+    if (seen.has(value)) {
+      return
+    }
+
+    seen.add(value)
+
+    if (Array.isArray(value)) {
+      summary.arrayCount += 1
+      for (const item of value) {
+        visit(item, depth + 1)
+        if (summary.truncated) {
+          return
+        }
+      }
+      return
+    }
+
+    summary.objectCount += 1
+    for (const entryValue of Object.values(value as Record<string, unknown>)) {
+      visit(entryValue, depth + 1)
+      if (summary.truncated) {
+        return
+      }
+    }
+  }
+
+  visit(root, 0)
+
+  return summary
 }
 
 async function getCardStoreSummary() {
