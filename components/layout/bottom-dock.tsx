@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Separator } from "@/components/ui/separator"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Download, FolderOpen, Package, Sparkles, FileText, FileJson, FileType, Code, Dice5, Plus, Upload, BookOpen, Layers, Bug } from "lucide-react"
+import { Download, FolderOpen, Package, Sparkles, FileText, FileJson, FileType, Code, Dice5, Plus, Upload, BookOpen, Layers, Bug, UsersRound } from "lucide-react"
 import { navigateToPage, cn } from "@/lib/utils"
 import { DualPageToggle } from "@/components/ui/dual-page-toggle"
 
@@ -120,6 +120,27 @@ function MainModeContent(props: MainModeProps) {
             <p>新手建卡指引</p>
             <p className="text-xs text-muted-foreground mt-1">
               跟随步骤快速创建你的第一个角色
+            </p>
+          </TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={() => navigateToPage('/gm-panel')}
+              className={cn(
+                "bg-gray-800 hover:bg-gray-700 text-white gap-1.5 text-sm",
+                isMobile ? "px-4 py-2.5" : "px-3 py-1.5"
+              )}
+            >
+              <UsersRound className="h-3.5 w-3.5" />
+              玩家面板
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="top">
+            <p>GM 玩家面板</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              上传多个角色 JSON，集中追踪玩家数值
             </p>
           </TooltipContent>
         </Tooltip>
