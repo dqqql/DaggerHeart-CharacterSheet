@@ -879,11 +879,13 @@ export const useSheetStore = create<SheetState>((set) => ({
             }
             newInventoryCards[index] = emptyCard;
 
+            const finalData = finalizeSheetData({
+                ...state.sheetData,
+                inventory_cards: newInventoryCards
+            }, state.sheetData);
+
             return {
-                sheetData: {
-                    ...state.sheetData,
-                    inventory_cards: newInventoryCards
-                }
+                sheetData: finalData
             };
         } else {
             // 删除主卡组卡牌
@@ -894,11 +896,16 @@ export const useSheetStore = create<SheetState>((set) => ({
             }
             newCards[index] = emptyCard;
 
+            const finalData = finalizeSheetData({
+                ...state.sheetData,
+                cards: newCards
+            }, state.sheetData);
+            const shouldResetArmorBoxes = finalData.armorValue !== state.sheetData.armorValue;
+
             return {
-                sheetData: {
-                    ...state.sheetData,
-                    cards: newCards
-                }
+                sheetData: shouldResetArmorBoxes
+                    ? { ...finalData, armorBoxes: Array(12).fill(false) }
+                    : finalData
             };
         }
     }),
@@ -968,12 +975,17 @@ export const useSheetStore = create<SheetState>((set) => ({
             targetCards[targetIndex] = cardToMove;
 
             success = true;
+            const finalData = finalizeSheetData({
+                ...state.sheetData,
+                cards: newFocusedCards,
+                inventory_cards: newInventoryCards
+            }, state.sheetData);
+            const shouldResetArmorBoxes = finalData.armorValue !== state.sheetData.armorValue;
+
             return {
-                sheetData: {
-                    ...state.sheetData,
-                    cards: newFocusedCards,
-                    inventory_cards: newInventoryCards
-                }
+                sheetData: shouldResetArmorBoxes
+                    ? { ...finalData, armorBoxes: Array(12).fill(false) }
+                    : finalData
             };
         });
 
@@ -1116,11 +1128,13 @@ export const useSheetStore = create<SheetState>((set) => ({
             }
             newInventoryCards[index] = card;
 
+            const finalData = finalizeSheetData({
+                ...state.sheetData,
+                inventory_cards: newInventoryCards
+            }, state.sheetData);
+
             return {
-                sheetData: {
-                    ...state.sheetData,
-                    inventory_cards: newInventoryCards
-                }
+                sheetData: finalData
             };
         } else {
             // 更新主卡组卡牌
@@ -1131,11 +1145,16 @@ export const useSheetStore = create<SheetState>((set) => ({
             }
             newCards[index] = card;
 
+            const finalData = finalizeSheetData({
+                ...state.sheetData,
+                cards: newCards
+            }, state.sheetData);
+            const shouldResetArmorBoxes = finalData.armorValue !== state.sheetData.armorValue;
+
             return {
-                sheetData: {
-                    ...state.sheetData,
-                    cards: newCards
-                }
+                sheetData: shouldResetArmorBoxes
+                    ? { ...finalData, armorBoxes: Array(12).fill(false) }
+                    : finalData
             };
         }
     }),

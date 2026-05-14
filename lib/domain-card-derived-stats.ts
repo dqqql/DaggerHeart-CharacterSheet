@@ -228,7 +228,7 @@ export function calculateArmorValueBreakdown(data: ArmorInput): DerivedStatBreak
 
   const sources: DerivedStatSourceLine[] = []
   if (armorBase !== null) {
-    sources.push({ label: bareBonesActive ? DOMAIN_CARD_LABELS.bareBones : "Base Armor", value: armorBase })
+    sources.push({ label: bareBonesActive ? DOMAIN_CARD_LABELS.bareBones : "基础护甲值", value: armorBase })
   }
 
   for (const source of equipment.sources) {
@@ -328,7 +328,7 @@ export function calculateHpMaxBreakdown(data: HpMaxInput): ResourceMaxBreakdown 
     total,
     display: String(total),
     sources: [
-      { label: "Base HP Max", value: storedBase },
+      { label: "基础生命槽", value: storedBase },
       ...automationSources,
     ],
   }
@@ -362,7 +362,7 @@ export function calculateStressMaxBreakdown(data: StressMaxInput): ResourceMaxBr
     total,
     display: String(total),
     sources: [
-      { label: "Base Stress Max", value: storedBase },
+      { label: "基础压力槽", value: storedBase },
       ...automationSources,
     ],
   }
@@ -452,12 +452,12 @@ function getDamageThresholdContext(data: ThresholdInput) {
 
     if (hasNumericInput(minorPart)) {
       minorBase = safeEvaluateExpression(minorPart)
-      minorBaseSources.push({ label: "Base Threshold", value: minorBase })
+      minorBaseSources.push({ label: "基础阈值", value: minorBase })
     }
 
     if (hasNumericInput(majorPart)) {
       majorBase = safeEvaluateExpression(majorPart)
-      majorBaseSources.push({ label: "Base Threshold", value: majorBase })
+      majorBaseSources.push({ label: "基础阈值", value: majorBase })
     }
 
     const levelBonus = parseLevelNumber(data.level)

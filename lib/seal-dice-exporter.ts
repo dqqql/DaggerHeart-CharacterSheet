@@ -1,5 +1,5 @@
 import { SheetData, AttributeValue } from './sheet-data'
-import { getDisplayedHpMax, getDisplayedStressMax } from './domain-card-derived-stats'
+import { calculateDamageThresholdBreakdown, getDisplayedHpMax, getDisplayedStressMax } from './domain-card-derived-stats'
 
 /**
  * 骰子导出器 - 将角色数据转换为骰子可用的.st命令格式
@@ -123,8 +123,9 @@ export function exportToSealDice(sheetData: SheetData): string {
   attributes.push(`闪避${evasion}`)
 
   // 阈值
-  const minorThreshold = sheetData.minorThreshold ? parseInt(sheetData.minorThreshold) : 0
-  const majorThreshold = sheetData.majorThreshold ? parseInt(sheetData.majorThreshold) : 0
+  const thresholdBreakdown = calculateDamageThresholdBreakdown(sheetData)
+  const minorThreshold = thresholdBreakdown.minor.total || 0
+  const majorThreshold = thresholdBreakdown.major.total || 0
   attributes.push(`重伤阈值${minorThreshold}`)
   attributes.push(`严重阈值${majorThreshold}`)
 
