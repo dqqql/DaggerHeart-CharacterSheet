@@ -31,6 +31,7 @@ import { Button } from "@/components/ui/button"
 import { AnnouncementModal } from "@/components/modals/announcement-modal"
 import { useAnnouncementStore } from "@/lib/announcement-store"
 import { getAnnouncements } from "@/lib/announcements"
+import { getLatestAnnouncementId } from "@/lib/announcement-index"
 import {
   exportMemoryDebugReport,
   recordMemoryDebugEvent,
@@ -297,7 +298,7 @@ export default function Home() {
   // 额外需要的MAX_CHARACTERS常量
   const MAX_CHARACTERS = 10
   const announcements = useMemo(() => getAnnouncements(), [])
-  const latestAnnouncementId = announcements[0]?.id ?? null
+  const latestAnnouncementId = useMemo(() => getLatestAnnouncementId(), [])
   const hasOfficialImagePack = !!officialImagePackMetadata?.available
   const officialImagePackProgressView = officialImagePackImportProgress
     ? getOfficialImagePackProgressView(officialImagePackImportProgress)

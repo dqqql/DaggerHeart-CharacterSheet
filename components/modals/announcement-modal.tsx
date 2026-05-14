@@ -29,12 +29,12 @@ export function AnnouncementModal({
 }: AnnouncementModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[85vh] max-w-3xl overflow-hidden">
-        <DialogHeader>
+      <DialogContent className="flex max-h-[85vh] max-w-3xl flex-col overflow-hidden">
+        <DialogHeader className="shrink-0">
           <DialogTitle>更新公告</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6 overflow-y-auto pr-2">
+        <div className="min-h-0 flex-1 space-y-6 overflow-y-auto pr-2">
           {announcements.map((announcement) => (
             <section
               key={announcement.id}
@@ -89,7 +89,7 @@ export function AnnouncementModal({
           ))}
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="shrink-0">
           <Button onClick={onAcknowledge}>我知道了</Button>
         </DialogFooter>
       </DialogContent>
