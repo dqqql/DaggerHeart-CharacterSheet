@@ -2,10 +2,11 @@
 
 import { useEffect, useMemo, useRef, useState } from "react"
 import type React from "react"
-import { ArrowLeft, FileJson, LayoutGrid, Settings2, Table2, Upload, UploadCloud, X } from "lucide-react"
+import { ArrowLeft, ChevronDown, ChevronRight, FileJson, LayoutGrid, Settings2, Table2, Upload, UploadCloud, X } from "lucide-react"
 
 import type { StandardCard } from "@/card/card-types"
 import { Button } from "@/components/ui/button"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -236,7 +237,7 @@ function renderInlineMarkdown(text: string, keyPrefix: string): React.ReactNode[
   return nodes
 }
 
-function BasicMarkdownPreview({ value }: { value: string }) {
+function BasicMarkdownPreview({ value, className }: { value: string; className?: string }) {
   const trimmed = value.trim()
 
   if (!trimmed) {
@@ -244,7 +245,7 @@ function BasicMarkdownPreview({ value }: { value: string }) {
   }
 
   return (
-    <div className="mt-2 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm leading-relaxed text-gray-800">
+    <div className={cn("mt-2 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm leading-relaxed text-gray-800", className)}>
       {trimmed.split(/\r?\n/).map((line, index) => {
         const heading = line.match(/^(#{1,3})\s+(.+)$/)
         if (heading) {
@@ -365,6 +366,138 @@ function TextAreaField({
       />
       <BasicMarkdownPreview value={value} />
     </label>
+  )
+}
+
+function TextInfoField({
+  label,
+  value,
+  onChange,
+}: {
+  label: string
+  value: string
+  onChange: (value: string) => void
+}) {
+  const [isEditorOpen, setIsEditorOpen] = useState(false)
+  const hasContent = value.trim().length > 0
+
+  return (
+    <Collapsible
+      open={isEditorOpen}
+      onOpenChange={setIsEditorOpen}
+      className="overflow-hidden rounded-md border border-gray-300 bg-gray-50"
+    >
+      <div className="flex items-center justify-between gap-3 bg-gray-800 px-3 py-2 text-white">
+        <h3 className="text-[11px] font-semibold tracking-wide">{label}</h3>
+        <CollapsibleTrigger asChild>
+          <button
+            type="button"
+            className="inline-flex items-center gap-1 rounded px-2 py-1 text-[11px] text-gray-200 transition hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-white/70"
+            aria-expanded={isEditorOpen}
+          >
+            {isEditorOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+            {isEditorOpen ? "收起编辑" : "展开编辑"}
+          </button>
+        </CollapsibleTrigger>
+      </div>
+
+      <div className="px-3 py-3">
+        {hasContent ? (
+          <BasicMarkdownPreview value={value} className="mt-0 border-gray-300" />
+        ) : (
+          <div className="rounded-md border border-dashed border-gray-300 bg-white px-3 py-4 text-sm text-gray-400">
+            暂无内容
+          </div>
+        )}
+      </div>
+
+      <CollapsibleContent className="border-t border-gray-200 bg-white px-3 py-3">
+        <AutoResizeTextarea
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          minHeight={132}
+          className="w-full resize-none rounded-md border border-gray-300 bg-white px-3 py-2 text-sm leading-relaxed text-gray-900 outline-none transition focus:border-gray-800"
+          placeholder={`填写${label}...`}
+        />
+      </CollapsibleContent>
+    </Collapsible>
+  )
+}
+
+function CollapsibleCardTextField({
+  card,
+  onNameChange,
+  onDescriptionChange,
+}: {
+  card: StandardCard
+  onNameChange: (value: string) => void
+  onDescriptionChange: (value: string) => void
+}) {
+  const [isEditorOpen, setIsEditorOpen] = useState(false)
+  const name = card.name || ""
+  const description = card.description || ""
+
+  return (
+    <Collapsible
+      open={isEditorOpen}
+      onOpenChange={setIsEditorOpen}
+      className="overflow-hidden rounded-md border border-gray-300 bg-gray-50"
+    >
+      <div className="flex items-center justify-between gap-3 bg-gray-800 px-3 py-2 text-white">
+        <div className="flex min-w-0 items-center gap-2">
+          <span className="rounded bg-white/15 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+            {getCardTypeLabel(card.type)}
+          </span>
+          {card.class && <span className="truncate text-[10px] text-gray-200">{card.class}</span>}
+          {card.level !== undefined && <span className="text-[10px] text-gray-200">Lv.{card.level}</span>}
+        </div>
+        <CollapsibleTrigger asChild>
+          <button
+            type="button"
+            className="inline-flex items-center gap-1 rounded px-2 py-1 text-[11px] text-gray-200 transition hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-white/70"
+            aria-expanded={isEditorOpen}
+          >
+            {isEditorOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+            {isEditorOpen ? "收起编辑" : "展开编辑"}
+          </button>
+        </CollapsibleTrigger>
+      </div>
+
+      <div className="space-y-3 px-3 py-3">
+        <div className="text-sm font-bold leading-relaxed text-gray-900">
+          {name || "未命名卡牌"}
+        </div>
+        {description.trim() ? (
+          <BasicMarkdownPreview value={description} className="mt-0 border-gray-300" />
+        ) : (
+          <div className="rounded-md border border-dashed border-gray-300 bg-white px-3 py-4 text-sm text-gray-400">
+            暂无描述
+          </div>
+        )}
+      </div>
+
+      <CollapsibleContent className="space-y-3 border-t border-gray-200 bg-white px-3 py-3">
+        <label className="block">
+          <span className="mb-1 block text-[11px] font-semibold text-gray-600">名称</span>
+          <input
+            value={name}
+            onChange={(event) => onNameChange(event.target.value)}
+            className="h-9 w-full rounded border border-gray-300 bg-white px-2 text-sm font-bold text-gray-900 outline-none focus:border-gray-800"
+            placeholder="卡牌名称"
+          />
+        </label>
+        <label className="block">
+          <span className="mb-1 block text-[11px] font-semibold text-gray-600">描述</span>
+          <AutoResizeTextarea
+            value={description}
+            onChange={(event) => onDescriptionChange(event.target.value)}
+            minHeight={132}
+            className="w-full resize-none rounded border border-gray-300 bg-white px-3 py-2 text-sm leading-relaxed outline-none focus:border-gray-800"
+            placeholder="卡牌文字"
+          />
+        </label>
+      </CollapsibleContent>
+    </Collapsible>
   )
 }
 
@@ -1157,6 +1290,38 @@ export default function GmPanelPage() {
       </div>
     )
   }
+  void renderCardTextSection
+
+  const renderCollapsibleCardTextSection = (
+    player: PlayerEntry,
+    playerIndex: number,
+    collection: "cards" | "inventory_cards",
+    filter: (card: StandardCard) => boolean,
+    emptyText: string,
+  ) => {
+    const cards = getVisibleCards(player.data[collection]).filter(({ card }) => filter(card))
+
+    if (cards.length === 0) {
+      return (
+        <div className="rounded-md border border-dashed border-gray-300 p-3 text-xs text-gray-500">
+          {emptyText}
+        </div>
+      )
+    }
+
+    return (
+      <div className="space-y-2">
+        {cards.map(({ card, index }) => (
+          <CollapsibleCardTextField
+            key={`${collection}-${card.id || index}-${index}`}
+            card={card}
+            onNameChange={(value) => setCardField(playerIndex, collection, index, "name", value)}
+            onDescriptionChange={(value) => setCardField(playerIndex, collection, index, "description", value)}
+          />
+        ))}
+      </div>
+    )
+  }
 
   const renderFullCard = (player: PlayerEntry, playerIndex: number) => {
     const data = player.data
@@ -1285,9 +1450,9 @@ export default function GmPanelPage() {
           {isFullSectionVisible("text") && (
           <section>
             <SectionTitle>文字信息</SectionTitle>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {TEXT_AREA_FIELDS.map((field) => (
-                <TextAreaField
+                <TextInfoField
                   key={String(field.key)}
                   label={field.label}
                   value={getTextValue(data[field.key])}
@@ -1301,7 +1466,7 @@ export default function GmPanelPage() {
           {isFullSectionVisible("characterCards") && (
           <section>
             <SectionTitle>角色卡</SectionTitle>
-            {renderCardTextSection(
+            {renderCollapsibleCardTextSection(
               player,
               playerIndex,
               "cards",
@@ -1314,7 +1479,7 @@ export default function GmPanelPage() {
           {isFullSectionVisible("domainCards") && (
           <section>
             <SectionTitle>领域卡</SectionTitle>
-            {renderCardTextSection(
+            {renderCollapsibleCardTextSection(
               player,
               playerIndex,
               "cards",
@@ -1327,7 +1492,7 @@ export default function GmPanelPage() {
           {isFullSectionVisible("inventoryCards") && (
           <section>
             <SectionTitle>库存卡</SectionTitle>
-            {renderCardTextSection(
+            {renderCollapsibleCardTextSection(
               player,
               playerIndex,
               "inventory_cards",
@@ -1479,9 +1644,9 @@ export default function GmPanelPage() {
               <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gray-900 text-white">
                 <FileJson className="h-7 w-7" />
               </div>
-              <h2 className="text-base font-bold">上传该项目导出的角色 JSON</h2>
+              <h2 className="text-base font-bold">上传角色卡JSON</h2>
               <p className="mt-2 text-sm leading-relaxed text-gray-500">
-                可以一次选择多份文件。面板只在当前页面中修改这些临时数据，不会覆盖主页存档，也不会触发自动化计算。
+                支持直接拖入多份上传。
               </p>
               <Button
                 onClick={() => fileInputRef.current?.click()}

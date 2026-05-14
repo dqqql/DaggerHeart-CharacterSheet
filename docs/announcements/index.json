@@ -1,5 +1,12 @@
 [
-    {
+  {
+    "id": "2026-05-14-gm-panel-update",
+    "title": "V1.2.1",
+    "file": "2026-05-14-gm-panel-update.md",
+    "publishedAt": "2026-05-14",
+    "priority": 1
+  },
+  {
     "id": "2026-05-14-memory",
     "title": "V1.2.0",
     "file": "2026-05-14-memory.md",
