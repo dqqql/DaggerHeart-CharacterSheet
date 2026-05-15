@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react"
 import type React from "react"
-import { ArrowLeft, ChevronDown, ChevronRight, FileJson, LayoutGrid, Settings2, Table2, Upload, UploadCloud, X } from "lucide-react"
+import { ArrowLeft, ChevronDown, ChevronRight, FileJson, LayoutGrid, Minus, Plus, RotateCcw, Settings2, Table2, Upload, UploadCloud, X } from "lucide-react"
 
 import type { StandardCard } from "@/card/card-types"
 import { Button } from "@/components/ui/button"
@@ -87,6 +87,57 @@ const FULL_SECTION_OPTIONS: Array<{ key: FullSectionKey; label: string }> = [
 ]
 
 const DEFAULT_FULL_SECTIONS: FullSectionKey[] = ["core", "attributes", "resources"]
+
+const FEAR_TONE_CLASSES = [
+  {
+    filled: "border-rose-200 bg-rose-100 text-rose-700 hover:bg-rose-200",
+    empty: "border-rose-100 bg-white text-rose-200 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-400",
+  },
+  {
+    filled: "border-rose-200 bg-rose-100 text-rose-700 hover:bg-rose-200",
+    empty: "border-rose-100 bg-white text-rose-200 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-400",
+  },
+  {
+    filled: "border-rose-300 bg-rose-200 text-rose-800 hover:bg-rose-300",
+    empty: "border-rose-200 bg-white text-rose-300 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-500",
+  },
+  {
+    filled: "border-rose-300 bg-rose-200 text-rose-800 hover:bg-rose-300",
+    empty: "border-rose-200 bg-white text-rose-300 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-500",
+  },
+  {
+    filled: "border-rose-400 bg-rose-300 text-rose-900 hover:bg-rose-400",
+    empty: "border-rose-200 bg-white text-rose-300 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-500",
+  },
+  {
+    filled: "border-rose-400 bg-rose-300 text-rose-900 hover:bg-rose-400",
+    empty: "border-rose-200 bg-white text-rose-300 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-500",
+  },
+  {
+    filled: "border-rose-500 bg-rose-400 text-white hover:bg-rose-500",
+    empty: "border-rose-300 bg-white text-rose-400 hover:border-rose-400 hover:bg-rose-50 hover:text-rose-600",
+  },
+  {
+    filled: "border-rose-500 bg-rose-400 text-white hover:bg-rose-500",
+    empty: "border-rose-300 bg-white text-rose-400 hover:border-rose-400 hover:bg-rose-50 hover:text-rose-600",
+  },
+  {
+    filled: "border-rose-600 bg-rose-500 text-white hover:bg-rose-600",
+    empty: "border-rose-300 bg-white text-rose-500 hover:border-rose-500 hover:bg-rose-50 hover:text-rose-700",
+  },
+  {
+    filled: "border-rose-600 bg-rose-500 text-white hover:bg-rose-600",
+    empty: "border-rose-300 bg-white text-rose-500 hover:border-rose-500 hover:bg-rose-50 hover:text-rose-700",
+  },
+  {
+    filled: "border-red-700 bg-red-600 text-white hover:bg-red-700",
+    empty: "border-rose-400 bg-white text-rose-500 hover:border-red-500 hover:bg-red-50 hover:text-red-700",
+  },
+  {
+    filled: "border-red-800 bg-red-700 text-white hover:bg-red-800",
+    empty: "border-rose-400 bg-white text-rose-500 hover:border-red-600 hover:bg-red-50 hover:text-red-700",
+  },
+] as const
 
 function getTextValue(value: unknown): string {
   if (value === undefined || value === null) return ""
@@ -573,6 +624,96 @@ function HopeTrack({
   )
 }
 
+function FearTracker({
+  value,
+  max,
+  onChange,
+}: {
+  value: number
+  max: number
+  onChange: (value: number) => void
+}) {
+  const safeValue = Math.max(0, Math.min(max, value))
+
+  return (
+    <section className="rounded-xl border border-rose-200 bg-gradient-to-r from-rose-50 via-white to-amber-50 px-4 py-4 shadow-sm">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div className="min-w-0">
+          <div className="flex items-center gap-3">
+            <div className="rounded-full bg-rose-600 px-3 py-1 text-xs font-bold tracking-[0.2em] text-white">
+              GM 资源
+            </div>
+            <div className="text-sm font-semibold text-rose-700">恐惧点</div>
+          </div>
+          <div className="mt-2 flex items-end gap-2">
+            <span className="text-3xl font-black leading-none text-rose-950">{safeValue}</span>
+            <span className="pb-0.5 text-sm font-medium text-rose-700">/ {max}</span>
+          </div>
+          <p className="mt-1 text-xs text-rose-700/80">点击进度格可设置当前恐惧点。</p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => onChange(safeValue - 1)}
+            disabled={safeValue <= 0}
+            className="gap-1 border-rose-300 bg-white text-rose-700 hover:bg-rose-50 hover:text-rose-800"
+          >
+            <Minus className="h-4 w-4" />
+            暗影消散
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => onChange(safeValue + 1)}
+            disabled={safeValue >= max}
+            className="gap-1 border-rose-300 bg-white text-rose-700 hover:bg-rose-50 hover:text-rose-800"
+          >
+            <Plus className="h-4 w-4" />
+            恐惧滋生
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => onChange(0)}
+            disabled={safeValue === 0}
+            className="gap-1 border-rose-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-800"
+          >
+            <RotateCcw className="h-4 w-4" />
+            重置
+          </Button>
+        </div>
+      </div>
+
+      <div className="mt-4 grid grid-cols-6 gap-2 sm:grid-cols-12">
+        {Array.from({ length: max }, (_, index) => {
+          const checked = index < safeValue
+          const tone = FEAR_TONE_CLASSES[index] ?? FEAR_TONE_CLASSES[FEAR_TONE_CLASSES.length - 1]
+          return (
+            <button
+              key={`fear-${index}`}
+              type="button"
+              onClick={() => onChange(safeValue === index + 1 ? index : index + 1)}
+              className={cn(
+                "h-10 rounded-md border text-sm font-bold transition focus:outline-none focus:ring-2 focus:ring-rose-400",
+                checked ? `${tone.filled} shadow-sm` : tone.empty,
+              )}
+              aria-label={`恐惧点 ${index + 1}`}
+              aria-pressed={checked}
+            >
+              {index + 1}
+            </button>
+          )
+        })}
+      </div>
+    </section>
+  )
+}
+
 function MiniTrack({
   values,
   length,
@@ -642,6 +783,7 @@ export default function GmPanelPage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [mode, setMode] = useState<PanelMode>("brief")
   const [players, setPlayers] = useState<PlayerEntry[]>([])
+  const [fear, setFear] = useState(0)
   const [isImporting, setIsImporting] = useState(false)
   const [isDraggingFiles, setIsDraggingFiles] = useState(false)
   const [importMessage, setImportMessage] = useState("")
@@ -1637,6 +1779,8 @@ export default function GmPanelPage() {
             </div>
           )}
         </header>
+
+        <FearTracker value={fear} max={12} onChange={(value) => setFear(Math.max(0, Math.min(12, value)))} />
 
         {players.length === 0 ? (
           <section className="flex min-h-[55vh] items-center justify-center rounded-lg border border-dashed border-gray-400 bg-white p-8 text-center shadow-sm">
