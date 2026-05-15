@@ -233,10 +233,14 @@ export function createImageServiceActions<T extends UnifiedCardState>(
         return;
       }
 
+      const uniqueCardIds = [...new Set(imageCardIds)];
+
       try {
         // Use transaction for atomic batch delete
         await db.transaction('rw', db.images, async () => {
-          for (const cardId of imageCardIds) {
+          // Deleting the same cardId repeatedly is idempotent, but redundant.
+          // Keep one delete per cardId to avoid unnecessary IndexedDB calls.
+          for (const cardId of uniqueCardIds) {
             await db.images.delete(cardId);
           }
         });
@@ -247,7 +251,7 @@ export function createImageServiceActions<T extends UnifiedCardState>(
           const newCacheOrder = [...state.imageService.cacheOrder];
           const newFailedImages = new Set(state.imageService.failedImages);
 
-          for (const cardId of imageCardIds) {
+          for (const cardId of uniqueCardIds) {
             // Revoke blob URL
             const url = newCache.get(cardId);
             if (url) {
@@ -275,7 +279,7 @@ export function createImageServiceActions<T extends UnifiedCardState>(
           };
         });
 
-        console.log(`[ImageService] Deleted ${imageCardIds.length} images`);
+        console.log(`[ImageService] Deleted ${uniqueCardIds.length} images`);
       } catch (error) {
         console.error(`[ImageService] Failed to delete batch images:`, error);
       }
