@@ -7,6 +7,51 @@ import { db, isIndexedDBAvailable } from './database';
 import type { UnifiedCardState } from '../store-types';
 import type { StateCreator } from 'zustand';
 
+
+const REVOKE_DELAY_MS = 2000;
+
+interface PendingRevokeEntry {
+  cardId: string;
+  url: string;
+  timer: ReturnType<typeof setTimeout>;
+}
+
+const pendingRevokes = new Map<string, PendingRevokeEntry>();
+
+function cancelPendingRevoke(cardId: string) {
+  const pending = pendingRevokes.get(cardId);
+  if (!pending) {
+    return;
+  }
+  clearTimeout(pending.timer);
+  pendingRevokes.delete(cardId);
+}
+
+function scheduleRevoke(cardId: string, url: string) {
+  // 同一 cardId 若被快速重新命中，先取消旧任务，避免误回收最新 URL
+  cancelPendingRevoke(cardId);
+
+  const timer = setTimeout(() => {
+    const pending = pendingRevokes.get(cardId);
+    if (!pending || pending.url !== url) {
+      return;
+    }
+
+    URL.revokeObjectURL(url);
+    pendingRevokes.delete(cardId);
+  }, REVOKE_DELAY_MS);
+
+  pendingRevokes.set(cardId, { cardId, url, timer });
+}
+
+function flushPendingRevokes() {
+  for (const pending of pendingRevokes.values()) {
+    clearTimeout(pending.timer);
+    URL.revokeObjectURL(pending.url);
+  }
+  pendingRevokes.clear();
+}
+
 // LRU Cache management
 function updateLRUCache(state: UnifiedCardState, cardId: string, blobUrl: string) {
   const { cache, cacheOrder, maxCacheSize } = state.imageService;
@@ -22,12 +67,17 @@ function updateLRUCache(state: UnifiedCardState, cardId: string, blobUrl: string
   cacheOrder.push(cardId);
 
   // Evict oldest entries if cache is full
-  // Note: We intentionally do NOT call URL.revokeObjectURL() here because
-  // Image components may still be using the evicted URLs. The browser will
-  // garbage collect the Blob when there are no more references to it.
+  // 使用短延时回收而非立即 revoke：
+  // 1) 立即 revoke 可能让仍在渲染中的 <img> 瞬间失效；
+  // 2) 永不 revoke 会长期占用 Blob URL 与内存。
+  // 因此采用“延迟回收 + 命中取消”折中策略，更安全也更低侵入。
   while (cacheOrder.length > maxCacheSize) {
     const evictedId = cacheOrder.shift();
     if (evictedId) {
+      const evictedUrl = cache.get(evictedId);
+      if (evictedUrl) {
+        scheduleRevoke(evictedId, evictedUrl);
+      }
       cache.delete(evictedId);
     }
   }
@@ -66,6 +116,7 @@ export function createImageServiceActions<T extends UnifiedCardState>(
 
       // Check cache first
       if (cache.has(cardId)) {
+        cancelPendingRevoke(cardId);
         const url = cache.get(cardId);
         // Update LRU order
         const { cacheOrder } = state.imageService;
@@ -133,6 +184,8 @@ export function createImageServiceActions<T extends UnifiedCardState>(
         const blobUrl = URL.createObjectURL(record.blob);
 
         // Update cache with LRU
+        cancelPendingRevoke(cardId);
+
         set((state: any) => {
           const newState = { ...state };
           updateLRUCache(newState, cardId, blobUrl);
@@ -255,7 +308,7 @@ export function createImageServiceActions<T extends UnifiedCardState>(
             // Revoke blob URL
             const url = newCache.get(cardId);
             if (url) {
-              URL.revokeObjectURL(url);
+              scheduleRevoke(cardId, url);
               newCache.delete(cardId);
             }
 
@@ -304,9 +357,11 @@ export function createImageServiceActions<T extends UnifiedCardState>(
         const { cache } = state.imageService;
 
         // Revoke all blob URLs
-        for (const url of cache.values()) {
-          URL.revokeObjectURL(url);
+        for (const [cardId, url] of cache.entries()) {
+          scheduleRevoke(cardId, url);
         }
+
+        flushPendingRevokes();
 
         set((state: any) => ({
           imageService: {
@@ -332,9 +387,11 @@ export function createImageServiceActions<T extends UnifiedCardState>(
       const { cache } = state.imageService;
 
       // Revoke all blob URLs
-      for (const url of cache.values()) {
-        URL.revokeObjectURL(url);
+      for (const [cardId, url] of cache.entries()) {
+        scheduleRevoke(cardId, url);
       }
+
+      flushPendingRevokes();
 
       set((state: any) => ({
         imageService: {
@@ -355,7 +412,7 @@ export function createImageServiceActions<T extends UnifiedCardState>(
       const url = state.imageService.cache.get(cardId);
 
       if (url) {
-        URL.revokeObjectURL(url);
+        scheduleRevoke(cardId, url);
 
         set((state: any) => {
           const newCache = new Map(state.imageService.cache);
