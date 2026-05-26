@@ -12,7 +12,8 @@ import {
   removeCharacterFromMetadataList,
   updateCharacterInMetadataList,
   MAX_CHARACTERS,
-  cleanupOrphanedCharacterData
+  cleanupOrphanedCharacterData,
+  recoverCharacterListFromDataKeys
 } from '@/lib/multi-character-storage'
 import { CharacterMetadata } from '@/lib/sheet-data'
 import { defaultSheetData } from '@/lib/default-sheet-data'
@@ -55,7 +56,15 @@ export function useCharacterManagement({ isClient, setCurrentTabValue }: UseChar
     const loadCharacters = () => {
       try {
         console.log('[CharacterManagement] Loading character list...')
-        const listData = loadCharacterList()
+        let listData = loadCharacterList()
+        if (listData.characters.length === 0) {
+          const recoveredList = recoverCharacterListFromDataKeys()
+          if (recoveredList) {
+            console.warn(`[CharacterManagement] Recovered ${recoveredList.characters.length} saves from character payloads`)
+            listData = recoveredList
+          }
+        }
+
         const list = listData.characters
         console.log(`[CharacterManagement] Found ${list.length} characters`)
         setCharacterList(list)

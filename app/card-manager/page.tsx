@@ -288,6 +288,14 @@ export default function CardImportTestPage() {
   // 清空所有localStorage数据
   const handleClearAllLocalStorage = async () => {
     if (confirm('⚠️ 危险操作确认 ⚠️\n\n确定要清空所有本地存储数据吗？\n\n这将删除：\n• 所有自定义卡牌\n• 内置卡牌缓存\n• 所有角色数据和角色卡\n• 其他所有本地数据\n\n此操作不可恢复！请确保您已备份重要数据。')) {
+      const confirmationText = '删除全部本地数据'
+      const typedConfirmation = prompt(`此操作会永久删除所有角色存档和卡牌数据。\n\n如确实需要继续，请输入：${confirmationText}`)
+
+      if (typedConfirmation !== confirmationText) {
+        alert('已取消强制初始化。')
+        return
+      }
+
       try {
         // 使用 resetSystem 来正确清理所有数据（包括 IndexedDB 图片）
         const store = useUnifiedCardStore.getState()

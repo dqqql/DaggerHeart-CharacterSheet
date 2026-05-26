@@ -279,6 +279,12 @@ export function migrateToMultiCharacterStorage(): void {
       return;
     }
 
+    const recoveredList = recoverCharacterListFromDataKeys();
+    if (recoveredList) {
+      console.warn(`[Migration] Recovered ${recoveredList.characters.length} existing character saves, skipping default migration`);
+      return;
+    }
+
     // 加载旧数据
     const legacySheetData = localStorage.getItem(LEGACY_SHEET_DATA_KEY);
     const legacyFocusedCards = localStorage.getItem(LEGACY_FOCUSED_CARDS_KEY);
@@ -424,6 +430,91 @@ export function getAllCharacterStorageKeys(): string[] {
 }
 
 /**
+ * Rebuild character metadata from existing character payloads.
+ *
+ * This is a recovery path for cases where dh_character_list is missing or
+ * corrupted while individual dh_character_<id> saves are still present.
+ */
+export function recoverCharacterListFromDataKeys(): CharacterList | null {
+  try {
+    const recoveredCharacters: CharacterMetadata[] = [];
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (!key || !key.startsWith(CHARACTER_DATA_PREFIX) || key === CHARACTER_LIST_KEY) {
+        continue;
+      }
+
+      const id = key.substring(CHARACTER_DATA_PREFIX.length);
+      if (!id || recoveredCharacters.some(character => character.id === id)) {
+        continue;
+      }
+
+      const stored = localStorage.getItem(key);
+      if (!stored) {
+        continue;
+      }
+
+      try {
+        const parsed = JSON.parse(stored);
+        if (!parsed || typeof parsed !== 'object') {
+          console.warn(`[Recovery] Skipping invalid character payload: ${key}`);
+          continue;
+        }
+
+        const now = new Date().toISOString();
+        const displayName = typeof parsed.name === 'string' && parsed.name.trim()
+          ? parsed.name.trim()
+          : `恢复的存档 ${recoveredCharacters.length + 1}`;
+
+        recoveredCharacters.push({
+          id,
+          saveName: displayName,
+          lastModified: now,
+          createdAt: now,
+          order: recoveredCharacters.length
+        });
+      } catch (error) {
+        console.warn(`[Recovery] Failed to parse character payload: ${key}`, error);
+      }
+    }
+
+    if (recoveredCharacters.length === 0) {
+      return null;
+    }
+
+    recoveredCharacters.sort((a, b) => a.order - b.order);
+
+    if (recoveredCharacters.length > MAX_CHARACTERS) {
+      console.warn(
+        `[Recovery] Found ${recoveredCharacters.length} character payloads, keeping first ${MAX_CHARACTERS}`
+      );
+      recoveredCharacters.splice(MAX_CHARACTERS);
+    }
+
+    const activeId = getActiveCharacterId();
+    const recoveredActiveId = activeId && recoveredCharacters.some(character => character.id === activeId)
+      ? activeId
+      : recoveredCharacters[0].id;
+
+    const recoveredList: CharacterList = {
+      characters: recoveredCharacters,
+      activeCharacterId: recoveredActiveId,
+      lastUpdated: new Date().toISOString()
+    };
+
+    saveCharacterList(recoveredList);
+    setActiveCharacterId(recoveredActiveId);
+
+    console.warn(`[Recovery] Rebuilt character list with ${recoveredCharacters.length} saves`);
+    return recoveredList;
+  } catch (error) {
+    console.error('[Recovery] Failed to rebuild character list:', error);
+    return null;
+  }
+}
+
+/**
  * 清理孤立的角色数据（僵尸数据）
  *
  * 僵尸数据的产生原因：
@@ -464,6 +555,14 @@ export function cleanupOrphanedCharacterData(): number {
           console.log(`[Cleanup] Found orphaned data: ${key} (ID: ${characterId})`);
         }
       }
+    }
+
+    if (validCharacterIds.size === 0 && orphanedKeys.length > 0) {
+      console.warn(
+        `[Cleanup] Metadata list is empty but ${orphanedKeys.length} character payloads exist. ` +
+        `Skipping cleanup to avoid data loss.`
+      );
+      return 0;
     }
 
     // 4. 安全检查：如果发现异常多的孤立数据，发出警告
