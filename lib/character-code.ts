@@ -1,0 +1,417 @@
+import type { StandardCard } from "@/card/card-types"
+import { CardSource } from "@/card/card-types"
+import { BUILTIN_BATCH_ID } from "@/card/stores/store-types"
+import {
+  calculateArmorValueBreakdown,
+  calculateDamageThresholdBreakdown,
+  calculateEvasionBreakdown,
+  getDisplayedStressMax,
+} from "@/lib/domain-card-derived-stats"
+import { safeEvaluateExpression } from "@/lib/number-utils"
+import type { AttributeValue, SheetData } from "@/lib/sheet-data"
+import {
+  CHARACTER_CODE_DOMAIN_DICT_V1,
+  CHARACTER_CODE_DOMAIN_ID_TO_INDEX_V1,
+  type CharacterCodeDomainEntry,
+} from "@/lib/character-code-dictionary"
+
+const CHARACTER_CODE_PREFIX = "dhc1_"
+const CHARACTER_CODE_VERSION = 1
+const DEFAULT_HOPE_MAX = 6
+const DEFAULT_GOLD_MAX = 20
+const UINT8_MAX = 0xff
+const INT16_MIN = -32768
+const INT16_MAX = 32767
+
+export interface CharacterCodePayloadV1 {
+  version: 1
+  level: number
+  proficiency: number
+  evasion: number
+  armor: number
+  attributes: {
+    agility: number
+    strength: number
+    finesse: number
+    instinct: number
+    presence: number
+    knowledge: number
+  }
+  damageThresholds: {
+    minor: number
+    major: number
+  }
+  resources: {
+    hopeMax: number
+    stressMax: number
+    goldMax: number
+  }
+  domainCardIndices: number[]
+}
+
+export interface DecodedCharacterCodeV1 extends CharacterCodePayloadV1 {
+  domains: CharacterCodeDomainEntry[]
+}
+
+export function exportCharacterCode(sheetData: SheetData): string {
+  const payload = buildCharacterCodePayload(sheetData)
+  const bytes = encodeCharacterCodePayload(payload)
+  return `${CHARACTER_CODE_PREFIX}${toBase64Url(bytes)}`
+}
+
+export function decodeCharacterCode(code: string): DecodedCharacterCodeV1 {
+  if (!code.startsWith(CHARACTER_CODE_PREFIX)) {
+    throw new Error("角色码版本前缀无效。")
+  }
+
+  const encodedBody = code.slice(CHARACTER_CODE_PREFIX.length)
+  if (!encodedBody) {
+    throw new Error("角色码内容为空。")
+  }
+
+  const payload = decodeCharacterCodePayload(fromBase64Url(encodedBody))
+  const domains = payload.domainCardIndices.map((index) => {
+    const entry = CHARACTER_CODE_DOMAIN_DICT_V1[index]
+    if (!entry) {
+      throw new Error(`角色码中包含未知的领域卡索引: ${index}`)
+    }
+    return entry
+  })
+
+  return {
+    ...payload,
+    domains,
+  }
+}
+
+function buildCharacterCodePayload(sheetData: SheetData): CharacterCodePayloadV1 {
+  const evasion = calculateEvasionBreakdown(sheetData).total ?? 0
+  const armor = calculateArmorValueBreakdown(sheetData).total ?? 0
+  const thresholds = calculateDamageThresholdBreakdown(sheetData)
+
+  return {
+    version: CHARACTER_CODE_VERSION,
+    level: parseStoredNumber(sheetData.level),
+    proficiency: getProficiencyCount(sheetData.proficiency),
+    evasion,
+    armor,
+    attributes: {
+      agility: getAttributeNumericValue(sheetData.agility),
+      strength: getAttributeNumericValue(sheetData.strength),
+      finesse: getAttributeNumericValue(sheetData.finesse),
+      instinct: getAttributeNumericValue(sheetData.instinct),
+      presence: getAttributeNumericValue(sheetData.presence),
+      knowledge: getAttributeNumericValue(sheetData.knowledge),
+    },
+    damageThresholds: {
+      minor: thresholds.minor.total ?? 0,
+      major: thresholds.major.total ?? 0,
+    },
+    resources: {
+      hopeMax: typeof sheetData.hopeMax === "number" ? sheetData.hopeMax : DEFAULT_HOPE_MAX,
+      stressMax: getDisplayedStressMax(sheetData),
+      goldMax: Array.isArray(sheetData.gold) ? sheetData.gold.length : DEFAULT_GOLD_MAX,
+    },
+    domainCardIndices: getDomainCardIndices(sheetData.cards),
+  }
+}
+
+function getDomainCardIndices(cards: SheetData["cards"] | undefined): number[] {
+  const indices: number[] = []
+
+  for (const card of cards || []) {
+    if (!isFilledDomainCard(card)) {
+      continue
+    }
+
+    if (isUnsupportedCustomDomainCard(card)) {
+      throw new Error(`角色码暂不支持导出自定义领域卡：${card.name}`)
+    }
+
+    const dictionaryIndex = CHARACTER_CODE_DOMAIN_ID_TO_INDEX_V1.get(card.id)
+    if (dictionaryIndex === undefined) {
+      throw new Error(`领域卡未收录到角色码字典中：${card.name || card.id}`)
+    }
+
+    indices.push(dictionaryIndex)
+  }
+
+  return indices
+}
+
+function isFilledDomainCard(card: StandardCard | undefined): card is StandardCard {
+  return !!card && card.type === "domain" && !!card.id && !!card.name
+}
+
+function isUnsupportedCustomDomainCard(card: StandardCard): boolean {
+  const extendedCard = card as StandardCard & { source?: CardSource; batchId?: string }
+  const batchId = extendedCard.batchId
+
+  return (
+    extendedCard.source === CardSource.CUSTOM ||
+    extendedCard.source === CardSource.ADHOC ||
+    (!!batchId && batchId !== BUILTIN_BATCH_ID) ||
+    card.id.startsWith("sheet-custom-")
+  )
+}
+
+function getAttributeNumericValue(attribute: AttributeValue | undefined): number {
+  if (!attribute?.value) {
+    return 0
+  }
+
+  return safeEvaluateExpression(attribute.value)
+}
+
+function getProficiencyCount(proficiency: SheetData["proficiency"]): number {
+  if (typeof proficiency === "number") {
+    return proficiency
+  }
+
+  if (Array.isArray(proficiency)) {
+    return proficiency.filter(Boolean).length
+  }
+
+  return 0
+}
+
+function parseStoredNumber(value?: string): number {
+  if (!value?.trim()) {
+    return 0
+  }
+
+  return safeEvaluateExpression(value)
+}
+
+function encodeCharacterCodePayload(payload: CharacterCodePayloadV1): Uint8Array {
+  const domainCount = payload.domainCardIndices.length
+  assertUInt8("领域卡数量", domainCount)
+
+  const bytes = new Uint8Array(27 + domainCount * 2 + 2)
+  let offset = 0
+
+  bytes[offset++] = payload.version
+  bytes[offset++] = toUInt8("等级", payload.level)
+  bytes[offset++] = toUInt8("熟练度", payload.proficiency)
+  offset = writeInt16(bytes, offset, payload.evasion, "闪避")
+  offset = writeInt16(bytes, offset, payload.armor, "护甲")
+  offset = writeInt16(bytes, offset, payload.attributes.agility, "敏捷")
+  offset = writeInt16(bytes, offset, payload.attributes.strength, "力量")
+  offset = writeInt16(bytes, offset, payload.attributes.finesse, "灵巧")
+  offset = writeInt16(bytes, offset, payload.attributes.instinct, "本能")
+  offset = writeInt16(bytes, offset, payload.attributes.presence, "风度")
+  offset = writeInt16(bytes, offset, payload.attributes.knowledge, "知识")
+  offset = writeInt16(bytes, offset, payload.damageThresholds.minor, "重伤阈值")
+  offset = writeInt16(bytes, offset, payload.damageThresholds.major, "严重阈值")
+  bytes[offset++] = toUInt8("希望上限", payload.resources.hopeMax)
+  bytes[offset++] = toUInt8("压力上限", payload.resources.stressMax)
+  bytes[offset++] = toUInt8("金币上限", payload.resources.goldMax)
+  bytes[offset++] = domainCount
+
+  for (const domainIndex of payload.domainCardIndices) {
+    if (!CHARACTER_CODE_DOMAIN_DICT_V1[domainIndex]) {
+      throw new Error(`存在无法编码的领域卡索引: ${domainIndex}`)
+    }
+    offset = writeUInt16(bytes, offset, domainIndex)
+  }
+
+  const checksum = calculateChecksum(bytes.subarray(0, offset))
+  writeUInt16(bytes, offset, checksum)
+
+  return bytes
+}
+
+function decodeCharacterCodePayload(bytes: Uint8Array): CharacterCodePayloadV1 {
+  if (bytes.length < 29) {
+    throw new Error("角色码长度不足。")
+  }
+
+  const payloadLength = bytes.length - 2
+  const expectedChecksum = readUInt16(bytes, payloadLength)
+  const actualChecksum = calculateChecksum(bytes.subarray(0, payloadLength))
+
+  if (expectedChecksum !== actualChecksum) {
+    throw new Error("角色码校验失败，可能已损坏或未完整复制。")
+  }
+
+  let offset = 0
+  const version = bytes[offset++]
+  if (version !== CHARACTER_CODE_VERSION) {
+    throw new Error(`暂不支持的角色码版本: ${version}`)
+  }
+
+  const level = bytes[offset++]
+  const proficiency = bytes[offset++]
+  const evasion = readInt16(bytes, offset)
+  offset += 2
+  const armor = readInt16(bytes, offset)
+  offset += 2
+  const agility = readInt16(bytes, offset)
+  offset += 2
+  const strength = readInt16(bytes, offset)
+  offset += 2
+  const finesse = readInt16(bytes, offset)
+  offset += 2
+  const instinct = readInt16(bytes, offset)
+  offset += 2
+  const presence = readInt16(bytes, offset)
+  offset += 2
+  const knowledge = readInt16(bytes, offset)
+  offset += 2
+  const minor = readInt16(bytes, offset)
+  offset += 2
+  const major = readInt16(bytes, offset)
+  offset += 2
+  const hopeMax = bytes[offset++]
+  const stressMax = bytes[offset++]
+  const goldMax = bytes[offset++]
+  const domainCount = bytes[offset++]
+
+  const remainingDomainBytes = payloadLength - offset
+  if (remainingDomainBytes !== domainCount * 2) {
+    throw new Error("角色码中的领域卡数据长度不正确。")
+  }
+
+  const domainCardIndices: number[] = []
+  for (let index = 0; index < domainCount; index++) {
+    const domainCardIndex = readUInt16(bytes, offset)
+    offset += 2
+
+    if (!CHARACTER_CODE_DOMAIN_DICT_V1[domainCardIndex]) {
+      throw new Error(`角色码中包含未知的领域卡索引: ${domainCardIndex}`)
+    }
+
+    domainCardIndices.push(domainCardIndex)
+  }
+
+  return {
+    version: CHARACTER_CODE_VERSION,
+    level,
+    proficiency,
+    evasion,
+    armor,
+    attributes: {
+      agility,
+      strength,
+      finesse,
+      instinct,
+      presence,
+      knowledge,
+    },
+    damageThresholds: {
+      minor,
+      major,
+    },
+    resources: {
+      hopeMax,
+      stressMax,
+      goldMax,
+    },
+    domainCardIndices,
+  }
+}
+
+function toUInt8(label: string, value: number): number {
+  assertUInt8(label, value)
+  return value
+}
+
+function assertUInt8(label: string, value: number): void {
+  if (!Number.isInteger(value) || value < 0 || value > UINT8_MAX) {
+    throw new Error(`${label}超出可编码范围。`)
+  }
+}
+
+function writeInt16(buffer: Uint8Array, offset: number, value: number, label: string): number {
+  if (!Number.isInteger(value) || value < INT16_MIN || value > INT16_MAX) {
+    throw new Error(`${label}超出可编码范围。`)
+  }
+
+  const normalized = value < 0 ? 0x10000 + value : value
+  buffer[offset] = normalized & 0xff
+  buffer[offset + 1] = (normalized >> 8) & 0xff
+  return offset + 2
+}
+
+function writeUInt16(buffer: Uint8Array, offset: number, value: number): number {
+  if (!Number.isInteger(value) || value < 0 || value > 0xffff) {
+    throw new Error("数值超出可编码范围。")
+  }
+
+  buffer[offset] = value & 0xff
+  buffer[offset + 1] = (value >> 8) & 0xff
+  return offset + 2
+}
+
+function readUInt16(buffer: Uint8Array, offset: number): number {
+  return buffer[offset] | (buffer[offset + 1] << 8)
+}
+
+function readInt16(buffer: Uint8Array, offset: number): number {
+  const value = readUInt16(buffer, offset)
+  return value > 0x7fff ? value - 0x10000 : value
+}
+
+function calculateChecksum(bytes: Uint8Array): number {
+  let checksum = 0
+
+  for (const value of bytes) {
+    checksum = (checksum + value) & 0xffff
+  }
+
+  return checksum
+}
+
+function toBase64Url(bytes: Uint8Array): string {
+  return encodeBase64(bytes).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "")
+}
+
+function fromBase64Url(value: string): Uint8Array {
+  const normalized = value.replace(/-/g, "+").replace(/_/g, "/")
+  const padding = normalized.length % 4 === 0 ? "" : "=".repeat(4 - (normalized.length % 4))
+
+  try {
+    return decodeBase64(`${normalized}${padding}`)
+  } catch (error) {
+    throw new Error(
+      `角色码内容无法解析为有效数据。${error instanceof Error ? ` ${error.message}` : ""}`.trim(),
+    )
+  }
+}
+
+function encodeBase64(bytes: Uint8Array): string {
+  if (typeof btoa === "function") {
+    let binary = ""
+    for (const value of bytes) {
+      binary += String.fromCharCode(value)
+    }
+    return btoa(binary)
+  }
+
+  const bufferCtor = (globalThis as { Buffer?: typeof Buffer }).Buffer
+  if (bufferCtor) {
+    return bufferCtor.from(bytes).toString("base64")
+  }
+
+  throw new Error("当前环境不支持 Base64 编码。")
+}
+
+function decodeBase64(value: string): Uint8Array {
+  if (typeof atob === "function") {
+    const binary = atob(value)
+    const bytes = new Uint8Array(binary.length)
+
+    for (let index = 0; index < binary.length; index++) {
+      bytes[index] = binary.charCodeAt(index)
+    }
+
+    return bytes
+  }
+
+  const bufferCtor = (globalThis as { Buffer?: typeof Buffer }).Buffer
+  if (bufferCtor) {
+    return Uint8Array.from(bufferCtor.from(value, "base64"))
+  }
+
+  throw new Error("当前环境不支持 Base64 解码。")
+}

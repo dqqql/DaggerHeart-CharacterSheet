@@ -13,6 +13,7 @@ import { CharacterSheetPageFour, CharacterSheetPageFive } from "@/components/cha
 import ArmorTemplatePage from "@/components/character-sheet-page-iknis"
 import { CharacterCreationGuide } from "@/components/guide/character-creation-guide"
 import { CharacterManagementModal } from "@/components/modals/character-management-modal"
+import { CharacterCodeExportModal } from "@/components/modals/character-code-export-modal"
 import { SealDiceExportModal } from "@/components/modals/seal-dice-export-modal"
 import { useSheetStore, useCardActions } from "@/lib/sheet-store"
 import { PrintReadyChecker } from "@/components/print/print-ready-checker"
@@ -264,6 +265,7 @@ export default function Home() {
   const [isPrintingAll, setIsPrintingAll] = useState(false)
   const [isGuideOpen, setIsGuideOpen] = useState(false)
   const [characterManagementModalOpen, setCharacterManagementModalOpen] = useState(false)
+  const [characterCodeExportModalOpen, setCharacterCodeExportModalOpen] = useState(false)
   const [sealDiceExportModalOpen, setSealDiceExportModalOpen] = useState(false)
   const [currentTabValue, setCurrentTabValue] = useState("page1")
   const [showShortcutHint, setShowShortcutHint] = useState(false)
@@ -327,6 +329,7 @@ export default function Home() {
     handlePrintAll,
     handleExportHTML,
     handleExportJSON,
+    handleExportCharacterCode,
     handleQuickExportPDF,
     handleQuickExportHTML,
     handleQuickExportJSON,
@@ -1023,6 +1026,10 @@ export default function Home() {
                 setSealDiceExportModalOpen(true)
                 setIsPrintingAll(false)
               }}
+              onOpenCharacterCodeExport={() => {
+                setCharacterCodeExportModalOpen(true)
+                setIsPrintingAll(false)
+              }}
               onExportDiagnostics={handleExportDiagnostics}
               onClose={() => setIsPrintingAll(false)}
             />
@@ -1242,6 +1249,7 @@ export default function Home() {
         onToggleGuide={toggleGuide}
         onToggleNotebook={toggleNotebook}
         onPrintAll={handlePrintAll}
+        onOpenCharacterCodeExport={() => setCharacterCodeExportModalOpen(true)}
         onOpenSealDiceExport={() => setSealDiceExportModalOpen(true)}
         onQuickExportJSON={handleQuickExportJSON}
         onQuickExportPDF={handleQuickExportPDF}
@@ -1305,6 +1313,12 @@ export default function Home() {
       )}
 
       {/* 骰子导出模态框 */}
+      <CharacterCodeExportModal
+        isOpen={characterCodeExportModalOpen}
+        onClose={() => setCharacterCodeExportModalOpen(false)}
+        getCharacterCode={handleExportCharacterCode}
+      />
+
       <SealDiceExportModal
         isOpen={sealDiceExportModalOpen}
         onClose={() => setSealDiceExportModalOpen(false)}

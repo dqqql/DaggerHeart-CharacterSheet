@@ -1,4 +1,4 @@
-// Vitest setup file
+import "@testing-library/jest-dom/vitest"
 
 // Mock console methods for cleaner test output if needed
 // You can uncomment these if you want to silence console logs during tests
