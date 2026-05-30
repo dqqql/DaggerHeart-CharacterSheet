@@ -4,15 +4,75 @@ import { CardSource, createEmptyCard } from "@/card/card-types"
 import { BUILTIN_BATCH_ID } from "@/card/stores/store-types"
 import { defaultSheetData } from "@/lib/default-sheet-data"
 import {
+  CHARACTER_CODE_ANCESTRY_DICT_V1,
+  CHARACTER_CODE_COMMUNITY_DICT_V1,
   CHARACTER_CODE_DOMAIN_DICT_V1,
+  CHARACTER_CODE_PROFESSION_DICT_V1,
+  CHARACTER_CODE_SUBCLASS_DICT_V1,
 } from "@/lib/character-code-dictionary"
-import {
-  decodeCharacterCode,
-  exportCharacterCode,
-} from "@/lib/character-code"
+import { decodeCharacterCode, exportCharacterCode } from "@/lib/character-code"
+
+function createBuiltinProfessionCard(index: number, startingEvasion = 10) {
+  const entry = CHARACTER_CODE_PROFESSION_DICT_V1[index]
+
+  return {
+    ...createEmptyCard("profession"),
+    id: entry.id,
+    name: entry.title,
+    description: entry.text,
+    type: "profession",
+    source: CardSource.BUILTIN,
+    professionSpecial: {
+      起始生命: 5,
+      起始闪避: startingEvasion,
+      起始物品: "",
+      希望特性: entry.hopeFeature,
+    },
+  }
+}
+
+function createBuiltinSubclassCard(index: number) {
+  const entry = CHARACTER_CODE_SUBCLASS_DICT_V1[index]
+
+  return {
+    ...createEmptyCard("subclass"),
+    id: entry.id,
+    name: entry.title,
+    description: entry.text,
+    type: "subclass",
+    source: CardSource.BUILTIN,
+  }
+}
+
+function createBuiltinAncestryCard(index: number) {
+  const entry = CHARACTER_CODE_ANCESTRY_DICT_V1[index]
+
+  return {
+    ...createEmptyCard("ancestry"),
+    id: entry.id,
+    name: entry.title,
+    description: entry.text,
+    type: "ancestry",
+    source: CardSource.BUILTIN,
+  }
+}
+
+function createBuiltinCommunityCard(index: number) {
+  const entry = CHARACTER_CODE_COMMUNITY_DICT_V1[index]
+
+  return {
+    ...createEmptyCard("community"),
+    id: entry.id,
+    name: entry.title,
+    description: entry.text,
+    type: "community",
+    source: CardSource.BUILTIN,
+  }
+}
 
 function createBuiltinDomainCard(index: number) {
   const entry = CHARACTER_CODE_DOMAIN_DICT_V1[index]
+
   return {
     ...createEmptyCard("domain"),
     id: entry.id,
@@ -20,21 +80,6 @@ function createBuiltinDomainCard(index: number) {
     description: entry.text,
     type: "domain",
     source: CardSource.BUILTIN,
-  }
-}
-
-function createProfessionCard(startingEvasion: number) {
-  return {
-    ...createEmptyCard("profession"),
-    id: "test-profession",
-    name: "测试职业",
-    type: "profession",
-    professionSpecial: {
-      起始生命: 5,
-      起始闪避: startingEvasion,
-      起始物品: "",
-      希望特性: "",
-    },
   }
 }
 
@@ -60,23 +105,41 @@ function updateChecksum(bytes: Uint8Array) {
 }
 
 describe("character code export", () => {
-  it("exports builtin domain cards and decodes them back to title and text", () => {
+  it("exports builtin special cards and domain cards, then decodes them back", () => {
     const result = exportCharacterCode({
       ...defaultSheetData,
-      cards: [createProfessionCard(10), createBuiltinDomainCard(0), createBuiltinDomainCard(1)],
+      cards: [
+        createBuiltinProfessionCard(0),
+        createBuiltinSubclassCard(0),
+        createBuiltinAncestryCard(0),
+        createBuiltinAncestryCard(1),
+        createBuiltinCommunityCard(0),
+        createBuiltinDomainCard(0),
+        createBuiltinDomainCard(1),
+      ],
     })
 
     const decoded = decodeCharacterCode(result)
 
-    expect(result.startsWith("dhc1_")).toBe(true)
+    expect(result.startsWith("dhc2_")).toBe(true)
+    expect(decoded.version).toBe(2)
+    expect(decoded.specialCardIndices).toEqual({
+      profession: 0,
+      subclass: 0,
+      ancestry1: 0,
+      ancestry2: 1,
+      community: 0,
+    })
+    expect(decoded.specialCards.profession).toEqual(CHARACTER_CODE_PROFESSION_DICT_V1[0])
+    expect(decoded.specialCards.subclass).toEqual(CHARACTER_CODE_SUBCLASS_DICT_V1[0])
+    expect(decoded.specialCards.ancestry1).toEqual(CHARACTER_CODE_ANCESTRY_DICT_V1[0])
+    expect(decoded.specialCards.ancestry2).toEqual(CHARACTER_CODE_ANCESTRY_DICT_V1[1])
+    expect(decoded.specialCards.community).toEqual(CHARACTER_CODE_COMMUNITY_DICT_V1[0])
     expect(decoded.domainCardIndices).toEqual([0, 1])
-    expect(decoded.domains).toEqual([
-      CHARACTER_CODE_DOMAIN_DICT_V1[0],
-      CHARACTER_CODE_DOMAIN_DICT_V1[1],
-    ])
+    expect(decoded.domains).toEqual([CHARACTER_CODE_DOMAIN_DICT_V1[0], CHARACTER_CODE_DOMAIN_DICT_V1[1]])
   })
 
-  it("accepts builtin domain cards that carry the system batch id", () => {
+  it("accepts builtin cards that carry the system batch id", () => {
     const builtinCardWithBatchId = {
       ...createBuiltinDomainCard(0),
       batchId: BUILTIN_BATCH_ID,
@@ -84,10 +147,12 @@ describe("character code export", () => {
 
     const result = exportCharacterCode({
       ...defaultSheetData,
-      cards: [createProfessionCard(10), builtinCardWithBatchId as any],
+      cards: [createBuiltinProfessionCard(0), createEmptyCard(), createEmptyCard(), createEmptyCard(), createEmptyCard(), builtinCardWithBatchId as any],
     })
 
-    expect(decodeCharacterCode(result).domainCardIndices).toEqual([0])
+    const decoded = decodeCharacterCode(result)
+    expect(decoded.version).toBe(2)
+    expect(decoded.domainCardIndices).toEqual([0])
   })
 
   it("exports displayed evasion, armor, and thresholds instead of raw stored fields", () => {
@@ -100,11 +165,11 @@ describe("character code export", () => {
       armorBaseScore: "7",
       armorValueManualModifier: "2",
       armorThreshold: "5/12",
-      cards: [createProfessionCard(10), createBuiltinDomainCard(0)],
+      cards: [createBuiltinProfessionCard(0, 10), createEmptyCard(), createEmptyCard(), createEmptyCard(), createEmptyCard(), createBuiltinDomainCard(0)],
     })
 
     const decoded = decodeCharacterCode(result)
-
+    expect(decoded.version).toBe(2)
     expect(decoded.evasion).toBe(13)
     expect(decoded.armor).toBe(9)
     expect(decoded.damageThresholds).toEqual({
@@ -113,47 +178,58 @@ describe("character code export", () => {
     })
   })
 
-  it("exports only hope, stress, and gold maximum values", () => {
+  it("exports hope/stress max and current gold value", () => {
+    const gold = Array(21).fill(false)
+    gold[0] = true
+    gold[1] = true
+    gold[10] = true
+    gold[20] = true
+
     const result = exportCharacterCode({
       ...defaultSheetData,
       hope: 2,
       hopeMax: 8,
       stressMax: 7,
       stress: [true, true, false],
-      gold: Array(13).fill(false),
-      cards: [createProfessionCard(10)],
+      gold,
+      cards: [createBuiltinProfessionCard(0)],
     })
 
     const decoded = decodeCharacterCode(result)
-
+    expect(decoded.version).toBe(2)
     expect(decoded.resources).toEqual({
       hopeMax: 8,
       stressMax: 7,
-      goldMax: 13,
+      goldCurrent: 4,
     })
   })
 
-  it("rejects custom and adhoc domain cards", () => {
+  it("rejects custom special cards and adhoc domain cards", () => {
     expect(() =>
       exportCharacterCode({
         ...defaultSheetData,
         cards: [
           {
-            ...createEmptyCard("domain"),
-            id: "custom-domain-card",
-            name: "自定义领域卡",
-            type: "domain",
+            ...createEmptyCard("profession"),
+            id: "custom-profession-card",
+            name: "自定义职业",
+            type: "profession",
             source: CardSource.CUSTOM,
             batchId: "custom-batch",
           } as any,
         ],
       }),
-    ).toThrow("角色码暂不支持导出自定义领域卡")
+    ).toThrow("角色码暂不支持导出自定义职业特性卡牌")
 
     expect(() =>
       exportCharacterCode({
         ...defaultSheetData,
         cards: [
+          createBuiltinProfessionCard(0),
+          createEmptyCard(),
+          createEmptyCard(),
+          createEmptyCard(),
+          createEmptyCard(),
           {
             ...createEmptyCard("domain"),
             id: "sheet-custom-player-1",
@@ -166,29 +242,36 @@ describe("character code export", () => {
     ).toThrow("角色码暂不支持导出自定义领域卡")
   })
 
-  it("ignores empty slots and non-domain cards", () => {
+  it("ignores empty slots and non-domain cards outside the special card area", () => {
     const result = exportCharacterCode({
       ...defaultSheetData,
       cards: [
-        createProfessionCard(10),
+        createBuiltinProfessionCard(0),
         createEmptyCard(),
-        {
-          ...createEmptyCard("ancestry"),
-          id: "ancestry-1",
-          name: "测试种族",
-          type: "ancestry",
-        },
+        createEmptyCard(),
+        createEmptyCard(),
+        createEmptyCard(),
+        createBuiltinAncestryCard(0),
         createBuiltinDomainCard(0),
       ],
     })
 
-    expect(decodeCharacterCode(result).domainCardIndices).toEqual([0])
+    const decoded = decodeCharacterCode(result)
+    expect(decoded.version).toBe(2)
+    expect(decoded.specialCardIndices).toEqual({
+      profession: 0,
+      subclass: null,
+      ancestry1: null,
+      ancestry2: null,
+      community: null,
+    })
+    expect(decoded.domainCardIndices).toEqual([0])
   })
 
   it("rejects invalid prefix and corrupted content", () => {
     const code = exportCharacterCode({
       ...defaultSheetData,
-      cards: [createProfessionCard(10), createBuiltinDomainCard(0)],
+      cards: [createBuiltinProfessionCard(0), createEmptyCard(), createEmptyCard(), createEmptyCard(), createEmptyCard(), createBuiltinDomainCard(0)],
     })
 
     expect(() => decodeCharacterCode("bad-prefix")).toThrow("角色码版本前缀无效")
@@ -198,15 +281,15 @@ describe("character code export", () => {
   it("rejects unknown dictionary indices", () => {
     const code = exportCharacterCode({
       ...defaultSheetData,
-      cards: [createProfessionCard(10), createBuiltinDomainCard(0)],
+      cards: [createBuiltinProfessionCard(0), createEmptyCard(), createEmptyCard(), createEmptyCard(), createEmptyCard(), createBuiltinDomainCard(0)],
     })
 
-    const bytes = fromBase64Url(code.slice("dhc1_".length))
-    const domainIndexOffset = 27
-    bytes[domainIndexOffset] = 0xff
-    bytes[domainIndexOffset + 1] = 0xff
+    const bytes = fromBase64Url(code.slice("dhc2_".length))
+    const professionIndexOffset = 26
+    bytes[professionIndexOffset] = 0xfe
+    bytes[professionIndexOffset + 1] = 0xff
     updateChecksum(bytes)
 
-    expect(() => decodeCharacterCode(`dhc1_${toBase64Url(bytes)}`)).toThrow("未知的领域卡索引")
+    expect(() => decodeCharacterCode(`dhc2_${toBase64Url(bytes)}`)).toThrow("未知的职业特性索引")
   })
 })

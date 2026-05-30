@@ -74,7 +74,7 @@ export function CharacterCodeExportModal({
         <DialogHeader>
           <DialogTitle data-testid="character-code-modal-title">导出角色码</DialogTitle>
           <DialogDescription>
-            生成一个便于复制分享的短码。v1 仅支持内置领域卡，不包含当前资源消耗状态。
+            生成一个便于复制分享的短码，仅支持内置核心书领域卡。
           </DialogDescription>
         </DialogHeader>
 
@@ -107,8 +107,8 @@ export function CharacterCodeExportModal({
           )}
 
           <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
-            <p className="font-medium text-slate-900">当前版本包含的内容</p>
-            <p>等级、熟练度、闪避、护甲、六项属性、伤害阈值、希望上限、压力上限、金币上限，以及聚焦卡组中的内置领域卡。</p>
+            <p className="font-medium text-slate-900">包含的内容</p>
+            <p>各项数据、可追踪资源与领域卡。</p>
           </div>
         </div>
       </DialogContent>

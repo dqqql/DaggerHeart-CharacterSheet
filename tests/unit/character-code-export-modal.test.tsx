@@ -33,7 +33,7 @@ function TestHarness() {
       <CharacterCodeExportModal
         isOpen={open}
         onClose={() => setOpen(false)}
-        getCharacterCode={() => "dhc1_test_code"}
+        getCharacterCode={() => "dhc2_test_code"}
       />
     </>
   )
@@ -60,7 +60,7 @@ describe("character code export modal", () => {
     fireEvent.click(screen.getByTestId("character-code-copy-button"))
 
     await waitFor(() => {
-      expect(writeText).toHaveBeenCalledWith("dhc1_test_code")
+      expect(writeText).toHaveBeenCalledWith("dhc2_test_code")
     })
   })
 })
