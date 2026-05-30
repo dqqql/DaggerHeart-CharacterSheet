@@ -5,6 +5,7 @@ import {
   calculateArmorValueBreakdown,
   calculateDamageThresholdBreakdown,
   calculateEvasionBreakdown,
+  getDisplayedHpMax,
   getDisplayedStressMax,
 } from "@/lib/domain-card-derived-stats"
 import {
@@ -32,7 +33,7 @@ const UINT8_MAX = 0xff
 const UINT16_NULL = 0xffff
 const INT16_MIN = -32768
 const INT16_MAX = 32767
-const MIN_CHARACTER_CODE_LENGTH = 39
+const MIN_CHARACTER_CODE_LENGTH = 41
 
 interface CharacterCodeAttributes {
   agility: number
@@ -68,6 +69,8 @@ export interface CharacterCodePayload {
     hopeMax: number
     stressMax: number
     goldCurrent: number
+    hpMax: number
+    armorMax: number
   }
   specialCardIndices: CharacterCodeSpecialCardIndices
   domainCardIndices: number[]
@@ -166,6 +169,8 @@ function buildCharacterCodePayload(sheetData: SheetData): CharacterCodePayload {
       hopeMax: typeof sheetData.hopeMax === "number" ? sheetData.hopeMax : DEFAULT_HOPE_MAX,
       stressMax: getDisplayedStressMax(sheetData),
       goldCurrent: getCurrentGoldValue(sheetData.gold),
+      hpMax: getDisplayedHpMax(sheetData),
+      armorMax: getDisplayedArmorMax(sheetData),
     },
     specialCardIndices: getSpecialCardIndices(sheetData.cards),
     domainCardIndices: getDomainCardIndices(sheetData.cards),
@@ -304,6 +309,23 @@ function getCurrentGoldValue(gold: SheetData["gold"] | undefined): number {
   return gold.filter(Boolean).length
 }
 
+function getDisplayedArmorMax(data: Pick<SheetData, "armorMax" | "armorBoxes" | "armorValue" | "armorValueManualModifier" | "cards" | "strength" | "armorName" | "armorBaseScore" | "armorThreshold" | "armorSelection" | "primaryWeaponName" | "primaryWeaponTrait" | "primaryWeaponDamage" | "primaryWeaponFeature" | "primaryWeaponSelection" | "secondaryWeaponName" | "secondaryWeaponTrait" | "secondaryWeaponDamage" | "secondaryWeaponFeature" | "secondaryWeaponSelection">): number {
+  if (typeof data.armorMax === "number" && data.armorMax > 0) {
+    return data.armorMax
+  }
+
+  const derivedArmorValue = calculateArmorValueBreakdown(data).total
+  if (typeof derivedArmorValue === "number" && derivedArmorValue > 0) {
+    return derivedArmorValue
+  }
+
+  if (Array.isArray(data.armorBoxes) && data.armorBoxes.length > 0) {
+    return data.armorBoxes.length
+  }
+
+  return 0
+}
+
 function parseStoredNumber(value?: string): number {
   if (!value?.trim()) {
     return 0
@@ -347,7 +369,7 @@ function encodeCharacterCodePayload(payload: CharacterCodePayload): Uint8Array {
   const domainCount = payload.domainCardIndices.length
   assertUInt8("领域卡数量", domainCount)
 
-  const bytes = new Uint8Array(37 + domainCount * 2 + 2)
+  const bytes = new Uint8Array(39 + domainCount * 2 + 2)
   let offset = 0
 
   bytes[offset++] = payload.version
@@ -366,6 +388,8 @@ function encodeCharacterCodePayload(payload: CharacterCodePayload): Uint8Array {
   bytes[offset++] = toUInt8("希望上限", payload.resources.hopeMax)
   bytes[offset++] = toUInt8("压力上限", payload.resources.stressMax)
   bytes[offset++] = toUInt8("金币当前值", payload.resources.goldCurrent)
+  bytes[offset++] = toUInt8("生命上限", payload.resources.hpMax)
+  bytes[offset++] = toUInt8("护甲上限", payload.resources.armorMax)
   offset = writeNullableUInt16(bytes, offset, payload.specialCardIndices.profession)
   offset = writeNullableUInt16(bytes, offset, payload.specialCardIndices.subclass)
   offset = writeNullableUInt16(bytes, offset, payload.specialCardIndices.ancestry1)
@@ -425,6 +449,8 @@ function decodeCharacterCodePayload(bytes: Uint8Array): CharacterCodePayload {
   const hopeMax = bytes[offset++]
   const stressMax = bytes[offset++]
   const goldCurrent = bytes[offset++]
+  const hpMax = bytes[offset++]
+  const armorMax = bytes[offset++]
   const profession = readNullableUInt16(bytes, offset)
   offset += 2
   const subclass = readNullableUInt16(bytes, offset)
@@ -476,6 +502,8 @@ function decodeCharacterCodePayload(bytes: Uint8Array): CharacterCodePayload {
       hopeMax,
       stressMax,
       goldCurrent,
+      hpMax,
+      armorMax,
     },
     specialCardIndices: {
       profession,

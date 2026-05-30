@@ -7,6 +7,7 @@ import JSZip from 'jszip';
 import { getAllEditorImageKeys, getImageBlobFromDB } from './image-db-helpers';
 import type { CardPackageState } from '../types';
 import type { StandardCard } from '@/card/card-types';
+import { getCardPackageDownloadName } from '@/card/utils/card-package-file';
 
 /**
  * Export card package as .dhcb/.zip file with images
@@ -126,7 +127,7 @@ export function downloadZipFile(blob: Blob, fileName: string) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = fileName.endsWith('.dhcb') ? fileName : `${fileName}.dhcb`;
+  a.download = getCardPackageDownloadName(fileName);
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);

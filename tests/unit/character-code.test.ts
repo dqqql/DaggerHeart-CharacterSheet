@@ -201,7 +201,24 @@ describe("character code export", () => {
       hopeMax: 8,
       stressMax: 7,
       goldCurrent: 4,
+      hpMax: 6,
+      armorMax: 12,
     })
+  })
+
+  it("exports displayed hp max and armor max", () => {
+    const result = exportCharacterCode({
+      ...defaultSheetData,
+      hpMax: 7,
+      armorMax: 5,
+      armorValue: "5",
+      cards: [createBuiltinProfessionCard(0)],
+    })
+
+    const decoded = decodeCharacterCode(result)
+
+    expect(decoded.resources.hpMax).toBe(7)
+    expect(decoded.resources.armorMax).toBe(5)
   })
 
   it("rejects custom special cards and adhoc domain cards", () => {
@@ -285,7 +302,7 @@ describe("character code export", () => {
     })
 
     const bytes = fromBase64Url(code.slice("dhc2_".length))
-    const professionIndexOffset = 26
+    const professionIndexOffset = 28
     bytes[professionIndexOffset] = 0xfe
     bytes[professionIndexOffset + 1] = 0xff
     updateChecksum(bytes)

@@ -22,6 +22,10 @@ import {
   type ExtendedStandardCard
 } from '@/card/index'
 import { importDhcbCardPackage, type DhcbImportResult } from '@/card/utils/dhcb-importer'
+import {
+  CARD_PACKAGE_IMPORT_ACCEPT,
+  isCardPackageArchiveFileName,
+} from '@/card/utils/card-package-file'
 import { useUnifiedCardStore } from '@/card/stores/unified-card-store'
 import { getBasePath, navigateToPage } from '@/lib/utils'
 import { DocumentModal } from '@/components/modals/document-modal'
@@ -149,15 +153,14 @@ export default function CardImportTestPage() {
 
     // 检查所有文件类型
     const invalid = fileArr.find(f =>
-      !f.name.endsWith('.json') &&
-      !f.name.endsWith('.dhcb') &&
-      !f.name.endsWith('.zip')
+      !f.name.toLowerCase().endsWith('.json') &&
+      !isCardPackageArchiveFileName(f.name)
     )
     if (invalid) {
       setImportStatus({
         isImporting: false,
         result: null,
-        error: '请选择 JSON、DHCB 或 ZIP 文件（可多选）'
+        error: '请选择 JSON、ZIP 或 DHCB 文件（可多选）'
       })
       return
     }
@@ -174,7 +177,7 @@ export default function CardImportTestPage() {
     for (const file of files) {
       try {
         // 判断文件类型
-        if (file.name.endsWith('.dhcb') || file.name.endsWith('.zip')) {
+        if (isCardPackageArchiveFileName(file.name)) {
           // .dhcb/.zip 导入
           const dhcbResult = await importDhcbCardPackage(file)
           allResults.push({
@@ -395,7 +398,7 @@ export default function CardImportTestPage() {
                 卡牌导入
               </CardTitle>
               <CardDescription>
-                拖拽或选择卡包（JSON/DHCB格式）导入自定义卡牌数据<br />
+                拖拽或选择卡包（JSON/ZIP/DHCB）导入自定义卡牌数据<br />
                 <span className="text-xs text-muted-foreground mt-1 block">
                   支持卡牌类型格式：profession (职业), ancestry (种族), community (社群), subclass (子职业), domain (领域)，variant（任意）
                 </span>
@@ -415,7 +418,7 @@ export default function CardImportTestPage() {
               >
                 <FileText className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                 <p className="text-lg font-medium mb-2">
-                  拖拽卡包文件到此处（JSON/DHCB格式）
+                  拖拽卡包文件到此处（JSON/ZIP/DHCB）
                 </p>
                 <p className="text-muted-foreground mb-4">
                   或点击下方按钮选择文件
@@ -436,7 +439,7 @@ export default function CardImportTestPage() {
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept=".json,.dhcb,.zip"
+                  accept={CARD_PACKAGE_IMPORT_ACCEPT}
                   onChange={(e) => handleFileSelect(e.target.files)}
                   className="hidden"
                   multiple

@@ -41,7 +41,7 @@ export async function importDhcbCardPackage(
   // ========== 步骤 2: 提取 cards.json ==========
   const cardsFile = zip.file('cards.json')
   if (!cardsFile) {
-    throw new Error('cards.json not found in .dhcb file')
+    throw new Error('cards.json not found in card package archive (.zip/.dhcb)')
   }
 
   const cardsText = await cardsFile.async('text')

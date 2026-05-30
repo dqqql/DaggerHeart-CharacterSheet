@@ -357,7 +357,7 @@ export function AncestryDualCardForm({
                   disabled={false}
                 />
                 <p className="text-xs text-muted-foreground">
-                  上传的图片将保存在浏览器 IndexedDB 中，导出时会打包到 .dhcb 文件
+                  上传的图片将保存在浏览器 IndexedDB 中，导出时会打包到 ZIP 卡包（兼容 .zip / .dhcb）
                 </p>
               </div>
             )}
@@ -447,7 +447,7 @@ export function AncestryDualCardForm({
                   disabled={false}
                 />
                 <p className="text-xs text-muted-foreground">
-                  上传的图片将保存在浏览器 IndexedDB 中，导出时会打包到 .dhcb 文件
+                  上传的图片将保存在浏览器 IndexedDB 中，导出时会打包到 ZIP 卡包（兼容 .zip / .dhcb）
                 </p>
               </div>
             )}

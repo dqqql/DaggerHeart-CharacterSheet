@@ -2,6 +2,10 @@ import { toast } from 'sonner'
 import type { ImportData } from '@/card/card-types'
 import type { AncestryCard } from '@/card/ancestry-card/convert'
 import type { SubClassCard } from '@/card/subclass-card/convert'
+import {
+  CARD_PACKAGE_IMPORT_ACCEPT,
+  isCardPackageArchiveFileName,
+} from '@/card/utils/card-package-file'
 import type { CardPackageState } from '../types'
 import { createDefaultCard } from './card-factory'
 
@@ -191,7 +195,7 @@ export function importCardPackage(): Promise<CardPackageState | null> {
   return new Promise((resolve) => {
     const input = document.createElement('input')
     input.type = 'file'
-    input.accept = '.json,.dhcb,.zip'
+    input.accept = CARD_PACKAGE_IMPORT_ACCEPT
     input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0]
       if (!file) {
@@ -203,7 +207,7 @@ export function importCardPackage(): Promise<CardPackageState | null> {
         let importedData: any;
 
         // Check if file is ZIP (.dhcb/.zip)
-        if (file.name.endsWith('.dhcb') || file.name.endsWith('.zip')) {
+        if (isCardPackageArchiveFileName(file.name)) {
           const { importCardPackageWithImages } = await import('./zip-import');
           toast.info('正在导入卡包...');
           const packageData = await importCardPackageWithImages(file);
