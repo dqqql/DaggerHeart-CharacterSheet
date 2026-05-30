@@ -1,5 +1,19 @@
 [
   {
+    "id": "2026-05-30-character-code-v3",
+    "title": "V2.0.0",
+    "file": "2026-05-30-character-code-v3.md",
+    "publishedAt": "2026-05-30",
+    "priority": 1
+  },
+  {
+    "id": "2026-05-30-card-package-zip-compatibility",
+    "title": "V1.2.2",
+    "file": "2026-05-30-card-package-zip-compatibility.md",
+    "publishedAt": "2026-05-30",
+    "priority": 1
+  },
+  {
     "id": "2026-05-14-gm-panel-update",
     "title": "V1.2.1",
     "file": "2026-05-14-gm-panel-update.md",

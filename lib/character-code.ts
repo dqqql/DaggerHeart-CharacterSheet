@@ -26,8 +26,13 @@ import {
 import { safeEvaluateExpression } from "@/lib/number-utils"
 import type { AttributeValue, SheetData } from "@/lib/sheet-data"
 
-const CHARACTER_CODE_PREFIX = "dhc2_"
-const CHARACTER_CODE_VERSION = 2
+type CharacterCodeVersion = 2 | 3
+
+const CHARACTER_CODE_FORMATS = [
+  { prefix: "dhc3_", version: 3 as const },
+  { prefix: "dhc2_", version: 2 as const },
+] as const
+const CURRENT_CHARACTER_CODE_FORMAT = CHARACTER_CODE_FORMATS[0]
 const DEFAULT_HOPE_MAX = 6
 const UINT8_MAX = 0xff
 const UINT16_NULL = 0xffff
@@ -58,7 +63,7 @@ interface CharacterCodeSpecialCardIndices {
 }
 
 export interface CharacterCodePayload {
-  version: 2
+  version: CharacterCodeVersion
   level: number
   proficiency: number
   evasion: number
@@ -90,15 +95,19 @@ export interface DecodedCharacterCode extends CharacterCodePayload {
 export function exportCharacterCode(sheetData: SheetData): string {
   const payload = buildCharacterCodePayload(sheetData)
   const bytes = encodeCharacterCodePayload(payload)
-  return `${CHARACTER_CODE_PREFIX}${toBase64Url(bytes)}`
+  return `${CURRENT_CHARACTER_CODE_FORMAT.prefix}${toBase64Url(bytes)}`
 }
 
 export function decodeCharacterCode(code: string): DecodedCharacterCode {
-  if (!code.startsWith(CHARACTER_CODE_PREFIX)) {
+  const matchedFormat = CHARACTER_CODE_FORMATS.find(({ prefix }) => code.startsWith(prefix))
+  if (!matchedFormat) {
     throw new Error("角色码版本前缀无效。")
   }
 
-  const payload = decodeCharacterCodePayload(getEncodedBody(code, CHARACTER_CODE_PREFIX))
+  const payload = decodeCharacterCodePayload(getEncodedBody(code, matchedFormat.prefix))
+  if (payload.version !== matchedFormat.version) {
+    throw new Error(`角色码前缀与内容版本不匹配: ${matchedFormat.prefix} / ${payload.version}`)
+  }
 
   return {
     ...payload,
@@ -148,7 +157,7 @@ function buildCharacterCodePayload(sheetData: SheetData): CharacterCodePayload {
   const thresholds = calculateDamageThresholdBreakdown(sheetData)
 
   return {
-    version: CHARACTER_CODE_VERSION,
+    version: CURRENT_CHARACTER_CODE_FORMAT.version,
     level: parseStoredNumber(sheetData.level),
     proficiency: getProficiencyCount(sheetData.proficiency),
     evasion,
@@ -420,7 +429,7 @@ function decodeCharacterCodePayload(bytes: Uint8Array): CharacterCodePayload {
 
   let offset = 0
   const version = bytes[offset++]
-  if (version !== CHARACTER_CODE_VERSION) {
+  if (!isSupportedCharacterCodeVersion(version)) {
     throw new Error(`暂不支持的角色码版本: ${version}`)
   }
 
@@ -481,7 +490,7 @@ function decodeCharacterCodePayload(bytes: Uint8Array): CharacterCodePayload {
   }
 
   return {
-    version: CHARACTER_CODE_VERSION,
+    version,
     level,
     proficiency,
     evasion,
@@ -514,6 +523,10 @@ function decodeCharacterCodePayload(bytes: Uint8Array): CharacterCodePayload {
     },
     domainCardIndices,
   }
+}
+
+function isSupportedCharacterCodeVersion(value: number): value is CharacterCodeVersion {
+  return CHARACTER_CODE_FORMATS.some((format) => format.version === value)
 }
 
 function assertChecksum(bytes: Uint8Array, payloadLength: number): void {

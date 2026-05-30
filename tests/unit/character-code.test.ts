@@ -121,8 +121,8 @@ describe("character code export", () => {
 
     const decoded = decodeCharacterCode(result)
 
-    expect(result.startsWith("dhc2_")).toBe(true)
-    expect(decoded.version).toBe(2)
+    expect(result.startsWith("dhc3_")).toBe(true)
+    expect(decoded.version).toBe(3)
     expect(decoded.specialCardIndices).toEqual({
       profession: 0,
       subclass: 0,
@@ -151,7 +151,7 @@ describe("character code export", () => {
     })
 
     const decoded = decodeCharacterCode(result)
-    expect(decoded.version).toBe(2)
+    expect(decoded.version).toBe(3)
     expect(decoded.domainCardIndices).toEqual([0])
   })
 
@@ -169,7 +169,7 @@ describe("character code export", () => {
     })
 
     const decoded = decodeCharacterCode(result)
-    expect(decoded.version).toBe(2)
+    expect(decoded.version).toBe(3)
     expect(decoded.evasion).toBe(13)
     expect(decoded.armor).toBe(9)
     expect(decoded.damageThresholds).toEqual({
@@ -196,7 +196,7 @@ describe("character code export", () => {
     })
 
     const decoded = decodeCharacterCode(result)
-    expect(decoded.version).toBe(2)
+    expect(decoded.version).toBe(3)
     expect(decoded.resources).toEqual({
       hopeMax: 8,
       stressMax: 7,
@@ -274,7 +274,7 @@ describe("character code export", () => {
     })
 
     const decoded = decodeCharacterCode(result)
-    expect(decoded.version).toBe(2)
+    expect(decoded.version).toBe(3)
     expect(decoded.specialCardIndices).toEqual({
       profession: 0,
       subclass: null,
@@ -295,18 +295,33 @@ describe("character code export", () => {
     expect(() => decodeCharacterCode(`${code}x`)).toThrow()
   })
 
+  it("keeps backward compatibility for legacy dhc2 codes", () => {
+    const code = exportCharacterCode({
+      ...defaultSheetData,
+      cards: [createBuiltinProfessionCard(0), createEmptyCard(), createEmptyCard(), createEmptyCard(), createEmptyCard(), createBuiltinDomainCard(0)],
+    })
+
+    const bytes = fromBase64Url(code.slice("dhc3_".length))
+    bytes[0] = 2
+    updateChecksum(bytes)
+
+    const decoded = decodeCharacterCode(`dhc2_${toBase64Url(bytes)}`)
+    expect(decoded.version).toBe(2)
+    expect(decoded.domainCardIndices).toEqual([0])
+  })
+
   it("rejects unknown dictionary indices", () => {
     const code = exportCharacterCode({
       ...defaultSheetData,
       cards: [createBuiltinProfessionCard(0), createEmptyCard(), createEmptyCard(), createEmptyCard(), createEmptyCard(), createBuiltinDomainCard(0)],
     })
 
-    const bytes = fromBase64Url(code.slice("dhc2_".length))
+    const bytes = fromBase64Url(code.slice("dhc3_".length))
     const professionIndexOffset = 28
     bytes[professionIndexOffset] = 0xfe
     bytes[professionIndexOffset + 1] = 0xff
     updateChecksum(bytes)
 
-    expect(() => decodeCharacterCode(`dhc2_${toBase64Url(bytes)}`)).toThrow("未知的职业特性索引")
+    expect(() => decodeCharacterCode(`dhc3_${toBase64Url(bytes)}`)).toThrow("未知的职业特性索引")
   })
 })
