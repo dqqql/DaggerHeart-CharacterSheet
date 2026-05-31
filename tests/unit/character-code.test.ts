@@ -178,7 +178,7 @@ describe("character code export", () => {
     })
   })
 
-  it("exports hope/stress max and current gold value", () => {
+  it("exports hope/stress max and converts gold across handfuls, bags, and chests", () => {
     const gold = Array(21).fill(false)
     gold[0] = true
     gold[1] = true
@@ -200,7 +200,7 @@ describe("character code export", () => {
     expect(decoded.resources).toEqual({
       hopeMax: 8,
       stressMax: 7,
-      goldCurrent: 4,
+      goldCurrent: 112,
       hpMax: 6,
       armorMax: 12,
     })

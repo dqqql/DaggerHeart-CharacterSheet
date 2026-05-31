@@ -39,6 +39,11 @@ const UINT16_NULL = 0xffff
 const INT16_MIN = -32768
 const INT16_MAX = 32767
 const MIN_CHARACTER_CODE_LENGTH = 41
+const GOLD_HANDFUL_END = 10
+const GOLD_BAG_END = 20
+const GOLD_BAG_VALUE = 10
+const GOLD_CHEST_INDEX = 20
+const GOLD_CHEST_VALUE = 100
 
 interface CharacterCodeAttributes {
   agility: number
@@ -315,7 +320,11 @@ function getCurrentGoldValue(gold: SheetData["gold"] | undefined): number {
     return 0
   }
 
-  return gold.filter(Boolean).length
+  const handfulCount = gold.slice(0, GOLD_HANDFUL_END).filter(Boolean).length
+  const bagCount = gold.slice(GOLD_HANDFUL_END, GOLD_BAG_END).filter(Boolean).length
+  const chestCount = gold[GOLD_CHEST_INDEX] ? 1 : 0
+
+  return handfulCount + bagCount * GOLD_BAG_VALUE + chestCount * GOLD_CHEST_VALUE
 }
 
 function getDisplayedArmorMax(data: Pick<SheetData, "armorMax" | "armorBoxes" | "armorValue" | "armorValueManualModifier" | "cards" | "strength" | "armorName" | "armorBaseScore" | "armorThreshold" | "armorSelection" | "primaryWeaponName" | "primaryWeaponTrait" | "primaryWeaponDamage" | "primaryWeaponFeature" | "primaryWeaponSelection" | "secondaryWeaponName" | "secondaryWeaponTrait" | "secondaryWeaponDamage" | "secondaryWeaponFeature" | "secondaryWeaponSelection">): number {
