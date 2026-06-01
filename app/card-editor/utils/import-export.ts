@@ -217,10 +217,6 @@ export function importCardPackage(): Promise<CardPackageState | null> {
         }
 
         // Otherwise, parse as JSON
-        const { clearAllEditorImages } = await import('./image-db-helpers');
-        await clearAllEditorImages();
-        console.log('[Import] Cleared all editor images for JSON import');
-
         const text = await file.text()
         importedData = JSON.parse(text) as ImportData
 
@@ -252,9 +248,13 @@ export function importCardPackage(): Promise<CardPackageState | null> {
           isModified: false,
           lastSaved: new Date()
         }
+        const { replaceAllEditorImages } = await import('./image-db-helpers');
+        await replaceAllEditorImages([]);
+        console.log('[Import] Replaced editor images after successful JSON import');
         toast.success('卡包已导入')
         resolve(newPackage)
-      } catch {
+      } catch (error) {
+        console.error('[Import] Failed to import card package:', error)
         toast.error('导入失败：文件格式不正确')
         resolve(null)
       }

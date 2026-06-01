@@ -9,8 +9,21 @@ import remarkBreaks from "remark-breaks"
 interface CardMarkdownProps {
     children: string
     className?: string
-    rehypePlugins?: any[]
     customComponents?: Partial<Components>
+}
+
+function sanitizeMarkdownUrl(url: string): string {
+    const trimmedUrl = url.trim()
+
+    if (!trimmedUrl || trimmedUrl.startsWith("//")) {
+        return ""
+    }
+
+    if (/^[a-z][a-z0-9+.-]*:/i.test(trimmedUrl)) {
+        return /^(https?:|mailto:|tel:)/i.test(trimmedUrl) ? trimmedUrl : ""
+    }
+
+    return trimmedUrl
 }
 
 /**
@@ -21,7 +34,7 @@ interface CardMarkdownProps {
  * - *直角引号* → 「text-amber-900」（琥珀色，使用直角引号包裹）
  * - ***重要*** → text-amber-800（琥珀色加粗 #92400E）
  */
-export function CardMarkdown({ children, className = "", rehypePlugins, customComponents }: CardMarkdownProps) {
+export function CardMarkdown({ children, className = "", customComponents }: CardMarkdownProps) {
     // 默认组件配置
     const defaultComponents: Components = {
         p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
@@ -75,7 +88,8 @@ export function CardMarkdown({ children, className = "", rehypePlugins, customCo
             <ReactMarkdown
                 components={mergedComponents}
                 remarkPlugins={[remarkGfm, remarkBreaks]}
-                rehypePlugins={rehypePlugins}
+                skipHtml
+                urlTransform={sanitizeMarkdownUrl}
             >
                 {children}
             </ReactMarkdown>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
+import { CardMarkdown } from "@/components/ui/card-markdown"
 import { ChevronLeft, ChevronRight, X, Minimize2, Maximize2 } from "lucide-react"
 import { guideSteps, canProceedToNextStep, getProfessionSpecificContent } from "@/components/guide/guide-content"
 import type { SheetData } from "@/lib/sheet-data"
@@ -170,10 +171,17 @@ export function CharacterCreationGuide({ isOpen, onClose }: CharacterCreationGui
           </div>
         </div>
 
-        <div
-          className="mb-6 min-h-[200px] text-sm whitespace-pre-line"
-          dangerouslySetInnerHTML={{ __html: getStepContent() }}
-        ></div>
+        <CardMarkdown
+          className="mb-6 min-h-[200px] text-sm"
+          customComponents={{
+            p: ({ children }) => <p className="mb-3 last:mb-0">{children}</p>,
+            li: ({ children }) => <li className="mb-1">{children}</li>,
+            strong: ({ children }) => <strong className="font-semibold text-gray-900">{children}</strong>,
+            em: ({ children }) => <em className="italic text-gray-800">{children}</em>,
+          }}
+        >
+          {getStepContent()}
+        </CardMarkdown>
 
         <div className="flex justify-between">
           <Button

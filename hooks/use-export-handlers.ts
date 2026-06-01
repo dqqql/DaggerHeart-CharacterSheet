@@ -1,7 +1,5 @@
 import { useCallback } from "react"
-import { getStandardCardById } from "@/card"
 import { exportCharacterCode } from "@/lib/character-code"
-import { exportToHTML } from "@/lib/html-exporter"
 import { exportCharacterData } from "@/lib/storage"
 import type { SheetData } from "@/lib/sheet-data"
 
@@ -56,6 +54,8 @@ export function useExportHandlers({
   setIsPrintingAll,
 }: UseExportHandlersProps) {
   const handlePrintAll = useCallback(async () => {
+    const { getStandardCardById } = await import("@/card")
+
     const getCardClass = (cardId: string | undefined): string => {
       if (!cardId) return "()"
 
@@ -84,6 +84,7 @@ export function useExportHandlers({
   const handleExportHTML = useCallback(async () => {
     try {
       console.log("[ExportHandlers] Starting HTML export")
+      const { exportToHTML } = await import("@/lib/html-exporter")
       await exportToHTML(formData)
       console.log("[ExportHandlers] HTML export completed")
     } catch (error) {

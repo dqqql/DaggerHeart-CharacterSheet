@@ -1,22 +1,7 @@
 import type { StandardCard } from "@/card/card-types";
 import { isEmptyCard } from "@/card/card-types"; // Import isEmptyCard
 import { CardType } from "@/card"; // Only import CardType since we no longer use getStandardCardsByTypeAsync
-
-// 工具函数：将简单的Markdown格式转换为HTML或移除格式
-function convertMarkdownToHtml(text: string): string {
-    if (!text) return text;
-    
-    // 转换 **粗体** 为 <strong>粗体</strong>
-    text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    
-    // 转换 *斜体* 为 <em>斜体</em>
-    text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
-    
-    // 转换换行符
-    text = text.replace(/\n/g, '<br>');
-    
-    return text;
-}
+import { normalizeLegacyHtmlToMarkdown } from "@/lib/md-component";
 
 // 工具函数：移除Markdown格式符号，只保留纯文本
 function stripMarkdown(text: string): string {
@@ -229,13 +214,13 @@ export const guideSteps: GuideStep[] = [
                     if (professionCard.professionSpecial) {
                         const rawHopeFeature = professionCard.professionSpecial["希望特性"];
                         hopeFeature = rawHopeFeature 
-                            ? convertMarkdownToHtml(String(rawHopeFeature))
+                            ? String(rawHopeFeature)
                             : "无特殊希望特性";
                     }
                 }
             }
 
-            return `压力点反映了您承受危险情境的精神和情感压力以及身体消耗的能力。每个PC开始时有<strong>6个压力栏位</strong>。\n希望点是一种元货币，可以用于激活经历或者帮助队友。不同职业会有专属的希望特性，可以在希望点区域下方查看。${professionName}的希望特性是：\n<strong>${hopeFeature}</strong>\n\n所有角色开始游戏时有 2 希望点。`;
+            return `压力点反映了您承受危险情境的精神和情感压力以及身体消耗的能力。每个PC开始时有<strong>6个压力栏位</strong>。\n希望点是一种元货币，可以用于激活经历或者帮助队友。不同职业会有专属的希望特性，可以在希望点区域下方查看。${professionName}的希望特性是：\n${hopeFeature}\n\n所有角色开始游戏时有 2 希望点。`;
         },
         validation: (formData) => {
             return true;
@@ -297,12 +282,12 @@ export const guideSteps: GuideStep[] = [
                 if (professionCard && professionCard.professionSpecial) {
                     const rawStartingItems = professionCard.professionSpecial["起始物品"];
                     startingItems = rawStartingItems
-                        ? convertMarkdownToHtml(String(rawStartingItems))
+                        ? String(rawStartingItems)
                         : "无特殊起始物品";
                 }
             }
 
-            return `将以下物品添加到角色表的\"物品栏\"字段中： \n1.一支火把、50 英尺长的绳索、基本补给品。 \n2.一瓶次级治疗药水（回复 1d4 生命点）<strong>或</strong>一瓶次级耐力药水（清除 1d4 压力点）。\n3.职业特殊起始物品：<strong>${startingItems} </strong> \n4. 其他GM批准您携带的物品。\n5. 在角色卡右下角<strong>金币栏</strong>中，<strong>添加一把金币。</strong>`;
+            return `将以下物品添加到角色表的\"物品栏\"字段中： \n1.一支火把、50 英尺长的绳索、基本补给品。 \n2.一瓶次级治疗药水（回复 1d4 生命点）<strong>或</strong>一瓶次级耐力药水（清除 1d4 压力点）。\n3.职业特殊起始物品：\n${startingItems}\n4. 其他GM批准您携带的物品。\n5. 在角色卡右下角<strong>金币栏</strong>中，<strong>添加一把金币。</strong>`;
         },
         validation: () => true,
     },
@@ -406,13 +391,13 @@ export function getProfessionSpecificContent(
     if (typeof contentSource === 'function') {
         try {
             // Pass an empty array or handle differently if allCards is truly no longer needed by any content function
-            return contentSource(formData, allCards); // or contentSource(formData, [])
+            return normalizeLegacyHtmlToMarkdown(contentSource(formData, allCards)); // or contentSource(formData, [])
         } catch (error) {
             console.error("在处理引导内容时出错:", error);
             return "获取内容时出错，请重试或选择其他选项";
         }
     }
-    return contentSource;
+    return normalizeLegacyHtmlToMarkdown(contentSource);
 }
 
 // 检查步骤是否可以进入下一步

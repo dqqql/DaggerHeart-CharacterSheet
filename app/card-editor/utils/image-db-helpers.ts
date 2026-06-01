@@ -5,6 +5,11 @@
 
 import { db, ImageRecord, isIndexedDBAvailable } from '@/card/stores/image-service/database';
 
+export interface EditorImageReplacement {
+  key: string;
+  blob: Blob | File;
+}
+
 /**
  * Save an image file to IndexedDB (editorImages table)
  * @param cardId - Unique card identifier
@@ -118,6 +123,33 @@ export async function clearAllEditorImages(): Promise<void> {
   }
 
   await db.editorImages.clear();
+}
+
+/**
+ * Replace all editor images in a single transaction.
+ * @param images - Complete next image set for the editor
+ * @returns Promise<void>
+ */
+export async function replaceAllEditorImages(images: EditorImageReplacement[]): Promise<void> {
+  if (!isIndexedDBAvailable()) {
+    return;
+  }
+
+  const records: ImageRecord[] = images.map(({ key, blob }) => ({
+    key,
+    blob,
+    mimeType: blob.type,
+    size: blob.size,
+    createdAt: Date.now()
+  }));
+
+  await db.transaction('rw', db.editorImages, async () => {
+    await db.editorImages.clear();
+
+    for (const record of records) {
+      await db.editorImages.put(record);
+    }
+  });
 }
 
 /**

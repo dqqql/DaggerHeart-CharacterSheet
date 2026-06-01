@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useMemo, useRef } from "react"
+import dynamic from "next/dynamic"
 import CharacterSheet from "@/components/character-sheet"
 import CharacterSheetPageTwo from "@/components/character-sheet-page-two"
 import CharacterSheetPageThree from "@/components/character-sheet-page-ranger-companion"
@@ -11,16 +12,11 @@ import { showFadeNotification } from "@/components/ui/fade-notification"
 import { CardSelectionModal } from "@/components/modals/card-selection-modal"
 import { CharacterSheetPageFour, CharacterSheetPageFive } from "@/components/character-sheet-page-card-print"
 import ArmorTemplatePage from "@/components/character-sheet-page-iknis"
-import { CharacterCreationGuide } from "@/components/guide/character-creation-guide"
-import { CharacterManagementModal } from "@/components/modals/character-management-modal"
-import { CharacterCodeExportModal } from "@/components/modals/character-code-export-modal"
-import { SealDiceExportModal } from "@/components/modals/seal-dice-export-modal"
 import { useSheetStore, useCardActions } from "@/lib/sheet-store"
 import { PrintReadyChecker } from "@/components/print/print-ready-checker"
 import { PrintProvider } from "@/contexts/print-context"
 import { usePinnedCardsStore } from "@/lib/pinned-cards-store"
 import { PinnedCardWindow } from "@/components/ui/pinned-card-window"
-import { FloatingNotebook } from "@/components/notebook"
 import { useTextModeStore } from "@/lib/text-mode-store"
 import { useDualPageStore } from "@/lib/dual-page-store"
 import { registerPages, getTabPages } from "@/lib/page-registry"
@@ -29,7 +25,6 @@ import { BottomDock } from "@/components/layout/bottom-dock"
 import { PrintPageRenderer } from "@/components/print/print-page-renderer"
 import { SaveSwitcher } from "@/components/ui/save-switcher"
 import { Button } from "@/components/ui/button"
-import { AnnouncementModal } from "@/components/modals/announcement-modal"
 import { useAnnouncementStore } from "@/lib/announcement-store"
 import { getAnnouncements } from "@/lib/announcements"
 import { getLatestAnnouncementId } from "@/lib/announcement-index"
@@ -132,6 +127,46 @@ function getOfficialImagePackProgressView(progress: OfficialImagePackImportProgr
 import { useCharacterManagement } from "@/hooks/use-character-management"
 import { useExportHandlers } from "@/hooks/use-export-handlers"
 import PrintHelper from "./print-helper"
+
+const AnnouncementModal = dynamic(
+  () =>
+    import("@/components/modals/announcement-modal").then(
+      (mod) => mod.AnnouncementModal,
+    ),
+  { ssr: false },
+)
+const CharacterCreationGuide = dynamic(
+  () =>
+    import("@/components/guide/character-creation-guide").then(
+      (mod) => mod.CharacterCreationGuide,
+    ),
+  { ssr: false },
+)
+const CharacterManagementModal = dynamic(
+  () =>
+    import("@/components/modals/character-management-modal").then(
+      (mod) => mod.CharacterManagementModal,
+    ),
+  { ssr: false },
+)
+const CharacterCodeExportModal = dynamic(
+  () =>
+    import("@/components/modals/character-code-export-modal").then(
+      (mod) => mod.CharacterCodeExportModal,
+    ),
+  { ssr: false },
+)
+const SealDiceExportModal = dynamic(
+  () =>
+    import("@/components/modals/seal-dice-export-modal").then(
+      (mod) => mod.SealDiceExportModal,
+    ),
+  { ssr: false },
+)
+const FloatingNotebook = dynamic(
+  () => import("@/components/notebook").then((mod) => mod.FloatingNotebook),
+  { ssr: false },
+)
 
 // 注册所有页面
 registerPages([
@@ -1019,27 +1054,36 @@ export default function Home() {
       )}
 
       {/* 建卡指引组件 - 移到父组件 */}
-      <AnnouncementModal
-        announcements={announcements}
-        open={announcementModalOpen}
-        onOpenChange={setAnnouncementModalOpen}
-        onAcknowledge={handleAnnouncementAcknowledge}
-      />
+      {announcementModalOpen && (
+        <AnnouncementModal
+          announcements={announcements}
+          open={announcementModalOpen}
+          onOpenChange={setAnnouncementModalOpen}
+          onAcknowledge={handleAnnouncementAcknowledge}
+        />
+      )}
 
-      <CharacterCreationGuide isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
+      {isGuideOpen && (
+        <CharacterCreationGuide
+          isOpen={isGuideOpen}
+          onClose={() => setIsGuideOpen(false)}
+        />
+      )}
 
       {/* 存档管理模态框 */}
-      <CharacterManagementModal
-        isOpen={characterManagementModalOpen}
-        onClose={closeCharacterManagementModal}
-        characterList={characterList}
-        currentCharacterId={currentCharacterId}
-        onSwitchCharacter={switchToCharacter}
-        onCreateCharacter={createNewCharacterHandler}
-        onDeleteCharacter={deleteCharacterHandler}
-        onDuplicateCharacter={duplicateCharacterHandler}
-        onRenameCharacter={renameCharacterHandler}
-      />
+      {characterManagementModalOpen && (
+        <CharacterManagementModal
+          isOpen={characterManagementModalOpen}
+          onClose={closeCharacterManagementModal}
+          characterList={characterList}
+          currentCharacterId={currentCharacterId}
+          onSwitchCharacter={switchToCharacter}
+          onCreateCharacter={createNewCharacterHandler}
+          onDeleteCharacter={deleteCharacterHandler}
+          onDuplicateCharacter={duplicateCharacterHandler}
+          onRenameCharacter={renameCharacterHandler}
+        />
+      )}
 
       {/* 添加卡牌选择模态框 */}
       {pendingCardIndex !== null && (
@@ -1057,17 +1101,21 @@ export default function Home() {
       )}
 
       {/* 骰子导出模态框 */}
-      <CharacterCodeExportModal
-        isOpen={characterCodeExportModalOpen}
-        onClose={() => setCharacterCodeExportModalOpen(false)}
-        getCharacterCode={handleExportCharacterCode}
-      />
+      {characterCodeExportModalOpen && (
+        <CharacterCodeExportModal
+          isOpen={characterCodeExportModalOpen}
+          onClose={() => setCharacterCodeExportModalOpen(false)}
+          getCharacterCode={handleExportCharacterCode}
+        />
+      )}
 
-      <SealDiceExportModal
-        isOpen={sealDiceExportModalOpen}
-        onClose={() => setSealDiceExportModalOpen(false)}
-        sheetData={formData}
-      />
+      {sealDiceExportModalOpen && (
+        <SealDiceExportModal
+          isOpen={sealDiceExportModalOpen}
+          onClose={() => setSealDiceExportModalOpen(false)}
+          sheetData={formData}
+        />
+      )}
 
       {/* 钉住的卡牌窗口 - 全局渲染，不受页面切换影响 */}
       {pinnedCards.map((pinnedCard) => (
@@ -1078,7 +1126,7 @@ export default function Home() {
       ))}
 
       {/* 悬浮笔记本 */}
-      <FloatingNotebook />
+      {formData.notebook?.isOpen && <FloatingNotebook />}
     </main>
   )
 }

@@ -1,33 +1,64 @@
-import React from "react";
+export interface MarkdownRenderSection {
+    content: string;
+    isCentered: boolean;
+}
 
-// [input:10] -> <code data-type="input" data-value="10"></code>
-// [box:2] -> <code data-type="box" data-value="2"></code>
-// [checkbox] -> <code data-type="checkbox"></code>
-// [checkbox:3] -> <code data-type="checkbox" data-value="3"></code>
-// [center]内容[/center] -> <div class="text-center">内容</div>
+const CENTER_BLOCK_PATTERN = /\[center\]([\s\S]*?)\[\/center\]/gi;
+
+function transformInlineCustomSyntax(text: string): string {
+    return text
+        .replace(/\[(input|box):(\d+)\]/g, (_, type: string, value: string) => `\`card-${type}:${value}\``)
+        .replace(/\[(checkbox):(\d+)\]/g, (_, type: string, value: string) => `\`card-${type}:${value}\``)
+        .replace(/\[(checkbox)\]/g, (_, type: string) => `\`card-${type}\``);
+}
 
 export function transformCustomSyntax(text: string): string {
-    let transformedText = text;
+    return transformInlineCustomSyntax(text);
+}
 
-    // 处理 [center]...[/center]
-    transformedText = transformedText.replace(
-        /\[center\]([\s\S]*?)\[\/center\]/g,
-        '<div class="text-center">$1</div>'
-    );
+export function splitMarkdownRenderSections(text: string): MarkdownRenderSection[] {
+    const sections: MarkdownRenderSection[] = [];
+    let lastIndex = 0;
 
-    // 处理 [input:size], [box:size], [checkbox], [checkbox:count]
-    transformedText = transformedText.replace(
-        /\[(input|box):(\d+)\]/g,
-        '<code data-type="$1" data-value="$2"></code>'
-    );
-    transformedText = transformedText.replace(
-        /\[(checkbox):(\d+)\]/g,
-        '<code data-type="$1" data-value="$2"></code>'
-    );
-    transformedText = transformedText.replace(
-        /\[(checkbox)\]/g,
-        '<code data-type="$1"></code>'
-    );
+    for (const match of text.matchAll(CENTER_BLOCK_PATTERN)) {
+        const matchIndex = match.index ?? 0;
 
-    return transformedText;
+        if (matchIndex > lastIndex) {
+            sections.push({
+                content: transformInlineCustomSyntax(text.slice(lastIndex, matchIndex)),
+                isCentered: false,
+            });
+        }
+
+        sections.push({
+            content: transformInlineCustomSyntax(match[1] ?? ""),
+            isCentered: true,
+        });
+
+        lastIndex = matchIndex + match[0].length;
+    }
+
+    if (lastIndex < text.length) {
+        sections.push({
+            content: transformInlineCustomSyntax(text.slice(lastIndex)),
+            isCentered: false,
+        });
+    }
+
+    if (sections.length === 0) {
+        return [{ content: transformInlineCustomSyntax(text), isCentered: false }];
+    }
+
+    return sections.filter(section => section.content.length > 0);
+}
+
+export function normalizeLegacyHtmlToMarkdown(text: string): string {
+    if (!text) {
+        return text;
+    }
+
+    return text
+        .replace(/<br\s*\/?>/gi, "\n")
+        .replace(/<\/?strong>/gi, "**")
+        .replace(/<\/?em>/gi, "*");
 }

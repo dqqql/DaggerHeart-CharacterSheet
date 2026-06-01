@@ -4,7 +4,7 @@
  */
 
 import JSZip from 'jszip';
-import { saveImageToDB, clearAllEditorImages } from './image-db-helpers';
+import { replaceAllEditorImages } from './image-db-helpers';
 import type { CardPackageState } from '../types';
 
 /**
@@ -33,12 +33,10 @@ export async function importCardPackageWithImages(file: File): Promise<CardPacka
   const cardsText = await cardsFile.async('text');
   const cardsData = JSON.parse(cardsText);
 
-  // Clear existing editor images before importing
-  await clearAllEditorImages();
-
-  // Import images from images/ folder
+  // Stage images in memory and only swap them in after the full import succeeds
   const imagesFolder = zip.folder('images');
   const importedImageIds = new Set<string>();
+  const replacementImages: Array<{ key: string; blob: Blob }> = [];
 
   if (imagesFolder) {
     const imageFiles = Object.keys(zip.files).filter(name => name.startsWith('images/'));
@@ -47,22 +45,18 @@ export async function importCardPackageWithImages(file: File): Promise<CardPacka
     for (const filePath of imageFiles) {
       const file = zip.file(filePath);
       if (file && !file.dir) {
-        try {
-          const blob = await file.async('blob');
-          // Extract cardId from filename (remove 'images/' prefix and file extension)
-          const fileName = filePath.replace('images/', '');
-          const cardId = fileName.replace(/\.(webp|png|jpg|jpeg|gif|svg)$/i, '');
+        const blob = await file.async('blob');
+        // Extract cardId from filename (remove 'images/' prefix and file extension)
+        const fileName = filePath.replace('images/', '');
+        const cardId = fileName.replace(/\.(webp|png|jpg|jpeg|gif|svg)$/i, '');
 
-          await saveImageToDB(cardId, blob);
-          importedImageIds.add(cardId);
-          imageCount++;
-        } catch (error) {
-          console.warn(`[ZipImport] Failed to import image ${filePath}:`, error);
-        }
+        replacementImages.push({ key: cardId, blob });
+        importedImageIds.add(cardId);
+        imageCount++;
       }
     }
 
-    console.log(`[ZipImport] Imported ${imageCount} images`);
+    console.log(`[ZipImport] Staged ${imageCount} images`);
   }
 
   // Debug: log cards.json structure
@@ -128,6 +122,9 @@ export async function importCardPackageWithImages(file: File): Promise<CardPacka
     isModified: false,
     lastSaved: new Date()
   };
+
+  await replaceAllEditorImages(replacementImages);
+  console.log(`[ZipImport] Replaced editor image set with ${replacementImages.length} images`);
 
   return finalPackage;
 }
