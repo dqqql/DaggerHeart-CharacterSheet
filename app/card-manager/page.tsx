@@ -26,7 +26,8 @@ import {
   CARD_PACKAGE_IMPORT_ACCEPT,
   isCardPackageArchiveFileName,
 } from '@/card/utils/card-package-file'
-import { useUnifiedCardStore } from '@/card/stores/unified-card-store'
+import { STORAGE_KEYS, useUnifiedCardStore } from '@/card/stores/unified-card-store'
+import { getAllCharacterStorageKeys } from '@/lib/multi-character-storage'
 import { getBasePath, navigateToPage } from '@/lib/utils'
 import { DocumentModal } from '@/components/modals/document-modal'
 import userGuideContent from '@/public/自定义卡包指南和示例/用户指南.md'
@@ -35,6 +36,32 @@ import exampleJsonData from '@/public/自定义卡包指南和示例/神州战�
 
 // 将 JSON 对象转换为格式化的字符串
 const exampleJsonContent = JSON.stringify(exampleJsonData, null, 2)
+const PROJECT_LOCAL_STORAGE_KEYS = [
+  'announcement-storage',
+  'dual-page-storage',
+  'official-image-pack-storage',
+  'text-mode-storage',
+  STORAGE_KEYS.CONFIG,
+] as const
+
+function clearProjectLocalStorage(): string[] {
+  if (typeof window === 'undefined') {
+    return []
+  }
+
+  const keysToRemove = Array.from(
+    new Set([
+      ...getAllCharacterStorageKeys(),
+      ...PROJECT_LOCAL_STORAGE_KEYS,
+    ])
+  ).filter((key) => localStorage.getItem(key) !== null)
+
+  keysToRemove.forEach((key) => {
+    localStorage.removeItem(key)
+  })
+
+  return keysToRemove
+}
 
 interface ImportStatus {
   isImporting: boolean
@@ -288,11 +315,11 @@ export default function CardImportTestPage() {
     }
   }
 
-  // 清空所有localStorage数据
+  // 清空本项目的 localStorage 数据，避免误删同源下其他页面的键
   const handleClearAllLocalStorage = async () => {
-    if (confirm('⚠️ 危险操作确认 ⚠️\n\n确定要清空所有本地存储数据吗？\n\n这将删除：\n• 所有自定义卡牌\n• 内置卡牌缓存\n• 所有角色数据和角色卡\n• 其他所有本地数据\n\n此操作不可恢复！请确保您已备份重要数据。')) {
+    if (confirm('⚠️ 危险操作确认 ⚠️\n\n确定要清空本项目的本地数据吗？\n\n这将删除：\n• 所有自定义卡牌\n• 内置卡牌缓存\n• 所有角色数据和角色卡\n• 本项目的公告阅读状态等本地设置\n\n不会删除同源下其他页面的本地数据。\n\n此操作不可恢复！请确保您已备份重要数据。')) {
       const confirmationText = '删除全部本地数据'
-      const typedConfirmation = prompt(`此操作会永久删除所有角色存档和卡牌数据。\n\n如确实需要继续，请输入：${confirmationText}`)
+      const typedConfirmation = prompt(`此操作会永久删除本项目的角色存档、卡牌数据和相关本地设置。\n\n如确实需要继续，请输入：${confirmationText}`)
 
       if (typedConfirmation !== confirmationText) {
         alert('已取消强制初始化。')
@@ -304,8 +331,9 @@ export default function CardImportTestPage() {
         const store = useUnifiedCardStore.getState()
         await store.resetSystem()
 
-        // 清空其他非卡牌系统的 localStorage 数据
-        localStorage.clear()
+        // 仅补充清理项目自有的非卡牌 localStorage 键
+        const clearedKeys = clearProjectLocalStorage()
+        console.log('[CardManager] Cleared project-owned localStorage keys:', clearedKeys)
 
         // 重新初始化卡牌系统
         await store.initializeSystem()
@@ -313,7 +341,7 @@ export default function CardImportTestPage() {
         // 刷新数据显示
         refreshData()
 
-        alert('所有本地存储数据已清空！页面将自动刷新。')
+        alert('本项目本地数据已清空！页面将自动刷新。')
 
         // 延迟刷新页面以确保用户看到提示
         setTimeout(() => {

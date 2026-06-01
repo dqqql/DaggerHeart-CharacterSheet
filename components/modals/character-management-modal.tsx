@@ -1,9 +1,9 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { CharacterMetadata } from "@/lib/sheet-data"
-import { loadCharacterById, MAX_CHARACTERS } from "@/lib/multi-character-storage"
+import { loadCharacterDisplayNameById, MAX_CHARACTERS } from "@/lib/multi-character-storage"
 import { importCharacterFromHTMLFile } from "@/lib/html-importer"
 import { validateJSONCharacterData } from "@/lib/character-data-validator"
 import { useSheetStore } from "@/lib/sheet-store"
@@ -33,6 +33,7 @@ export function CharacterManagementModal({
     onRenameCharacter,
 }: CharacterManagementModalProps) {
     const { sheetData: formData, replaceSheetData } = useSheetStore()
+    const [characterDisplayNames, setCharacterDisplayNames] = useState<Record<string, string>>({})
     
     const onImportData = (data: any) => {
         // 数据迁移：为旧存档添加缺失字段
@@ -60,6 +61,22 @@ export function CharacterManagementModal({
             document.removeEventListener('keydown', handleKeyDown)
         }
     }, [isOpen, onClose])
+
+    useEffect(() => {
+        if (!isOpen) {
+            setCharacterDisplayNames({})
+            return
+        }
+
+        const nextDisplayNames = Object.fromEntries(
+            characterList.map((character) => [
+                character.id,
+                loadCharacterDisplayNameById(character.id) || "未填写",
+            ])
+        )
+
+        setCharacterDisplayNames(nextDisplayNames)
+    }, [characterList, isOpen])
 
     // 如果模态框没有打开，不渲染任何内容
     if (!isOpen) return null
@@ -154,7 +171,6 @@ export function CharacterManagementModal({
                     {/* 现有存档列表 - 可滚动区域 */}
                     <div className="space-y-2 overflow-y-auto flex-1 min-h-0">
                         {characterList.map((character, index) => {
-                            const characterData = loadCharacterById(character.id);
                             return (
                                 <div
                                     key={character.id}
@@ -170,7 +186,7 @@ export function CharacterManagementModal({
                                         <div className="flex-1">
                                             <div className="font-medium">{character.saveName}</div>
                                             <div className="text-sm text-gray-500">
-                                                角色: {characterData?.name || "未填写"} |
+                                                角色: {characterDisplayNames[character.id] || "未填写"} |
                                                 创建：{new Date(character.createdAt).toLocaleDateString()}
                                                 {character.lastModified && (
                                                     <span className="ml-2">

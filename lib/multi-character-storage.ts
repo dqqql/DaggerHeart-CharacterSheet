@@ -171,35 +171,100 @@ export function saveCharacterById(id: string, data: SheetData): string {
   }
 }
 
+function getStoredCharacterRecord(
+  id: string,
+  options: { logMissing?: boolean } = {}
+): { parsed: Record<string, unknown> } | null {
+  const { logMissing = true } = options;
+  const key = CHARACTER_DATA_PREFIX + id;
+  const stored = localStorage.getItem(key);
+
+  if (!stored) {
+    if (logMissing) {
+      console.warn(`[Character] No data found for ${id}`);
+    }
+    return null;
+  }
+
+  const parsed = JSON.parse(stored);
+  if (!parsed || typeof parsed !== "object") {
+    console.error(`[Character] Invalid data structure for ${id}`);
+    return null;
+  }
+
+  return {
+    parsed: parsed as Record<string, unknown>,
+  };
+}
+
+function cloneCharacterRecord<T>(value: T): T {
+  if (typeof structuredClone === "function") {
+    return structuredClone(value);
+  }
+
+  return JSON.parse(JSON.stringify(value)) as T;
+}
+
+function stableSerializeCharacterRecord(value: unknown): string {
+  if (Array.isArray(value)) {
+    return `[${value.map(stableSerializeCharacterRecord).join(",")}]`;
+  }
+
+  if (value && typeof value === "object") {
+    const entries = Object.entries(value as Record<string, unknown>).sort(([left], [right]) =>
+      left.localeCompare(right)
+    );
+
+    return `{${entries
+      .map(
+        ([key, nestedValue]) =>
+          `${JSON.stringify(key)}:${stableSerializeCharacterRecord(nestedValue)}`
+      )
+      .join(",")}}`;
+  }
+
+  return JSON.stringify(value);
+}
+
 export function loadCharacterById(id: string): SheetData | null {
   try {
-    const key = CHARACTER_DATA_PREFIX + id;
-    const stored = localStorage.getItem(key);
-
-    if (!stored) {
-      console.warn(`[Character] No data found for ${id}`);
+    const characterRecord = getStoredCharacterRecord(id);
+    if (!characterRecord) {
       return null;
     }
 
-    let parsed = JSON.parse(stored);
+    const parsedRecord = characterRecord.parsed;
+    const originalSerialized = stableSerializeCharacterRecord(parsedRecord);
 
-    // 基本验证
-    if (!parsed || typeof parsed !== 'object') {
-      console.error(`[Character] Invalid data structure for ${id}`);
-      return null;
-    }
-
-    // 应用数据迁移（迁移函数会自动判断是否需要迁移）
     console.log(`[Migration] Applying migrations for character ${id}`);
-    const migratedData = migrateSheetData(parsed);
-    
-    // 保存迁移后的数据（即使没有迁移也保存，确保数据一致性）
-    console.log(`[Migration] Saving processed data for character ${id}`);
-    saveCharacterById(id, migratedData);
-    
+    const migratedData = migrateSheetData(cloneCharacterRecord(parsedRecord));
+    const migratedSerialized = stableSerializeCharacterRecord(migratedData);
+
+    if (migratedSerialized !== originalSerialized) {
+      console.log(`[Migration] Saving migrated data for character ${id}`);
+      saveCharacterById(id, migratedData);
+    }
+
     return migratedData;
   } catch (error) {
     console.error(`[Character] Load failed for ${id} (Fast Fail):`, error);
+    return null;
+  }
+}
+
+export function loadCharacterDisplayNameById(id: string): string | null {
+  try {
+    const characterRecord = getStoredCharacterRecord(id, { logMissing: false });
+    if (!characterRecord) {
+      return null;
+    }
+
+    const displayName = characterRecord.parsed.name;
+    return typeof displayName === "string" && displayName.trim()
+      ? displayName.trim()
+      : null;
+  } catch (error) {
+    console.error(`[Character] Display name load failed for ${id} (Fast Fail):`, error);
     return null;
   }
 }
