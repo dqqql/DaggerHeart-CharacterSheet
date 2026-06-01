@@ -46,10 +46,11 @@ export function getCardImageUrl(
   isError: boolean = false
 ): string {
   const basePath = getBasePath();
+  const emptyCardUrl = `${basePath}/image/empty-card.webp`;
 
   // 如果出错或没有卡片，返回默认图片
   if (isError || !card) {
-    return `${basePath}/image/empty-card.webp`;
+    return emptyCardUrl;
   }
 
   // 获取要使用的 imageUrl
@@ -95,10 +96,11 @@ export async function getCardImageUrlAsync(
   isError: boolean = false
 ): Promise<string> {
   const basePath = getBasePath();
+  const emptyCardUrl = `${basePath}/image/empty-card.webp`;
 
   // 如果出错或没有卡片，返回默认图片
   if (isError || !card) {
-    return `${basePath}/image/empty-card.webp`;
+    return emptyCardUrl;
   }
 
   // Builtin cards now prefer the locally imported official image pack.
@@ -109,6 +111,10 @@ export async function getCardImageUrlAsync(
     } catch (error) {
       console.error(`[getCardImageUrlAsync] Failed to load official image:`, error);
     }
+
+    // Avoid probing missing /image/builtin-cards/* assets when the official
+    // pack is unavailable or incomplete.
+    return emptyCardUrl;
   }
 
   // Check if card has local image in IndexedDB
