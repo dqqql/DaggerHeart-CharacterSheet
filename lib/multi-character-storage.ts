@@ -149,9 +149,10 @@ export function removeCharacterFromMetadataList(characterId: string): void {
 }
 
 // ===== 单个角色数据管理 =====
-export function saveCharacterById(id: string, data: SheetData): void {
+export function saveCharacterById(id: string, data: SheetData): string {
   try {
     const key = CHARACTER_DATA_PREFIX + id;
+    const lastModified = new Date().toISOString();
     localStorage.setItem(key, JSON.stringify(data));
 
     // 不再同步更新元数据中的角色名称
@@ -159,9 +160,11 @@ export function saveCharacterById(id: string, data: SheetData): void {
     const list = loadCharacterList();
     const index = list.characters.findIndex(char => char.id === id);
     if (index !== -1) {
-      list.characters[index].lastModified = new Date().toISOString();
+      list.characters[index].lastModified = lastModified;
       saveCharacterList(list);
     }
+
+    return lastModified;
   } catch (error) {
     console.error(`[Character] Save failed for ${id} (Fast Fail):`, error);
     throw error; // 快速失败

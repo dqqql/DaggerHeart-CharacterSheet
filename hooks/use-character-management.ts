@@ -15,7 +15,7 @@ import {
   cleanupOrphanedCharacterData,
   recoverCharacterListFromDataKeys
 } from '@/lib/multi-character-storage'
-import { CharacterMetadata } from '@/lib/sheet-data'
+import { CharacterMetadata, SheetData } from '@/lib/sheet-data'
 import { defaultSheetData } from '@/lib/default-sheet-data'
 
 interface UseCharacterManagementProps {
@@ -280,6 +280,11 @@ export function useCharacterManagement({ isClient, setCurrentTabValue }: UseChar
     // 如果用户取消或输入空名称，则不创建存档
   }, [characterList.length, createNewCharacterHandler, setCurrentTabValue])
 
+  // 自动保存只透传给统一持久化入口，避免每个防抖周期都刷新顶层列表状态
+  const persistCharacterData = useCallback((characterId: string, data: SheetData) => {
+    return saveCharacterById(characterId, data)
+  }, [])
+
   return {
     // 状态
     currentCharacterId,
@@ -293,5 +298,6 @@ export function useCharacterManagement({ isClient, setCurrentTabValue }: UseChar
     duplicateCharacterHandler,
     renameCharacterHandler,
     handleQuickCreateArchive,
+    persistCharacterData,
   }
 }

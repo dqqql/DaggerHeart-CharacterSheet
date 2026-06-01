@@ -25,7 +25,6 @@ function TestHarness() {
         onQuickExportJSON={() => {}}
         onQuickExportPDF={() => {}}
         onQuickExportHTML={() => {}}
-        onExportDiagnostics={() => {}}
         onOpenCharacterManagement={() => {}}
         onQuickCreateArchive={() => {}}
         onQuickImportFromHTML={() => {}}
