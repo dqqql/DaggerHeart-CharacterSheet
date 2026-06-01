@@ -18,8 +18,12 @@ const ProfessionDescriptionSection: React.FC<ProfessionDescriptionSectionProps> 
             return String(child);
         }
 
-        if (React.isValidElement(child) && child.props && 'children' in child.props) {
-            return React.Children.toArray(child.props.children).map(extractText).join('');
+        if (React.isValidElement(child)) {
+            const childProps = child.props as { children?: React.ReactNode } | null;
+
+            if (childProps?.children !== undefined) {
+                return React.Children.toArray(childProps.children).map(extractText).join('');
+            }
         }
 
         return '';

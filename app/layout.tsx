@@ -2,7 +2,6 @@ import type React from "react"
 import type { Metadata } from "next"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
-import { CardSystemInitializer } from "@/components/card-system-initializer"
 import { Toaster } from "@/components/ui/toaster"
 import { FadeNotificationContainer } from "@/components/ui/fade-notification"
 import { ProgressModalProvider } from "@/components/ui/unified-progress-modal"
@@ -108,7 +107,6 @@ export default function RootLayout({
         <ChunkLoadErrorHandler />
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <ProgressModalProvider>
-            <CardSystemInitializer />
             <PrintHelper />
             {children}
             <Toaster />

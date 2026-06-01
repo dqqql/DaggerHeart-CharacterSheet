@@ -24,30 +24,33 @@
 | 为主页面低频功能做动态导入 / 代码分割 | 性能报告任务 3 | `app/page.tsx` 现在把 `AnnouncementModal`、`CharacterCreationGuide`、`CharacterManagementModal`、`CharacterCodeExportModal`、`SealDiceExportModal`、`FloatingNotebook` 改成了 `next/dynamic` 懒加载，并且只在对应打开状态下才渲染；`hooks/use-export-handlers.ts` 也把 `@/card` 与 `@/lib/html-exporter` 下沉到真正执行打印 / HTML 导出时再动态加载。 | 已执行相关单测：`tests/unit/character-code-export-modal.test.tsx` 通过；并用全量 `tsc --noEmit` 复核，本轮未新增这两处文件的类型错误。 | 当前还没有新的 bundle 体积或 hydration 对比基准；`PrintProvider`、`PrintReadyChecker`、`PrintPageRenderer` 等打印链路仍保留在页面文件中，只是继续受 `isPrintingAll` 分支门控。 |
 | 收紧文本到 HTML 的信任边界 | 稳健性报告任务 1 | `components/ui/card-markdown.tsx` 已移除外部 `rehypePlugins` 注入口，显式启用 `skipHtml` 并对白名单 URL 协议做收敛；`components/character-sheet-sections/profession-description-section.tsx` 不再走 `rehypeRaw`，而是通过 `lib/md-component.ts` 的受控分段与 token 渲染支持 `[center]` / `[input]` / `[box]` / `[checkbox]`；`components/guide/character-creation-guide.tsx` 也已移除 `dangerouslySetInnerHTML`，改由 `CardMarkdown` 渲染经 `guide-content.ts` 规范化后的内容。 | 已执行相关单测：`tests/unit/card-markdown.test.tsx`、`tests/unit/profession-description-section.test.tsx`、`tests/unit/character-creation-guide.test.tsx` 全部通过，覆盖原始 HTML、事件属性、`javascript:` 链接和自定义语法渲染。 | 当前策略是“剥离 / 忽略原始 HTML”，而不是支持富 HTML 白名单；如果未来要重新支持 HTML 标签，需要单独设计 allowlist sanitizer。 |
 | 将卡包编辑器导入改为事务式替换 | 稳健性报告任务 2 | `app/card-editor/utils/import-export.ts` 中 JSON 导入不再在解析前清空旧图；`app/card-editor/utils/zip-import.ts` 改为先把 ZIP 内图片暂存到内存、完整处理 `cards.json` 后再统一提交；`app/card-editor/utils/image-db-helpers.ts` 新增 `replaceAllEditorImages()`，在单个 IndexedDB transaction 中执行“清空旧图 + 写入新图”。 | 已执行相关单测：`tests/unit/card-package-import-transaction.test.ts` 通过，覆盖 JSON 成功后才替换、JSON 失败不替换、ZIP 成功后才提交、ZIP 失败不替换。 | 当前“事务式”覆盖的是编辑器图片库替换；`CardPackageState` 的最终写入仍由 store 层紧接着完成，因此还不是跨 IndexedDB 与页面状态的单一原子提交。 |
-| 执行首轮 verify-first 的依赖 / 死代码 / 调试产物清理 | 性能报告任务 6（部分完成） | 已确认 `components/ui/use-toast.ts` 无引用并删除，保留唯一入口 `hooks/use-toast.ts`；同时删除了已跟踪的 `.next-dev*.log`、`.playwright-mcp/*`、`.DS_Store` 以及 `components/ui/.unused-to-delete.txt`，并在 `.gitignore` 中补充了 `.next-dev*.log` 与 `.playwright-mcp/` 忽略规则。 | 已完成代码核对：当前仓库搜索只剩 `components/ui/toaster.tsx -> "@/hooks/use-toast"` 这一条 toast 入口；被点名的本地产物和重复 hook 已从工作区移除。 | 这一项目前只完成了低风险、可直接证明无消费者的子集；`package.json` 疑似未使用依赖、其余未引用 UI 组件等候选项仍需继续 verify-first，不应视为整项彻底关单。 |
+| 收缩卡牌系统初始化作用域 | 性能报告任务 5 | `CardSystemInitializer` 已从全局 [app/layout.tsx](./../app/layout.tsx) 移除，并下沉到 [app/page.tsx](./../app/page.tsx) 首页路由内；`/card-manager` 仍保留自身的显式 `initializeSystem()` 路径，因此本轮把全站初始化成本收缩到了真正使用角色表的入口。 | 新增 `tests/unit/card-system-init-scope.test.ts` 并通过，直接校验根布局不再引用 `CardSystemInitializer`、首页保留路由内初始化、`/card-manager` 继续保留页面内初始化；本轮 `corepack pnpm build` 也通过，确认静态构建未被该调整破坏。 | 当前仍缺少 `/gm-panel`、`/card-editor` 冷启动 trace 或 bundle / hydration 基准，因此“作用域已收缩”已确认，但“收益量化”仍待后续性能基准补齐。 |
+| 执行 verify-first 的依赖 / 死代码 / 调试产物清理 | 性能报告任务 6 | 在首轮低风险清理基础上，本轮继续删除已确认无消费者的直接依赖 `console`、`domain`、`rehype-raw`，同步更新 `pnpm-lock.yaml`；同时去除 `.gitignore` 中重复的 `docs/code-review-progress-zh.md` 规则，保留现有 `.next-dev*.log` 与 `.playwright-mcp/` 忽略项。 | 已执行全文检索，当前工作区未发现上述三个依赖的直接 import / require 命中；`corepack pnpm build` 与 `corepack pnpm exec tsc --noEmit` 均通过，说明本轮依赖收敛未破坏构建和类型校验。 | 当前 verify-first 仍主要依赖人工检索与现有测试兜底，尚未引入通用 unused-deps 自动审计；后续若继续清理依赖，仍建议逐项验证而不是批量裁剪。 |
+| 为高风险存储、导入、渲染链路补回归测试并收紧门禁 | 稳健性报告任务 5 | 本轮新增 `tests/unit/card-system-init-scope.test.ts`，并把高风险链路的核心回归测试固化为 `test:review-gates` 脚本；[.github/workflows/nextjs.yml](./../.github/workflows/nextjs.yml) 现已在构建前先执行 `pnpm test:review-gates`，将存储、导入、渲染与初始化作用域相关风险纳入显式 CI 阻断路径。 | `corepack pnpm test:review-gates` 通过，覆盖 `tests/unit/multi-character-storage.test.ts`、`tests/unit/use-character-management.test.tsx`、`tests/unit/card-markdown.test.tsx`、`tests/unit/profession-description-section.test.tsx`、`tests/unit/character-creation-guide.test.tsx`、`tests/unit/card-package-import-transaction.test.ts` 与 `tests/unit/card-system-init-scope.test.ts` 共 `13` 个测试；相关脚本已接入工作流。 | 当前门禁策略更偏“关键链路显式阻断”，而不是全仓覆盖率阈值治理；如果后续希望把标准再收紧，下一步更适合在现有 gate 基础上补 coverage threshold 或更细粒度的分层测试矩阵。 |
 
 ## 3. 仍待处理事项
 
 | 事项 | 主要来源 | 当前状态 | 说明 |
 | --- | --- | --- | --- |
-| 收缩卡牌系统初始化作用域 | 性能报告任务 5 | `待处理` | 仍未确认卡牌系统已从全局初始化改为按路由或按需初始化。 |
-| 继续执行 verify-first 的依赖、死代码与调试产物清理 | 性能报告任务 6 | `待处理` | 已完成首轮低风险清理，但 `package.json` 疑似未使用依赖、其余未引用 UI 组件等候选项尚未逐项验证，不宜直接全部删除。 |
-| 收缩卡牌系统初始化作用域 | 性能报告任务 5 | `待处理` | 仍未确认卡牌系统已从全局初始化改为按路由或按需初始化。 |
-| 为高风险存储、导入、渲染链路补回归测试并收紧门禁 | 稳健性报告任务 5 | `待处理` | 本轮已新增渲染链与导入链的直接回归测试，但高风险链路的整体门禁仍未补齐，也还没有覆盖率阈值或更明确的 CI 阻断策略。 |
+| 当前无仍待处理事项 | 性能报告任务 5、6；稳健性报告任务 5 | `已关单` | 截至 `2026-06-01`，进度文档中此前列出的三项待办已完成实现、验证与文档回填；后续若继续推进，将更多是性能量化、覆盖率治理或无关既有失败用例的单独治理。 |
 
 ## 4. 当前验证结果
 
-- `2026-06-01` 已执行并通过的相关单测：
-  - `tests/unit/multi-character-storage.test.ts`
-  - `tests/unit/character-management-modal.test.tsx`
-  - `tests/unit/use-character-management.test.tsx`
-  - `tests/unit/card-markdown.test.tsx`
-  - `tests/unit/profession-description-section.test.tsx`
-  - `tests/unit/character-creation-guide.test.tsx`
-  - `tests/unit/card-package-import-transaction.test.ts`
-  - `tests/unit/character-code-export-modal.test.tsx`
-- 上述 8 个测试文件共 `12` 个测试，本次执行结果均为通过。
-- `2026-06-01` 执行全量 `tsc --noEmit` 仍未通过；当前阻塞来自既有测试文件 `tests/unit/id-generator.test.ts`，报错为 `TS2353`，核心问题是传给 `ProfessionCard` 的对象字面量包含未知属性 `职业`。
+- `2026-06-01` 已执行并通过的关键回归与门禁验证：
+  - `corepack pnpm test:review-gates`
+    - 覆盖 `tests/unit/card-system-init-scope.test.ts`
+    - `tests/unit/multi-character-storage.test.ts`
+    - `tests/unit/use-character-management.test.tsx`
+    - `tests/unit/card-markdown.test.tsx`
+    - `tests/unit/profession-description-section.test.tsx`
+    - `tests/unit/character-creation-guide.test.tsx`
+    - `tests/unit/card-package-import-transaction.test.ts`
+  - 上述 review-gate 共 `7` 个测试文件、`13` 个测试，本次执行结果均为通过。
+  - `corepack pnpm exec tsc --noEmit`
+  - `corepack pnpm build`
+- `2026-06-01` 执行全量 `corepack pnpm test:run` 未完全通过；当前剩余失败集中在既有测试文件 `tests/unit/level-proficiency.test.ts` 中的 `2` 个断言，均与本轮三项待办无直接关联：
+  - “空等级不应触发伤害阈值计算”
+  - “空护甲阈值不应计算伤害阈值”
 
 ## 5. 当前剩余风险与测试缺口
 
@@ -57,7 +60,10 @@
 - 首页低频功能已经完成首轮懒加载和条件渲染收敛，但仍缺少 bundle 体积、parse/execute 时间和 hydration 时间的前后对比基准。
 - 文本渲染链已经默认剥离原始 HTML，但如果未来确实需要支持更多富文本标签，仍需单独设计 allowlist sanitizer，而不能重新打开 `rehypeRaw` / `dangerouslySetInnerHTML`。
 - 编辑器导入链已经避免“先清后验”的图片丢失窗口，但 `CardPackageState` 与 IndexedDB 图片集仍不是单事务跨层提交；若未来导入流程继续扩展，仍建议维持“先暂存、后提交”的边界。
-- 当前全量 TypeScript 校验仍被 `tests/unit/id-generator.test.ts` 的既有错误阻塞，因此虽然本轮相关单测通过，仓库层面的全量类型验证还不能作为“整体绿灯”信号。
+- 卡牌系统初始化作用域已经按最小方案收缩到首页路由，但还没有补 `/gm-panel`、`/card-editor` 冷启动 trace，因此当前更像“结构性整改已完成、收益量化待补”的状态。
+- verify-first 已完成当前文档点名候选的第二轮清理，但项目仍缺少自动 unused-deps 审计；未来如果新增依赖层清理，建议继续沿用“先检索 / 再删包 / 再跑构建”的 verify-first 流程。
+- 高风险链路现在已有显式 `test:review-gates` CI 阻断，但尚未建立覆盖率阈值或更完整的分层测试矩阵。
+- 当前 `corepack pnpm test:run` 仍被 `tests/unit/level-proficiency.test.ts` 的 `2` 个既有失败阻塞，因此虽然本轮 gate、类型检查与构建已通过，仓库层面的“全量单测绿灯”仍未完全恢复。
 
 ## 6. 当前结论
 
@@ -69,5 +75,7 @@
   - 为主页面低频功能做首轮动态导入 / 条件渲染收敛。
   - 收紧文本到 HTML 的信任边界。
   - 将卡包编辑器导入改为事务式替换，避免失败时先清空旧图片。
-  - 完成首轮 verify-first 的低风险清理（重复 toast hook、清理备忘与已跟踪本地产物）。
-- 其余事项仍应继续保留在进度文档中跟踪，待对应实现、验证或复审完成后再更新状态。
+  - 收缩卡牌系统初始化作用域，把全局初始化下沉到首页路由。
+  - 完成 verify-first 的第二轮依赖清理（移除无消费者直接依赖并整理忽略规则）。
+  - 为高风险存储、导入、渲染链路补齐 review-gate，并接入 GitHub Actions 构建前阻断。
+- 当前进度文档中原有三项待办已全部关单；本轮剩余需要后续单独跟踪的，主要是性能量化基准、覆盖率治理，以及与本轮整改无直接关联的 `level-proficiency` 既有失败用例。

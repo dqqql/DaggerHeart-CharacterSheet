@@ -8,6 +8,21 @@ import {
 } from '@/app/card-editor/utils/id-generator'
 import type { CardPackageState } from '@/app/card-editor/types'
 
+function createMockProfessionCard(id: string, 名称: string) {
+  return {
+    id,
+    名称,
+    简介: '',
+    领域1: 'Arcana',
+    领域2: 'Blade',
+    起始生命: 5,
+    起始闪避: 10,
+    起始物品: '',
+    希望特性: '',
+    职业特性: '',
+  }
+}
+
 describe('ID Generator - sanitizeIdString', () => {
   it('应该移除非法字符', () => {
     expect(sanitizeIdString('hello@world!')).toBe('hello-world')
@@ -155,7 +170,7 @@ describe('ID Generator - generateRobustCardId', () => {
     const id1 = generateRobustCardId('测试包', '张三', 'profession', mockPackage)
 
     // 添加到卡包中
-    mockPackage.profession = [{ id: id1, 名称: '测试', 职业: '战士', 简介: '', 效果: '', 类别: 0 }]
+    mockPackage.profession = [createMockProfessionCard(id1, '测试')]
 
     // 第二次生成，由于时间戳和随机数的存在，极少会冲突
     // 但如果冲突，应该添加额外后缀
@@ -242,8 +257,8 @@ describe('ID Generator - isIdUniqueInPackage', () => {
       variants: []
     },
     profession: [
-      { id: 'existing-id-1', 名称: '测试1', 职业: '战士', 简介: '', 效果: '', 类别: 0 },
-      { id: 'existing-id-2', 名称: '测试2', 职业: '法师', 简介: '', 效果: '', 类别: 0 }
+      createMockProfessionCard('existing-id-1', '测试1'),
+      createMockProfessionCard('existing-id-2', '测试2')
     ],
     ancestry: [],
     community: [],

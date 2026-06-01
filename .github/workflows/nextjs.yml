@@ -26,6 +26,8 @@ jobs:
           version: "latest"
       - name: Install dependencies
         run: pnpm install
+      - name: Run review-gate tests
+        run: pnpm test:review-gates
       - name: Build with Next.js
         run: pnpm build
       - name: Upload artifact

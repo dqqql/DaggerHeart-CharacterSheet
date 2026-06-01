@@ -34,6 +34,7 @@ import {
   type OfficialImagePackImportProgress,
 } from "@/lib/official-image-pack"
 import { useOfficialImagePackStore } from "@/lib/official-image-pack-store"
+import { CardSystemInitializer } from "@/components/card-system-initializer"
 
 // EyeIcon和EyeOffIcon已移除 - 现在使用PageVisibilityDropdown
 
@@ -855,6 +856,7 @@ export default function Home() {
   return (
     <main className={`min-w-0 w-full max-w-full mx-auto px-0 container ${isMobile ? 'pb-32' : 'pb-20'
       }`}>
+      <CardSystemInitializer />
 
       {/* 底部抽屉式卡牌展示 - 打印时隐藏 */}
       <div className="print:hidden">
