@@ -1,5 +1,12 @@
 [
   {
+    "id": "2026-06-03-ancestry-single-mode",
+    "title": "V2.0.1",
+    "file": "2026-06-03-ancestry-single-mode.md",
+    "publishedAt": "2026-06-03",
+    "priority": 1
+  },
+  {
     "id": "2026-05-30-character-code-v3",
     "title": "V2.0.0",
     "file": "2026-05-30-character-code-v3.md",
