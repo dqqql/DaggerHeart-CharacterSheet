@@ -8,6 +8,7 @@ export const defaultSheetData: SheetData = {
     proficiency: [true, false, false, false, false, false], // Default as boolean array, first one lit
     ancestry1: "",
     ancestry2: "",
+    mixedAncestryEnabled: false,
     profession: "",
     community: "",
     subclass: "",

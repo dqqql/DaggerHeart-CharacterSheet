@@ -1,25 +1,28 @@
 "use client"
 
 import type React from "react"
-import { useRef, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { useAutoResizeFont } from "@/hooks/use-auto-resize-font"
 import { useCardPreview } from "@/hooks/use-card-preview"
 import { SelectableCard } from "@/components/ui/selectable-card"
 import { useSheetStore } from "@/lib/sheet-store"
 import { PageHeader } from "@/components/page-header"
+import { getDisplayedCharacterCards } from "@/lib/ancestry-utils"
 
 interface HeaderSectionProps {
   onOpenProfessionModal: () => void;
   onOpenAncestryModal: (field: string) => void;
   onOpenCommunityModal: () => void;
   onOpenSubclassModal: () => void;
+  onToggleMixedAncestry: (enabled: boolean) => void;
 }
 
 export function HeaderSection({
   onOpenProfessionModal,
   onOpenAncestryModal,
   onOpenCommunityModal,
-  onOpenSubclassModal
+  onOpenSubclassModal,
+  onToggleMixedAncestry,
 }: HeaderSectionProps) {
   const { sheetData: formData, setSheetData, updateLevel } = useSheetStore()
   const containerRef = useRef<HTMLDivElement>(null)
@@ -122,13 +125,15 @@ export function HeaderSection({
     minFontSize: 10
   })
 
+  const displayCards = useMemo(() => getDisplayedCharacterCards(formData), [formData])
+
   const {
     hoveredCard,
     previewPosition,
     handleMouseEnter,
     handleMouseLeave
   } = useCardPreview({
-    cards: formData.cards || [],
+    cards: displayCards,
     containerRef
   })
 
@@ -242,7 +247,18 @@ export function HeaderSection({
         </div>
         <div className="flex gap-2">
           <div className="flex flex-col">
-            <label className="text-[9px] text-gray-300">种族</label>
+            <div className="flex items-center justify-between">
+              <label className="text-[9px] text-gray-300">种族</label>
+              <label className="flex items-center gap-1 text-[9px] text-gray-200 print:hidden">
+                <input
+                  type="checkbox"
+                  checked={!!formData.mixedAncestryEnabled}
+                  onChange={(e) => onToggleMixedAncestry(e.target.checked)}
+                  className="h-3 w-3 rounded border-gray-300 text-gray-800"
+                />
+                <span>混血</span>
+              </label>
+            </div>
             <div className="flex gap-1">
               {editingField === 'ancestry1Ref' ? (
                 <input
@@ -294,22 +310,35 @@ export function HeaderSection({
                 />
               ) : (
                   <div
-                    className="group relative flex w-24 border border-gray-400 rounded h-7 bg-white overflow-hidden"
-                    onMouseEnter={(e) => handleMouseEnter(formData.ancestry2Ref, e.currentTarget)}
+                    className={`group relative flex w-24 border border-gray-400 rounded h-7 bg-white overflow-hidden ${
+                      formData.mixedAncestryEnabled ? "" : "opacity-60"
+                    }`}
+                    onMouseEnter={(e) => {
+                      if (formData.mixedAncestryEnabled) {
+                        handleMouseEnter(formData.ancestry2Ref, e.currentTarget)
+                      }
+                    }}
                     onMouseLeave={handleMouseLeave}
                   >
                     <button
                       type="button"
+                      disabled={!formData.mixedAncestryEnabled}
                       onClick={() => openAncestryModal("ancestry2")}
-                      className="flex-1 text-gray-800 text-xs text-left px-2 py-0.5 hover:bg-gray-50 focus:outline-none truncate"
+                      className="flex-1 text-gray-800 text-xs text-left px-2 py-0.5 hover:bg-gray-50 focus:outline-none truncate disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500"
+                      title={formData.mixedAncestryEnabled ? undefined : "未开启混血时，此槽位会自动补全"}
                     >
-                      {formData.ancestry2Ref?.name || <span className="print:hidden">选择种族</span>}
+                      {formData.ancestry2Ref?.name || (
+                        <span className="print:hidden">
+                          {formData.mixedAncestryEnabled ? "选择种族" : "自动补全"}
+                        </span>
+                      )}
                     </button>
                     {formData.ancestry2Ref?.name && (
                       <button
                         type="button"
+                        disabled={!formData.mixedAncestryEnabled}
                         onClick={() => startEditingName('ancestry2Ref', formData.ancestry2Ref?.name || '')}
-                        className="absolute right-0 top-0 bottom-0 w-8 flex items-center justify-center bg-white hover:bg-gray-50 focus:outline-none print:hidden opacity-0 group-hover:opacity-100 transition-opacity border-l border-gray-300"
+                        className="absolute right-0 top-0 bottom-0 w-8 flex items-center justify-center bg-white hover:bg-gray-50 focus:outline-none print:hidden opacity-0 group-hover:opacity-100 transition-opacity border-l border-gray-300 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-0"
                         title="编辑名称"
                       >
                         <svg className="w-3 h-3 text-gray-500" viewBox="0 0 16 16" fill="currentColor">

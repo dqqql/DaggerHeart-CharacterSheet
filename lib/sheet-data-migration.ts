@@ -13,6 +13,7 @@
 import type { SheetData, AttributeValue } from './sheet-data'
 import { defaultSheetData } from './default-sheet-data'
 import { createEmptyCard, type StandardCard } from '@/card/card-types'
+import { inferMixedAncestryEnabled } from '@/lib/ancestry-utils'
 import {
   aggregatePresetEquipmentEffects,
   getProfessionBaseEvasion,
@@ -406,6 +407,22 @@ function migratePresetEquipmentAutoCalc(data: SheetData): SheetData {
 }
 
 /**
+ * 混血开关迁移
+ * 为旧存档补上 mixedAncestryEnabled，并根据旧的双种族搭配自动推断
+ */
+function migrateMixedAncestryEnabled(data: SheetData): SheetData {
+  if (typeof data.mixedAncestryEnabled === 'boolean') {
+    return data
+  }
+
+  const migrated = { ...data }
+  migrated.mixedAncestryEnabled = inferMixedAncestryEnabled(data)
+
+  console.log(`[Migration] Inferred mixedAncestryEnabled = ${migrated.mixedAncestryEnabled}`)
+  return migrated
+}
+
+/**
  * 清理废弃字段
  * 移除不再使用的字段，保持数据结构清洁
  */
@@ -458,6 +475,10 @@ export function migrateSheetData(
     migrated.presetEquipmentCalcVersion = 0
   }
 
+  if (!hasOwnField('mixedAncestryEnabled') || sourceData.mixedAncestryEnabled === undefined) {
+    migrated.mixedAncestryEnabled = undefined
+  }
+
   // 2. 应用各项迁移（按依赖顺序执行）
   migrated = migratePageVisibility(migrated)
   migrated = migrateInventoryCards(migrated)
@@ -479,6 +500,9 @@ export function migrateSheetData(
 
   // 预设装备自动计算迁移
   migrated = migratePresetEquipmentAutoCalc(migrated)
+
+  // 混血开关迁移
+  migrated = migrateMixedAncestryEnabled(migrated)
 
   // 3. 清理废弃字段（最后执行）
   migrated = cleanupDeprecatedFields(migrated)

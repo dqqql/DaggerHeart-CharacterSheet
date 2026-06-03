@@ -10,6 +10,7 @@ import { useUnifiedCardStore } from "@/card/stores/unified-card-store"
 import { BaseCardModal, ModalHeader, ModalFilterBar } from "./base"
 import { ContentStates, CardGrid } from "./display"
 import { MultiSelectFilter } from "./filters"
+import { getSingleAncestrySelectionCards } from "@/lib/ancestry-utils"
 
 interface GenericCardSelectionModalProps {
   isOpen: boolean
@@ -118,6 +119,8 @@ export function GenericCardSelectionModal({
         (card): card is StandardCard =>
           card.level === 1 && card.class === professionName
       )
+    } else if (cardType === CardType.Ancestry && !formData.mixedAncestryEnabled) {
+      initialCards = getSingleAncestrySelectionCards(initialCards)
     } else if (levelFilter) {
       initialCards = initialCards.filter(card => card.level === levelFilter)
     }

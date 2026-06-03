@@ -8,15 +8,30 @@ import { secondaryWeapons } from "@/data/list/secondary-weapon"
 import { CircleHelp } from "lucide-react"
 import {
   CardType, // Import CardType
+  getStandardCardsByType,
 } from "@/card"
 import { useCardStore } from "@/card/stores/unified-card-store"
 import { useSheetStore, useSheetArmorBoxes, useSheetProficiency, useSafeSheetData } from "@/lib/sheet-store"
+import {
+  buildSingleAncestrySelection,
+  clearAncestrySelection,
+  normalizeSingleAncestrySelection,
+} from "@/lib/ancestry-utils"
 
 // Import modals
 import { WeaponSelectionModal } from "@/components/modals/weapon-selection-modal"
 import { ArmorSelectionModal } from "@/components/modals/armor-selection-modal"
 import { GenericCardSelectionModal } from "@/components/modals/generic-card-selection-modal"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
 
 // Import sections
 import { HeaderSection } from "@/components/character-sheet-sections/header-section"
@@ -128,6 +143,7 @@ export default function CharacterSheet() {
   // 使用全局卡牌Store
   const store = useCardStore();
   const cardsLoading = store.loading;
+  const ancestryCards = store.initialized ? getStandardCardsByType(CardType.Ancestry) : []
 
   // 在组件加载时确保系统已初始化
   useEffect(() => {
@@ -143,6 +159,8 @@ export default function CharacterSheet() {
   const [armorModalOpen, setArmorModalOpen] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
   const [currentModal, setCurrentModal] = useState<{ type: "profession" | "ancestry" | "community" | "subclass"; field?: string; levelFilter?: number }>({ type: "profession" })
+  const [mixedAncestryNoticeOpen, setMixedAncestryNoticeOpen] = useState(false)
+  const [hasShownMixedAncestryNotice, setHasShownMixedAncestryNotice] = useState(false)
 
   const needsSyncRef = useRef(true)
   const initialRenderRef = useRef(true)
@@ -390,11 +408,16 @@ export default function CharacterSheet() {
 
     if (value === "none" || !value) {
       setFormData((prev) => {
-        const updatedFormData = {
-          ...prev,
-          [field]: "",
-          [refField]: { id: "", name: "" },
-        };
+        const updatedFormData = prev.mixedAncestryEnabled
+          ? {
+            ...prev,
+            [field]: "",
+            [refField]: { id: "", name: "" },
+          }
+          : {
+            ...prev,
+            ...clearAncestrySelection(),
+          };
         return updatedFormData;
       })
     } else {
@@ -405,17 +428,55 @@ export default function CharacterSheet() {
       const ancestryCard = store.getCardById(value);
       if (ancestryCard && ancestryCard.type === CardType.Ancestry) {
         setFormData((prev) => {
-          const updatedFormData = {
-            ...prev,
-            [field]: ancestryCard.id,
-            [refField]: { id: ancestryCard.id, name: ancestryCard.name },
-          };
+          const updatedFormData = prev.mixedAncestryEnabled
+            ? {
+              ...prev,
+              [field]: ancestryCard.id,
+              [refField]: { id: ancestryCard.id, name: ancestryCard.name },
+            }
+            : {
+              ...prev,
+              ...buildSingleAncestrySelection(ancestryCard, ancestryCards),
+            };
           return updatedFormData;
         })
       } else {
         console.warn(`handleAncestryChange: Ancestry card not found for ID: ${value} in field: ${field}`);
       }
     }
+    needsSyncRef.current = true
+  }
+
+  const handleMixedAncestryToggle = (enabled: boolean) => {
+    if (enabled && !safeFormData.mixedAncestryEnabled && !hasShownMixedAncestryNotice) {
+      setMixedAncestryNoticeOpen(true)
+      return
+    }
+
+    setFormData((prev) => {
+      if (enabled) {
+        return {
+          ...prev,
+          mixedAncestryEnabled: true,
+        }
+      }
+
+      return {
+        ...prev,
+        mixedAncestryEnabled: false,
+        ...normalizeSingleAncestrySelection(prev, ancestryCards),
+      }
+    })
+    needsSyncRef.current = true
+  }
+
+  const confirmEnableMixedAncestry = () => {
+    setHasShownMixedAncestryNotice(true)
+    setMixedAncestryNoticeOpen(false)
+    setFormData((prev) => ({
+      ...prev,
+      mixedAncestryEnabled: true,
+    }))
     needsSyncRef.current = true
   }
 
@@ -624,7 +685,8 @@ export default function CharacterSheet() {
   }
 
   const openProfessionModal = () => openGenericModal("profession")
-  const openAncestryModal = (field: string) => openGenericModal("ancestry", field, field === "ancestry1" ? 1 : 2)
+  const openAncestryModalForCurrentMode = (field: string) =>
+    openGenericModal("ancestry", field, safeFormData.mixedAncestryEnabled ? (field === "ancestry1" ? 1 : 2) : undefined)
   const openCommunityModal = () => openGenericModal("community")
   const openSubclassModal = () => openGenericModal("subclass") // Ensure subclass type is supported
 
@@ -676,9 +738,10 @@ export default function CharacterSheet() {
           {/* Header Section */}
           <HeaderSection
             onOpenProfessionModal={openProfessionModal}
-            onOpenAncestryModal={openAncestryModal}
+            onOpenAncestryModal={openAncestryModalForCurrentMode}
             onOpenCommunityModal={openCommunityModal}
             onOpenSubclassModal={openSubclassModal}
+            onToggleMixedAncestry={handleMixedAncestryToggle}
           />
 
           {/* Main Content - Two Section Layout */}
@@ -927,6 +990,25 @@ export default function CharacterSheet() {
           levelFilter={currentModal.levelFilter}
         />
       )}
+
+      <Dialog open={mixedAncestryNoticeOpen} onOpenChange={setMixedAncestryNoticeOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>开启混血规则</DialogTitle>
+            <DialogDescription>
+              请向GM确认开启了混血规则。
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setMixedAncestryNoticeOpen(false)}>
+              取消
+            </Button>
+            <Button onClick={confirmEnableMixedAncestry}>
+              确认开启
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

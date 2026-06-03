@@ -80,6 +80,7 @@ export const guideSteps: GuideStep[] = [
         id: "step3",
         title: "选择种族",
         content: (formData: any, allCardsList: StandardCard[] = []): string => {
+            const mixedAncestryEnabled = !!formData?.mixedAncestryEnabled;
             const ancestry1 = formData?.ancestry1;
             const ancestry2 = formData?.ancestry2;
             // Use allCardsList instead of synchronous API call
@@ -87,25 +88,37 @@ export const guideSteps: GuideStep[] = [
             const ancestry1Card = ancestryCards.find((card) => card.id === ancestry1);
             const ancestry2Card = ancestryCards.find((card) => card.id === ancestry2);
             if (!isFilled(ancestry1) && !isFilled(ancestry2)) {
-                return "请移动至职业选项框右侧，选择您的种族，您可以选择两种种族，并各自从中继承一项能力。";
+                return mixedAncestryEnabled
+                    ? "请移动至职业选项框右侧，先打开“混血”开关，再分别选择两张不同的种族特性卡。"
+                    : "请移动至职业选项框右侧，选择一个种族特性。默认规则下系统会自动补全同种族的另一张特性卡。";
             }
+
+            if (!mixedAncestryEnabled) {
+                const ancestryCard = ancestry1Card || ancestry2Card;
+                const ancestryClass = ancestryCard?.class || "未知种族";
+                const ancestryName1 = ancestry1Card?.name || ancestryCard?.name || "未知能力";
+                const ancestryName2 = ancestry2Card?.name || "未知能力";
+                return `您选择的种族是：${ancestryClass}。当前会自动获得两项种族特性：${ancestryName1}、${ancestryName2}。如果您想改成双种族角色，可以打开“混血”开关。`;
+            }
+
             // 只选择了一种
             if (Number(isFilled(ancestry1)) + Number(isFilled(ancestry2)) === 1) {
                 const ancestryCard = ancestry1Card || ancestry2Card;
                 const ancestryClass = ancestryCard?.class || "未知种族";
                 const ancestryName = ancestryCard?.name || "未知能力";
-                const ancestryHint = ancestryCard?.hint || "";
-                return `您已经选择的种族是：${ancestryClass}，您继承了对应的${ancestryName}能力。`;
+                return `您已经选择了一张混血种族特性：${ancestryClass}的${ancestryName}。请再选择另一张。`;
             }
             // 两种都选择了
             let ancestry1Class = ancestry1Card?.class || "未知种族";
             let ancestry2Class = ancestry2Card?.class || "未知种族";
-            let ancestry1Hint = ancestry1Card?.hint || "";
-            let ancestry2Hint = ancestry2Card?.hint || "";
-            return `您选择的种族是：${ancestry1Class} 和 ${ancestry2Class} \n请问您确定吗,您可以尝试切换种族，点击下一步按钮继续。`;
+            return `您开启了混血，并选择了：${ancestry1Class} 和 ${ancestry2Class}。\n请确认这是您想保留的双种族组合，然后点击下一步继续。`;
         },
         validation: (formData, allCards = []) => { // allCards might be unused
-            return isFilled(formData.ancestry1) && isFilled(formData.ancestry2);
+            if (formData?.mixedAncestryEnabled) {
+                return isFilled(formData.ancestry1) && isFilled(formData.ancestry2);
+            }
+
+            return isFilled(formData.ancestry1) || isFilled(formData.ancestry2);
         },
     },
     {

@@ -259,6 +259,7 @@ export interface SheetData {
   proficiency: number | boolean[]
   ancestry1?: string
   ancestry2?: string
+  mixedAncestryEnabled?: boolean
   profession: string
   community: string
   subclass?: string

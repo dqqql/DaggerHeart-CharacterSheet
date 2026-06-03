@@ -14,6 +14,7 @@ import type { CSSProperties, MouseEvent } from "react"
 import { usePinnedCardsStore } from "@/lib/pinned-cards-store"
 import { useCardActions } from "@/lib/sheet-store"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { getDisplayedCharacterCards } from "@/lib/ancestry-utils"
 
 interface CardDeckSectionProps {
   formData: SheetData
@@ -59,6 +60,7 @@ interface CardProps {
   onCardDelete: (index: number) => void;
   isTextMode: boolean;
   isMobile: boolean;
+  isSuppressed?: boolean;
 }
 
 function Card({
@@ -75,6 +77,7 @@ function Card({
   onCardDelete,
   isTextMode,
   isMobile,
+  isSuppressed = false,
 }: CardProps) {
   // Optimize: avoid unnecessary conversion if already StandardCard
   const standardCard = card && typeof card === 'object' && 'type' in card && 'name' in card 
@@ -105,7 +108,7 @@ function Card({
   return (
     <div
       className={`relative cursor-pointer transition-colors rounded-md p-1 h-16 group ${isSelected ? "border-3" : "border"
-        } ${getBorderColor(isSpecial)}`}
+        } ${getBorderColor(isSpecial)} ${isSuppressed ? "border-dashed opacity-60" : ""}`}
       onClick={() => onCardClick(index)}
       onContextMenu={(e) => onCardRightClick(index, e)}
       onMouseEnter={() => {
@@ -161,6 +164,12 @@ function Card({
           </span>
           <span className="truncate max-w-[33%]">{standardCard?.cardSelectDisplay?.item2 || ""}</span>
           <span className="truncate max-w-[33%]">{standardCard?.cardSelectDisplay?.item3 || ""}</span>
+        </div>
+      )}
+
+      {isSuppressed && !card?.name && (
+        <div className="flex h-full items-center justify-center text-[10px] text-gray-400">
+          混血关闭时隐藏
         </div>
       )}
 
@@ -237,11 +246,17 @@ export function CardDeckSection({
   const [cardSelectionModalOpen, setCardSelectionModalOpen] = useState(false)
   const [selectedCardIndex, setSelectedCardIndex] = useState<number | null>(null)
 
+  const getActualDeckCards = (deckType: 'focused' | 'inventory'): StandardCard[] => {
+    return deckType === 'focused'
+      ? (formData?.cards || [])
+      : (formData?.inventory_cards || [])
+  }
+
   // 获取当前卡组数据的辅助函数
   const getCurrentDeckCards = (deckType: 'focused' | 'inventory'): StandardCard[] => {
-    const sourceCards = deckType === 'focused' 
-      ? (formData?.cards || [])
-      : (formData?.inventory_cards || []);
+    const sourceCards = deckType === 'focused'
+      ? getDisplayedCharacterCards(formData)
+      : getActualDeckCards(deckType);
     
     // 确保数组长度为20，不足的用空卡填充
     const result = Array(20).fill(0).map((_, index) => 
@@ -428,7 +443,7 @@ export function CardDeckSection({
               }`}
             onClick={() => setActiveDeck('focused')}
           >
-            配置卡组 ({getCurrentDeckCards('focused').filter(card => !isEmptyCard(card)).length}/20)
+            配置卡组 ({getActualDeckCards('focused').filter(card => !isEmptyCard(card)).length}/20)
           </button>
           <button
             className={`px-3 py-1.5 text-sm font-medium border-b-2 transition-colors ${activeDeck === 'inventory'
@@ -437,7 +452,7 @@ export function CardDeckSection({
               }`}
             onClick={() => setActiveDeck('inventory')}
           >
-            宝库卡组 ({getCurrentDeckCards('inventory').filter(card => !isEmptyCard(card)).length}/20)
+            宝库卡组 ({getActualDeckCards('inventory').filter(card => !isEmptyCard(card)).length}/20)
           </button>
         </div>
 
@@ -457,6 +472,7 @@ export function CardDeckSection({
 
             const isSpecial = isSpecialSlot(index);
             const isSelected = false; // 移除选中状态，双卡组系统不需要此功能
+            const isSuppressed = activeDeck === 'focused' && !formData.mixedAncestryEnabled && index === 3
 
             return (
               <div
@@ -479,6 +495,7 @@ export function CardDeckSection({
                   onCardDelete={handleCardDelete}
                   isTextMode={isTextMode}
                   isMobile={isMobile}
+                  isSuppressed={isSuppressed}
                 />
               </div>
             );
