@@ -126,6 +126,13 @@ export function HeaderSection({
   })
 
   const displayCards = useMemo(() => getDisplayedCharacterCards(formData), [formData])
+  const ancestryCard1 = formData.cards?.[2]
+  const ancestryDisplayName1 = formData.mixedAncestryEnabled
+    ? formData.ancestry1Ref?.name
+    : ancestryCard1?.class || ""
+  const ancestryDisplayName2 = formData.mixedAncestryEnabled
+    ? formData.ancestry2Ref?.name
+    : ""
 
   const {
     hoveredCard,
@@ -281,9 +288,9 @@ export function HeaderSection({
                       onClick={() => openAncestryModal("ancestry1")}
                       className="flex-1 text-gray-800 text-xs text-left px-2 py-0.5 hover:bg-gray-50 focus:outline-none truncate"
                     >
-                      {formData.ancestry1Ref?.name || <span className="print:hidden">选择种族</span>}
+                      {ancestryDisplayName1 || <span className="print:hidden">选择种族</span>}
                     </button>
-                    {formData.ancestry1Ref?.name && (
+                    {formData.mixedAncestryEnabled && formData.ancestry1Ref?.name && (
                       <button
                         type="button"
                         onClick={() => startEditingName('ancestry1Ref', formData.ancestry1Ref?.name || '')}
@@ -327,13 +334,13 @@ export function HeaderSection({
                       className="flex-1 text-gray-800 text-xs text-left px-2 py-0.5 hover:bg-gray-50 focus:outline-none truncate disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500"
                       title={formData.mixedAncestryEnabled ? undefined : "未开启混血时，此槽位会自动补全"}
                     >
-                      {formData.ancestry2Ref?.name || (
+                      {ancestryDisplayName2 || (
                         <span className="print:hidden">
-                          {formData.mixedAncestryEnabled ? "选择种族" : "自动补全"}
+                          {formData.mixedAncestryEnabled ? "选择种族" : ""}
                         </span>
                       )}
                     </button>
-                    {formData.ancestry2Ref?.name && (
+                    {formData.mixedAncestryEnabled && formData.ancestry2Ref?.name && (
                       <button
                         type="button"
                         disabled={!formData.mixedAncestryEnabled}
