@@ -86,6 +86,10 @@ function isReferenceIntegrityWarning(error: ValidationError): boolean {
         return false;
     }
 
+    if (/^profession\[\d+\]\.名称$/.test(error.path)) {
+        return error.message.includes('有效的职业名称');
+    }
+
     if (/^profession\[\d+\]\.领域[12]$/.test(error.path)) {
         return error.message.includes('有效的领域名称');
     }

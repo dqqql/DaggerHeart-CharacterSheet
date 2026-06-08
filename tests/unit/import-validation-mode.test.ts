@@ -32,6 +32,27 @@ const subclassOnlyImportData: ImportData = {
   ],
 }
 
+const professionOnlyImportData: ImportData = {
+  name: 'Missing profession definitions',
+  customFieldDefinitions: {
+    domains: ['勇气', '贤者'],
+  },
+  profession: [
+    {
+      id: 'profession-missing-definition',
+      名称: '新职业',
+      简介: '测试职业',
+      领域1: '勇气',
+      领域2: '贤者',
+      起始生命: 6,
+      起始闪避: 1,
+      起始物品: '测试物品',
+      希望特性: '希望特性',
+      职业特性: '职业特性',
+    },
+  ],
+}
+
 describe('import validation modes', () => {
   beforeEach(() => {
     localStorage.clear()
@@ -83,6 +104,28 @@ describe('import validation modes', () => {
       expect.arrayContaining([
         expect.objectContaining({
           path: 'subclass[0].主职',
+        }),
+      ])
+    )
+  })
+
+  it('allows profession cards to bootstrap their own names in import_relaxed mode', () => {
+    const result = CardTypeValidator.validateImportData(professionOnlyImportData, {
+      ...validationContext,
+      customFields: {
+        ...validationContext.customFields,
+        domains: ['勇气', '贤者'],
+      },
+    }, {
+      mode: 'import_relaxed',
+    })
+
+    expect(result.isValid).toBe(true)
+    expect(result.errors).toHaveLength(0)
+    expect(result.warnings).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          path: 'profession[0].名称',
         }),
       ])
     )
