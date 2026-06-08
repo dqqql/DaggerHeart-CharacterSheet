@@ -22,6 +22,7 @@ import {
   CustomCardStats,
   BatchStats
 } from './store-types';
+import { normalizeImportMetadata } from '../import-metadata-normalizer';
 import { preprocessVariantFormat } from '../variant-format-preprocessor';
 import { createImageServiceActions } from './image-service/actions';
 
@@ -200,7 +201,7 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
     console.log('[UnifiedCardStore] Starting card import...');
 
     try {
-      const state = get();
+      let state = get();
 
       // Ensure system is initialized
       if (!state.initialized) {
@@ -208,6 +209,7 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
         if (!result.initialized) {
           throw new Error('Failed to initialize card system');
         }
+        state = get();
       }
 
       // 🎯 预处理新格式：将新的 variants 数组转换为旧的 variantTypes 对象
@@ -224,6 +226,9 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
           batchId: ''
         };
       }
+
+      const normalizedMetadata = normalizeImportMetadata(processedData);
+      const warnings = [...validation.warnings, ...normalizedMetadata.warnings];
 
       // Check for ID conflicts with existing cards
       const existingCards = Array.from(state.cards.values());
@@ -246,7 +251,7 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
           success: false,
           imported: 0,
           errors: [`Duplicate card IDs found: ${duplicateIds.join(', ')}`],
-          warnings: validation.warnings,
+          warnings,
           batchId: ''
         };
       }
@@ -258,7 +263,7 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
           success: false,
           imported: 0,
           errors: convertResult.errors || ['Conversion failed'],
-          warnings: validation.warnings,
+          warnings,
           batchId: ''
         };
       }
@@ -280,12 +285,8 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
         isSystemBatch: false,
         disabled: false,
         cardIds: convertResult.cards.map(card => card.id),
-        customFieldDefinitions: processedData.customFieldDefinitions ?
-          Object.fromEntries(
-            Object.entries(processedData.customFieldDefinitions)
-              .filter(([key, value]) => key !== 'variantTypes' && Array.isArray(value))
-          ) as CustomFieldsForBatch : undefined,
-        variantTypes: processedData.customFieldDefinitions?.variantTypes,
+        customFieldDefinitions: normalizedMetadata.customFieldDefinitions as CustomFieldsForBatch,
+        variantTypes: normalizedMetadata.variantTypes,
         imageCount: undefined,
         totalImageSize: undefined
       };
@@ -345,7 +346,7 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
         success: true,
         imported: convertResult.cards.length,
         errors: [],
-        warnings: validation.warnings,
+        warnings,
         batchId
       };
 
