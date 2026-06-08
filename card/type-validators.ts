@@ -30,6 +30,12 @@ export interface StructuredImportValidationResult {
     totalCards: number;
 }
 
+export type ImportValidationMode = 'strict' | 'import_relaxed';
+
+export interface ImportValidationOptions {
+    mode?: ImportValidationMode;
+}
+
 export interface TypeValidationResult {
     isValid: boolean;
     errors: ValidationError[];
@@ -591,23 +597,36 @@ export class CardTypeValidator {
     /**
      * 验证完整的导入数据 (传统方式，使用TemporaryCustomFields)
      */
-    static validateImportData(importData: any, tempFields?: TemporaryCustomFields): { isValid: boolean; errors: ValidationError[]; totalCards: number };
+    static validateImportData(
+        importData: any,
+        tempFields?: TemporaryCustomFields,
+        options?: ImportValidationOptions
+    ): StructuredImportValidationResult;
 
     /**
      * 验证完整的导入数据 (新方式，使用ValidationContext)
      */
-    static validateImportData(importData: any, context: ValidationContext): { isValid: boolean; errors: ValidationError[]; totalCards: number };
+    static validateImportData(
+        importData: any,
+        context: ValidationContext,
+        options?: ImportValidationOptions
+    ): StructuredImportValidationResult;
 
     /**
      * 验证完整的导入数据 (实现)
      */
-    static validateImportData(importData: any, contextOrTempFields?: ValidationContext | TemporaryCustomFields): { isValid: boolean; errors: ValidationError[]; totalCards: number } {
+    static validateImportData(
+        importData: any,
+        contextOrTempFields?: ValidationContext | TemporaryCustomFields,
+        options?: ImportValidationOptions
+    ): StructuredImportValidationResult {
         console.log('[DEBUG] CardTypeValidator.validateImportData 开始');
         console.log('[DEBUG] 输入数据结构:', Object.keys(importData));
         console.log('[DEBUG] 参数类型:', contextOrTempFields);
 
         const allErrors: ValidationError[] = [];
         let totalCards = 0;
+        const mode = options?.mode ?? 'strict';
 
         // 检测参数类型
         const isValidationContext = contextOrTempFields && 'customFields' in contextOrTempFields && 'variantTypes' in contextOrTempFields;
@@ -684,9 +703,14 @@ export class CardTypeValidator {
 
         console.log('[DEBUG] 验证完成，总卡牌数:', totalCards, '错误数:', allErrors.length);
 
+        if (mode === 'import_relaxed') {
+            return partitionImportValidationErrors(allErrors, totalCards);
+        }
+
         return {
             isValid: allErrors.length === 0,
             errors: allErrors,
+            warnings: [],
             totalCards
         };
     }

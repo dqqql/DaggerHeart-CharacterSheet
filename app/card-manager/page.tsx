@@ -210,6 +210,7 @@ export default function CardImportTestPage() {
             success: true,
             imported: dhcbResult.totalCards,
             errors: dhcbResult.validationErrors,
+            warnings: dhcbResult.warnings,
             fileName: file.name,
             batchId: dhcbResult.batchId,
             imageCount: dhcbResult.imageCount

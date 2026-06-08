@@ -50,7 +50,7 @@ class ValidationService implements CardValidationService {
       }
       
       // 使用现有的验证器
-      const validationResult = CardTypeValidator.validateImportData(importData, context)
+      const validationResult = CardTypeValidator.validateImportData(importData, context, { mode: 'strict' })
       
       // 添加种族卡配对验证
       const ancestryPairErrors = this.validateAncestryPairs(packageData.ancestry as any[] || [])

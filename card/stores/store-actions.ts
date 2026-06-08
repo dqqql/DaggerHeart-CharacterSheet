@@ -214,12 +214,13 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
       const processedData = preprocessVariantFormat(importData);
 
       // Validate import data
-      const validation = get()._validateImportData(processedData);
+      const validation = get()._validateImportData(processedData, 'import_relaxed');
       if (!validation.isValid) {
         return {
           success: false,
           imported: 0,
           errors: validation.errors,
+          warnings: validation.warnings,
           batchId: ''
         };
       }
@@ -245,6 +246,7 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
           success: false,
           imported: 0,
           errors: [`Duplicate card IDs found: ${duplicateIds.join(', ')}`],
+          warnings: validation.warnings,
           batchId: ''
         };
       }
@@ -256,6 +258,7 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
           success: false,
           imported: 0,
           errors: convertResult.errors || ['Conversion failed'],
+          warnings: validation.warnings,
           batchId: ''
         };
       }
@@ -342,6 +345,7 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
         success: true,
         imported: convertResult.cards.length,
         errors: [],
+        warnings: validation.warnings,
         batchId
       };
 
@@ -351,6 +355,7 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
         success: false,
         imported: 0,
         errors: [error instanceof Error ? error.message : 'Import failed'],
+        warnings: [],
         batchId: ''
       };
     }
@@ -1541,13 +1546,14 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
     }
   },
 
-  _validateImportData: (importData: ImportData) => {
+  _validateImportData: (importData: ImportData, mode: 'strict' | 'import_relaxed' = 'strict') => {
     const errors: string[] = [];
+    const warnings: string[] = [];
 
     // Basic validation
     if (!importData || typeof importData !== 'object') {
       errors.push('Invalid import data format');
-      return { isValid: false, errors };
+      return { isValid: false, errors, warnings };
     }
 
     // Check if at least one card type is present
@@ -1628,14 +1634,14 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
       };
 
       // Validate using the original system's validator
-      const validationResult = CardTypeValidator.validateImportData(importData, validationContext);
+      const validationResult = CardTypeValidator.validateImportData(importData, validationContext, { mode });
 
-      if (!validationResult.isValid) {
-        // Convert validation errors to simple error messages
-        validationResult.errors.forEach((error: any) => {
-          errors.push(`${error.path}: ${error.message}`);
-        });
-      }
+      validationResult.errors.forEach((error: any) => {
+        errors.push(`${error.path}: ${error.message}`);
+      });
+      validationResult.warnings.forEach((warning: any) => {
+        warnings.push(`${warning.path}: ${warning.message}`);
+      });
     } catch (error) {
       console.warn('[UnifiedCardStore] Failed to use advanced validation, falling back to basic validation:', error);
 
@@ -1654,7 +1660,8 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
 
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
+      warnings
     };
   }
 });

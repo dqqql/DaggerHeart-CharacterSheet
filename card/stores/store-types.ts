@@ -266,7 +266,7 @@ export interface UnifiedCardActions {
   _computeStats: () => CustomCardStats;
   _importBuiltinCards: (jsonCardPack: any, previousDisabledStatus?: boolean) => Promise<void>;
   _convertImportData: (importData: ImportData) => Promise<{ success: boolean; cards: ExtendedStandardCard[]; errors?: string[] }>;
-  _validateImportData: (importData: ImportData) => { isValid: boolean; errors: string[] };
+  _validateImportData: (importData: ImportData, mode?: 'strict' | 'import_relaxed') => { isValid: boolean; errors: string[]; warnings: string[] };
   _preprocessCardImages: () => void;
   _inferCardImageUrl: (card: ExtendedStandardCard) => string | null;
 }
