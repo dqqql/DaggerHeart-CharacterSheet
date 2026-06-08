@@ -29,6 +29,13 @@ type VariantAccumulator = {
   levels: number[]
 }
 
+type NormalizedDefinitionCategory =
+  | 'professions'
+  | 'ancestries'
+  | 'communities'
+  | 'domains'
+  | 'variants'
+
 function pushUnique(target: string[], value: unknown) {
   if (typeof value !== 'string') {
     return
@@ -55,6 +62,22 @@ function readDefinitionValues(definitions: ImportData['customFieldDefinitions'],
   })
 
   return values
+}
+
+function collectMissingValues(derived: string[], declared: string[]) {
+  return derived.filter((value) => !declared.includes(value))
+}
+
+function joinValues(values: string[]) {
+  return values.join('、')
+}
+
+function createAutoFilledDefinitionWarning(parts: string[]) {
+  if (parts.length === 0) {
+    return null
+  }
+
+  return `以下定义未在导入文件中预先声明，系统已根据卡牌内容自动补齐：${parts.join('；')}。`
 }
 
 function collectVariantTypes(importData: ImportData) {
@@ -108,39 +131,63 @@ function toVariantTypeDefinition(accumulator: VariantAccumulator, existing?: Var
 export function normalizeImportMetadata(importData: ImportData): NormalizedImportMetadata {
   const definitions = importData.customFieldDefinitions
 
-  const professions = readDefinitionValues(definitions, ['professions', 'profession'])
-  const ancestries = readDefinitionValues(definitions, ['ancestries', 'ancestry'])
-  const communities = readDefinitionValues(definitions, ['communities', 'community'])
-  const domains = readDefinitionValues(definitions, ['domains', 'domain'])
-  const variants = readDefinitionValues(definitions, ['variants', 'variant'])
+  const declaredDefinitions: Record<NormalizedDefinitionCategory, string[]> = {
+    professions: readDefinitionValues(definitions, ['professions', 'profession']),
+    ancestries: readDefinitionValues(definitions, ['ancestries', 'ancestry']),
+    communities: readDefinitionValues(definitions, ['communities', 'community']),
+    domains: readDefinitionValues(definitions, ['domains', 'domain']),
+    variants: readDefinitionValues(definitions, ['variants', 'variant']),
+  }
+
+  const professions = [...declaredDefinitions.professions]
+  const ancestries = [...declaredDefinitions.ancestries]
+  const communities = [...declaredDefinitions.communities]
+  const domains = [...declaredDefinitions.domains]
+  const variants = [...declaredDefinitions.variants]
+  const professionNamesFromCards: string[] = []
+  const subclassMainProfessions: string[] = []
+  const ancestryNamesFromCards: string[] = []
+  const communityNamesFromCards: string[] = []
+  const domainNamesFromCards: string[] = []
 
   ;(importData.profession ?? []).forEach((card) => {
+    pushUnique(professionNamesFromCards, card.名称)
     pushUnique(professions, card.名称)
+    pushUnique(domainNamesFromCards, card.领域1)
+    pushUnique(domainNamesFromCards, card.领域2)
     pushUnique(domains, card.领域1)
     pushUnique(domains, card.领域2)
   })
 
   ;(importData.subclass ?? []).forEach((card) => {
+    pushUnique(subclassMainProfessions, card.主职)
     pushUnique(professions, card.主职)
   })
 
   ;(importData.ancestry ?? []).forEach((card) => {
+    pushUnique(ancestryNamesFromCards, card.种族)
     pushUnique(ancestries, card.种族)
   })
 
   ;(importData.community ?? []).forEach((card) => {
+    pushUnique(communityNamesFromCards, card.名称)
     pushUnique(communities, card.名称)
   })
 
   ;(importData.domain ?? []).forEach((card) => {
+    pushUnique(domainNamesFromCards, card.领域)
     pushUnique(domains, card.领域)
   })
 
   const collectedVariantTypes = collectVariantTypes(importData)
+  const existingVariantTypes = definitions?.variantTypes ?? {}
+  const declaredVariantTypes = [...new Set([...declaredDefinitions.variants, ...Object.keys(existingVariantTypes)])]
+  const autoCreatedVariantTypes = [...collectedVariantTypes.keys()].filter(
+    (type) => !declaredVariantTypes.includes(type)
+  )
   collectedVariantTypes.forEach((_, type) => pushUnique(variants, type))
 
   const variantTypes: Record<string, VariantTypeDefinition> = {}
-  const existingVariantTypes = definitions?.variantTypes ?? {}
 
   Object.entries(existingVariantTypes).forEach(([type, definition]) => {
     variantTypes[type] = toVariantTypeDefinition(
@@ -154,6 +201,51 @@ export function normalizeImportMetadata(importData: ImportData): NormalizedImpor
     variantTypes[type] = toVariantTypeDefinition(accumulator)
   })
 
+  const missingSubclassMainProfessions = collectMissingValues(
+    subclassMainProfessions,
+    declaredDefinitions.professions
+  )
+  const autoFilledProfessions = collectMissingValues(
+    professionNamesFromCards,
+    declaredDefinitions.professions
+  ).filter((value) => !missingSubclassMainProfessions.includes(value))
+  const autoFilledAncestries = collectMissingValues(
+    ancestryNamesFromCards,
+    declaredDefinitions.ancestries
+  )
+  const autoFilledCommunities = collectMissingValues(
+    communityNamesFromCards,
+    declaredDefinitions.communities
+  )
+  const autoFilledDomains = collectMissingValues(domainNamesFromCards, declaredDefinitions.domains)
+
+  const warnings: string[] = []
+
+  if (missingSubclassMainProfessions.length > 0) {
+    warnings.push(
+      `有子职业引用了未预先声明的主职：${joinValues(missingSubclassMainProfessions)}。系统已按卡牌内容继续导入，并补齐这些主职定义。`
+    )
+  }
+
+  if (autoCreatedVariantTypes.length > 0) {
+    warnings.push(
+      `发现未预先定义的变体类型：${joinValues(autoCreatedVariantTypes)}。系统已根据对应卡牌内容自动建立这些类型。`
+    )
+  }
+
+  const autoFilledDefinitionWarning = createAutoFilledDefinitionWarning(
+    [
+      autoFilledProfessions.length > 0 ? `职业：${joinValues(autoFilledProfessions)}` : null,
+      autoFilledDomains.length > 0 ? `领域：${joinValues(autoFilledDomains)}` : null,
+      autoFilledAncestries.length > 0 ? `种族：${joinValues(autoFilledAncestries)}` : null,
+      autoFilledCommunities.length > 0 ? `社群：${joinValues(autoFilledCommunities)}` : null,
+    ].filter((value): value is string => value !== null)
+  )
+
+  if (autoFilledDefinitionWarning) {
+    warnings.push(autoFilledDefinitionWarning)
+  }
+
   return {
     customFieldDefinitions: {
       professions,
@@ -163,6 +255,6 @@ export function normalizeImportMetadata(importData: ImportData): NormalizedImpor
       variants,
     },
     variantTypes,
-    warnings: [],
+    warnings,
   }
 }

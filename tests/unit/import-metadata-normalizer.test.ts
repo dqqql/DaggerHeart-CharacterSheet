@@ -121,6 +121,10 @@ describe('normalizeImportMetadata', () => {
         levelRange: [2, 2],
       },
     })
-    expect(result.warnings).toEqual([])
+    expect(result.warnings).toEqual([
+      '有子职业引用了未预先声明的主职：秘术师。系统已按卡牌内容继续导入，并补齐这些主职定义。',
+      '发现未预先定义的变体类型：圣器。系统已根据对应卡牌内容自动建立这些类型。',
+      '以下定义未在导入文件中预先声明，系统已根据卡牌内容自动补齐：职业：夜行者；领域：暗影、风暴；种族：月裔；社群：流亡者。',
+    ])
   })
 })

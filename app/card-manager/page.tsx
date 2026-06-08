@@ -21,7 +21,7 @@ import {
   type ImportResult,
   type ExtendedStandardCard
 } from '@/card/index'
-import { importDhcbCardPackage, type DhcbImportResult } from '@/card/utils/dhcb-importer'
+import { DhcbImportError, importDhcbCardPackage } from '@/card/utils/dhcb-importer'
 import {
   CARD_PACKAGE_IMPORT_ACCEPT,
   isCardPackageArchiveFileName,
@@ -73,6 +73,88 @@ interface ImportStatus {
 interface ImportResultWithFileName extends ImportResult {
   fileName: string
   imageCount?: number
+}
+
+type DisplayImportResult = ImportResult | ImportResultWithFileName
+
+function getResultWarnings(result: DisplayImportResult) {
+  return result.warnings ?? []
+}
+
+function getResultImageErrors(result: DisplayImportResult) {
+  return result.imageErrors ?? []
+}
+
+function hasResultHints(result: DisplayImportResult) {
+  return getResultWarnings(result).length > 0 || getResultImageErrors(result).length > 0
+}
+
+function getResultContainerClass(result: DisplayImportResult) {
+  if (!result.success) {
+    return 'bg-red-50 border border-red-200'
+  }
+
+  if (hasResultHints(result)) {
+    return 'bg-amber-50 border border-amber-200'
+  }
+
+  return 'bg-green-50 border border-green-200'
+}
+
+function getResultTitleClass(result: DisplayImportResult) {
+  if (!result.success) {
+    return 'text-red-700'
+  }
+
+  if (hasResultHints(result)) {
+    return 'text-amber-700'
+  }
+
+  return 'text-green-700'
+}
+
+function getResultSummaryClass(result: DisplayImportResult) {
+  if (!result.success) {
+    return 'text-red-600'
+  }
+
+  if (hasResultHints(result)) {
+    return 'text-amber-700'
+  }
+
+  return 'text-green-600'
+}
+
+function getResultTitle(result: DisplayImportResult) {
+  if (!result.success) {
+    return '导入失败'
+  }
+
+  if (hasResultHints(result)) {
+    return '导入成功，但有以下提示'
+  }
+
+  return '导入成功'
+}
+
+function buildFailedDhcbResult(fileName: string, error: unknown): ImportResultWithFileName {
+  if (error instanceof DhcbImportError) {
+    return {
+      success: false,
+      imported: 0,
+      errors: error.validationErrors.length > 0 ? error.validationErrors : [error.message],
+      warnings: error.warnings,
+      imageErrors: error.imageErrors,
+      fileName,
+    }
+  }
+
+  return {
+    success: false,
+    imported: 0,
+    errors: [error instanceof Error ? error.message : '文件解析失败'],
+    fileName,
+  }
 }
 
 export default function CardImportTestPage() {
@@ -211,6 +293,7 @@ export default function CardImportTestPage() {
             imported: dhcbResult.totalCards,
             errors: dhcbResult.validationErrors,
             warnings: dhcbResult.warnings,
+            imageErrors: dhcbResult.imageErrors,
             fileName: file.name,
             batchId: dhcbResult.batchId,
             imageCount: dhcbResult.imageCount
@@ -224,12 +307,16 @@ export default function CardImportTestPage() {
           if (!result.success) anyError = true
         }
       } catch (error) {
-        allResults.push({
-          success: false,
-          imported: 0,
-          errors: [error instanceof Error ? error.message : '文件解析失败'],
-          fileName: file.name
-        })
+        allResults.push(
+          isCardPackageArchiveFileName(file.name)
+            ? buildFailedDhcbResult(file.name, error)
+            : {
+                success: false,
+                imported: 0,
+                errors: [error instanceof Error ? error.message : '文件解析失败'],
+                fileName: file.name
+              }
+        )
         anyError = true
       }
     }
@@ -352,6 +439,81 @@ export default function CardImportTestPage() {
         console.error('清空localStorage数据失败:', error)
       }
     }
+  }
+
+  const renderIssueSection = (
+    title: string,
+    items: string[] | undefined,
+    tone: 'warning' | 'error'
+  ) => {
+    if (!items || items.length === 0) {
+      return null
+    }
+
+    const titleClass = tone === 'warning' ? 'text-amber-700' : 'text-red-600'
+    const listClass = tone === 'warning' ? 'text-amber-700' : 'text-red-600'
+
+    return (
+      <div className="mt-2">
+        <p className={`${titleClass} text-sm font-medium mb-1`}>{title}</p>
+        <ul className={`${listClass} text-sm list-disc list-inside`}>
+          {items.map((item, index) => (
+            <li key={`${title}-${index}`}>{item}</li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+
+  const renderImportResultCard = (result: DisplayImportResult, key: React.Key) => {
+    const titleClass = getResultTitleClass(result)
+    const summaryClass = getResultSummaryClass(result)
+
+    return (
+      <div key={key} className={`p-3 rounded-lg ${getResultContainerClass(result)}`}>
+        <div className="flex items-center gap-2 mb-2">
+          {result.success ? (
+            <CheckCircle className={`h-4 w-4 ${hasResultHints(result) ? 'text-amber-600' : 'text-green-600'}`} />
+          ) : (
+            <XCircle className="h-4 w-4 text-red-600" />
+          )}
+          <span className={`font-medium ${titleClass}`}>
+            {getResultTitle(result)}
+          </span>
+          {'fileName' in result && (
+            <span className="ml-2 text-xs text-muted-foreground">{result.fileName}</span>
+          )}
+        </div>
+        {result.success && (
+          <div className="space-y-1">
+            <p className={`${summaryClass} text-sm`}>
+              ✅ 成功导入 {result.imported} 张卡牌
+              {result.batchId && ` (批次ID: ${result.batchId})`}
+            </p>
+            {'imageCount' in result && result.imageCount !== undefined && result.imageCount > 0 && (
+              <p className={`${summaryClass} text-sm`}>
+                🖼️ 导入 {result.imageCount} 张图片
+              </p>
+            )}
+          </div>
+        )}
+        {renderIssueSection('提示信息：', getResultWarnings(result), 'warning')}
+        {renderIssueSection('图片处理问题：', getResultImageErrors(result), 'warning')}
+        {renderIssueSection('错误信息：', result.errors, 'error')}
+        {result.duplicateIds && result.duplicateIds.length > 0 && (
+          <div className="mt-2">
+            <p className="text-red-600 text-sm font-medium mb-1">重复的ID：</p>
+            <div className="flex flex-wrap gap-1">
+              {result.duplicateIds.map((id, index) => (
+                <Badge key={index} variant="destructive" className="text-xs">
+                  {id}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    )
   }
 
   return (
@@ -486,114 +648,12 @@ export default function CardImportTestPage() {
               {Array.isArray(importStatus.result) ? (
                 <div className="space-y-2">
                   {(importStatus.result as ImportResultWithFileName[]).map((res, idx) => (
-                    <div key={idx} className={`p-3 rounded-lg ${res.success ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'
-                      }`}>
-                      <div className="flex items-center gap-2 mb-2">
-                        {res.success ? (
-                          <CheckCircle className="h-4 w-4 text-green-600" />
-                        ) : (
-                          <XCircle className="h-4 w-4 text-red-600" />
-                        )}
-                        <span className={`font-medium ${res.success ? 'text-green-700' : 'text-red-700'
-                          }`}>
-                          {res.success ? '导入成功' : '导入失败'}
-                        </span>
-                        <span className="ml-2 text-xs text-muted-foreground">{res.fileName}</span>
-                      </div>
-                      {res.success && (
-                        <div className="space-y-1">
-                          <p className="text-green-600 text-sm">
-                            ✅ 成功导入 {res.imported} 张卡牌
-                            {res.batchId && ` (批次ID: ${res.batchId})`}
-                          </p>
-                          {res.imageCount !== undefined && res.imageCount > 0 && (
-                            <p className="text-green-600 text-sm">
-                              🖼️ 导入 {res.imageCount} 张图片
-                            </p>
-                          )}
-                        </div>
-                      )}
-                      {res.errors && res.errors.length > 0 && (
-                        <div className="mt-2">
-                          <p className="text-red-600 text-sm font-medium mb-1">错误信息：</p>
-                          <ul className="text-red-600 text-sm list-disc list-inside">
-                            {res.errors.map((error: string, i: number) => (
-                              <li key={i}>{error}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                      {res.duplicateIds && res.duplicateIds.length > 0 && (
-                        <div className="mt-2">
-                          <p className="text-red-600 text-sm font-medium mb-1">重复的ID：</p>
-                          <div className="flex flex-wrap gap-1">
-                            {res.duplicateIds.map((id: string, i: number) => (
-                              <Badge key={i} variant="destructive" className="text-xs">
-                                {id}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                    renderImportResultCard(res, idx)
                   ))}
                 </div>
               ) : (
                 importStatus.result && (
-                  <div className={`p-3 rounded-lg ${importStatus.result.success
-                    ? 'bg-green-50 border border-green-200'
-                    : 'bg-red-50 border border-red-200'
-                    }`}>
-                    <div className="flex items-center gap-2 mb-2">
-                      {importStatus.result.success ? (
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                      ) : (
-                        <XCircle className="h-4 w-4 text-red-600" />
-                      )}
-                      <span className={`font-medium ${importStatus.result.success ? 'text-green-700' : 'text-red-700'
-                        }`}>
-                        {importStatus.result.success ? '导入成功' : '导入失败'}
-                      </span>
-                      {'fileName' in importStatus.result && (
-                        <span className="ml-2 text-xs text-muted-foreground">{(importStatus.result as any).fileName}</span>
-                      )}
-                    </div>
-                    {importStatus.result.success && (
-                      <div className="space-y-1">
-                        <p className="text-green-600 text-sm">
-                          ✅ 成功导入 {importStatus.result.imported} 张卡牌
-                          {importStatus.result.batchId && ` (批次ID: ${importStatus.result.batchId})`}
-                        </p>
-                        {('imageCount' in importStatus.result) && (importStatus.result as any).imageCount > 0 && (
-                          <p className="text-green-600 text-sm">
-                            🖼️ 导入 {(importStatus.result as any).imageCount} 张图片
-                          </p>
-                        )}
-                      </div>
-                    )}
-                    {importStatus.result.errors.length > 0 && (
-                      <div className="mt-2">
-                        <p className="text-red-600 text-sm font-medium mb-1">错误信息：</p>
-                        <ul className="text-red-600 text-sm list-disc list-inside">
-                          {importStatus.result.errors.map((error, index) => (
-                            <li key={index}>{error}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                    {importStatus.result.duplicateIds && importStatus.result.duplicateIds.length > 0 && (
-                      <div className="mt-2">
-                        <p className="text-red-600 text-sm font-medium mb-1">重复的ID：</p>
-                        <div className="flex flex-wrap gap-1">
-                          {importStatus.result.duplicateIds.map((id, index) => (
-                            <Badge key={index} variant="destructive" className="text-xs">
-                              {id}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  renderImportResultCard(importStatus.result, 'single-result')
                 )
               )}
 

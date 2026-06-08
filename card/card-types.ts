@@ -198,6 +198,7 @@ export interface ImportResult {
   imported: number;
   errors: string[];
   warnings?: string[];
+  imageErrors?: string[];
   duplicateIds?: string[];
   conflictingTypes?: string[]; // 变体类型冲突列表
   batchId?: string; // 成功导入时返回批次ID

@@ -13,6 +13,28 @@ export interface DhcbImportResult {
   imageCount: number
   validationErrors: string[]
   warnings?: string[]
+  imageErrors?: string[]
+}
+
+export class DhcbImportError extends Error {
+  validationErrors: string[]
+  warnings: string[]
+  imageErrors: string[]
+
+  constructor(
+    message: string,
+    options?: {
+      validationErrors?: string[]
+      warnings?: string[]
+      imageErrors?: string[]
+    }
+  ) {
+    super(message)
+    this.name = 'DhcbImportError'
+    this.validationErrors = options?.validationErrors ?? []
+    this.warnings = options?.warnings ?? []
+    this.imageErrors = options?.imageErrors ?? []
+  }
 }
 
 /**
@@ -53,6 +75,7 @@ export async function importDhcbCardPackage(
 
   // ========== 步骤 3: 提取图片 (先提取,用于预处理和校验) ==========
   const imageMap = new Map<string, Blob>()
+  const imageErrors: string[] = []
   const imageFiles = Object.keys(zip.files).filter(name =>
     name.startsWith('images/') && !zip.files[name].dir
   )
@@ -73,6 +96,9 @@ export async function importDhcbCardPackage(
         console.log(`[DhcbImport] Loaded image: ${cardId} (${(blob.size / 1024).toFixed(1)}KB)`)
       } catch (error) {
         console.warn(`[DhcbImport] Failed to load image ${filePath}:`, error)
+        imageErrors.push(
+          `图片 ${filePath} 读取失败，已跳过该文件${error instanceof Error ? `：${error.message}` : ''}`
+        )
       }
     }
   }
@@ -119,7 +145,11 @@ export async function importDhcbCardPackage(
   const importResult = await store.importCards(processedImportData, file.name)
 
   if (!importResult.success) {
-    throw new Error(`卡牌导入失败: ${importResult.errors.join(', ')}`)
+    throw new DhcbImportError('卡牌导入失败，请先处理下列问题。', {
+      validationErrors: importResult.errors,
+      warnings: importResult.warnings ?? [],
+      imageErrors,
+    })
   }
 
   const batchId = importResult.batchId!
@@ -152,11 +182,13 @@ export async function importDhcbCardPackage(
     console.error('[DhcbImport] Orphan images detected, rolling back card import...')
     useUnifiedCardStore.getState().removeBatch(batchId)
 
-    throw new Error(
-      `发现孤儿图片,导入被拒绝:\n` +
-      orphanImages.map(id => `  - ${id} (图片存在但对应卡牌不存在)`).join('\n') +
-      `\n\n请确保所有图片都有对应的卡牌。`
-    )
+    throw new DhcbImportError('卡包中的图片与卡牌不匹配，已取消导入。', {
+      warnings: importResult.warnings ?? [],
+      imageErrors: [
+        ...imageErrors,
+        ...orphanImages.map((id) => `图片 ${id} 找不到对应的卡牌，导入已取消。`),
+      ],
+    })
   }
 
   console.log('[DhcbImport] ✅ All images validated - no orphans')
@@ -174,7 +206,13 @@ export async function importDhcbCardPackage(
       console.log('[DhcbImport] Rolling back card import due to image import failure...')
       useUnifiedCardStore.getState().removeBatch(batchId)
 
-      throw new Error(`图片导入失败,已回滚: ${error instanceof Error ? error.message : String(error)}`)
+      throw new DhcbImportError('图片导入失败，已回滚本次卡包导入。', {
+        warnings: importResult.warnings ?? [],
+        imageErrors: [
+          ...imageErrors,
+          error instanceof Error ? error.message : String(error),
+        ],
+      })
     }
   } else {
     console.log('[DhcbImport] No images to import')
@@ -187,6 +225,7 @@ export async function importDhcbCardPackage(
     totalCards: importResult.imported,
     imageCount: imageMap.size,
     validationErrors: [],
-    warnings: importResult.warnings ?? []
+    warnings: importResult.warnings ?? [],
+    imageErrors,
   }
 }

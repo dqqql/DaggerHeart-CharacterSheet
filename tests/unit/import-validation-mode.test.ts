@@ -162,7 +162,7 @@ describe('import validation modes', () => {
     expect(result.errors).toEqual([])
     expect(result.warnings).toEqual(
       expect.arrayContaining([
-        expect.stringContaining('subclass[0].主职'),
+        '有子职业引用了未预先声明的主职：未声明主职。系统已按卡牌内容继续导入，并补齐这些主职定义。',
       ])
     )
     expect(result.batchId).toBe('batch-test')

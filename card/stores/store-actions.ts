@@ -30,6 +30,27 @@ import { createImageServiceActions } from './image-service/actions';
 type SetFunction = (partial: Partial<UnifiedCardState> | ((state: UnifiedCardState) => Partial<UnifiedCardState>)) => void;
 type GetFunction = () => UnifiedCardState & UnifiedCardActions;
 
+const NORMALIZATION_WARNING_PATTERNS = [
+  /^profession\[\d+\]\.名称:/,
+  /^profession\[\d+\]\.领域[12]:/,
+  /^ancestry\[\d+\]\.种族:/,
+  /^community\[\d+\]\.名称:/,
+  /^subclass\[\d+\]\.主职:/,
+  /^domain\[\d+\]\.领域:/,
+  /^variant\[\d+\]\.类型:/,
+];
+
+function shouldSuppressValidationWarning(warning: string) {
+  return NORMALIZATION_WARNING_PATTERNS.some((pattern) => pattern.test(warning));
+}
+
+function mergeImportWarnings(validationWarnings: string[], normalizedWarnings: string[]) {
+  return [...new Set([
+    ...validationWarnings.filter((warning) => !shouldSuppressValidationWarning(warning)),
+    ...normalizedWarnings,
+  ])];
+}
+
 export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedCardActions => ({
   // Image service actions
   ...createImageServiceActions(set as any, get as any),
@@ -228,7 +249,7 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
       }
 
       const normalizedMetadata = normalizeImportMetadata(processedData);
-      const warnings = [...validation.warnings, ...normalizedMetadata.warnings];
+      const warnings = mergeImportWarnings(validation.warnings, normalizedMetadata.warnings);
 
       // Check for ID conflicts with existing cards
       const existingCards = Array.from(state.cards.values());
