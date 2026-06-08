@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest"
 
-import { validateProfessionCard, type ValidationContext } from "@/card/type-validators"
+import {
+  partitionImportValidationErrors,
+  validateProfessionCard,
+  type ValidationContext,
+  type ValidationError,
+} from "@/card/type-validators"
 
 const context: ValidationContext = {
   customFields: {
@@ -37,5 +42,49 @@ describe("validateProfessionCard", () => {
       expect.objectContaining({ path: "profession[0].起始闪避" })
     )
     expect(result.isValid).toBe(true)
+  })
+})
+
+describe("partitionImportValidationErrors", () => {
+  it("downgrades reference integrity issues with concrete values into warnings", () => {
+    const issues: ValidationError[] = [
+      {
+        path: "profession[0].领域1",
+        message: "领域1字段必须是有效的领域名称。有效选项: 守护, 奥术 (或用户自定义)",
+        value: "失落领域",
+      },
+      {
+        path: "variant[0].等级",
+        message: "等级字段必须在范围 1-3 内",
+        value: 5,
+      },
+    ]
+
+    const result = partitionImportValidationErrors(issues)
+
+    expect(result.errors).toHaveLength(0)
+    expect(result.warnings).toEqual(issues)
+    expect(result.isValid).toBe(true)
+  })
+
+  it("keeps missing required values and structural problems as fatal errors", () => {
+    const issues: ValidationError[] = [
+      {
+        path: "profession[0].领域1",
+        message: "领域1字段必须是有效的领域名称。有效选项: 守护, 奥术 (或用户自定义)",
+        value: undefined,
+      },
+      {
+        path: "variant[0].等级",
+        message: "等级字段必须是非负数字",
+        value: -1,
+      },
+    ]
+
+    const result = partitionImportValidationErrors(issues)
+
+    expect(result.errors).toEqual(issues)
+    expect(result.warnings).toHaveLength(0)
+    expect(result.isValid).toBe(false)
   })
 })

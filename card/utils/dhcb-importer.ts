@@ -12,6 +12,7 @@ export interface DhcbImportResult {
   totalCards: number
   imageCount: number
   validationErrors: string[]
+  warnings?: string[]
 }
 
 /**
@@ -185,6 +186,7 @@ export async function importDhcbCardPackage(
     batchId,
     totalCards: importResult.imported,
     imageCount: imageMap.size,
-    validationErrors: [] // 严格模式下不允许警告
+    validationErrors: [],
+    warnings: importResult.warnings ?? []
   }
 }

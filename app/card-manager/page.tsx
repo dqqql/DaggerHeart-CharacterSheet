@@ -73,7 +73,6 @@ interface ImportStatus {
 interface ImportResultWithFileName extends ImportResult {
   fileName: string
   imageCount?: number
-  validationWarnings?: string[]
 }
 
 export default function CardImportTestPage() {

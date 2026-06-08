@@ -23,6 +23,13 @@ export interface ValidationError {
     value?: any;
 }
 
+export interface StructuredImportValidationResult {
+    isValid: boolean;
+    errors: ValidationError[];
+    warnings: ValidationError[];
+    totalCards: number;
+}
+
 export interface TypeValidationResult {
     isValid: boolean;
     errors: ValidationError[];
@@ -62,6 +69,74 @@ function getDomainCardNamesFromContext(context: ValidationContext): string[] {
 
 function getVariantTypesFromContext(context: ValidationContext): Record<string, any> {
     return context.variantTypes || {};
+}
+
+function hasReferenceValue(value: unknown): boolean {
+    return value !== undefined && value !== null && value !== '';
+}
+
+function isReferenceIntegrityWarning(error: ValidationError): boolean {
+    if (!hasReferenceValue(error.value)) {
+        return false;
+    }
+
+    if (/^profession\[\d+\]\.领域[12]$/.test(error.path)) {
+        return error.message.includes('有效的领域名称');
+    }
+
+    if (/^ancestry\[\d+\]\.种族$/.test(error.path)) {
+        return error.message.includes('有效的种族名称');
+    }
+
+    if (/^community\[\d+\]\.名称$/.test(error.path)) {
+        return error.message.includes('有效的社群名称');
+    }
+
+    if (/^subclass\[\d+\]\.主职$/.test(error.path)) {
+        return error.message.includes('有效的子职业名称');
+    }
+
+    if (/^domain\[\d+\]\.领域$/.test(error.path)) {
+        return error.message.includes('有效的领域名称');
+    }
+
+    if (/^variant\[\d+\]\.类型$/.test(error.path)) {
+        return error.message.includes('预定义的变体类型') || error.message.includes('未定义任何变体类型');
+    }
+
+    if (/^variant\[\d+\]\.子类别$/.test(error.path)) {
+        return error.message.includes('有效子类别');
+    }
+
+    if (/^variant\[\d+\]\.等级$/.test(error.path)) {
+        return error.message.includes('范围');
+    }
+
+    return false;
+}
+
+export function partitionImportValidationErrors(
+    errors: ValidationError[],
+    totalCards = 0
+): StructuredImportValidationResult {
+    const fatalErrors: ValidationError[] = [];
+    const warnings: ValidationError[] = [];
+
+    errors.forEach((error) => {
+        if (isReferenceIntegrityWarning(error)) {
+            warnings.push(error);
+            return;
+        }
+
+        fatalErrors.push(error);
+    });
+
+    return {
+        isValid: fatalErrors.length === 0,
+        errors: fatalErrors,
+        warnings,
+        totalCards
+    };
 }
 
 /**
