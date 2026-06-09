@@ -22,7 +22,10 @@ import {
   CustomCardStats,
   BatchStats
 } from './store-types';
+import { isVariantCard } from '../card-types';
 import { normalizeImportMetadata } from '../import-metadata-normalizer';
+import builtinCardPackJson from '../../data/cards/builtin-base.json';
+import { CardTypeValidator } from '../type-validators';
 import { preprocessVariantFormat } from '../variant-format-preprocessor';
 import { createImageServiceActions } from './image-service/actions';
 
@@ -1040,7 +1043,6 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
 
   _rebuildSubclassIndex: () => {
     const state = get();
-    const { isVariantCard } = require('../card-types');
 
     // Initialize the index objects
     const cardIndex: Record<string, Record<string, string[]>> = {};
@@ -1591,9 +1593,6 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
 
     // Use the original validation system for detailed validation
     try {
-      // Import validation utilities dynamically
-      const { CardTypeValidator } = require('../type-validators');
-
       // Create validation context from import data (inline implementation to avoid circular dependency)
       const tempCustomFields = importData.customFieldDefinitions ? Object.fromEntries(
         Object.entries(importData.customFieldDefinitions)
@@ -1608,7 +1607,6 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
       const builtinFields: CustomFieldNamesStore = {};
 
       // Get builtin fields
-      const builtinCardPackJson = require('../../data/cards/builtin-base.json');
       const builtinCustomFields = (builtinCardPackJson as any).customFieldDefinitions;
       if (builtinCustomFields) {
         for (const [category, names] of Object.entries(builtinCustomFields)) {

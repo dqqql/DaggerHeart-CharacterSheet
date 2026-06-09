@@ -23,6 +23,11 @@ import {
 } from '@/card/index'
 import { DhcbImportError, importDhcbCardPackage } from '@/card/utils/dhcb-importer'
 import {
+  buildFailedDhcbResult as buildFailedDhcbResultHelper,
+  getImportIssueSections as getImportIssueSectionsHelper,
+  getImportStatusErrorMessage as getImportStatusErrorMessageHelper,
+} from './import-result-utils'
+import {
   CARD_PACKAGE_IMPORT_ACCEPT,
   isCardPackageArchiveFileName,
 } from '@/card/utils/card-package-file'
@@ -309,7 +314,7 @@ export default function CardImportTestPage() {
       } catch (error) {
         allResults.push(
           isCardPackageArchiveFileName(file.name)
-            ? buildFailedDhcbResult(file.name, error)
+            ? buildFailedDhcbResultHelper(file.name, error)
             : {
                 success: false,
                 imported: 0,
@@ -324,7 +329,7 @@ export default function CardImportTestPage() {
     setImportStatus({
       isImporting: false,
       result: allResults.length === 1 ? allResults[0] : allResults,
-      error: anyError ? '部分文件导入失败，请检查下方结果' : null
+      error: getImportStatusErrorMessageHelper(allResults)
     })
     refreshData()
   }
@@ -497,9 +502,11 @@ export default function CardImportTestPage() {
             )}
           </div>
         )}
-        {renderIssueSection('提示信息：', getResultWarnings(result), 'warning')}
-        {renderIssueSection('图片处理问题：', getResultImageErrors(result), 'warning')}
-        {renderIssueSection('错误信息：', result.errors, 'error')}
+        {getImportIssueSectionsHelper(result).map((section) => (
+          <React.Fragment key={`${String(key)}-${section.title}`}>
+            {renderIssueSection(section.title, section.items, section.tone)}
+          </React.Fragment>
+        ))}
         {result.duplicateIds && result.duplicateIds.length > 0 && (
           <div className="mt-2">
             <p className="text-red-600 text-sm font-medium mb-1">重复的ID：</p>
