@@ -8,6 +8,7 @@ import {
   UnifiedCardActions,
   BatchInfo,
   CustomCardIndex,
+  BatchIndexEntry,
   BatchData,
   CustomFieldNamesStore,
   VariantTypesForBatch,
@@ -20,7 +21,13 @@ import {
   CardSource,
   ImportData,
   CustomCardStats,
-  BatchStats
+  BatchStats,
+  BatchMetadataUpdate,
+  BatchActivityLogEntry,
+  BatchSourceKind,
+  BatchHealthStatus,
+  BatchManagementRow,
+  BatchDetail
 } from './store-types';
 import { isVariantCard } from '../card-types';
 import { normalizeImportMetadata } from '../import-metadata-normalizer';
@@ -52,6 +59,143 @@ function mergeImportWarnings(validationWarnings: string[], normalizedWarnings: s
     ...validationWarnings.filter((warning) => !shouldSuppressValidationWarning(warning)),
     ...normalizedWarnings,
   ])];
+}
+
+function dedupeMessages(messages: string[] | undefined) {
+  return [...new Set((messages ?? []).filter(Boolean))];
+}
+
+function inferSourceKind(fileName: string | undefined, isSystemBatch: boolean | undefined): BatchSourceKind {
+  if (isSystemBatch) {
+    return 'builtin';
+  }
+
+  const normalizedFileName = (fileName ?? '').toLowerCase();
+  if (normalizedFileName.endsWith('.json')) {
+    return 'json';
+  }
+
+  if (normalizedFileName.endsWith('.zip') || normalizedFileName.endsWith('.dhcb')) {
+    return 'archive';
+  }
+
+  return 'unknown';
+}
+
+function getHealthStatus(messages: string[] | undefined, loadError?: string): BatchHealthStatus {
+  return dedupeMessages([...(messages ?? []), ...(loadError ? [loadError] : [])]).length > 0
+    ? 'abnormal'
+    : 'normal';
+}
+
+function createActivityLogEntry(
+  type: BatchActivityLogEntry['type'],
+  at: string,
+  summary: string
+): BatchActivityLogEntry {
+  return { type, at, summary };
+}
+
+function getDefaultActivityLog(batch: {
+  importTime: string;
+  cardCount: number;
+  healthMessages?: string[];
+  activityLog?: BatchActivityLogEntry[];
+}) {
+  if (batch.activityLog && batch.activityLog.length > 0) {
+    return batch.activityLog;
+  }
+
+  const summaryParts = [`导入 ${batch.cardCount} 张卡牌`];
+  if ((batch.healthMessages?.length ?? 0) > 0) {
+    summaryParts.push(`伴随 ${batch.healthMessages!.length} 条提示`);
+  }
+
+  return [createActivityLogEntry('imported', batch.importTime, summaryParts.join('，'))];
+}
+
+function createBatchIndexEntry(batch: BatchInfo): BatchIndexEntry {
+  return {
+    id: batch.id,
+    name: batch.name,
+    fileName: batch.fileName,
+    importTime: batch.importTime,
+    version: batch.version,
+    cardCount: batch.cardCount,
+    cardTypes: batch.cardTypes,
+    size: batch.size,
+    isSystemBatch: batch.isSystemBatch,
+    disabled: batch.disabled,
+    lastUpdatedAt: batch.lastUpdatedAt,
+    sourceKind: batch.sourceKind,
+    healthStatus: batch.healthStatus,
+    healthMessages: batch.healthMessages,
+    activityLog: batch.activityLog,
+    loadError: batch.loadError,
+  };
+}
+
+function normalizeBatchInfo(batch: BatchInfo): BatchInfo {
+  const healthMessages = dedupeMessages([...(batch.healthMessages ?? []), ...(batch.loadError ? [batch.loadError] : [])]);
+  const importTime = batch.importTime;
+  const lastUpdatedAt = batch.lastUpdatedAt ?? importTime;
+
+  return {
+    ...batch,
+    lastUpdatedAt,
+    sourceKind: batch.sourceKind ?? inferSourceKind(batch.fileName, batch.isSystemBatch),
+    healthMessages,
+    healthStatus: batch.healthStatus ?? getHealthStatus(healthMessages, batch.loadError),
+    activityLog: getDefaultActivityLog({
+      importTime,
+      cardCount: batch.cardCount,
+      healthMessages,
+      activityLog: batch.activityLog,
+    }),
+  };
+}
+
+function appendBatchActivityLog(
+  existingLog: BatchActivityLogEntry[] | undefined,
+  entry: BatchActivityLogEntry
+) {
+  return [...(existingLog ?? []), entry].sort((a, b) => a.at.localeCompare(b.at));
+}
+
+function createBatchPlaceholder(
+  batchId: string,
+  batchInfo: BatchIndexEntry,
+  loadError: string
+): BatchInfo {
+  const healthMessages = dedupeMessages([...(batchInfo.healthMessages ?? []), loadError]);
+  const placeholder = normalizeBatchInfo({
+    id: batchId,
+    name: batchInfo.name,
+    fileName: batchInfo.fileName,
+    importTime: batchInfo.importTime,
+    lastUpdatedAt: batchInfo.lastUpdatedAt ?? batchInfo.importTime,
+    version: batchInfo.version,
+    description: undefined,
+    author: undefined,
+    cardCount: batchInfo.cardCount,
+    cardTypes: batchInfo.cardTypes,
+    size: batchInfo.size,
+    isSystemBatch: batchInfo.isSystemBatch,
+    disabled: batchInfo.disabled,
+    sourceKind: batchInfo.sourceKind ?? inferSourceKind(batchInfo.fileName, batchInfo.isSystemBatch),
+    healthStatus: 'abnormal',
+    healthMessages,
+    activityLog: batchInfo.activityLog,
+    loadError,
+    cardIds: [],
+    customFieldDefinitions: undefined,
+    variantTypes: undefined,
+    imageCardIds: undefined,
+    imageCount: 0,
+    totalImageSize: 0,
+  });
+
+  return placeholder;
 }
 
 export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedCardActions => ({
@@ -296,24 +440,42 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
       const batchId = get().generateBatchId();
       const cardTypes = [...new Set(convertResult.cards.map(card => card.type))];
       const batchDisplayName = processedData.name || batchName || `Import ${new Date().toLocaleDateString()}`;
+      const importTime = new Date().toISOString();
+      const healthMessages = dedupeMessages(warnings);
 
       // Create batch info
-      const batchInfo: BatchInfo = {
+      const batchInfo = normalizeBatchInfo({
         id: batchId,
         name: batchDisplayName,
         fileName: batchName || 'Imported Cards',
-        importTime: new Date().toISOString(),
+        importTime,
+        lastUpdatedAt: importTime,
+        version: processedData.version,
+        description: processedData.description,
+        author: processedData.author,
         cardCount: convertResult.cards.length,
         cardTypes,
         size: JSON.stringify(convertResult.cards).length,
         isSystemBatch: false,
         disabled: false,
+        sourceKind: inferSourceKind(batchName || 'Imported Cards', false),
+        healthStatus: getHealthStatus(healthMessages),
+        healthMessages,
+        activityLog: [
+          createActivityLogEntry(
+            'imported',
+            importTime,
+            warnings.length > 0
+              ? `导入 ${convertResult.cards.length} 张卡牌，并记录 ${warnings.length} 条提示`
+              : `导入 ${convertResult.cards.length} 张卡牌`
+          ),
+        ],
         cardIds: convertResult.cards.map(card => card.id),
         customFieldDefinitions: normalizedMetadata.customFieldDefinitions as CustomFieldsForBatch,
         variantTypes: normalizedMetadata.variantTypes,
-        imageCount: undefined,
-        totalImageSize: undefined
-      };
+        imageCount: 0,
+        totalImageSize: 0
+      });
 
       // Update store state
       const newBatches = new Map(state.batches);
@@ -328,17 +490,7 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
 
       // Update index
       const newIndex = { ...state.index };
-      newIndex.batches[batchId] = {
-        id: batchId,
-        name: batchDisplayName,
-        fileName: batchInfo.fileName,
-        importTime: batchInfo.importTime,
-        cardCount: batchInfo.cardCount,
-        cardTypes: batchInfo.cardTypes,
-        size: batchInfo.size,
-        isSystemBatch: false,
-        disabled: false
-      };
+      newIndex.batches[batchId] = createBatchIndexEntry(batchInfo);
       newIndex.totalCards = newCards.size;
       newIndex.totalBatches = newBatches.size;
       newIndex.lastUpdate = new Date().toISOString();
@@ -390,6 +542,10 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
     const state = get();
     const batch = state.batches.get(batchId);
     if (!batch) return false;
+    if (batch.isSystemBatch) {
+      console.warn(`[UnifiedCardStore] Refused to remove system batch ${batchId}`);
+      return false;
+    }
 
     // Delete batch images from IndexedDB if they exist
     if (batch.imageCardIds && batch.imageCardIds.length > 0) {
@@ -486,16 +642,7 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
 
     const newIndex: CustomCardIndex = {
       batches: builtinBatch ? {
-        [BUILTIN_BATCH_ID]: {
-          id: BUILTIN_BATCH_ID,
-          name: builtinBatch.name,
-          fileName: builtinBatch.fileName,
-          importTime: builtinBatch.importTime,
-          cardCount: builtinBatch.cardCount,
-          cardTypes: builtinBatch.cardTypes,
-          size: builtinBatch.size,
-          isSystemBatch: true
-        }
+        [BUILTIN_BATCH_ID]: createBatchIndexEntry(normalizeBatchInfo(builtinBatch))
       } : {},
       totalCards: newCards.size,
       totalBatches: newBatches.size,
@@ -519,11 +666,16 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
       name: batch.name,
       fileName: batch.fileName,
       importTime: batch.importTime,
+      lastUpdatedAt: batch.lastUpdatedAt ?? batch.importTime,
       cardCount: batch.cardCount,
       cardTypes: batch.cardTypes,
       storageSize: batch.size,
       isSystemBatch: batch.isSystemBatch || false,
-      disabled: batch.disabled || false
+      disabled: batch.disabled || false,
+      sourceKind: batch.sourceKind ?? inferSourceKind(batch.fileName, batch.isSystemBatch),
+      healthStatus: batch.healthStatus ?? getHealthStatus(batch.healthMessages, batch.loadError),
+      healthMessages: batch.healthMessages ?? [],
+      loadError: batch.loadError
     } as BatchStats & { id: string; name: string; fileName: string; isSystemBatch: boolean; disabled: boolean }));
   },
 
@@ -776,17 +928,28 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
     const state = get();
     const batch = state.batches.get(batchId);
     if (!batch) return;
+    const timestamp = new Date().toISOString();
 
-    const updatedBatch = {
+    const updatedBatch = normalizeBatchInfo({
       ...batch,
-      customFieldDefinitions: definitions
-    };
+      customFieldDefinitions: definitions,
+      lastUpdatedAt: timestamp,
+      activityLog: appendBatchActivityLog(
+        batch.activityLog,
+        createActivityLogEntry('config_changed', timestamp, '更新了自定义字段配置')
+      ),
+    });
 
     const newBatches = new Map(state.batches);
     newBatches.set(batchId, updatedBatch);
+    const newIndex = { ...state.index };
+    if (newIndex.batches[batchId]) {
+      newIndex.batches[batchId] = createBatchIndexEntry(updatedBatch);
+    }
 
     set({
       batches: newBatches,
+      index: newIndex,
       cacheValid: false
     });
 
@@ -797,38 +960,90 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
     const state = get();
     const batch = state.batches.get(batchId);
     if (!batch) return;
+    const timestamp = new Date().toISOString();
 
-    const updatedBatch = {
+    const updatedBatch = normalizeBatchInfo({
       ...batch,
-      variantTypes: types
-    };
+      variantTypes: types,
+      lastUpdatedAt: timestamp,
+      activityLog: appendBatchActivityLog(
+        batch.activityLog,
+        createActivityLogEntry('config_changed', timestamp, '更新了变体类型配置')
+      ),
+    });
 
     const newBatches = new Map(state.batches);
     newBatches.set(batchId, updatedBatch);
+    const newIndex = { ...state.index };
+    if (newIndex.batches[batchId]) {
+      newIndex.batches[batchId] = createBatchIndexEntry(updatedBatch);
+    }
 
     set({
       batches: newBatches,
+      index: newIndex,
       cacheValid: false
     });
 
     get()._syncToLocalStorage();
   },
 
-  toggleBatchDisabled: async (batchId: string) => {
+  updateBatchMetadata: (batchId: string, updates: BatchMetadataUpdate) => {
+    const state = get();
+    const batch = state.batches.get(batchId);
+    if (!batch) return;
+
+    const updatedBatch = normalizeBatchInfo({
+      ...batch,
+      ...updates,
+      healthMessages: updates.healthMessages ? dedupeMessages(updates.healthMessages) : batch.healthMessages,
+    });
+
+    const newBatches = new Map(state.batches);
+    newBatches.set(batchId, updatedBatch);
+
+    const newIndex = { ...state.index };
+    if (newIndex.batches[batchId]) {
+      newIndex.batches[batchId] = createBatchIndexEntry(updatedBatch);
+    }
+
+    set({
+      batches: newBatches,
+      index: newIndex,
+      cacheValid: false
+    });
+
+    get()._syncToLocalStorage();
+  },
+
+  setBatchDisabled: async (batchId: string, disabled: boolean) => {
     const state = get();
     const batch = state.batches.get(batchId);
     if (!batch) {
-      console.log(`[UnifiedCardStore] toggleBatchDisabled: batch ${batchId} not found`);
+      console.log(`[UnifiedCardStore] setBatchDisabled: batch ${batchId} not found`);
       return false;
     }
 
     const oldDisabled = batch.disabled || false;
-    const newDisabled = !oldDisabled;
+    if (oldDisabled === disabled) {
+      return true;
+    }
 
-    const updatedBatch = {
+    const timestamp = new Date().toISOString();
+
+    const updatedBatch = normalizeBatchInfo({
       ...batch,
-      disabled: newDisabled
-    };
+      disabled,
+      lastUpdatedAt: timestamp,
+      activityLog: appendBatchActivityLog(
+        batch.activityLog,
+        createActivityLogEntry(
+          disabled ? 'disabled' : 'enabled',
+          timestamp,
+          disabled ? '批次已停用' : '批次已启用'
+        )
+      ),
+    });
 
     const newBatches = new Map(state.batches);
     newBatches.set(batchId, updatedBatch);
@@ -836,13 +1051,10 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
     // Update the index as well
     const newIndex = { ...state.index };
     if (newIndex.batches[batchId]) {
-      newIndex.batches[batchId] = {
-        ...newIndex.batches[batchId],
-        disabled: newDisabled
-      };
+      newIndex.batches[batchId] = createBatchIndexEntry(updatedBatch);
     }
 
-    console.log(`[UnifiedCardStore] toggleBatchDisabled: batch ${batchId} disabled: ${oldDisabled} -> ${newDisabled}`);
+    console.log(`[UnifiedCardStore] setBatchDisabled: batch ${batchId} disabled: ${oldDisabled} -> ${disabled}`);
 
     set({
       batches: newBatches,
@@ -861,9 +1073,89 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
     return true;
   },
 
+  toggleBatchDisabled: async (batchId: string) => {
+    const batch = get().batches.get(batchId);
+    if (!batch) {
+      console.log(`[UnifiedCardStore] toggleBatchDisabled: batch ${batchId} not found`);
+      return false;
+    }
+
+    return get().setBatchDisabled(batchId, !(batch.disabled || false));
+  },
+
+  removeBatches: (batchIds: string[]) => {
+    const removableBatchIds = [...new Set(batchIds)].filter((batchId) => {
+      const batch = get().batches.get(batchId);
+      return !!batch && !batch.isSystemBatch;
+    });
+
+    if (removableBatchIds.length === 0) {
+      return false;
+    }
+
+    let removedAny = false;
+    removableBatchIds.forEach((batchId) => {
+      removedAny = get().removeBatch(batchId) || removedAny;
+    });
+
+    return removedAny;
+  },
+
   getBatchDisabledStatus: (batchId: string) => {
     const batch = get().batches.get(batchId);
     return batch?.disabled || false;
+  },
+
+  getBatchManagementRows: () => {
+    const state = get();
+
+    return Array.from(state.batches.values()).map((batch): BatchManagementRow => {
+      const normalizedBatch = normalizeBatchInfo(batch);
+
+      return {
+        id: normalizedBatch.id,
+        name: normalizedBatch.name,
+        fileName: normalizedBatch.fileName,
+        importTime: normalizedBatch.importTime,
+        lastUpdatedAt: normalizedBatch.lastUpdatedAt ?? normalizedBatch.importTime,
+        cardCount: normalizedBatch.cardCount,
+        cardTypes: normalizedBatch.cardTypes,
+        storageSize: normalizedBatch.size,
+        isSystemBatch: normalizedBatch.isSystemBatch ?? false,
+        disabled: normalizedBatch.disabled ?? false,
+        sourceKind: normalizedBatch.sourceKind ?? inferSourceKind(normalizedBatch.fileName, normalizedBatch.isSystemBatch),
+        healthStatus: normalizedBatch.healthStatus ?? getHealthStatus(normalizedBatch.healthMessages, normalizedBatch.loadError),
+        healthMessages: normalizedBatch.healthMessages ?? [],
+        description: normalizedBatch.description,
+        author: normalizedBatch.author,
+        imageCount: normalizedBatch.imageCount ?? 0,
+        totalImageSize: normalizedBatch.totalImageSize ?? 0,
+        loadError: normalizedBatch.loadError,
+        activityLog: normalizedBatch.activityLog ?? [],
+        hasCustomFields: Object.values(normalizedBatch.customFieldDefinitions ?? {}).some((values) => values.length > 0),
+        hasVariantTypes: Object.keys(normalizedBatch.variantTypes ?? {}).length > 0,
+      };
+    });
+  },
+
+  getBatchDetail: (batchId: string) => {
+    const state = get();
+    const batch = state.batches.get(batchId);
+    if (!batch) {
+      return null;
+    }
+
+    const normalizedBatch = normalizeBatchInfo(batch);
+    const previewCards = normalizedBatch.cardIds
+      .map((cardId) => state.cards.get(cardId))
+      .filter((card): card is ExtendedStandardCard => !!card)
+      .slice(0, 5);
+
+    return {
+      ...get().getBatchManagementRows().find((row) => row.id === batchId)!,
+      cardIds: [...normalizedBatch.cardIds],
+      previewCards,
+    } satisfies BatchDetail;
   },
 
 
@@ -1185,7 +1477,13 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
             author: batch.author,
             imageCardIds: batch.imageCardIds,        // ✅ 保存图片ID列表
             imageCount: batch.imageCount,            // ✅ 保存图片数量
-            totalImageSize: batch.totalImageSize     // ✅ 保存图片总大小
+            totalImageSize: batch.totalImageSize,    // ✅ 保存图片总大小
+            lastUpdatedAt: batch.lastUpdatedAt,
+            sourceKind: batch.sourceKind,
+            healthStatus: batch.healthStatus,
+            healthMessages: batch.healthMessages,
+            activityLog: batch.activityLog,
+            loadError: batch.loadError,
           },
           cards: batchCards,
           customFieldDefinitions: batch.customFieldDefinitions,
@@ -1260,6 +1558,11 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
         console.warn(`[UnifiedCardStore] Detected ${orphanedKeys.length} orphaned batch keys. Run cleanupOrphanedData() to remove them.`);
       }
 
+      const normalizedIndex: CustomCardIndex = {
+        ...index,
+        batches: { ...index.batches },
+      };
+
       // Load custom batches only (skip builtin which is already loaded)
       for (const batchId of Object.keys(index.batches)) {
         // Skip builtin batch - it's already loaded by _seedBuiltinCards
@@ -1269,15 +1572,28 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
         }
 
         const batchStr = localStorage.getItem(`${STORAGE_KEYS.BATCH_PREFIX}${batchId}`);
-        if (batchStr) {
-          const batchData: BatchData = JSON.parse(batchStr);
-          const batchInfo = index.batches[batchId];
+        const batchInfo = normalizedIndex.batches[batchId];
 
-          const batch: BatchInfo = {
-            id: batchData.metadata.id,
+        if (!batchStr) {
+          const placeholder = createBatchPlaceholder(batchId, batchInfo, '批次数据缺失，原始卡牌内容无法读取。');
+          batches.set(batchId, placeholder);
+          normalizedIndex.batches[batchId] = createBatchIndexEntry(placeholder);
+          customBatchCount++;
+          continue;
+        }
+
+        try {
+          const batchData: BatchData = JSON.parse(batchStr);
+          if (!Array.isArray(batchData.cards)) {
+            throw new Error('批次卡牌列表格式无效');
+          }
+
+          const batch = normalizeBatchInfo({
+            id: batchData.metadata.id || batchId,
             name: batchInfo.name,
             fileName: batchInfo.fileName,
             importTime: batchInfo.importTime,
+            lastUpdatedAt: batchData.metadata.lastUpdatedAt ?? batchInfo.lastUpdatedAt ?? batchInfo.importTime,
             version: batchData.metadata.version,
             description: batchData.metadata.description,
             author: batchData.metadata.author,
@@ -1286,15 +1602,21 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
             size: batchInfo.size,
             isSystemBatch: batchInfo.isSystemBatch,
             disabled: batchInfo.disabled,
+            sourceKind: batchData.metadata.sourceKind ?? batchInfo.sourceKind ?? inferSourceKind(batchInfo.fileName, batchInfo.isSystemBatch),
+            healthStatus: batchData.metadata.healthStatus ?? batchInfo.healthStatus,
+            healthMessages: batchData.metadata.healthMessages ?? batchInfo.healthMessages ?? [],
+            activityLog: batchData.metadata.activityLog ?? batchInfo.activityLog,
+            loadError: batchData.metadata.loadError ?? batchInfo.loadError,
             cardIds: batchData.cards.map(card => card.id),
             customFieldDefinitions: batchData.customFieldDefinitions,
             variantTypes: batchData.variantTypes,
             imageCardIds: batchData.metadata.imageCardIds,        // ✅ 读取图片ID列表
-            imageCount: batchData.metadata.imageCount,            // ✅ 读取图片数量
-            totalImageSize: batchData.metadata.totalImageSize     // ✅ 读取图片总大小
-          };
+            imageCount: batchData.metadata.imageCount ?? 0,       // ✅ 读取图片数量
+            totalImageSize: batchData.metadata.totalImageSize ?? 0 // ✅ 读取图片总大小
+          });
 
           batches.set(batchId, batch);
+          normalizedIndex.batches[batchId] = createBatchIndexEntry(batch);
           customBatchCount++;
 
           // Add cards to the cards map, ensuring they have the correct batchId
@@ -1307,11 +1629,19 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
             cards.set(card.id, cardWithBatchId);
             customCardCount++;
           });
+        } catch (error) {
+          const message = error instanceof Error
+            ? `批次数据已损坏，无法解析：${error.message}`
+            : '批次数据已损坏，无法解析。';
+          const placeholder = createBatchPlaceholder(batchId, batchInfo, message);
+          batches.set(batchId, placeholder);
+          normalizedIndex.batches[batchId] = createBatchIndexEntry(placeholder);
+          customBatchCount++;
         }
       }
 
       // Update store state (preserve existing index but ensure it's consistent)
-      const newIndex = { ...index };
+      const newIndex = normalizedIndex;
       set({
         index: newIndex,
         batches,
@@ -1336,12 +1666,14 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
       
       // Check for saved disabled status in localStorage
       let savedDisabledStatus = false;
+      let previousBuiltinEntry: BatchIndexEntry | undefined;
       const indexStr = localStorage.getItem('daggerheart_custom_cards_index');
       
       if (indexStr) {
         try {
           const index = JSON.parse(indexStr);
-          savedDisabledStatus = index.batches?.[BUILTIN_BATCH_ID]?.disabled || false;
+          previousBuiltinEntry = index.batches?.[BUILTIN_BATCH_ID];
+          savedDisabledStatus = previousBuiltinEntry?.disabled || false;
           console.log(`[UnifiedCardStore] Restoring builtin batch disabled status: ${savedDisabledStatus}`);
         } catch (error) {
           console.error('[UnifiedCardStore] Error reading builtin batch status:', error);
@@ -1357,7 +1689,7 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
       // Import builtin card pack JSON
       const builtinCardPackJson = await import('../../data/cards/builtin-base.json');
       console.log('[UnifiedCardStore] Importing builtin cards...');
-      await get()._importBuiltinCards(builtinCardPackJson.default, savedDisabledStatus);
+      await get()._importBuiltinCards(builtinCardPackJson.default, savedDisabledStatus, previousBuiltinEntry);
       
       console.log('[UnifiedCardStore] Builtin cards seeding completed');
       
@@ -1400,7 +1732,7 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
   },
 
 
-  _importBuiltinCards: async (jsonCardPack: any, previousDisabledStatus?: boolean) => {
+  _importBuiltinCards: async (jsonCardPack: any, previousDisabledStatus?: boolean, previousBuiltinEntry?: BatchIndexEntry) => {
     console.log('[UnifiedCardStore] Importing builtin cards from JSON...');
 
     try {
@@ -1428,23 +1760,31 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
       }
 
       // Create builtin batch
-      const batchInfo: BatchInfo = {
+      const importTime = previousBuiltinEntry?.importTime ?? new Date().toISOString();
+      const batchInfo = normalizeBatchInfo({
         id: BUILTIN_BATCH_ID,
         name: jsonCardPack.name,
         fileName: 'builtin-base.json',
-        importTime: new Date().toISOString(),
+        importTime,
+        lastUpdatedAt: previousBuiltinEntry?.lastUpdatedAt ?? importTime,
         version: jsonCardPack.version,
+        description: jsonCardPack.description,
         cardCount: convertResult.cards.length,
         cardTypes: [...new Set(convertResult.cards.map(card => card.type))],
         size: JSON.stringify(convertResult.cards).length,
         isSystemBatch: true,
         disabled: savedDisabledStatus,
+        sourceKind: 'builtin',
+        healthStatus: previousBuiltinEntry?.healthStatus,
+        healthMessages: previousBuiltinEntry?.healthMessages ?? [],
+        activityLog: previousBuiltinEntry?.activityLog,
+        loadError: undefined,
         cardIds: convertResult.cards.map(card => card.id),
         customFieldDefinitions: jsonCardPack.customFieldDefinitions,
         variantTypes: jsonCardPack.customFieldDefinitions?.variantTypes,
-        imageCount: undefined,
-        totalImageSize: undefined
-      };
+        imageCount: 0,
+        totalImageSize: 0
+      });
 
       // Update store state
       const state = get();
@@ -1465,18 +1805,7 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
 
       // Update index to include builtin batch
       const newIndex = { ...state.index };
-      newIndex.batches[BUILTIN_BATCH_ID] = {
-        id: BUILTIN_BATCH_ID,
-        name: batchInfo.name,
-        fileName: batchInfo.fileName,
-        importTime: batchInfo.importTime,
-        version: batchInfo.version,
-        cardCount: batchInfo.cardCount,
-        cardTypes: batchInfo.cardTypes,
-        size: batchInfo.size,
-        isSystemBatch: batchInfo.isSystemBatch,
-        disabled: savedDisabledStatus
-      };
+      newIndex.batches[BUILTIN_BATCH_ID] = createBatchIndexEntry(batchInfo);
 
       newIndex.totalCards = newCards.size;
       newIndex.totalBatches = newBatches.size;

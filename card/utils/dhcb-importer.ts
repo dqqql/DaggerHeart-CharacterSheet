@@ -218,6 +218,21 @@ export async function importDhcbCardPackage(
     console.log('[DhcbImport] No images to import')
   }
 
+  if (imageErrors.length > 0) {
+    const latestBatch = useUnifiedCardStore.getState().batches.get(batchId)
+    if (latestBatch) {
+      const mergedHealthMessages = [
+        ...(latestBatch.healthMessages ?? []),
+        ...imageErrors,
+      ]
+
+      useUnifiedCardStore.getState().updateBatchMetadata(batchId, {
+        healthStatus: 'abnormal',
+        healthMessages: mergedHealthMessages,
+      })
+    }
+  }
+
   console.log('[DhcbImport] Import completed successfully')
 
   return {

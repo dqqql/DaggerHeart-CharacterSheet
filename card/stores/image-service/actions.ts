@@ -251,20 +251,30 @@ export function createImageServiceActions<T extends UnifiedCardState>(
 
           const imageCardIds = Array.from(images.keys());
           const totalImageSize = Array.from(images.values()).reduce((sum, b) => sum + b.size, 0);
+          const timestamp = new Date().toISOString();
 
           const updatedBatch = {
             ...batch,
             imageCardIds,           // ← 保存图片ID列表
             imageCount: images.size,
-            totalImageSize
+            totalImageSize,
+            lastUpdatedAt: batch.lastUpdatedAt ?? timestamp,
           };
 
           const newBatches = new Map(state.batches);
           newBatches.set(batchId, updatedBatch);
 
+          const newIndex = { ...state.index };
+          if (newIndex.batches[batchId]) {
+            newIndex.batches[batchId] = {
+              ...newIndex.batches[batchId],
+              lastUpdatedAt: updatedBatch.lastUpdatedAt,
+            };
+          }
+
           console.log(`[ImageService] Updated batch ${batchId} with ${imageCardIds.length} imageCardIds`);
 
-          return { batches: newBatches };
+          return { batches: newBatches, index: newIndex };
         });
 
         // ✅ 同步到 localStorage

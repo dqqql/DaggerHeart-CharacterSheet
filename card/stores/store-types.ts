@@ -14,20 +14,38 @@ import {
 // Import CardType and CardSource to be re-exported
 import { CardType, CardSource } from '../card-types';
 
+export type BatchSourceKind = 'builtin' | 'json' | 'archive' | 'unknown';
+export type BatchHealthStatus = 'normal' | 'abnormal';
+export type BatchActivityType = 'imported' | 'enabled' | 'disabled' | 'config_changed';
+
+export interface BatchActivityLogEntry {
+  type: BatchActivityType;
+  at: string;
+  summary: string;
+}
+
+export interface BatchIndexEntry {
+  id: string;
+  name: string;
+  fileName: string;
+  importTime: string;
+  version?: string;
+  cardCount: number;
+  cardTypes: string[];
+  size: number;
+  isSystemBatch?: boolean;
+  disabled?: boolean;
+  lastUpdatedAt?: string;
+  sourceKind?: BatchSourceKind;
+  healthStatus?: BatchHealthStatus;
+  healthMessages?: string[];
+  activityLog?: BatchActivityLogEntry[];
+  loadError?: string;
+}
+
 // Type definitions (moved from deleted card-storage.ts)
 export interface CustomCardIndex {
-  batches: Record<string, {
-    id: string;
-    name: string;
-    fileName: string;
-    importTime: string;
-    version?: string;
-    cardCount: number;
-    cardTypes: string[];
-    size: number;
-    isSystemBatch?: boolean;
-    disabled?: boolean;
-  }>;
+  batches: Record<string, BatchIndexEntry>;
   totalCards: number;
   totalBatches: number;
   lastUpdate: string;
@@ -45,6 +63,12 @@ export interface BatchData {
     imageCardIds?: string[];      // 有图片的卡牌ID列表
     imageCount?: number;           // 图片数量
     totalImageSize?: number;       // 图片总大小 (bytes)
+    lastUpdatedAt?: string;
+    sourceKind?: BatchSourceKind;
+    healthStatus?: BatchHealthStatus;
+    healthMessages?: string[];
+    activityLog?: BatchActivityLogEntry[];
+    loadError?: string;
   };
   cards: ExtendedStandardCard[];
   customFieldDefinitions?: CustomFieldsForBatch;
@@ -131,6 +155,7 @@ export interface BatchInfo {
   name: string;
   fileName: string;
   importTime: string;
+  lastUpdatedAt?: string;
   version?: string;
   description?: string;
   author?: string;
@@ -139,6 +164,11 @@ export interface BatchInfo {
   size: number;
   isSystemBatch?: boolean;
   disabled?: boolean;
+  sourceKind?: BatchSourceKind;
+  healthStatus?: BatchHealthStatus;
+  healthMessages?: string[];
+  activityLog?: BatchActivityLogEntry[];
+  loadError?: string;
   // 只存储卡牌ID引用，不存储完整的卡牌数据
   cardIds: string[];
   customFieldDefinitions?: CustomFieldsForBatch;
@@ -146,6 +176,48 @@ export interface BatchInfo {
   // 有本地图片的卡牌ID列表（用于批量删除时清理IndexedDB）
   imageCardIds?: string[];
   // 图片统计信息
+  imageCount?: number;
+  totalImageSize?: number;
+}
+
+export interface BatchManagementRow {
+  id: string;
+  name: string;
+  fileName: string;
+  importTime: string;
+  lastUpdatedAt: string;
+  cardCount: number;
+  cardTypes: string[];
+  storageSize: number;
+  isSystemBatch: boolean;
+  disabled: boolean;
+  sourceKind: BatchSourceKind;
+  healthStatus: BatchHealthStatus;
+  healthMessages: string[];
+  description?: string;
+  author?: string;
+  imageCount: number;
+  totalImageSize: number;
+  loadError?: string;
+  activityLog: BatchActivityLogEntry[];
+  hasCustomFields: boolean;
+  hasVariantTypes: boolean;
+}
+
+export interface BatchDetail extends BatchManagementRow {
+  cardIds: string[];
+  previewCards: ExtendedStandardCard[];
+}
+
+export interface BatchMetadataUpdate {
+  lastUpdatedAt?: string;
+  disabled?: boolean;
+  sourceKind?: BatchSourceKind;
+  healthStatus?: BatchHealthStatus;
+  healthMessages?: string[];
+  activityLog?: BatchActivityLogEntry[];
+  loadError?: string;
+  imageCardIds?: string[];
   imageCount?: number;
   totalImageSize?: number;
 }
@@ -234,8 +306,13 @@ export interface UnifiedCardActions {
   // Batch operations
   updateBatchCustomFields: (batchId: string, definitions: CustomFieldsForBatch) => void;
   updateBatchVariantTypes: (batchId: string, types: VariantTypesForBatch) => void;
+  updateBatchMetadata: (batchId: string, updates: BatchMetadataUpdate) => void;
+  setBatchDisabled: (batchId: string, disabled: boolean) => Promise<boolean>;
   toggleBatchDisabled: (batchId: string) => Promise<boolean>;
+  removeBatches: (batchIds: string[]) => boolean;
   getBatchDisabledStatus: (batchId: string) => boolean;
+  getBatchManagementRows: () => BatchManagementRow[];
+  getBatchDetail: (batchId: string) => BatchDetail | null;
   
   
   // Utilities
@@ -264,7 +341,7 @@ export interface UnifiedCardActions {
   _seedBuiltinCards: () => Promise<void>;
   _migrateLegacyData: () => Promise<any>;
   _computeStats: () => CustomCardStats;
-  _importBuiltinCards: (jsonCardPack: any, previousDisabledStatus?: boolean) => Promise<void>;
+  _importBuiltinCards: (jsonCardPack: any, previousDisabledStatus?: boolean, previousBuiltinEntry?: BatchIndexEntry) => Promise<void>;
   _convertImportData: (importData: ImportData) => Promise<{ success: boolean; cards: ExtendedStandardCard[]; errors?: string[] }>;
   _validateImportData: (importData: ImportData, mode?: 'strict' | 'import_relaxed') => { isValid: boolean; errors: string[]; warnings: string[] };
   _preprocessCardImages: () => void;

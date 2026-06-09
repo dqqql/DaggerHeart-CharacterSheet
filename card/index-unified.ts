@@ -285,6 +285,14 @@ export const toggleBatchDisabled = async (batchId: string): Promise<boolean> => 
 };
 
 /**
+ * Set batch disabled status deterministically
+ */
+export const setBatchDisabled = async (batchId: string, disabled: boolean): Promise<boolean> => {
+  const store = useUnifiedCardStore.getState();
+  return store.setBatchDisabled(batchId, disabled);
+};
+
+/**
  * Get batch disabled status
  */
 export const getBatchDisabledStatus = (batchId: string): boolean => {
@@ -293,11 +301,35 @@ export const getBatchDisabledStatus = (batchId: string): boolean => {
 };
 
 /**
+ * Remove multiple batches
+ */
+export const removeBatches = (batchIds: string[]): boolean => {
+  const store = useUnifiedCardStore.getState();
+  return store.removeBatches(batchIds);
+};
+
+/**
  * Get all batches with status information
  */
 export const getAllBatches = () => {
   const store = useUnifiedCardStore.getState();
   return store.getAllBatches();
+};
+
+/**
+ * Get batch management rows for the management UI
+ */
+export const getBatchManagementRows = () => {
+  const store = useUnifiedCardStore.getState();
+  return store.getBatchManagementRows();
+};
+
+/**
+ * Get one batch detail for the management drawer
+ */
+export const getBatchDetail = (batchId: string) => {
+  const store = useUnifiedCardStore.getState();
+  return store.getBatchDetail(batchId);
 };
 
 // ===== Store and Hooks =====
