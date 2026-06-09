@@ -395,7 +395,49 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
         };
       }
 
-      const normalizedMetadata = normalizeImportMetadata(processedData);
+      const builtinKnownDefinitions = ((builtinCardPackJson as any).customFieldDefinitions ?? {}) as Record<string, unknown>;
+      const existingCustomFieldDefinitions = get().getAggregatedCustomFields();
+      const existingVariantTypes = get().getAggregatedVariantTypes();
+      const normalizedMetadata = normalizeImportMetadata(processedData, {
+        existingCustomFieldDefinitions: {
+          professions: [
+            ...new Set([
+              ...(Array.isArray(builtinKnownDefinitions.professions) ? builtinKnownDefinitions.professions as string[] : []),
+              ...(existingCustomFieldDefinitions.professions ?? []),
+            ]),
+          ],
+          ancestries: [
+            ...new Set([
+              ...(Array.isArray(builtinKnownDefinitions.ancestries) ? builtinKnownDefinitions.ancestries as string[] : []),
+              ...(existingCustomFieldDefinitions.ancestries ?? []),
+            ]),
+          ],
+          communities: [
+            ...new Set([
+              ...(Array.isArray(builtinKnownDefinitions.communities) ? builtinKnownDefinitions.communities as string[] : []),
+              ...(existingCustomFieldDefinitions.communities ?? []),
+            ]),
+          ],
+          domains: [
+            ...new Set([
+              ...(Array.isArray(builtinKnownDefinitions.domains) ? builtinKnownDefinitions.domains as string[] : []),
+              ...(existingCustomFieldDefinitions.domains ?? []),
+            ]),
+          ],
+          variants: [
+            ...new Set([
+              ...(Array.isArray(builtinKnownDefinitions.variants) ? builtinKnownDefinitions.variants as string[] : []),
+              ...(existingCustomFieldDefinitions.variants ?? []),
+            ]),
+          ],
+        },
+        existingVariantTypes: {
+          ...((builtinKnownDefinitions.variantTypes && typeof builtinKnownDefinitions.variantTypes === 'object')
+            ? builtinKnownDefinitions.variantTypes as Record<string, any>
+            : {}),
+          ...existingVariantTypes,
+        },
+      });
       const warnings = mergeImportWarnings(validation.warnings, normalizedMetadata.warnings);
 
       // Check for ID conflicts with existing cards

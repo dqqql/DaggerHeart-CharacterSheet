@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest"
 import {
   partitionImportValidationErrors,
   validateProfessionCard,
+  validateVariantCard,
   type ValidationContext,
   type ValidationError,
 } from "@/card/type-validators"
@@ -86,5 +87,40 @@ describe("partitionImportValidationErrors", () => {
     expect(result.errors).toEqual(issues)
     expect(result.warnings).toHaveLength(0)
     expect(result.isValid).toBe(false)
+  })
+})
+
+describe("validateVariantCard", () => {
+  it("accepts package-declared variants even when unrelated variantTypes already exist in context", () => {
+    const result = validateVariantCard(
+      {
+        id: "enemy-variant-1",
+        ["\u540d\u79f0"]: "灰帽",
+        ["\u7c7b\u578b"]: "敌人",
+        ["\u6548\u679c"]: "测试效果",
+      },
+      0,
+      undefined,
+      {
+        customFields: {
+          professions: [],
+          domains: [],
+          ancestries: [],
+          communities: [],
+          variants: ["敌人"],
+        },
+        variantTypes: {
+          ["\u91ce\u517d\u5f62\u6001"]: {
+            subclasses: [],
+            levelRange: [1, 4],
+          },
+        },
+      }
+    )
+
+    expect(result.errors).not.toContainEqual(
+      expect.objectContaining({ path: "variant[0].类型" })
+    )
+    expect(result.isValid).toBe(true)
   })
 })

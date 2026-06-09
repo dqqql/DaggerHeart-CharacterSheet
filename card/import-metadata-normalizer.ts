@@ -36,6 +36,11 @@ type NormalizedDefinitionCategory =
   | 'domains'
   | 'variants'
 
+export interface ImportMetadataNormalizationContext {
+  existingCustomFieldDefinitions?: Partial<Record<NormalizedDefinitionCategory, string[]>>
+  existingVariantTypes?: Record<string, VariantTypeDefinition>
+}
+
 function pushUnique(target: string[], value: unknown) {
   if (typeof value !== 'string') {
     return
@@ -66,6 +71,10 @@ function readDefinitionValues(definitions: ImportData['customFieldDefinitions'],
 
 function collectMissingValues(derived: string[], declared: string[]) {
   return derived.filter((value) => !declared.includes(value))
+}
+
+function collectUnknownValues(derived: string[], declared: string[], known: string[]) {
+  return derived.filter((value) => !declared.includes(value) && !known.includes(value))
 }
 
 function joinValues(values: string[]) {
@@ -128,7 +137,10 @@ function toVariantTypeDefinition(accumulator: VariantAccumulator, existing?: Var
   }
 }
 
-export function normalizeImportMetadata(importData: ImportData): NormalizedImportMetadata {
+export function normalizeImportMetadata(
+  importData: ImportData,
+  context: ImportMetadataNormalizationContext = {}
+): NormalizedImportMetadata {
   const definitions = importData.customFieldDefinitions
 
   const declaredDefinitions: Record<NormalizedDefinitionCategory, string[]> = {
@@ -137,6 +149,13 @@ export function normalizeImportMetadata(importData: ImportData): NormalizedImpor
     communities: readDefinitionValues(definitions, ['communities', 'community']),
     domains: readDefinitionValues(definitions, ['domains', 'domain']),
     variants: readDefinitionValues(definitions, ['variants', 'variant']),
+  }
+  const knownDefinitions: Record<NormalizedDefinitionCategory, string[]> = {
+    professions: context.existingCustomFieldDefinitions?.professions ?? [],
+    ancestries: context.existingCustomFieldDefinitions?.ancestries ?? [],
+    communities: context.existingCustomFieldDefinitions?.communities ?? [],
+    domains: context.existingCustomFieldDefinitions?.domains ?? [],
+    variants: context.existingCustomFieldDefinitions?.variants ?? [],
   }
 
   const professions = [...declaredDefinitions.professions]
@@ -180,16 +199,21 @@ export function normalizeImportMetadata(importData: ImportData): NormalizedImpor
   })
 
   const collectedVariantTypes = collectVariantTypes(importData)
-  const existingVariantTypes = definitions?.variantTypes ?? {}
-  const declaredVariantTypes = [...new Set([...declaredDefinitions.variants, ...Object.keys(existingVariantTypes)])]
+  const declaredVariantTypes = definitions?.variantTypes ?? {}
+  const knownVariantTypeNames = new Set([
+    ...declaredDefinitions.variants,
+    ...Object.keys(declaredVariantTypes),
+    ...Object.keys(context.existingVariantTypes ?? {}),
+    ...knownDefinitions.variants,
+  ])
   const autoCreatedVariantTypes = [...collectedVariantTypes.keys()].filter(
-    (type) => !declaredVariantTypes.includes(type)
+    (type) => !knownVariantTypeNames.has(type)
   )
   collectedVariantTypes.forEach((_, type) => pushUnique(variants, type))
 
   const variantTypes: Record<string, VariantTypeDefinition> = {}
 
-  Object.entries(existingVariantTypes).forEach(([type, definition]) => {
+  Object.entries(declaredVariantTypes).forEach(([type, definition]) => {
     variantTypes[type] = toVariantTypeDefinition(
       collectedVariantTypes.get(type) ?? { subclasses: new Set<string>(), levels: [] },
       definition
@@ -201,23 +225,31 @@ export function normalizeImportMetadata(importData: ImportData): NormalizedImpor
     variantTypes[type] = toVariantTypeDefinition(accumulator)
   })
 
-  const missingSubclassMainProfessions = collectMissingValues(
+  const missingSubclassMainProfessions = collectUnknownValues(
     subclassMainProfessions,
-    declaredDefinitions.professions
+    declaredDefinitions.professions,
+    knownDefinitions.professions
   )
-  const autoFilledProfessions = collectMissingValues(
+  const autoFilledProfessions = collectUnknownValues(
     professionNamesFromCards,
-    declaredDefinitions.professions
+    declaredDefinitions.professions,
+    knownDefinitions.professions
   ).filter((value) => !missingSubclassMainProfessions.includes(value))
-  const autoFilledAncestries = collectMissingValues(
+  const autoFilledAncestries = collectUnknownValues(
     ancestryNamesFromCards,
-    declaredDefinitions.ancestries
+    declaredDefinitions.ancestries,
+    knownDefinitions.ancestries
   )
-  const autoFilledCommunities = collectMissingValues(
+  const autoFilledCommunities = collectUnknownValues(
     communityNamesFromCards,
-    declaredDefinitions.communities
+    declaredDefinitions.communities,
+    knownDefinitions.communities
   )
-  const autoFilledDomains = collectMissingValues(domainNamesFromCards, declaredDefinitions.domains)
+  const autoFilledDomains = collectUnknownValues(
+    domainNamesFromCards,
+    declaredDefinitions.domains,
+    knownDefinitions.domains
+  )
 
   const warnings: string[] = []
 

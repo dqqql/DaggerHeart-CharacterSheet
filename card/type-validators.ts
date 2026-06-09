@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 卡牌类型验证器
  * 用于验证导入的原始卡牌数据是否符合各自的类型定义
  */
@@ -440,75 +440,71 @@ export function validateDomainCard(card: any, index: number, tempFields?: Tempor
 export function validateVariantCard(card: any, index: number, variantTypes?: Record<string, any>, context?: ValidationContext): TypeValidationResult {
     const errors: ValidationError[] = [];
     const prefix = `variant[${index}]`;
-
-    // 优先使用ValidationContext中的变体类型，否则使用传入的variantTypes
     const effectiveVariantTypes = context ? context.variantTypes : variantTypes;
+    const declaredVariantNames = context?.customFields?.variants ?? [];
+    const hasDeclaredVariantNames = declaredVariantNames.length > 0;
 
-    // 必需字段验证
     if (!card.id || typeof card.id !== 'string') {
-        errors.push({ 
-            path: `${prefix}.id`, 
-            message: 'id字段是必需的，且必须是字符串' 
+        errors.push({
+            path: `${prefix}.id`,
+            message: 'id字段是必需的，且必须是字符串'
         });
     }
 
     if (!card.名称 || typeof card.名称 !== 'string') {
-        errors.push({ 
-            path: `${prefix}.名称`, 
-            message: '名称字段是必需的，且必须是字符串' 
+        errors.push({
+            path: `${prefix}.名称`,
+            message: '名称字段是必需的，且必须是字符串'
         });
     }
 
     if (!card.类型 || typeof card.类型 !== 'string') {
-        errors.push({ 
-            path: `${prefix}.类型`, 
-            message: '类型字段是必需的，且必须是字符串' 
+        errors.push({
+            path: `${prefix}.类型`,
+            message: '类型字段是必需的，且必须是字符串'
         });
     } else {
-        // 支持两种验证方式：老格式 variantTypes 对象和新格式 variants 数组
-        // 优先使用老格式验证（兼容导入），然后使用新格式验证（编辑器）
         if (effectiveVariantTypes && Object.keys(effectiveVariantTypes).length > 0) {
-            // 老格式验证：检查 variantTypes 对象
-            if (!effectiveVariantTypes[card.类型]) {
+            if (!effectiveVariantTypes[card.类型] && !declaredVariantNames.includes(card.类型)) {
                 const availableTypes = Object.keys(effectiveVariantTypes);
-                errors.push({ 
-                    path: `${prefix}.类型`, 
-                    message: `类型字段必须是预定义的变体类型。可用类型: ${availableTypes.join(', ')}`,
+                const availableTypeSummary = declaredVariantNames.length > 0
+                    ? [...new Set([...availableTypes, ...declaredVariantNames.filter(Boolean)])]
+                    : availableTypes;
+
+                errors.push({
+                    path: `${prefix}.类型`,
+                    message: `类型字段必须是预定义的变体类型。可用类型: ${availableTypeSummary.join(', ')}`,
                     value: card.类型
                 });
             }
-        } else if (context?.customFields?.variants && context.customFields.variants.length > 0) {
-            // 新格式验证：检查 variants 数组
-            if (!context.customFields.variants.includes(card.类型)) {
-                const availableTypes = context.customFields.variants;
-                errors.push({ 
-                    path: `${prefix}.类型`, 
-                    message: `类型字段必须是预定义的变体类型。可用类型: ${availableTypes.join(', ')}`,
+        } else if (hasDeclaredVariantNames) {
+            if (!declaredVariantNames.includes(card.类型)) {
+                errors.push({
+                    path: `${prefix}.类型`,
+                    message: `类型字段必须是预定义的变体类型。可用类型: ${declaredVariantNames.join(', ')}`,
                     value: card.类型
                 });
             }
         } else {
-            // 如果两种格式都没有定义，要求用户先定义变体类型
-            errors.push({ 
-                path: `${prefix}.类型`, 
+            errors.push({
+                path: `${prefix}.类型`,
                 message: '包中未定义任何变体类型，请在自定义字段定义中添加变体类型',
                 value: card.类型
             });
         }
     }
 
-    // 子类别验证（如果提供）- 统一空值检查
     if (card.子类别 !== undefined && card.子类别 !== null && card.子类别 !== '') {
         if (typeof card.子类别 !== 'string') {
-            errors.push({ 
-                path: `${prefix}.子类别`, 
-                message: '子类别字段必须是字符串' 
+            errors.push({
+                path: `${prefix}.子类别`,
+                message: '子类别字段必须是字符串'
             });
         } else if (effectiveVariantTypes && effectiveVariantTypes[card.类型]) {
             const validSubclasses = effectiveVariantTypes[card.类型].subclasses;
             if (validSubclasses && Array.isArray(validSubclasses) && !validSubclasses.includes(card.子类别)) {
-                errors.push({ 
-                    path: `${prefix}.子类别`, 
+                errors.push({
+                    path: `${prefix}.子类别`,
                     message: `子类别字段必须是类型"${card.类型}"的有效子类别。可用选项: ${validSubclasses.join(', ')}`,
                     value: card.子类别
                 });
@@ -516,25 +512,24 @@ export function validateVariantCard(card: any, index: number, variantTypes?: Rec
         }
     }
 
-    // 等级验证（如果提供）- 统一空值检查，空字符串视为未提供
     if (card.等级 !== undefined && card.等级 !== null && card.等级 !== '') {
         if (typeof card.等级 === 'string') {
-            errors.push({ 
-                path: `${prefix}.等级`, 
+            errors.push({
+                path: `${prefix}.等级`,
                 message: '等级字段必须是数字，不能包含文字或特殊字符',
                 value: card.等级
             });
         } else if (typeof card.等级 !== 'number' || card.等级 < 0 || !Number.isInteger(card.等级)) {
-            errors.push({ 
-                path: `${prefix}.等级`, 
-                message: '等级字段必须是非负数字',
+            errors.push({
+                path: `${prefix}.等级`,
+                message: '等级字段必须是非负整数',
                 value: card.等级
             });
         } else if (effectiveVariantTypes && effectiveVariantTypes[card.类型]?.levelRange) {
             const [min, max] = effectiveVariantTypes[card.类型].levelRange;
             if (card.等级 < min || card.等级 > max) {
-                errors.push({ 
-                    path: `${prefix}.等级`, 
+                errors.push({
+                    path: `${prefix}.等级`,
                     message: `等级字段必须在范围 ${min}-${max} 内`,
                     value: card.等级
                 });
@@ -542,19 +537,17 @@ export function validateVariantCard(card: any, index: number, variantTypes?: Rec
         }
     }
 
-    // 效果验证
     if (!card.效果 || typeof card.效果 !== 'string') {
-        errors.push({ 
-            path: `${prefix}.效果`, 
-            message: '效果字段是必需的，且必须是字符串' 
+        errors.push({
+            path: `${prefix}.效果`,
+            message: '效果字段是必需的，且必须是字符串'
         });
     }
 
-    // 简略信息验证（如果提供）- 统一空值检查
     if (card.简略信息 !== undefined && card.简略信息 !== null) {
         if (typeof card.简略信息 !== 'object' || Array.isArray(card.简略信息)) {
-            errors.push({ 
-                path: `${prefix}.简略信息`, 
+            errors.push({
+                path: `${prefix}.简略信息`,
                 message: '简略信息字段必须是对象（如果提供的话）',
                 value: card.简略信息
             });
@@ -566,10 +559,6 @@ export function validateVariantCard(card: any, index: number, variantTypes?: Rec
         errors
     };
 }
-
-/**
- * 验证变体类型定义
- */
 export function validateVariantTypeDefinitions(variantTypes: Record<string, any>): ValidationError[] {
     const errors: ValidationError[] = [];
     
@@ -719,3 +708,4 @@ export class CardTypeValidator {
         };
     }
 }
+
