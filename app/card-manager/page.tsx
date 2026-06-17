@@ -217,14 +217,14 @@ function BatchMetricCard({
 
 function StatusPill({ row }: { row: BatchManagementRow }) {
   if (row.healthStatus === 'abnormal') {
-    return <span className="inline-flex rounded-full bg-red-50 px-2.5 py-1 text-xs font-medium text-red-500">异常</span>
+    return <span className="inline-flex whitespace-nowrap rounded-full bg-red-50 px-2.5 py-1 text-xs font-medium text-red-500">异常</span>
   }
 
   if (row.disabled) {
-    return <span className="inline-flex rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-500">未启用</span>
+    return <span className="inline-flex whitespace-nowrap rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-500">未启用</span>
   }
 
-  return <span className="inline-flex rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-500">已启用</span>
+  return <span className="inline-flex whitespace-nowrap rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-500">已启用</span>
 }
 
 function StorageUsageDial({ percent }: { percent: number }) {
@@ -856,7 +856,7 @@ export default function CardManagerPage() {
                       <RefreshCw className="h-4 w-4" />
                       刷新
                     </Button>
-                    <Button variant="outline" size="sm" className="rounded-md" onClick={goBackToMain}>
+                    <Button variant="outline" size="sm" className="rounded-md border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700" onClick={goBackToMain}>
                       <Home className="h-4 w-4" />
                       返回主站
                     </Button>
