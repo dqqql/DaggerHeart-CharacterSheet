@@ -197,10 +197,10 @@ function BatchMetricCard({
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-2xl border px-4 py-3 text-left transition ${active ? 'border-red-200 bg-red-50/40 shadow-[0_12px_30px_rgba(239,68,68,0.08)]' : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/80'}`}
+      className={`rounded-lg border px-4 py-3 text-left transition ${active ? 'border-slate-400 bg-slate-100' : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'}`}
     >
       <div className="flex items-center gap-3">
-        <div className={`flex h-9 w-9 items-center justify-center rounded-xl border ${accentClasses[accent]}`}>
+        <div className={`flex h-9 w-9 items-center justify-center rounded-md border ${accentClasses[accent]}`}>
           <Icon className="h-4 w-4" />
         </div>
         <div className="min-w-0">
@@ -234,7 +234,7 @@ function StorageUsageDial({ percent }: { percent: number }) {
     <div
       className="relative flex h-[92px] w-[92px] items-center justify-center rounded-full"
       style={{
-        background: `conic-gradient(#3b82f6 ${safePercent}%, #e5e7eb ${safePercent}% 100%)`,
+        background: `conic-gradient(#334155 ${safePercent}%, #e5e7eb ${safePercent}% 100%)`,
       }}
     >
       <div className="absolute inset-[10px] rounded-full bg-white" />
@@ -717,11 +717,11 @@ export default function CardManagerPage() {
   }, [paginatedRows])
 
   return (
-    <div className="min-h-screen bg-[#f4f6fb] px-4 py-6 md:px-6">
-      <div className="mx-auto max-w-[1580px] rounded-[34px] border border-white/70 bg-white/90 p-4 shadow-[0_24px_80px_rgba(15,23,42,0.08)] backdrop-blur md:p-5 xl:p-6">
+    <div className="min-h-screen bg-slate-50 px-4 py-6 md:px-6">
+      <div className="mx-auto max-w-[1580px] rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:p-5 xl:p-6">
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-[320px_minmax(0,1fr)]">
           <div className="space-y-5">
-            <Card className="rounded-[28px] border-slate-200/80 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
+            <Card className="rounded-lg border border-slate-200 shadow-sm">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-2 text-xl">
                   <Upload className="h-5 w-5 text-slate-700" />
@@ -730,7 +730,7 @@ export default function CardManagerPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div
-                  className={`rounded-[24px] border border-dashed px-6 py-9 text-center transition ${dragActive ? 'border-blue-400 bg-blue-50' : 'border-slate-200 bg-slate-50/90 hover:border-slate-300'} ${importStatus.isImporting ? 'pointer-events-none opacity-60' : ''}`}
+                  className={`rounded-lg border border-dashed px-6 py-9 text-center transition ${dragActive ? 'border-slate-400 bg-slate-100' : 'border-slate-300 bg-slate-50 hover:border-slate-400'} ${importStatus.isImporting ? 'pointer-events-none opacity-60' : ''}`}
                   onDragEnter={handleDrag}
                   onDragLeave={handleDrag}
                   onDragOver={handleDrag}
@@ -742,7 +742,7 @@ export default function CardManagerPage() {
                   <p className="mt-5 text-base font-semibold text-slate-900">拖拽文件到此处</p>
                   <p className="mt-2 text-sm leading-6 text-slate-500">支持 JSON / ZIP / DHCB，点击下方按钮也可以直接上传。</p>
                   <Button
-                    className="mt-5 rounded-xl border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                    className="mt-5 rounded-md border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
                     variant="outline"
                     onClick={openSystemFilePicker}
                     disabled={importStatus.isImporting}
@@ -760,7 +760,7 @@ export default function CardManagerPage() {
                 </div>
 
                 {importStatus.isImporting && (
-                  <div className="flex items-center gap-2 rounded-2xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+                  <div className="flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700">
                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
                     正在导入卡包...
                   </div>
@@ -775,7 +775,7 @@ export default function CardManagerPage() {
                 )}
 
                 {importStatus.error && (
-                  <div className="flex items-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                  <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                     <AlertCircle className="h-4 w-4" />
                     {importStatus.error}
                   </div>
@@ -783,7 +783,7 @@ export default function CardManagerPage() {
               </CardContent>
             </Card>
 
-            <Card className="rounded-[28px] border-slate-200/80 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
+            <Card className="rounded-lg border border-slate-200 shadow-sm">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-2 text-xl">
                   <HardDrive className="h-5 w-5 text-slate-700" />
@@ -811,7 +811,7 @@ export default function CardManagerPage() {
               </CardContent>
             </Card>
 
-            <Card className="rounded-[28px] border-red-100 bg-red-50/40 shadow-[0_10px_30px_rgba(239,68,68,0.08)]">
+            <Card className="rounded-lg border border-red-200 bg-red-50/50 shadow-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-xl text-red-600">
                   <ShieldAlert className="h-5 w-5" />
@@ -822,7 +822,7 @@ export default function CardManagerPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button variant="destructive" className="h-11 w-full rounded-xl" onClick={handleClearAllLocalStorage}>
+                <Button variant="destructive" className="h-11 w-full rounded-lg" onClick={handleClearAllLocalStorage}>
                   强制初始化所有数据
                 </Button>
                 <p className="text-xs text-red-500/80">此操作不会恢复历史存档，建议先导出或手动备份重要数据。</p>
@@ -830,7 +830,7 @@ export default function CardManagerPage() {
             </Card>
           </div>
 
-          <Card className="overflow-hidden rounded-[30px] border-slate-200/80 shadow-[0_16px_48px_rgba(15,23,42,0.05)]">
+          <Card className="overflow-hidden rounded-lg border border-slate-200 shadow-sm">
             <CardContent className="space-y-5 p-4 md:p-5 xl:p-6">
               <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
                 <div className="min-w-0">
@@ -839,24 +839,24 @@ export default function CardManagerPage() {
                     支持搜索、筛选、批量启停和详情抽屉。当前共显示 {filteredRows.length} 个结果。
                   </p>
                   <div className="mt-4 flex flex-wrap items-center gap-2">
-                    <Button variant="outline" size="sm" className="rounded-xl" onClick={() => setDocumentModalOpen(true)}>
+                    <Button variant="outline" size="sm" className="rounded-md" onClick={() => setDocumentModalOpen(true)}>
                       <BookOpen className="h-4 w-4" />
                       高级卡包创作指南
                     </Button>
-                    <Button variant="outline" size="sm" className="rounded-xl" onClick={() => navigateToPage('/card-editor')}>
+                    <Button variant="outline" size="sm" className="rounded-md" onClick={() => navigateToPage('/card-editor')}>
                       <Edit3 className="h-4 w-4" />
                       卡包编辑器
                     </Button>
-                    <Button variant="outline" size="sm" className="rounded-xl" onClick={() => handleViewCards()}>
+                    <Button variant="outline" size="sm" className="rounded-md" onClick={() => handleViewCards()}>
                       <Eye className="h-4 w-4" />
                       查看全部卡牌
                       <Badge variant="secondary" className="ml-1 rounded-full px-2">{allCardsCount}</Badge>
                     </Button>
-                    <Button variant="outline" size="sm" className="rounded-xl" onClick={() => refreshData()}>
+                    <Button variant="outline" size="sm" className="rounded-md" onClick={() => refreshData()}>
                       <RefreshCw className="h-4 w-4" />
                       刷新
                     </Button>
-                    <Button variant="outline" size="sm" className="rounded-xl" onClick={goBackToMain}>
+                    <Button variant="outline" size="sm" className="rounded-md" onClick={goBackToMain}>
                       <Home className="h-4 w-4" />
                       返回主站
                     </Button>
@@ -866,7 +866,7 @@ export default function CardManagerPage() {
                 <div className="flex flex-col items-stretch gap-3 xl:items-end">
                   <Button
                     onClick={openSystemFilePicker}
-                    className="h-11 rounded-xl bg-red-500 px-5 text-white shadow-[0_12px_30px_rgba(239,68,68,0.24)] hover:bg-red-600"
+                    className="h-11 rounded-lg px-5"
                   >
                     <Upload className="h-4 w-4" />
                     导入卡包
@@ -927,7 +927,7 @@ export default function CardManagerPage() {
                   <Input
                     value={filters.search}
                     onChange={(event) => setFilters((previous) => ({ ...previous, search: event.target.value }))}
-                    className="h-11 rounded-2xl border-slate-200 bg-white pl-11 shadow-sm"
+                    className="h-11 rounded-lg border-slate-200 bg-white pl-11 shadow-sm"
                     placeholder="搜索卡包名称 / 文件名 / 批次 ID"
                   />
                 </div>
@@ -935,7 +935,7 @@ export default function CardManagerPage() {
                 <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
                     <Select value={filters.status} onValueChange={(value) => setFilters((previous) => ({ ...previous, status: value as BatchFilterState['status'] }))}>
-                      <SelectTrigger className="h-10 min-w-[124px] rounded-xl border-slate-200 bg-white">
+                      <SelectTrigger className="h-10 min-w-[124px] rounded-md border-slate-200 bg-white">
                         <SelectValue placeholder="状态" />
                       </SelectTrigger>
                       <SelectContent>
@@ -946,7 +946,7 @@ export default function CardManagerPage() {
                       </SelectContent>
                     </Select>
                     <Select value={filters.type} onValueChange={(value) => setFilters((previous) => ({ ...previous, type: value as BatchFilterState['type'] }))}>
-                      <SelectTrigger className="h-10 min-w-[124px] rounded-xl border-slate-200 bg-white">
+                      <SelectTrigger className="h-10 min-w-[124px] rounded-md border-slate-200 bg-white">
                         <SelectValue placeholder="类型" />
                       </SelectTrigger>
                       <SelectContent>
@@ -956,7 +956,7 @@ export default function CardManagerPage() {
                       </SelectContent>
                     </Select>
                     <Select value={filters.source} onValueChange={(value) => setFilters((previous) => ({ ...previous, source: value as BatchFilterState['source'] }))}>
-                      <SelectTrigger className="h-10 min-w-[124px] rounded-xl border-slate-200 bg-white">
+                      <SelectTrigger className="h-10 min-w-[124px] rounded-md border-slate-200 bg-white">
                         <SelectValue placeholder="来源" />
                       </SelectTrigger>
                       <SelectContent>
@@ -974,7 +974,7 @@ export default function CardManagerPage() {
                         setSort({ key, direction })
                       }}
                     >
-                      <SelectTrigger className="h-10 min-w-[172px] rounded-xl border-slate-200 bg-white">
+                      <SelectTrigger className="h-10 min-w-[172px] rounded-md border-slate-200 bg-white">
                         <SelectValue placeholder="排序" />
                       </SelectTrigger>
                       <SelectContent>
@@ -988,11 +988,11 @@ export default function CardManagerPage() {
                     </Select>
                   </div>
 
-                  <div className="flex items-center gap-2 self-start rounded-2xl border border-slate-200 bg-slate-50 p-1">
+                  <div className="flex items-center gap-2 self-start rounded-md border border-slate-200 bg-slate-50 p-1">
                     <Button
                       size="sm"
                       variant={viewMode === 'list' ? 'default' : 'ghost'}
-                      className={viewMode === 'list' ? 'rounded-xl bg-white text-red-500 shadow-sm hover:bg-white' : 'rounded-xl text-slate-500 hover:text-slate-700'}
+                      className={viewMode === 'list' ? 'rounded-md bg-white text-slate-900 shadow-sm hover:bg-white' : 'rounded-md text-slate-500 hover:text-slate-700'}
                       onClick={() => setViewMode('list')}
                     >
                       <LayoutList className="h-4 w-4" />
@@ -1001,7 +1001,7 @@ export default function CardManagerPage() {
                     <Button
                       size="sm"
                       variant={viewMode === 'grouped' ? 'default' : 'ghost'}
-                      className={viewMode === 'grouped' ? 'rounded-xl bg-white text-red-500 shadow-sm hover:bg-white' : 'rounded-xl text-slate-500 hover:text-slate-700'}
+                      className={viewMode === 'grouped' ? 'rounded-md bg-white text-slate-900 shadow-sm hover:bg-white' : 'rounded-md text-slate-500 hover:text-slate-700'}
                       onClick={() => setViewMode('grouped')}
                     >
                       <Layers3 className="h-4 w-4" />
@@ -1011,7 +1011,7 @@ export default function CardManagerPage() {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-3 rounded-[24px] border border-slate-200 bg-slate-50/80 px-4 py-3 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex flex-col gap-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 lg:flex-row lg:items-center lg:justify-between">
                 <div className="flex items-center gap-3">
                   <Checkbox
                     checked={allVisibleSelected}
@@ -1027,7 +1027,7 @@ export default function CardManagerPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="rounded-xl border-emerald-200 bg-white text-emerald-600 hover:bg-emerald-50"
+                    className="rounded-md border-emerald-200 bg-white text-emerald-600 hover:bg-emerald-50"
                     onClick={() => handleBulkDisabled(false)}
                     disabled={selectedRows.length === 0}
                   >
@@ -1037,7 +1037,7 @@ export default function CardManagerPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="rounded-xl border-slate-200 bg-white text-slate-700 hover:bg-slate-100"
+                    className="rounded-md border-slate-200 bg-white text-slate-700 hover:bg-slate-100"
                     onClick={() => handleBulkDisabled(true)}
                     disabled={selectedRows.length === 0}
                   >
@@ -1047,7 +1047,7 @@ export default function CardManagerPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="rounded-xl border-red-200 bg-white text-red-500 hover:bg-red-50"
+                    className="rounded-md border-red-200 bg-white text-red-500 hover:bg-red-50"
                     onClick={() => openDeleteDialog([...selectedBatchIds])}
                     disabled={selectedRemovableRows.length === 0}
                   >
@@ -1058,13 +1058,13 @@ export default function CardManagerPage() {
               </div>
 
               {filteredRows.length === 0 ? (
-                <div className="flex min-h-[360px] flex-col items-center justify-center rounded-[24px] border border-dashed border-slate-300 bg-slate-50 text-center">
+                <div className="flex min-h-[360px] flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 bg-slate-50 text-center">
                   <FileText className="mb-4 h-12 w-12 text-slate-400" />
                   <p className="text-lg font-medium text-slate-900">暂无匹配的卡包</p>
                   <p className="mt-2 text-sm text-slate-500">调整搜索与筛选条件，或先导入新的卡包。</p>
                 </div>
               ) : viewMode === 'list' ? (
-                <div className="overflow-hidden rounded-[24px] border border-slate-200">
+                <div className="overflow-hidden rounded-lg border border-slate-200">
                   <Table>
                     <TableHeader>
                       <TableRow className="h-12 border-slate-200 bg-slate-50/80 hover:bg-slate-50/80">
@@ -1086,7 +1086,7 @@ export default function CardManagerPage() {
                         return (
                           <TableRow
                             key={row.id}
-                            className={`cursor-pointer border-slate-100 transition hover:bg-slate-50 ${selectedBatchIds.has(row.id) ? 'bg-red-50/50' : 'bg-white'}`}
+                            className={`cursor-pointer border-slate-100 transition hover:bg-slate-50 ${selectedBatchIds.has(row.id) ? 'bg-slate-100' : 'bg-white'}`}
                             onClick={() => openBatchDetail(row.id)}
                           >
                             <TableCell className="align-middle" onClick={(event) => event.stopPropagation()}>
@@ -1177,7 +1177,7 @@ export default function CardManagerPage() {
               ) : (
                 <div className="space-y-4">
                   {groupedRows.map((group) => (
-                    <div key={group.sourceKind} className="rounded-[24px] border border-slate-200 bg-slate-50/60 p-4">
+                    <div key={group.sourceKind} className="rounded-lg border border-slate-200 bg-slate-50 p-4">
                       <div className="mb-3 flex items-center justify-between">
                         <div>
                           <h3 className="font-medium text-slate-900">{group.label}</h3>
@@ -1189,7 +1189,7 @@ export default function CardManagerPage() {
                         {group.rows.map((row) => (
                           <div
                             key={row.id}
-                            className={`cursor-pointer rounded-[22px] border p-4 transition hover:border-slate-200 hover:bg-white ${selectedBatchIds.has(row.id) ? 'border-red-100 bg-red-50/40' : 'border-white bg-white'}`}
+                            className={`cursor-pointer rounded-lg border p-4 transition hover:border-slate-300 ${selectedBatchIds.has(row.id) ? 'border-slate-400 bg-slate-100' : 'border-slate-200 bg-white'}`}
                             onClick={() => openBatchDetail(row.id)}
                           >
                             <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
@@ -1249,7 +1249,7 @@ export default function CardManagerPage() {
                 <div className="flex items-center gap-2 text-sm text-slate-500">
                   <span>每页</span>
                   <Select value={String(pageSize)} onValueChange={(value) => setPageSize(Number(value))}>
-                    <SelectTrigger className="h-9 w-[88px] rounded-xl border-slate-200 bg-white">
+                    <SelectTrigger className="h-9 w-[88px] rounded-md border-slate-200 bg-white">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -1266,7 +1266,7 @@ export default function CardManagerPage() {
                   <Button
                     variant="outline"
                     size="icon"
-                    className="h-9 w-9 rounded-xl"
+                    className="h-9 w-9 rounded-md"
                     onClick={() => setPage((previous) => Math.max(1, previous - 1))}
                     disabled={paginatedRows.currentPage <= 1}
                   >
@@ -1282,7 +1282,7 @@ export default function CardManagerPage() {
                         key={pageNumber}
                         variant={pageNumber === paginatedRows.currentPage ? 'default' : 'outline'}
                         size="icon"
-                        className={pageNumber === paginatedRows.currentPage ? 'h-9 w-9 rounded-xl bg-red-500 text-white hover:bg-red-600' : 'h-9 w-9 rounded-xl'}
+                        className={pageNumber === paginatedRows.currentPage ? 'h-9 w-9 rounded-md bg-primary text-primary-foreground hover:bg-primary/90' : 'h-9 w-9 rounded-md'}
                         onClick={() => setPage(pageNumber)}
                       >
                         {pageNumber}
@@ -1292,7 +1292,7 @@ export default function CardManagerPage() {
                   <Button
                     variant="outline"
                     size="icon"
-                    className="h-9 w-9 rounded-xl"
+                    className="h-9 w-9 rounded-md"
                     onClick={() => setPage((previous) => Math.min(paginatedRows.totalPages, previous + 1))}
                     disabled={paginatedRows.currentPage >= paginatedRows.totalPages}
                   >
@@ -1301,14 +1301,14 @@ export default function CardManagerPage() {
                 </div>
 
                 <div className="flex flex-wrap items-center justify-end gap-2">
-                  <Button variant="outline" className="rounded-xl border-red-200 text-red-500 hover:bg-red-50" onClick={handleClearAll}>
+                  <Button variant="outline" className="rounded-md border-red-200 text-red-500 hover:bg-red-50" onClick={handleClearAll}>
                     清空所有自定义卡牌
                   </Button>
                   <span className="text-sm font-medium text-slate-600">共 {filteredRows.length} 条</span>
                   <Button
                     variant="outline"
                     size="icon"
-                    className="h-9 w-9 rounded-xl"
+                    className="h-9 w-9 rounded-md"
                     onClick={() => refreshData()}
                     title="刷新数据"
                   >
@@ -1408,7 +1408,7 @@ export default function CardManagerPage() {
                       </CardHeader>
                       <CardContent className="space-y-3">
                         {batchDetail.activityLog.map((entry, index) => (
-                          <div key={`${entry.type}-${entry.at}-${index}`} className="rounded-xl border border-slate-200 p-3">
+                          <div key={`${entry.type}-${entry.at}-${index}`} className="rounded-md border border-slate-200 p-3">
                             <div className="flex items-center justify-between gap-3">
                               <span className="text-sm font-medium text-slate-900">{entry.summary}</span>
                               <span className="text-xs text-slate-500">{new Date(entry.at).toLocaleString()}</span>
@@ -1457,7 +1457,7 @@ export default function CardManagerPage() {
                 : `将永久删除 ${deleteTargetIds.length} 个卡包及其卡牌数据，且不可恢复。`}
             </DialogDescription>
           </DialogHeader>
-          <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          <div className="rounded-md border border-slate-200 bg-slate-50 p-3 text-sm text-slate-600">
             系统内置批次不会进入删除列表；只有当前确认的自定义批次会被移除。
           </div>
           <DialogFooter>
