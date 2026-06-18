@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
+import { promptDialog } from "@/components/ui/confirm-dialog"
+import { toast } from "@/hooks/use-toast"
 import { CharacterMetadata } from "@/lib/sheet-data"
 import { loadCharacterDisplayNameById, MAX_CHARACTERS } from "@/lib/multi-character-storage"
 import { importCharacterFromHTMLFile } from "@/lib/html-importer"
@@ -96,7 +98,7 @@ export function CharacterManagementModal({
                         const defaultSaveName = `${characterName} (导入)`
                         
                         // 提示用户输入存档名称
-                        const saveName = prompt('请输入新存档的名称:', defaultSaveName)
+                        const saveName = await promptDialog({ title: '新建存档', label: '存档名称', defaultValue: defaultSaveName, confirmText: '创建' })
                         if (saveName) {
                             // 先创建新存档
                             const success = onCreateCharacter(saveName)
@@ -104,20 +106,20 @@ export function CharacterManagementModal({
                                 // 创建成功后导入数据
                                 onImportData(result.data)
                                 if (result.warnings && result.warnings.length > 0) {
-                                    alert(`HTML导入成功并创建新存档"${saveName}"，但有以下警告：\n${result.warnings.join('\n')}`)
+                                    toast({ title: '导入成功', description: `已创建新存档"${saveName}"，但有警告：${result.warnings.join('；')}` })
                                 } else {
-                                    alert(`HTML导入成功并创建新存档"${saveName}"`)
+                                    toast({ title: '导入成功', description: `已创建新存档"${saveName}"` })
                                 }
                             } else {
-                                alert('创建新存档失败，可能已达到存档数量上限')
+                                toast({ variant: 'destructive', title: '创建失败', description: '创建新存档失败，可能已达到存档数量上限' })
                             }
                         }
                     } else {
-                        alert(`HTML导入失败：${result.error}`)
+                        toast({ variant: 'destructive', title: 'HTML导入失败', description: result.error })
                     }
                 } catch (error) {
                     console.error('HTML Import and Create failed:', error)
-                    alert('HTML导入失败：文件处理出错')
+                    toast({ variant: 'destructive', title: 'HTML导入失败', description: '文件处理出错' })
                 }
             }
         }
@@ -152,8 +154,8 @@ export function CharacterManagementModal({
                     {/* 新建存档按钮 - 固定在列表上方 */}
                     <div
                         className="flex items-center justify-center p-4 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 hover:border-gray-400 transition-colors cursor-pointer mb-2 flex-shrink-0"
-                        onClick={() => {
-                            const saveName = prompt('请输入新存档的名称:', '我的存档')
+                        onClick={async () => {
+                            const saveName = await promptDialog({ title: '新建空白存档', label: '存档名称', defaultValue: '我的存档', confirmText: '创建' })
                             if (saveName) {
                                 onCreateCharacter(saveName)
                             }
@@ -209,8 +211,8 @@ export function CharacterManagementModal({
                                         <Button
                                             size="sm"
                                             variant="outline"
-                                            onClick={() => {
-                                                const newSaveName = prompt('请输入新的存档名称:', character.saveName)
+                                            onClick={async () => {
+                                                const newSaveName = await promptDialog({ title: '重命名存档', label: '新的存档名称', defaultValue: character.saveName, confirmText: '重命名' })
                                                 if (newSaveName && newSaveName !== character.saveName) {
                                                     onRenameCharacter(character.id, newSaveName)
                                                 }
@@ -221,8 +223,8 @@ export function CharacterManagementModal({
                                         <Button
                                             size="sm"
                                             variant="outline"
-                                            onClick={() => {
-                                                const newSaveName = prompt('请输入复制存档的名称:', `${character.saveName} (副本)`)
+                                            onClick={async () => {
+                                                const newSaveName = await promptDialog({ title: '复制存档', label: '复制存档的名称', defaultValue: `${character.saveName} (副本)`, confirmText: '复制' })
                                                 if (newSaveName) {
                                                     onDuplicateCharacter(character.id, newSaveName)
                                                 }
@@ -260,7 +262,7 @@ export function CharacterManagementModal({
                                     if (file) {
                                         try {
                                             const reader = new FileReader()
-                                            reader.onload = (e: ProgressEvent<FileReader>) => {
+                                            reader.onload = async (e: ProgressEvent<FileReader>) => {
                                                 try {
                                                     const jsonString = e.target?.result as string
                                                     const validation = validateJSONCharacterData(jsonString)
@@ -271,7 +273,7 @@ export function CharacterManagementModal({
                                                         const defaultSaveName = `${characterName} (导入)`
 
                                                         // 提示用户输入存档名称
-                                                        const saveName = prompt('请输入新存档的名称:', defaultSaveName)
+                                                        const saveName = await promptDialog({ title: '新建存档', label: '存档名称', defaultValue: defaultSaveName, confirmText: '创建' })
                                                         if (saveName) {
                                                             // 先创建新存档
                                                             const success = onCreateCharacter(saveName)
@@ -279,26 +281,26 @@ export function CharacterManagementModal({
                                                                 // 创建成功后导入数据
                                                                 onImportData(validation.data)
                                                                 if (validation.warnings && validation.warnings.length > 0) {
-                                                                    alert(`JSON导入成功并创建新存档"${saveName}"，但有以下警告：\n${validation.warnings.join('\n')}`)
+                                                                    toast({ title: '导入成功', description: `已创建新存档"${saveName}"，但有警告：${validation.warnings.join('；')}` })
                                                                 } else {
-                                                                    alert(`JSON导入成功并创建新存档"${saveName}"`)
+                                                                    toast({ title: '导入成功', description: `已创建新存档"${saveName}"` })
                                                                 }
                                                             } else {
-                                                                alert('创建新存档失败，可能已达到存档数量上限')
+                                                                toast({ variant: 'destructive', title: '创建失败', description: '创建新存档失败，可能已达到存档数量上限' })
                                                             }
                                                         }
                                                     } else {
-                                                        alert(`导入失败：${validation.error}`)
+                                                        toast({ variant: 'destructive', title: '导入失败', description: validation.error })
                                                     }
                                                 } catch (error) {
                                                     console.error('JSON Import failed:', error)
-                                                    alert('JSON导入失败：文件处理出错')
+                                                    toast({ variant: 'destructive', title: 'JSON导入失败', description: '文件处理出错' })
                                                 }
                                             }
                                             reader.readAsText(file)
                                         } catch (error) {
                                             console.error('File reading failed:', error)
-                                            alert('文件读取失败')
+                                            toast({ variant: 'destructive', title: '读取失败', description: '文件读取失败' })
                                         }
                                     }
                                 }

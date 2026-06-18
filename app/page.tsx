@@ -9,6 +9,7 @@ import CharacterSheetPageAdventureNotes from "@/components/character-sheet-page-
 import { isEmptyCard, type StandardCard } from "@/card/card-types"
 import { CardDrawer } from "@/components/card-drawer"
 import { showFadeNotification } from "@/components/ui/fade-notification"
+import { confirm, promptDialog } from "@/components/ui/confirm-dialog"
 import { CardSelectionModal } from "@/components/modals/card-selection-modal"
 import { CharacterSheetPageFour, CharacterSheetPageFive } from "@/components/character-sheet-page-card-print"
 import ArmorTemplatePage from "@/components/character-sheet-page-iknis"
@@ -446,13 +447,14 @@ export default function Home() {
       })
 
       if (result.warnings.length > 0) {
-        window.alert(`卡图包已导入，但有以下提示：\n\n${result.warnings.join("\n")}`)
+        showFadeNotification({ message: `卡图包已导入，但有提示：${result.warnings.join("；")}`, type: "info" })
       }
     } catch (error) {
       console.error("[OfficialImagePack] Import failed:", error)
-      window.alert(
-        `卡图包导入失败：${error instanceof Error ? error.message : "未知错误"}`,
-      )
+      showFadeNotification({
+        message: `卡图包导入失败：${error instanceof Error ? error.message : "未知错误"}`,
+        type: "error",
+      })
     } finally {
       setIsImportingOfficialImagePack(false)
       setOfficialImagePackImportProgress(null)
@@ -464,7 +466,12 @@ export default function Home() {
       return
     }
 
-    const confirmed = window.confirm("确认清除当前本地官方卡图缓存吗？")
+    const confirmed = await confirm({
+      title: "清除本地官方卡图缓存",
+      description: "确认清除当前本地官方卡图缓存吗？",
+      confirmText: "清除",
+      variant: "destructive",
+    })
     if (!confirmed) {
       return
     }
@@ -480,9 +487,10 @@ export default function Home() {
       })
     } catch (error) {
       console.error("[OfficialImagePack] Clear failed:", error)
-      window.alert(
-        `清除卡图失败：${error instanceof Error ? error.message : "未知错误"}`,
-      )
+      showFadeNotification({
+        message: `清除卡图失败：${error instanceof Error ? error.message : "未知错误"}`,
+        type: "error",
+      })
     }
   }
 
@@ -634,7 +642,12 @@ export default function Home() {
             const defaultSaveName = `${characterName} (HTML导入)`
 
             // 提示用户输入存档名称
-            const saveName = prompt('请输入新存档的名称:', defaultSaveName)
+            const saveName = await promptDialog({
+              title: '新建存档',
+              label: '存档名称',
+              defaultValue: defaultSaveName,
+              confirmText: '创建',
+            })
             if (saveName && saveName.trim()) {
               // 先创建新存档
               const success = createNewCharacterHandler(saveName.trim())
@@ -642,20 +655,20 @@ export default function Home() {
                 // 创建成功后导入数据
                 setFormData(result.data)
                 if (result.warnings && result.warnings.length > 0) {
-                  alert(`HTML导入成功并创建新存档"${saveName}"，但有以下警告：\n${result.warnings.join('\n')}`)
+                  showFadeNotification({ message: `HTML导入成功并创建新存档"${saveName}"，但有警告：${result.warnings.join('；')}`, type: 'info' })
                 } else {
-                  alert(`HTML导入成功并创建新存档"${saveName}"`)
+                  showFadeNotification({ message: `HTML导入成功并创建新存档"${saveName}"`, type: 'success' })
                 }
               } else {
-                alert('创建新存档失败，可能已达到存档数量上限')
+                showFadeNotification({ message: '创建新存档失败，可能已达到存档数量上限', type: 'error' })
               }
             }
           } else {
-            alert(`HTML导入失败：${result.error}`)
+            showFadeNotification({ message: `HTML导入失败：${result.error}`, type: 'error' })
           }
         } catch (error) {
           console.error('HTML导入失败:', error)
-          alert('HTML导入失败: ' + (error instanceof Error ? error.message : '未知错误'))
+          showFadeNotification({ message: 'HTML导入失败: ' + (error instanceof Error ? error.message : '未知错误'), type: 'error' })
         }
       }
     }
@@ -915,7 +928,7 @@ export default function Home() {
 
           {/* 文字模式切换开关 - 胶囊型，在容器外右下角 */}
           <div className={`print:hidden mt-3 flex flex-col gap-3 transition-all duration-300 ${isDualPageMode && !isMobile ? 'w-[425mm] min-w-[425mm]' : 'w-[210mm]'}`}>
-            <div className="flex items-start justify-between gap-3 rounded-2xl border border-slate-200 bg-white/85 px-4 py-3 shadow-sm backdrop-blur">
+            <div className="flex items-start justify-between gap-3 rounded-xl border border-slate-200 bg-white/85 px-4 py-3 shadow-sm backdrop-blur">
               <div className="min-w-0">
                 <div className="text-sm font-semibold text-slate-800">
                   {hasOfficialImagePack ? "卡图包已导入" : "当前为 SRD 纯文字模式"}
@@ -990,7 +1003,7 @@ export default function Home() {
             </div>
 
             {isImportingOfficialImagePack && officialImagePackProgressView && (
-              <div className="rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 shadow-sm">
+              <div className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 shadow-sm">
                 <div className="flex items-center justify-between gap-3 text-sm text-sky-900">
                   <div className="flex items-center gap-2">
                     <div className="h-2 w-2 animate-pulse rounded-full bg-sky-500" />

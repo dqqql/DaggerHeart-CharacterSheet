@@ -19,7 +19,7 @@ export function PageHeader({ variant = 'full' }: PageHeaderProps) {
   }, [])
 
   return (
-    <div className="bg-gray-800 text-white p-1.5 flex items-center rounded-t-md mb-2">
+    <div className="bg-primary text-primary-foreground p-1.5 flex items-center rounded-t-md mb-2">
       <div className="flex flex-col">
         <div className="text-[9px]">DAGGERHEART P{openDate}</div>
       </div>

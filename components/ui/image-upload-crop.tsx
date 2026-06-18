@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react"
 import ReactCrop, { centerCrop, makeAspectCrop, type Crop } from "react-image-crop"
 import "react-image-crop/dist/ReactCrop.css"
+import { toast } from "@/hooks/use-toast"
 
 interface ImageUploadCropProps {
     /** 当前图片的 base64 字符串 */
@@ -95,7 +96,7 @@ export const ImageUploadCrop: React.FC<ImageUploadCropProps> = ({
         if (e.target.files && e.target.files.length > 0) {
             const file = e.target.files[0]
             if (file.size > 20 * 1024 * 1024) {
-                alert("图片文件过大，请选择小于20MB的图片。")
+                toast({ variant: "destructive", title: "图片过大", description: "图片文件过大，请选择小于20MB的图片。" })
                 return
             }
 

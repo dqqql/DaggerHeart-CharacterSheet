@@ -4,6 +4,7 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { FadeNotificationContainer } from "@/components/ui/fade-notification"
+import { ConfirmDialogHost } from "@/components/ui/confirm-dialog"
 import { ProgressModalProvider } from "@/components/ui/unified-progress-modal"
 import { ChunkLoadErrorHandler } from "@/components/chunk-load-error-handler"
 import PrintHelper from "./print-helper"
@@ -105,11 +106,12 @@ export default function RootLayout({
       </head>
       <body suppressHydrationWarning>
         <ChunkLoadErrorHandler />
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+        <ThemeProvider attribute="class" defaultTheme="light" forcedTheme="light" enableSystem={false}>
           <ProgressModalProvider>
             <PrintHelper />
             {children}
             <Toaster />
+            <ConfirmDialogHost />
             <FadeNotificationContainer />
             {/* 水印 */}
             <div className="app-watermark fixed bottom-2 left-2 text-gray-500 text-xs opacity-75 pointer-events-none">

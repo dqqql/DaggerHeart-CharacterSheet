@@ -1,6 +1,7 @@
 "use client"
 
 import { CharacterMetadata } from "@/lib/sheet-data"
+import { promptDialog } from "@/components/ui/confirm-dialog"
 
 interface SaveSwitcherProps {
   characterList: CharacterMetadata[]
@@ -16,10 +17,10 @@ export function SaveSwitcher({
   const currentSave = characterList.find(char => char.id === currentCharacterId)
   const displayName = currentSave?.saveName || '加载中...'
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if (!currentCharacterId || !currentSave) return
-    
-    const newSaveName = prompt('请输入新的存档名称:', currentSave.saveName)
+
+    const newSaveName = await promptDialog({ title: '重命名存档', label: '新的存档名称', defaultValue: currentSave.saveName, confirmText: '重命名' })
     if (newSaveName && newSaveName.trim() !== currentSave.saveName) {
       onRenameCharacter(currentCharacterId, newSaveName.trim())
     }

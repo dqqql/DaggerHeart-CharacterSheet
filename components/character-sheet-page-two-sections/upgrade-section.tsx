@@ -13,6 +13,7 @@ import { DomainCardSelector } from "@/components/upgrade-popover/domain-card-sel
 import { ProficiencyEditor } from "@/components/upgrade-popover/proficiency-editor"
 import { SubclassCardSelector } from "@/components/upgrade-popover/subclass-card-selector"
 import { NewExperienceEditor } from "@/components/upgrade-popover/new-experience-editor"
+import { showFadeNotification } from "@/components/ui/fade-notification"
 import type { StandardCard } from "@/card/card-types"
 
 interface UpgradeSectionProps {
@@ -95,8 +96,7 @@ export function UpgradeSection({
       }
 
       if (emptySlotIndex === -1) {
-        // Use showFadeNotification - need to import it
-        alert("没有空余卡位") // Temporary, will be replaced
+        showFadeNotification({ message: "没有空余卡位", type: "error" })
         return
       }
 
@@ -124,7 +124,7 @@ export function UpgradeSection({
       }
 
       if (emptySlotIndex === -1) {
-        alert("没有空余卡位") // Temporary
+        showFadeNotification({ message: "没有空余卡位", type: "error" })
         return
       }
 

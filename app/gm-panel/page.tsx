@@ -636,7 +636,7 @@ function FearTracker({
   const safeValue = Math.max(0, Math.min(max, value))
 
   return (
-    <section className="rounded-xl border border-rose-200 bg-gradient-to-r from-rose-50 via-white to-amber-50 px-4 py-4 shadow-sm">
+    <section className="rounded-lg border border-rose-200 bg-rose-50/60 px-4 py-4 shadow-sm">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0">
           <div className="flex items-center gap-3">

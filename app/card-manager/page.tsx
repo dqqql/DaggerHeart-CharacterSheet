@@ -5,6 +5,7 @@ import { AlertCircle, BookOpen, CheckCircle2, ChevronLeft, ChevronRight, Edit3, 
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { confirm, promptDialog } from '@/components/ui/confirm-dialog'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -32,6 +33,7 @@ import { CARD_PACKAGE_IMPORT_ACCEPT, isCardPackageArchiveFileName } from '@/card
 import { STORAGE_KEYS, useUnifiedCardStore } from '@/card/stores/unified-card-store'
 import type { BatchDetail, BatchManagementRow } from '@/card/stores/store-types'
 import { getAllCharacterStorageKeys } from '@/lib/multi-character-storage'
+import { toast } from '@/hooks/use-toast'
 import { navigateToPage } from '@/lib/utils'
 import aiGuideContent from '@/public/自定义卡包指南和示例/AI-卡包创作指南.md'
 import exampleJsonData from '@/public/自定义卡包指南和示例/神州战役卡牌包.json'
@@ -557,7 +559,7 @@ export default function CardManagerPage() {
   const handleSingleToggle = async (row: BatchManagementRow) => {
     const success = await setBatchDisabled(row.id, !row.disabled)
     if (!success) {
-      alert('切换卡包状态失败')
+      toast({ variant: 'destructive', title: '操作失败', description: '切换卡包状态失败' })
       return
     }
 
@@ -572,7 +574,7 @@ export default function CardManagerPage() {
 
     const results = await Promise.all(targetRows.map((row) => setBatchDisabled(row.id, disabled)))
     if (results.some((result) => !result)) {
-      alert(disabled ? '部分卡包停用失败' : '部分卡包启用失败')
+      toast({ variant: 'destructive', title: '操作失败', description: disabled ? '部分卡包停用失败' : '部分卡包启用失败' })
     }
 
     await refreshData()
@@ -585,7 +587,7 @@ export default function CardManagerPage() {
     })
 
     if (removableIds.length === 0) {
-      alert('系统内置批次不可删除。')
+      toast({ title: '无法删除', description: '系统内置批次不可删除。' })
       return
     }
 
@@ -599,7 +601,7 @@ export default function CardManagerPage() {
 
     const removed = removeBatches(deleteTargetIds)
     if (!removed) {
-      alert('删除失败')
+      toast({ variant: 'destructive', title: '删除失败', description: '未能删除所选卡包，请重试。' })
       return
     }
 
@@ -616,7 +618,13 @@ export default function CardManagerPage() {
   }
 
   const handleClearAll = async () => {
-    if (!confirm('确定要清空所有自定义卡牌吗？此操作不可恢复。')) {
+    const confirmed = await confirm({
+      title: '清空所有自定义卡牌',
+      description: '确定要清空所有自定义卡牌吗？此操作不可恢复。',
+      confirmText: '清空',
+      variant: 'destructive',
+    })
+    if (!confirmed) {
       return
     }
 
@@ -626,22 +634,36 @@ export default function CardManagerPage() {
       setSelectedBatchId(null)
       setDetailOpen(false)
       await refreshData()
-      alert('所有自定义卡牌已清空')
+      toast({ title: '已清空', description: '所有自定义卡牌已清空' })
     } catch (error) {
-      alert(`清空失败: ${error instanceof Error ? error.message : String(error)}`)
+      toast({ variant: 'destructive', title: '清空失败', description: error instanceof Error ? error.message : String(error) })
     }
   }
 
   const handleClearAllLocalStorage = async () => {
-    if (!confirm('⚠️ 危险操作确认 ⚠️\n\n确定要清空本项目的本地数据吗？\n\n这将删除：\n• 所有自定义卡牌\n• 内置卡牌缓存\n• 所有角色数据和角色卡\n• 本项目的公告阅读状态等本地设置\n\n不会删除同源下其他页面的本地数据。\n\n此操作不可恢复！请确保您已备份重要数据。')) {
+    const confirmed = await confirm({
+      title: '⚠️ 危险操作确认',
+      description: '确定要清空本项目的本地数据吗？\n\n这将删除：\n• 所有自定义卡牌\n• 内置卡牌缓存\n• 所有角色数据和角色卡\n• 本项目的公告阅读状态等本地设置\n\n不会删除同源下其他页面的本地数据。\n\n此操作不可恢复！请确保您已备份重要数据。',
+      confirmText: '我已了解，继续',
+      variant: 'destructive',
+    })
+    if (!confirmed) {
       return
     }
 
     const confirmationText = '删除全部本地数据'
-    const typedConfirmation = prompt(`此操作会永久删除本项目的角色存档、卡牌数据和相关本地设置。\n\n如确实需要继续，请输入：${confirmationText}`)
+    const typedConfirmation = await promptDialog({
+      title: '请输入确认文本',
+      description: `此操作会永久删除本项目的角色存档、卡牌数据和相关本地设置。\n\n如确实需要继续，请输入：${confirmationText}`,
+      label: '确认文本',
+      placeholder: confirmationText,
+      requireMatch: confirmationText,
+      confirmText: '永久删除',
+      variant: 'destructive',
+    })
 
     if (typedConfirmation !== confirmationText) {
-      alert('已取消强制初始化。')
+      toast({ title: '已取消', description: '已取消强制初始化。' })
       return
     }
 
@@ -652,12 +674,12 @@ export default function CardManagerPage() {
       await store.initializeSystem()
       await refreshData()
 
-      alert('本项目本地数据已清空！页面将自动刷新。')
+      toast({ title: '已清空', description: '本项目本地数据已清空！页面将自动刷新。' })
       setTimeout(() => {
         window.location.reload()
       }, 1000)
     } catch (error) {
-      alert(`清空数据失败: ${error instanceof Error ? error.message : String(error)}`)
+      toast({ variant: 'destructive', title: '清空数据失败', description: error instanceof Error ? error.message : String(error) })
     }
   }
 

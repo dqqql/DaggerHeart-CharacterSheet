@@ -385,7 +385,8 @@ html {
       --card-foreground: 0 0% 3.9%;
       --popover: 0 0% 100%;
       --popover-foreground: 0 0% 3.9%;
-      --primary: 0 0% 9%;
+      /* 深灰主色，对齐导航栏/品牌栏既有的 gray-800 (#1f2937) */
+      --primary: 215 28% 17%;
       --primary-foreground: 0 0% 98%;
       --secondary: 0 0% 96.1%;
       --secondary-foreground: 0 0% 9%;

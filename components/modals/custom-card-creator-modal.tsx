@@ -7,6 +7,7 @@ import { Reorder } from "framer-motion"
 import { BaseCardModal } from "./base/BaseCardModal"
 import { ModalHeader } from "./base/ModalHeader"
 import { Button } from "@/components/ui/button"
+import { confirm } from "@/components/ui/confirm-dialog"
 import { Input } from "@/components/ui/input"
 import {
   Form,
@@ -89,13 +90,19 @@ export function CustomCardCreatorModal({
     setTags(tags.filter((tag) => tag !== tagToRemove))
   }
 
-  const handleClose = useCallback(() => {
+  const handleClose = useCallback(async () => {
     // 检测是否有未保存的内容
     const formValues = form.getValues()
     const formHasContent = formValues.name || formValues.realType
 
     if (formHasContent) {
-      if (confirm("关闭将丢失未保存的卡牌，确定要关闭吗？")) {
+      const confirmed = await confirm({
+        title: "放弃未保存的卡牌",
+        description: "关闭将丢失未保存的卡牌，确定要关闭吗？",
+        confirmText: "关闭",
+        variant: "destructive",
+      })
+      if (confirmed) {
         form.reset()
         onClose()
       }

@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
+import { promptDialog } from "@/components/ui/confirm-dialog"
 import { CharacterMetadata } from "@/lib/sheet-data"
 import { MAX_CHARACTERS } from "@/lib/multi-character-storage"
 
@@ -35,18 +36,18 @@ export function ArchiveManagerDropdown({
 
   const currentSave = characterList.find(char => char.id === currentCharacterId)
 
-  const handleRename = () => {
+  const handleRename = async () => {
     if (!currentCharacterId || !currentSave) return
-    
-    const newSaveName = prompt('请输入新的存档名称:', currentSave.saveName)
+
+    const newSaveName = await promptDialog({ title: '重命名存档', label: '新的存档名称', defaultValue: currentSave.saveName, confirmText: '重命名' })
     if (newSaveName && newSaveName.trim() !== currentSave.saveName) {
       onRenameCharacter(currentCharacterId, newSaveName.trim())
     }
     setOpen(false)
   }
 
-  const handleCreateNew = () => {
-    const saveName = prompt('请输入新存档的名称:', '我的存档')
+  const handleCreateNew = async () => {
+    const saveName = await promptDialog({ title: '新建存档', label: '存档名称', defaultValue: '我的存档', confirmText: '创建' })
     if (saveName && saveName.trim()) {
       onCreateCharacter(saveName.trim())
     }

@@ -77,7 +77,7 @@ function MainModeContent(props: MainModeProps) {
             <Button
               onClick={props.onToggleCardDrawer}
               className={cn(
-                "relative flex items-center justify-center rounded-full bg-gray-800 p-0 text-white hover:bg-gray-700",
+                "relative flex items-center justify-center rounded-full bg-primary p-0 text-primary-foreground hover:bg-primary/90",
                 isMobile ? "h-12 w-12" : "h-10 w-10",
                 props.isCardDrawerOpen && "ring-2 ring-blue-400 ring-offset-2 ring-offset-gray-900",
               )}
@@ -106,7 +106,7 @@ function MainModeContent(props: MainModeProps) {
             <Button
               onClick={props.onToggleGuide}
               className={cn(
-                "gap-1.5 bg-gray-800 text-sm text-white hover:bg-gray-700",
+                "gap-1.5 bg-primary text-sm text-primary-foreground hover:bg-primary/90",
                 isMobile ? "px-4 py-2.5" : "px-3 py-1.5",
               )}
             >
@@ -125,7 +125,7 @@ function MainModeContent(props: MainModeProps) {
             <Button
               onClick={() => navigateToPage("/gm-panel")}
               className={cn(
-                "gap-1.5 bg-gray-800 text-sm text-white hover:bg-gray-700",
+                "gap-1.5 bg-primary text-sm text-primary-foreground hover:bg-primary/90",
                 isMobile ? "px-4 py-2.5" : "px-3 py-1.5",
               )}
             >
@@ -144,7 +144,7 @@ function MainModeContent(props: MainModeProps) {
             <Button
               onClick={props.onToggleNotebook}
               className={cn(
-                "gap-1.5 bg-gray-800 text-sm text-white hover:bg-gray-700",
+                "gap-1.5 bg-primary text-sm text-primary-foreground hover:bg-primary/90",
                 isMobile ? "px-4 py-2.5" : "px-3 py-1.5",
               )}
             >
@@ -169,7 +169,7 @@ function MainModeContent(props: MainModeProps) {
                 <Button
                   data-testid="export-menu-trigger"
                   className={cn(
-                    "gap-1.5 bg-gray-800 text-sm text-white hover:bg-gray-700",
+                    "gap-1.5 bg-primary text-sm text-primary-foreground hover:bg-primary/90",
                     isMobile ? "px-4 py-2.5" : "px-3 py-1.5",
                   )}
                 >
@@ -222,7 +222,7 @@ function MainModeContent(props: MainModeProps) {
               <DropdownMenuTrigger asChild>
                 <Button
                   className={cn(
-                    "gap-1.5 bg-gray-800 text-sm text-white hover:bg-gray-700",
+                    "gap-1.5 bg-primary text-sm text-primary-foreground hover:bg-primary/90",
                     isMobile ? "px-4 py-2.5" : "px-3 py-1.5",
                   )}
                 >
@@ -270,7 +270,7 @@ function MainModeContent(props: MainModeProps) {
             <Button
               onClick={() => navigateToPage("/card-manager")}
               className={cn(
-                "gap-1.5 bg-gray-800 text-sm text-white hover:bg-gray-700",
+                "gap-1.5 bg-primary text-sm text-primary-foreground hover:bg-primary/90",
                 isMobile ? "px-4 py-2.5" : "px-3 py-1.5",
               )}
             >
@@ -298,7 +298,7 @@ function PreviewModeContent(props: PreviewModeProps) {
       <Button
         onClick={props.onExportPDF}
         className={cn(
-          "whitespace-nowrap bg-gray-800 text-white hover:bg-gray-700 focus:outline-none",
+          "whitespace-nowrap bg-primary text-primary-foreground hover:bg-primary/90 focus:outline-none",
           isMobile ? "px-6 py-3 text-base" : "px-4 py-2 text-sm",
         )}
       >
@@ -307,7 +307,7 @@ function PreviewModeContent(props: PreviewModeProps) {
       <Button
         onClick={props.onExportHTML}
         className={cn(
-          "whitespace-nowrap bg-gray-800 text-white hover:bg-gray-700 focus:outline-none",
+          "whitespace-nowrap bg-primary text-primary-foreground hover:bg-primary/90 focus:outline-none",
           isMobile ? "px-6 py-3 text-base" : "px-4 py-2 text-sm",
         )}
       >
@@ -316,7 +316,7 @@ function PreviewModeContent(props: PreviewModeProps) {
       <Button
         onClick={props.onExportJSON}
         className={cn(
-          "whitespace-nowrap bg-gray-800 text-white hover:bg-gray-700 focus:outline-none",
+          "whitespace-nowrap bg-primary text-primary-foreground hover:bg-primary/90 focus:outline-none",
           isMobile ? "px-6 py-3 text-base" : "px-4 py-2 text-sm",
         )}
       >
@@ -325,7 +325,7 @@ function PreviewModeContent(props: PreviewModeProps) {
       <Button
         onClick={props.onOpenCharacterCodeExport}
         className={cn(
-          "whitespace-nowrap bg-gray-800 text-white hover:bg-gray-700 focus:outline-none",
+          "whitespace-nowrap bg-primary text-primary-foreground hover:bg-primary/90 focus:outline-none",
           isMobile ? "px-6 py-3 text-base" : "px-4 py-2 text-sm",
         )}
       >
@@ -334,7 +334,7 @@ function PreviewModeContent(props: PreviewModeProps) {
       <Button
         onClick={props.onOpenSealDiceExport}
         className={cn(
-          "whitespace-nowrap bg-gray-800 text-white hover:bg-gray-700 focus:outline-none",
+          "whitespace-nowrap bg-primary text-primary-foreground hover:bg-primary/90 focus:outline-none",
           isMobile ? "px-6 py-3 text-base" : "px-4 py-2 text-sm",
         )}
       >

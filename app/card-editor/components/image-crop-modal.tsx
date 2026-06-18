@@ -5,6 +5,7 @@ import ReactCrop, { centerCrop, makeAspectCrop, type Crop, type PixelCrop } from
 import 'react-image-crop/dist/ReactCrop.css'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { toast } from '@/hooks/use-toast'
 import {
   calculateTargetDimensions,
   estimateQuality,
@@ -179,7 +180,7 @@ export function ImageCropModal({
       onClose()
     } catch (error) {
       console.error('[ImageCropModal] Failed to crop image:', error)
-      alert('图片裁剪失败，请重试')
+      toast({ variant: 'destructive', title: '裁剪失败', description: '图片裁剪失败，请重试' })
     } finally {
       setProcessing(false)
     }
