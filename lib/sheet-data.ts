@@ -4,24 +4,45 @@ import { StandardCard } from "@/card/card-types"
 import type { EquipmentSelectionState } from "@/types/preset-equipment"
 
 // ===== 多角色系统数据结构 =====
+export const RULE_SET_IDS = ["daggerheart", "rhodes-island"] as const
+export type RuleSetId = (typeof RULE_SET_IDS)[number]
+
+export function normalizeRuleSetId(value: unknown): RuleSetId {
+  return value === "rhodes-island" ? "rhodes-island" : "daggerheart"
+}
+
 export interface CharacterMetadata {
   id: string          // 唯一ID
   saveName: string    // 存档名称（用户为这个存档起的名字）
   lastModified: string // ISO 日期字符串
   createdAt: string   // ISO 日期字符串
   order: number       // 用于排序
+  ruleSetId?: RuleSetId // 所属规则；读取后必有值，optional 仅兼容历史调用方
 }
 
 export interface CharacterList {
   characters: CharacterMetadata[]  // 最多10个
   activeCharacterId: string | null // 当前活动角色ID
+  activeCharacterIds?: Partial<Record<RuleSetId, string | null>> // 各规则最近活动存档
+  activeRuleSetId?: RuleSetId
   lastUpdated: string             // ISO 日期字符串
+}
+
+export interface ActiveCharacterRecord {
+  ruleSetId: RuleSetId
+  characterId: string | null
 }
 
 // ===== 原有数据结构 =====
 export interface SheetCardReference {
   id: string
   name: string
+}
+
+export interface MulticlassSelection {
+  profession: SheetCardReference
+  branch: SheetCardReference
+  domain: SheetCardReference
 }
 
 /**
@@ -253,6 +274,7 @@ export interface NotebookData {
 
 export interface SheetData {
   // 通用属性
+  ruleSetId: RuleSetId
   name: string
   characterImage?: string
   level: string
@@ -286,6 +308,8 @@ export interface SheetData {
   gold: boolean[]
   experience: string[]
   experienceValues?: string[] // 经验数值，与 experience 一一对应
+  ancestryExperience?: string[] // 罗德岛规则：独立种族经历
+  ancestryExperienceValues?: string[]
   hope: number        // 当前希望值 (0-hopeMax)
   hopeMax?: number    // 希望最大值，默认6
   hp?: boolean[]
@@ -380,6 +404,12 @@ export interface SheetData {
   // ===== 预设装备自动计算迁移版本 =====
   presetEquipmentCalcVersion?: number
   domainCardAutomation?: DomainCardAutomationState
+
+  // ===== 规则专属进度与幂等自动化状态 =====
+  branchUpgradeCount?: number
+  selectedModule?: "x" | "y"
+  multiclassSelection?: MulticlassSelection
+  rulesetAutomationVersions?: Partial<Record<RuleSetId, number>>
 
   // ===== 临时索引签名，兼容动态key访问，后续逐步收敛类型安全 =====
   // [key: string]: any // 已废弃，彻底类型安全后移除

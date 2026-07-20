@@ -53,6 +53,7 @@ export function WeaponSection({
   const { sheetData: formData, setSheetData } = useSheetStore()
   const [isEditingName, setIsEditingName] = useState(false)
   const weaponFields = getWeaponFields(fieldPrefix)
+  const isBoundRhodesWeapon = formData.ruleSetId === "rhodes-island" && isPrimary
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -114,13 +115,18 @@ export function WeaponSection({
             <div className="group flex w-full border border-gray-400 rounded h-6 bg-white overflow-hidden">
               <button
                 type="button"
-                onClick={() => onOpenWeaponModal(weaponFields.name, isPrimary ? "primary" : "secondary")}
+                onClick={() => {
+                  if (!isBoundRhodesWeapon) {
+                    onOpenWeaponModal(weaponFields.name, isPrimary ? "primary" : "secondary")
+                  }
+                }}
+                aria-readonly={isBoundRhodesWeapon}
                 className="flex-1 text-sm text-left px-2 py-0.5 hover:bg-gray-50 focus:outline-none"
               >
                 {formData[weaponFields.name] || <span className="print:hidden">选择武器</span>}
               </button>
-              <div className="w-px bg-gray-300 hidden group-hover:block" />
-              <button
+              {!isBoundRhodesWeapon && <div className="w-px bg-gray-300 hidden group-hover:block" />}
+              {!isBoundRhodesWeapon && <button
                 type="button"
                 onClick={() => setIsEditingName(true)}
                 className="w-8 hidden group-hover:flex items-center justify-center hover:bg-gray-50 focus:outline-none print:hidden"
@@ -129,7 +135,7 @@ export function WeaponSection({
                 <svg className="w-3 h-3 text-gray-500" viewBox="0 0 16 16" fill="currentColor">
                   <path d="M11.498 1.5a.5.5 0 0 1 .707 0l2.295 2.295a.5.5 0 0 1 0 .707l-9.435 9.435a.5.5 0 0 1-.354.146H1.5a.5.5 0 0 1-.5-.5v-3.211a.5.5 0 0 1 .146-.354L10.582 1.5h.916zm-1 2.207-8.646 8.646v2.36h2.36l8.647-8.647L10.498 3.707z" />
                 </svg>
-              </button>
+              </button>}
             </div>
           )}
         </div>

@@ -18,6 +18,8 @@ yarn-error.log*
 .pnpm-debug.log*
 .next-dev*.log
 .playwright-mcp/
+/.playwright-cli/
+/output/playwright/
 
 # env files
 .env*

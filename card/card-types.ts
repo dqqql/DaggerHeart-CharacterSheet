@@ -16,6 +16,8 @@ export type SubClassLevel = typeof SUBCLASS_LEVEL_NAMES[number];
 
 export interface StandardCard {
   standarized: boolean
+  /** 内置卡所属规则；历史卡缺失时视为 daggerheart。 */
+  ruleset?: "daggerheart" | "rhodes-island"
   id: string
   name: string
   type: string // 确保这个字段存在

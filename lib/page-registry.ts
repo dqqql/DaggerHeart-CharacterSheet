@@ -60,6 +60,13 @@ export function getAllPages(): PageDefinition[] {
  * 判断页面是否可见
  */
 export function isPageVisible(page: PageDefinition, sheetData: SheetData): boolean {
+  if (
+    sheetData.ruleSetId === 'rhodes-island' &&
+    page.visibility.type === 'config'
+  ) {
+    return false
+  }
+
   switch (page.visibility.type) {
     case 'always':
       return true

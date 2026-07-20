@@ -7,6 +7,7 @@ import remarkGfm from "remark-gfm"
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -32,6 +33,9 @@ export function AnnouncementModal({
       <DialogContent className="flex max-h-[85vh] max-w-3xl flex-col overflow-hidden">
         <DialogHeader className="shrink-0">
           <DialogTitle>更新公告</DialogTitle>
+          <DialogDescription className="sr-only">
+            查看当前版本与历史版本的更新内容。
+          </DialogDescription>
         </DialogHeader>
 
         <div className="min-h-0 flex-1 space-y-6 overflow-y-auto pr-2">

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "ruleset": "rhodes-island",
+  "generatedFrom": "tttri",
+  "counts": {
+    "professions": 7,
+    "branches": 28,
+    "ancestries": 31,
+    "communities": 15,
+    "domains": 11,
+    "domainCards": 262
+  },
+  "normalizationNotes": [
+    "工业领域源文件有三张卡将‘回想费用1’误写为‘回想等级1’；按发布清单262张保留首张，另两张保存在 catalog.unpublishedSourceEntries 中。"
+  ],
+  "files": {
+    "catalog": "./catalog.json",
+    "cards": "./cards.json"
+  },
+  "placeholderImage": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+}

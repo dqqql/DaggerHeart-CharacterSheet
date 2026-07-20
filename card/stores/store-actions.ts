@@ -32,6 +32,7 @@ import {
 import { isVariantCard } from '../card-types';
 import { normalizeImportMetadata } from '../import-metadata-normalizer';
 import builtinCardPackJson from '../../data/cards/builtin-base.json';
+import { rhodesIslandCards } from '../../data/rhodes-island';
 import { CardTypeValidator } from '../type-validators';
 import { preprocessVariantFormat } from '../variant-format-preprocessor';
 import { createImageServiceActions } from './image-service/actions';
@@ -1794,6 +1795,11 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
         throw new Error(`Builtin cards conversion failed: ${convertResult.errors?.join(', ')}`);
       }
 
+      const allBuiltinCards: ExtendedStandardCard[] = [
+        ...convertResult.cards.map(card => ({ ...card, ruleset: 'daggerheart' as const })),
+        ...(rhodesIslandCards as ExtendedStandardCard[]),
+      ];
+
       // Use provided disabled status (already resolved in caller)
       const savedDisabledStatus = previousDisabledStatus || false;
 
@@ -1811,9 +1817,9 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
         lastUpdatedAt: previousBuiltinEntry?.lastUpdatedAt ?? importTime,
         version: jsonCardPack.version,
         description: jsonCardPack.description,
-        cardCount: convertResult.cards.length,
-        cardTypes: [...new Set(convertResult.cards.map(card => card.type))],
-        size: JSON.stringify(convertResult.cards).length,
+        cardCount: allBuiltinCards.length,
+        cardTypes: [...new Set(allBuiltinCards.map(card => card.type))],
+        size: JSON.stringify(allBuiltinCards).length,
         isSystemBatch: true,
         disabled: savedDisabledStatus,
         sourceKind: 'builtin',
@@ -1821,7 +1827,7 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
         healthMessages: previousBuiltinEntry?.healthMessages ?? [],
         activityLog: previousBuiltinEntry?.activityLog,
         loadError: undefined,
-        cardIds: convertResult.cards.map(card => card.id),
+        cardIds: allBuiltinCards.map(card => card.id),
         customFieldDefinitions: jsonCardPack.customFieldDefinitions,
         variantTypes: jsonCardPack.customFieldDefinitions?.variantTypes,
         imageCount: 0,
@@ -1837,7 +1843,7 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
       newBatches.set(BUILTIN_BATCH_ID, batchInfo);
 
       // Add cards with builtin source
-      convertResult.cards.forEach(card => {
+      allBuiltinCards.forEach(card => {
         newCards.set(card.id, {
           ...card,
           batchId: BUILTIN_BATCH_ID,
@@ -1864,7 +1870,7 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
       // NOTE: Do NOT call _rebuildCardsByType here - will be called in initializeSystem
       // NOTE: Do NOT call _preprocessCardImages here - will be called in initializeSystem
 
-      console.log(`[UnifiedCardStore] Successfully imported ${convertResult.cards.length} builtin cards`);
+      console.log(`[UnifiedCardStore] Successfully imported ${allBuiltinCards.length} builtin cards`);
 
     } catch (error) {
       console.error('[UnifiedCardStore] Failed to import builtin cards:', error);

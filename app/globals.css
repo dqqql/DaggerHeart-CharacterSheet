@@ -54,6 +54,110 @@ html {
   }
 }
 
+/* 共赴明日：罗德岛旅记。仅在对应规则外层生效，不改动原版外观。 */
+.rhodes-island-shell {
+  --ri-graphite: #222a2e;
+  --ri-steel: #dfe5e6;
+  --ri-cyan: #168aa3;
+  --ri-warning: #e4b928;
+  color: #20282c;
+  background:
+    linear-gradient(135deg, rgba(22, 138, 163, 0.07) 0 1px, transparent 1px 18px),
+    #eef1f1;
+}
+
+.rhodes-island-shell .a4-page {
+  border: 1px solid #aeb9bc;
+  border-top: 4px solid var(--ri-cyan);
+  background-color: #f7f8f7 !important;
+  box-shadow: 0 18px 44px rgba(25, 38, 43, 0.16);
+}
+
+.rhodes-island-shell .bg-gray-800 {
+  background-color: var(--ri-graphite) !important;
+}
+
+.rhodes-island-shell .bg-gray-600 {
+  background-color: #536166 !important;
+}
+
+.rhodes-island-shell button:focus-visible,
+.rhodes-island-shell [role="button"]:focus-visible {
+  outline: 3px solid var(--ri-warning);
+  outline-offset: 2px;
+}
+
+.rhodes-island-shell input:focus-visible {
+  border-color: var(--ri-cyan);
+  box-shadow: 0 0 0 1px var(--ri-cyan);
+  outline: none;
+}
+
+.rhodes-island-shell [data-radix-collection-item][data-state="active"] {
+  box-shadow: inset 0 -3px 0 var(--ri-cyan);
+}
+
+.rhodes-island-shell .a4-page > .rounded-t-md {
+  border-radius: 0;
+}
+
+.rhodes-island-shell .a4-page > .rounded-t-md::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-top: 10px solid #f7f8f7;
+  border-left: 10px solid transparent;
+  pointer-events: none;
+}
+
+/*
+ * 角色纸以 A4 实际尺寸排版。小屏不压缩可点击区域或缩小正文，而是在规则
+ * 外壳内提供明确的横向浏览区域；底部通用操作栏仍固定在视口中。
+ */
+@media (max-width: 800px) {
+  .rhodes-island-shell {
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-color: var(--ri-cyan) #d5dddf;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .rhodes-island-shell::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  .rhodes-island-shell::-webkit-scrollbar-thumb {
+    background: var(--ri-cyan);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rhodes-island-shell *,
+  .rhodes-island-shell *::before,
+  .rhodes-island-shell *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  .rhodes-island-shell {
+    background: white !important;
+  }
+
+  .rhodes-island-shell .a4-page {
+    box-shadow: none !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}
+
 /* 打印所有页面的特殊样式 - 默认都有分页符 */
 .print-all-pages .page-one,
 .print-all-pages .page-two,

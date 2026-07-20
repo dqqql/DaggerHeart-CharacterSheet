@@ -8,10 +8,9 @@
  * 4. 兼容性检查和警告
  */
 
-import { SheetData } from './sheet-data'
+import { normalizeRuleSetId, type SheetData, type AttributeValue } from './sheet-data'
 import { StandardCard } from '@/card/card-types'
 import { defaultSheetData } from './default-sheet-data'
-import type { AttributeValue } from './sheet-data'
 import { migrateSheetData } from './sheet-data-migration'
 import type { EquipmentSelectionState } from '@/types/preset-equipment'
 
@@ -83,6 +82,7 @@ export function isValidCard(card: any): card is StandardCard {
 export function cleanAndNormalizeData(data: any): SheetData {
   // 创建一个新的对象，只保留有效的字段
   const cleaned: SheetData = {
+    ruleSetId: normalizeRuleSetId(data.ruleSetId),
     name: String(data.name || ''),
     level: String(data.level || '1'),
     proficiency: Array.isArray(data.proficiency) ? data.proficiency : (typeof data.proficiency === 'number' ? data.proficiency : 0),
@@ -116,6 +116,10 @@ export function cleanAndNormalizeData(data: any): SheetData {
     gold: Array.isArray(data.gold) ? data.gold : [],
     experience: Array.isArray(data.experience) ? data.experience : [],
     experienceValues: Array.isArray(data.experienceValues) ? data.experienceValues : undefined,
+    ancestryExperience: Array.isArray(data.ancestryExperience) ? data.ancestryExperience.map(String) : [],
+    ancestryExperienceValues: Array.isArray(data.ancestryExperienceValues)
+      ? data.ancestryExperienceValues.map(String)
+      : [],
 
     // Hope 验证和转换（支持 number 和 boolean[] 两种格式）
     hope: (() => {
@@ -246,7 +250,23 @@ export function cleanAndNormalizeData(data: any): SheetData {
 
     presetEquipmentCalcVersion: typeof data.presetEquipmentCalcVersion === 'number'
       ? data.presetEquipmentCalcVersion
-      : undefined
+      : undefined,
+
+    domainCardAutomation: data.domainCardAutomation && typeof data.domainCardAutomation === 'object'
+      ? data.domainCardAutomation
+      : undefined,
+    branchUpgradeCount: Number.isFinite(data.branchUpgradeCount)
+      ? Math.max(0, Math.min(2, Math.trunc(data.branchUpgradeCount)))
+      : 0,
+    selectedModule: data.selectedModule === 'x' || data.selectedModule === 'y'
+      ? data.selectedModule
+      : undefined,
+    multiclassSelection: data.multiclassSelection && typeof data.multiclassSelection === 'object'
+      ? data.multiclassSelection
+      : undefined,
+    rulesetAutomationVersions: data.rulesetAutomationVersions && typeof data.rulesetAutomationVersions === 'object'
+      ? data.rulesetAutomationVersions
+      : undefined,
   }
 
   return cleaned

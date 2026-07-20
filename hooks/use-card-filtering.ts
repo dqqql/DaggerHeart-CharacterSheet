@@ -5,6 +5,8 @@ import { useUnifiedCardStore, CardType } from "@/card/stores/unified-card-store"
 import { useCardFilterStore } from "@/lib/card-filter-store"
 import type { ExtendedStandardCard } from "@/card/card-types"
 import { isVariantType, CARD_LEVEL_OPTIONS } from "@/card/card-types"
+import { cardBelongsToRuleSet } from "@/lib/ruleset"
+import { useSheetStore } from "@/lib/sheet-store"
 
 /**
  * 筛选状态
@@ -64,6 +66,7 @@ interface UseCardFilteringReturn {
 export function useCardFiltering(initialTab?: string): UseCardFilteringReturn {
   const cardStore = useUnifiedCardStore()
   const filterStore = useCardFilterStore()
+  const ruleSetId = useSheetStore(state => state.sheetData.ruleSetId)
 
   // === 同步 initialTab ===
   // 当 initialTab 与当前 activeTab 不同时，重置到 initialTab
@@ -100,6 +103,7 @@ export function useCardFiltering(initialTab?: string): UseCardFilteringReturn {
     const isVariant = isVariantType(state.activeTab)
     const targetType = isVariant ? CardType.Variant : (state.activeTab as CardType)
     const cards = cardStore.loadCardsByType(targetType)
+      .filter(card => cardBelongsToRuleSet(card, ruleSetId))
 
     // 如果是变体类型，需要进一步筛选 realType
     if (isVariant) {
@@ -109,7 +113,7 @@ export function useCardFiltering(initialTab?: string): UseCardFilteringReturn {
     }
 
     return cards
-  }, [state.activeTab, cardStore.initialized])
+  }, [state.activeTab, cardStore.initialized, ruleSetId])
 
   // === 卡包过滤后的卡牌（用于计算选项） ===
   const batchFilteredCards = useMemo(() => {

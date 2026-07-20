@@ -36,6 +36,7 @@ export function PageDisplay({
   onSwitchToPrevPage,
   onSwitchToNextPage,
 }: PageDisplayProps) {
+  const showPageSettings = formData.ruleSetId !== "rhodes-island"
   
   // 生成可见的tab配置
   const getVisibleTabs = () => {
@@ -59,7 +60,7 @@ export function PageDisplay({
               <div className="w-full overflow-x-auto tabs-container">
                 <TabsList className="grid w-full transition-all duration-300 ease-in-out h-10"
                   style={{
-                    gridTemplateColumns: `repeat(${getVisibleTabs().length}, 1fr) auto`
+                    gridTemplateColumns: `repeat(${getVisibleTabs().length}, 1fr)${showPageSettings ? " auto" : ""}`
                   }}>
                   {/* 左页tabs */}
                   {getVisibleTabs().map((tab, index) => (
@@ -76,9 +77,9 @@ export function PageDisplay({
                   ))}
 
                   {/* 页面管理下拉菜单 */}
-                  <div className="flex items-center justify-center min-w-[44px]">
+                  {showPageSettings && <div className="flex items-center justify-center min-w-[44px]">
                     <PageVisibilityDropdown />
-                  </div>
+                  </div>}
                 </TabsList>
               </div>
 
@@ -101,7 +102,7 @@ export function PageDisplay({
               <div className="w-full overflow-x-auto tabs-container">
                 <TabsList className="grid w-full transition-all duration-300 ease-in-out h-10"
                   style={{
-                    gridTemplateColumns: `repeat(${getVisibleTabs().length}, 1fr) auto`
+                    gridTemplateColumns: `repeat(${getVisibleTabs().length}, 1fr)${showPageSettings ? " auto" : ""}`
                   }}>
                   {/* 右页tabs */}
                   {getVisibleTabs().map((tab, index) => (
@@ -118,9 +119,9 @@ export function PageDisplay({
                   ))}
 
                   {/* 页面管理下拉菜单 */}
-                  <div className="flex items-center justify-center min-w-[44px]">
+                  {showPageSettings && <div className="flex items-center justify-center min-w-[44px]">
                     <PageVisibilityDropdown />
-                  </div>
+                  </div>}
                 </TabsList>
               </div>
 
@@ -144,7 +145,7 @@ export function PageDisplay({
           <div className="w-full overflow-x-auto tabs-container">
             <TabsList className={`grid w-full transition-all duration-300 ease-in-out ${isMobile ? 'h-12' : 'h-10'}`}
               style={{
-                gridTemplateColumns: `repeat(${getVisibleTabs().length}, 1fr) auto`
+                gridTemplateColumns: `repeat(${getVisibleTabs().length}, 1fr)${showPageSettings ? " auto" : ""}`
               }}>
               {/* 动态渲染可见的tabs - 填满可用空间 */}
               {getVisibleTabs().map((tab, index) => (
@@ -161,9 +162,9 @@ export function PageDisplay({
               ))}
 
               {/* 页面管理下拉菜单 - 固定宽度 */}
-              <div className="flex items-center justify-center min-w-[44px]">
+              {showPageSettings && <div className="flex items-center justify-center min-w-[44px]">
                 <PageVisibilityDropdown />
-              </div>
+              </div>}
             </TabsList>
           </div>
 

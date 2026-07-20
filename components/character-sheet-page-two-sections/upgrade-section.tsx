@@ -15,6 +15,7 @@ import { SubclassCardSelector } from "@/components/upgrade-popover/subclass-card
 import { NewExperienceEditor } from "@/components/upgrade-popover/new-experience-editor"
 import { showFadeNotification } from "@/components/ui/fade-notification"
 import type { StandardCard } from "@/card/card-types"
+import { getRhodesBranch } from "@/lib/rhodes-island-automation"
 
 interface UpgradeSectionProps {
   tier: number
@@ -45,6 +46,7 @@ export function UpgradeSection({
 }: UpgradeSectionProps) {
   const tierKey = `tier${tier}`
   const updateLevel = useSheetStore(state => state.updateLevel)
+  const setSheetData = useSheetStore(state => state.setSheetData)
   const [openPopoverIndex, setOpenPopoverIndex] = useState<string | null>(null)
   const [isLevelExpanded, setIsLevelExpanded] = useState(false)
   const [openNewExperiencePopover, setOpenNewExperiencePopover] = useState(false)
@@ -430,6 +432,44 @@ export function UpgradeSection({
             )
           })}
         </div>
+
+        {formData.ruleSetId === "rhodes-island" && tier === 3 && (() => {
+          const branch = getRhodesBranch(formData.subclassRef?.id)
+          const moduleOptionIndex = getUpgradeOptions(tier).findIndex(option => option.label.includes("获取模组"))
+          if (!branch || moduleOptionIndex < 0) return null
+          const moduleCheckKey = `${tierKey}-${moduleOptionIndex}-0`
+          return (
+            <div className="mt-2 border-l-4 border-cyan-700 bg-slate-50 p-2 print:border-slate-500">
+              <div className="mb-1 text-[10px] font-bold text-slate-700">模组编辑器（单选）</div>
+              <div className="grid grid-cols-2 gap-1">
+                {(["x", "y"] as const).map(moduleId => {
+                  const module = branch.modules[moduleId]
+                  const selected = formData.selectedModule === moduleId
+                  return (
+                    <button
+                      key={moduleId}
+                      type="button"
+                      aria-pressed={selected}
+                      className={`border px-1 py-1 text-[9px] font-bold transition-colors ${selected ? "border-cyan-800 bg-cyan-800 text-white" : "border-slate-400 bg-white text-slate-700"}`}
+                      title={module.description}
+                      onClick={() => {
+                        setSheetData({ selectedModule: moduleId })
+                        toggleUpgradeCheckbox(moduleCheckKey, moduleOptionIndex, true)
+                      }}
+                    >
+                      {module.name}
+                    </button>
+                  )
+                })}
+              </div>
+              {formData.selectedModule && (
+                <p className="mt-1 whitespace-pre-line text-[8px] leading-snug text-slate-600">
+                  {branch.modules[formData.selectedModule].description}
+                </p>
+              )}
+            </div>
+          )
+        })()}
 
         <div className="mt-3 !text-xs">
           {tier === 1 && (

@@ -29,12 +29,12 @@ const getBorderColor = (isSpecial = false): string => {
 }
 
 // Utility function for special slot label
-const getSpecialSlotLabel = (index: number): string => {
+const getSpecialSlotLabel = (index: number, isRhodesIsland = false): string => {
   switch (index) {
     case 0:
       return "职业";
     case 1:
-      return "子职业";
+      return isRhodesIsland ? "分支" : "子职业";
     case 2:
       return "种族一";
     case 3:
@@ -61,6 +61,7 @@ interface CardProps {
   isTextMode: boolean;
   isMobile: boolean;
   isSuppressed?: boolean;
+  isRhodesIsland?: boolean;
 }
 
 function Card({
@@ -78,6 +79,7 @@ function Card({
   isTextMode,
   isMobile,
   isSuppressed = false,
+  isRhodesIsland = false,
 }: CardProps) {
   // Optimize: avoid unnecessary conversion if already StandardCard
   const standardCard = card && typeof card === 'object' && 'type' in card && 'name' in card 
@@ -177,7 +179,7 @@ function Card({
       {isSpecial && (
         <div className="absolute -top-4 left-0 right-0 text-center">
           <span className="text-[10px] font-medium bg-yellow-100 px-1 py-0 rounded-t-sm border border-yellow-300 border-b-0">
-            {getSpecialSlotLabel(index)}
+            {getSpecialSlotLabel(index, isRhodesIsland)}
           </span>
         </div>
       )}
@@ -466,6 +468,9 @@ export function CardDeckSection({
         {cards &&
           Array.isArray(cards) &&
           cards.map((card: StandardCard, index: number) => {
+            if (formData.ruleSetId === "rhodes-island" && activeDeck === "focused" && index === 3) {
+              return null
+            }
             if (!card) {
               card = createEmptyCard();
             }
@@ -496,6 +501,7 @@ export function CardDeckSection({
                   isTextMode={isTextMode}
                   isMobile={isMobile}
                   isSuppressed={isSuppressed}
+                  isRhodesIsland={formData.ruleSetId === "rhodes-island"}
                 />
               </div>
             );

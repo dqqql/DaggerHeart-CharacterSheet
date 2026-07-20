@@ -19,6 +19,10 @@ export function InventorySection() {
   const hasContent = safeInventory.some(item => item.trim() !== "");
 
   const handleToggle = () => {
+    if (formData.ruleSetId === "rhodes-island") {
+      return
+    }
+
     if (hasContent) {
       // 有内容则清空
       const newInventory = ["", "", "", "", ""];

@@ -1,4 +1,11 @@
-import { SheetData, CharacterMetadata, CharacterList } from "./sheet-data";
+import {
+  SheetData,
+  CharacterMetadata,
+  CharacterList,
+  RuleSetId,
+  ActiveCharacterRecord,
+  normalizeRuleSetId,
+} from "./sheet-data";
 import { defaultSheetData } from "./default-sheet-data";
 import { migrateSheetData } from "./sheet-data-migration";
 
@@ -6,6 +13,7 @@ import { migrateSheetData } from "./sheet-data-migration";
 export const CHARACTER_LIST_KEY = "dh_character_list";       // 角色元数据列表
 export const CHARACTER_DATA_PREFIX = "dh_character_";        // 单个角色数据前缀 
 export const ACTIVE_CHARACTER_ID_KEY = "dh_active_character_id"; // 当前活动角色ID
+export const ACTIVE_CHARACTER_RECORD_KEY = "dh_active_character_record";
 
 // ===== 旧系统存储键（仅用于迁移） =====
 const LEGACY_SHEET_DATA_KEY = "charactersheet_data";
@@ -14,6 +22,52 @@ const LEGACY_PERSISTENT_FORM_DATA_KEY = "persistentFormData";
 
 // ===== 常量 =====
 export const MAX_CHARACTERS = 10;
+
+function emptyCharacterList(): CharacterList {
+  return {
+    characters: [],
+    activeCharacterId: null,
+    activeCharacterIds: {},
+    activeRuleSetId: "daggerheart",
+    lastUpdated: new Date().toISOString(),
+  };
+}
+
+function normalizeCharacterList(value: Record<string, unknown>): CharacterList {
+  const rawCharacters = Array.isArray(value.characters) ? value.characters : [];
+  const characters = rawCharacters
+    .filter((item): item is Record<string, unknown> => Boolean(item && typeof item === "object"))
+    .map((item, index) => ({
+      ...item,
+      id: String(item.id ?? ""),
+      saveName: String(item.saveName ?? "未命名存档"),
+      lastModified: String(item.lastModified ?? new Date().toISOString()),
+      createdAt: String(item.createdAt ?? item.lastModified ?? new Date().toISOString()),
+      order: Number.isFinite(item.order) ? Number(item.order) : index,
+      ruleSetId: normalizeRuleSetId(item.ruleSetId),
+    })) as CharacterMetadata[];
+
+  const legacyActiveId = typeof value.activeCharacterId === "string" ? value.activeCharacterId : null;
+  const rawActiveIds = value.activeCharacterIds && typeof value.activeCharacterIds === "object"
+    ? value.activeCharacterIds as Record<string, unknown>
+    : {};
+  const activeCharacterIds: Partial<Record<RuleSetId, string | null>> = {
+    daggerheart: typeof rawActiveIds.daggerheart === "string"
+      ? rawActiveIds.daggerheart
+      : legacyActiveId,
+    "rhodes-island": typeof rawActiveIds["rhodes-island"] === "string"
+      ? rawActiveIds["rhodes-island"]
+      : null,
+  };
+
+  return {
+    characters,
+    activeCharacterId: legacyActiveId,
+    activeCharacterIds,
+    activeRuleSetId: normalizeRuleSetId(value.activeRuleSetId),
+    lastUpdated: typeof value.lastUpdated === "string" ? value.lastUpdated : new Date().toISOString(),
+  };
+}
 
 // ===== UUID生成器 =====
 export function generateCharacterId(): string {
@@ -37,32 +91,24 @@ export function loadCharacterList(): CharacterList {
   try {
     const stored = localStorage.getItem(CHARACTER_LIST_KEY);
     if (!stored) {
-      return {
-        characters: [],
-        activeCharacterId: null,
-        lastUpdated: new Date().toISOString()
-      };
+      return emptyCharacterList();
     }
 
     const parsed = JSON.parse(stored);
     // 基本结构验证
     if (!parsed || typeof parsed !== 'object' || !Array.isArray(parsed.characters)) {
       console.error('[CharacterList] Invalid structure, returning default');
-      return {
-        characters: [],
-        activeCharacterId: null,
-        lastUpdated: new Date().toISOString()
-      };
+      return emptyCharacterList();
     }
 
-    return parsed;
+    const normalized = normalizeCharacterList(parsed);
+    if (JSON.stringify(normalized) !== JSON.stringify(parsed)) {
+      saveCharacterList(normalized);
+    }
+    return normalized;
   } catch (error) {
     console.error('[CharacterList] Load failed (Fast Fail):', error);
-    return {
-      characters: [],
-      activeCharacterId: null,
-      lastUpdated: new Date().toISOString()
-    };
+    return emptyCharacterList();
   }
 }
 
@@ -76,11 +122,19 @@ export function saveCharacterList(list: CharacterList): void {
   }
 }
 
-export function addCharacterToMetadataList(saveName: string): CharacterMetadata | null {
+export function getCharactersForRuleSet(ruleSetId: RuleSetId): CharacterMetadata[] {
+  return loadCharacterList().characters.filter(character => character.ruleSetId === ruleSetId);
+}
+
+export function addCharacterToMetadataList(
+  saveName: string,
+  ruleSetId: RuleSetId = "daggerheart"
+): CharacterMetadata | null {
   const list = loadCharacterList();
 
   // 检查数量限制
-  if (list.characters.length >= MAX_CHARACTERS) {
+  const ruleCharacters = list.characters.filter(character => character.ruleSetId === ruleSetId);
+  if (ruleCharacters.length >= MAX_CHARACTERS) {
     console.error(`[CharacterList] Cannot add character: limit of ${MAX_CHARACTERS} reached`);
     return null;
   }
@@ -93,7 +147,8 @@ export function addCharacterToMetadataList(saveName: string): CharacterMetadata 
     saveName: saveName || "未命名存档",
     lastModified: now,
     createdAt: now,
-    order: list.characters.length
+    order: ruleCharacters.length,
+    ruleSetId,
   };
 
   list.characters.push(metadata);
@@ -125,11 +180,15 @@ export function updateCharacterInMetadataList(
 export function removeCharacterFromMetadataList(characterId: string): void {
   // 1. 先删除元数据（确保 UI 一致性优先）
   const list = loadCharacterList();
+  const removedRuleSetId = list.characters.find(char => char.id === characterId)?.ruleSetId;
   list.characters = list.characters.filter(char => char.id !== characterId);
 
   // 如果删除的是活动角色，清除活动状态
   if (list.activeCharacterId === characterId) {
     list.activeCharacterId = null;
+  }
+  if (removedRuleSetId && list.activeCharacterIds?.[removedRuleSetId] === characterId) {
+    list.activeCharacterIds[removedRuleSetId] = null;
   }
 
   saveCharacterList(list);
@@ -153,13 +212,19 @@ export function saveCharacterById(id: string, data: SheetData): string {
   try {
     const key = CHARACTER_DATA_PREFIX + id;
     const lastModified = new Date().toISOString();
-    localStorage.setItem(key, JSON.stringify(data));
+    // 保存入口只补规则身份；结构迁移仍统一在读取/导入阶段执行，保持既有时序。
+    const normalizedData: SheetData = {
+      ...data,
+      ruleSetId: normalizeRuleSetId(data.ruleSetId),
+    };
+    localStorage.setItem(key, JSON.stringify(normalizedData));
 
     // 不再同步更新元数据中的角色名称
     // 只更新最后修改时间
     const list = loadCharacterList();
     const index = list.characters.findIndex(char => char.id === id);
     if (index !== -1) {
+      list.characters[index].ruleSetId = normalizedData.ruleSetId;
       list.characters[index].lastModified = lastModified;
       saveCharacterList(list);
     }
@@ -237,7 +302,13 @@ export function loadCharacterById(id: string): SheetData | null {
     const originalSerialized = stableSerializeCharacterRecord(parsedRecord);
 
     console.log(`[Migration] Applying migrations for character ${id}`);
-    const migratedData = migrateSheetData(cloneCharacterRecord(parsedRecord));
+    const metadataRuleSetId = loadCharacterList().characters.find(character => character.id === id)?.ruleSetId;
+    const migratedData = migrateSheetData({
+      ...cloneCharacterRecord(parsedRecord),
+      ...(metadataRuleSetId && parsedRecord.ruleSetId === undefined
+        ? { ruleSetId: metadataRuleSetId }
+        : {}),
+    });
     const migratedSerialized = stableSerializeCharacterRecord(migratedData);
 
     if (migratedSerialized !== originalSerialized) {
@@ -281,7 +352,7 @@ export function deleteCharacterById(id: string): boolean {
 }
 
 // ===== 活动角色管理 =====
-export function setActiveCharacterId(id: string | null): void {
+export function setActiveCharacterId(id: string | null, requestedRuleSetId?: RuleSetId): void {
   try {
     if (id === null) {
       localStorage.removeItem(ACTIVE_CHARACTER_ID_KEY);
@@ -289,18 +360,36 @@ export function setActiveCharacterId(id: string | null): void {
       localStorage.setItem(ACTIVE_CHARACTER_ID_KEY, id);
     }
 
-    // 同步更新角色列表中的活动状态
+    // 同步更新角色列表中的活动状态（旧字段继续表示全局当前存档）
     const list = loadCharacterList();
+    const matchedRuleSetId = id
+      ? list.characters.find(character => character.id === id)?.ruleSetId
+      : undefined;
+    const ruleSetId = requestedRuleSetId ?? matchedRuleSetId ?? list.activeRuleSetId ?? "daggerheart";
     list.activeCharacterId = id;
+    list.activeRuleSetId = ruleSetId;
+    list.activeCharacterIds = {
+      ...list.activeCharacterIds,
+      [ruleSetId]: id,
+    };
     saveCharacterList(list);
+    const record: ActiveCharacterRecord = { ruleSetId, characterId: id };
+    localStorage.setItem(ACTIVE_CHARACTER_RECORD_KEY, JSON.stringify(record));
   } catch (error) {
     console.error('[ActiveCharacter] Set failed (Fast Fail):', error);
     throw error;
   }
 }
 
-export function getActiveCharacterId(): string | null {
+export function getActiveCharacterId(ruleSetId?: RuleSetId): string | null {
   try {
+    if (ruleSetId) {
+      const list = loadCharacterList();
+      const activeId = list.activeCharacterIds?.[ruleSetId];
+      return activeId && list.characters.some(character => character.id === activeId && character.ruleSetId === ruleSetId)
+        ? activeId
+        : null;
+    }
     return localStorage.getItem(ACTIVE_CHARACTER_ID_KEY);
   } catch (error) {
     console.error('[ActiveCharacter] Get failed (Fast Fail):', error);
@@ -308,15 +397,73 @@ export function getActiveCharacterId(): string | null {
   }
 }
 
+export function getActiveCharacterRecord(): ActiveCharacterRecord {
+  try {
+    const stored = localStorage.getItem(ACTIVE_CHARACTER_RECORD_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored) as Partial<ActiveCharacterRecord>;
+      const ruleSetId = normalizeRuleSetId(parsed.ruleSetId);
+      return { ruleSetId, characterId: getActiveCharacterId(ruleSetId) };
+    }
+  } catch (error) {
+    console.warn("[ActiveCharacter] Invalid active record, using legacy state", error);
+  }
+  const list = loadCharacterList();
+  const ruleSetId = normalizeRuleSetId(list.activeRuleSetId);
+  return { ruleSetId, characterId: getActiveCharacterId(ruleSetId) };
+}
+
 // ===== 角色操作 =====
-export function createNewCharacter(name: string): SheetData {
+export function createNewCharacter(
+  name: string,
+  ruleSetId: RuleSetId = "daggerheart"
+): SheetData {
   const newCharacter: SheetData = {
     ...defaultSheetData,
+    ruleSetId,
     name: name || "新角色",
     // 注释：移除了 focused_card_ids 初始化，聚焦功能由双卡组系统取代
   };
 
   return newCharacter;
+}
+
+export interface RuleSetSwitchResult {
+  ruleSetId: RuleSetId
+  characterId: string
+  characterData: SheetData
+  created: boolean
+}
+
+/** Select the target ruleset's last active save, or create its first blank save. */
+export function switchToRuleSet(ruleSetId: RuleSetId): RuleSetSwitchResult {
+  const list = loadCharacterList();
+  const candidates = list.characters.filter(character => character.ruleSetId === ruleSetId);
+  let characterId = getActiveCharacterId(ruleSetId);
+  let created = false;
+
+  if (!characterId && candidates.length > 0) {
+    characterId = [...candidates].sort((left, right) =>
+      right.lastModified.localeCompare(left.lastModified)
+    )[0].id;
+  }
+
+  if (!characterId) {
+    const metadata = addCharacterToMetadataList("存档 1", ruleSetId);
+    if (!metadata) {
+      throw new Error(`无法为规则 ${ruleSetId} 创建存档`);
+    }
+    characterId = metadata.id;
+    saveCharacterById(characterId, createNewCharacter("", ruleSetId));
+    created = true;
+  }
+
+  const characterData = loadCharacterById(characterId);
+  if (!characterData) {
+    throw new Error(`规则 ${ruleSetId} 的活动存档不存在: ${characterId}`);
+  }
+  setActiveCharacterId(characterId, ruleSetId);
+  return { ruleSetId, characterId, characterData, created };
 }
 
 export function duplicateCharacter(originalId: string, newName: string): SheetData | null {
@@ -397,13 +544,16 @@ export function migrateToMultiCharacterStorage(): void {
       saveName: "迁移的存档", // 迁移时使用默认存档名
       lastModified: new Date().toISOString(),
       createdAt: new Date().toISOString(),
-      order: 0
+      order: 0,
+      ruleSetId: "daggerheart",
     };
 
     // 创建新的角色列表
     const newCharacterList: CharacterList = {
       characters: [metadata],
       activeCharacterId: newCharacterId,
+      activeCharacterIds: { daggerheart: newCharacterId },
+      activeRuleSetId: "daggerheart",
       lastUpdated: new Date().toISOString()
     };
 
@@ -440,7 +590,8 @@ export function safeCleanupForTesting(): void {
     LEGACY_FOCUSED_CARDS_KEY,
     LEGACY_PERSISTENT_FORM_DATA_KEY,
     CHARACTER_LIST_KEY,
-    ACTIVE_CHARACTER_ID_KEY
+    ACTIVE_CHARACTER_ID_KEY,
+    ACTIVE_CHARACTER_RECORD_KEY,
   ];
 
   keysToRemove.forEach(key => {
@@ -477,7 +628,8 @@ export function getAllCharacterStorageKeys(): string[] {
     LEGACY_FOCUSED_CARDS_KEY,
     LEGACY_PERSISTENT_FORM_DATA_KEY,
     CHARACTER_LIST_KEY,
-    ACTIVE_CHARACTER_ID_KEY
+    ACTIVE_CHARACTER_ID_KEY,
+    ACTIVE_CHARACTER_RECORD_KEY,
   ];
 
   systemKeys.forEach(key => {
@@ -540,7 +692,8 @@ export function recoverCharacterListFromDataKeys(): CharacterList | null {
           saveName: displayName,
           lastModified: now,
           createdAt: now,
-          order: recoveredCharacters.length
+          order: recoveredCharacters.filter(character => character.ruleSetId === normalizeRuleSetId(parsed.ruleSetId)).length,
+          ruleSetId: normalizeRuleSetId(parsed.ruleSetId),
         });
       } catch (error) {
         console.warn(`[Recovery] Failed to parse character payload: ${key}`, error);
@@ -553,12 +706,10 @@ export function recoverCharacterListFromDataKeys(): CharacterList | null {
 
     recoveredCharacters.sort((a, b) => a.order - b.order);
 
-    if (recoveredCharacters.length > MAX_CHARACTERS) {
-      console.warn(
-        `[Recovery] Found ${recoveredCharacters.length} character payloads, keeping first ${MAX_CHARACTERS}`
-      );
-      recoveredCharacters.splice(MAX_CHARACTERS);
-    }
+    const limitedCharacters = recoveredCharacters.filter((character, index, all) =>
+      all.filter(candidate => candidate.ruleSetId === character.ruleSetId).indexOf(character) < MAX_CHARACTERS
+    );
+    recoveredCharacters.splice(0, recoveredCharacters.length, ...limitedCharacters);
 
     const activeId = getActiveCharacterId();
     const recoveredActiveId = activeId && recoveredCharacters.some(character => character.id === activeId)
@@ -568,6 +719,15 @@ export function recoverCharacterListFromDataKeys(): CharacterList | null {
     const recoveredList: CharacterList = {
       characters: recoveredCharacters,
       activeCharacterId: recoveredActiveId,
+      activeCharacterIds: {
+        daggerheart: recoveredCharacters.find(character => character.ruleSetId === "daggerheart" && character.id === activeId)?.id
+          ?? recoveredCharacters.find(character => character.ruleSetId === "daggerheart")?.id
+          ?? null,
+        "rhodes-island": recoveredCharacters.find(character => character.ruleSetId === "rhodes-island" && character.id === activeId)?.id
+          ?? recoveredCharacters.find(character => character.ruleSetId === "rhodes-island")?.id
+          ?? null,
+      },
+      activeRuleSetId: recoveredCharacters.find(character => character.id === recoveredActiveId)?.ruleSetId ?? "daggerheart",
       lastUpdated: new Date().toISOString()
     };
 

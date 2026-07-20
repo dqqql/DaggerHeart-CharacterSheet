@@ -7,16 +7,18 @@ import {
   saveCharacterById,
   setActiveCharacterId,
   getActiveCharacterId,
+  getActiveCharacterRecord,
   createNewCharacter,
   addCharacterToMetadataList,
   removeCharacterFromMetadataList,
   updateCharacterInMetadataList,
   MAX_CHARACTERS,
   cleanupOrphanedCharacterData,
-  recoverCharacterListFromDataKeys
+  recoverCharacterListFromDataKeys,
+  switchToRuleSet,
 } from '@/lib/multi-character-storage'
-import { CharacterMetadata, SheetData } from '@/lib/sheet-data'
-import { defaultSheetData } from '@/lib/default-sheet-data'
+import { CharacterMetadata, RuleSetId, SheetData } from '@/lib/sheet-data'
+import { useTextModeStore } from '@/lib/text-mode-store'
 
 interface UseCharacterManagementProps {
   isClient: boolean
@@ -26,6 +28,7 @@ interface UseCharacterManagementProps {
 export function useCharacterManagement({ isClient, setCurrentTabValue }: UseCharacterManagementProps) {
   const { replaceSheetData } = useSheetStore()
   const [currentCharacterId, setCurrentCharacterId] = useState<string | null>(null)
+  const [activeRuleSetId, setActiveRuleSetId] = useState<RuleSetId>('daggerheart')
   const [characterList, setCharacterList] = useState<CharacterMetadata[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isMigrationCompleted, setIsMigrationCompleted] = useState(false)
@@ -65,7 +68,11 @@ export function useCharacterManagement({ isClient, setCurrentTabValue }: UseChar
           }
         }
 
-        const list = listData.characters
+        const activeRecord = getActiveCharacterRecord()
+        const initialRuleSetId = activeRecord.ruleSetId
+        setActiveRuleSetId(initialRuleSetId)
+        useTextModeStore.getState().setRuleSet(initialRuleSetId)
+        const list = listData.characters.filter(character => character.ruleSetId === initialRuleSetId)
         console.log(`[CharacterManagement] Found ${list.length} characters`)
         setCharacterList(list)
 
@@ -77,9 +84,14 @@ export function useCharacterManagement({ isClient, setCurrentTabValue }: UseChar
 
         if (list.length === 0) {
           console.log('[CharacterManagement] No characters found, creating first character')
-          createFirstCharacter()
+          const result = switchToRuleSet(initialRuleSetId)
+          setCharacterList(
+            loadCharacterList().characters.filter(character => character.ruleSetId === initialRuleSetId)
+          )
+          setCurrentCharacterId(result.characterId)
+          replaceSheetData(result.characterData)
         } else {
-          const activeId = getActiveCharacterId() || list[0].id
+          const activeId = getActiveCharacterId(initialRuleSetId) || list[0].id
           console.log(`[CharacterManagement] Loading active character: ${activeId}`)
           switchToCharacter(activeId)
         }
@@ -98,10 +110,10 @@ export function useCharacterManagement({ isClient, setCurrentTabValue }: UseChar
   const createFirstCharacter = useCallback(() => {
     try {
       console.log('[CharacterManagement] Creating first character...')
-      const metadata = addCharacterToMetadataList("存档 1")
+      const metadata = addCharacterToMetadataList("存档 1", activeRuleSetId)
       
       if (metadata) {
-        const newCharacterData = { ...defaultSheetData }
+        const newCharacterData = createNewCharacter("", activeRuleSetId)
         saveCharacterById(metadata.id, newCharacterData)
         setCharacterList([metadata])
         setCurrentCharacterId(metadata.id)
@@ -114,7 +126,7 @@ export function useCharacterManagement({ isClient, setCurrentTabValue }: UseChar
     } catch (error) {
       console.error('[CharacterManagement] Error creating first character:', error)
     }
-  }, [replaceSheetData])
+  }, [activeRuleSetId, replaceSheetData])
 
   // 切换角色
   const switchToCharacter = useCallback((characterId: string) => {
@@ -146,8 +158,8 @@ export function useCharacterManagement({ isClient, setCurrentTabValue }: UseChar
       }
 
       console.log(`[CharacterManagement] Creating new save: ${saveName}`)
-      const newCharacterData = createNewCharacter("") // 空白角色名，用户后续填写
-      const metadata = addCharacterToMetadataList(saveName) // 使用存档名
+      const newCharacterData = createNewCharacter("", activeRuleSetId) // 空白角色名，用户后续填写
+      const metadata = addCharacterToMetadataList(saveName, activeRuleSetId) // 使用存档名
 
       if (metadata) {
         saveCharacterById(metadata.id, newCharacterData)
@@ -165,7 +177,7 @@ export function useCharacterManagement({ isClient, setCurrentTabValue }: UseChar
       alert('创建存档失败')
       return false
     }
-  }, [characterList.length, switchToCharacter])
+  }, [activeRuleSetId, characterList.length, switchToCharacter])
 
   // 删除角色
   const deleteCharacterHandler = useCallback((characterId: string) => {
@@ -221,7 +233,7 @@ export function useCharacterManagement({ isClient, setCurrentTabValue }: UseChar
         return false
       }
 
-      const metadata = addCharacterToMetadataList(newSaveName)
+      const metadata = addCharacterToMetadataList(newSaveName, activeRuleSetId)
       
       if (metadata) {
         saveCharacterById(metadata.id, sourceData)
@@ -239,7 +251,26 @@ export function useCharacterManagement({ isClient, setCurrentTabValue }: UseChar
       alert('复制角色失败')
       return false
     }
-  }, [characterList.length, switchToCharacter])
+  }, [activeRuleSetId, characterList.length, switchToCharacter])
+
+  const switchRuleSetHandler = useCallback((ruleSetId: RuleSetId) => {
+    try {
+      const result = switchToRuleSet(ruleSetId)
+      setActiveRuleSetId(ruleSetId)
+      setCurrentCharacterId(result.characterId)
+      setCharacterList(
+        loadCharacterList().characters.filter(character => character.ruleSetId === ruleSetId)
+      )
+      useTextModeStore.getState().setRuleSet(ruleSetId)
+      replaceSheetData(result.characterData)
+      setCurrentTabValue('page1')
+      return true
+    } catch (error) {
+      console.error(`[CharacterManagement] Failed to switch ruleset to ${ruleSetId}:`, error)
+      alert('切换规则失败')
+      return false
+    }
+  }, [replaceSheetData, setCurrentTabValue])
 
   // 重命名角色
   const renameCharacterHandler = useCallback((characterId: string, newSaveName: string) => {
@@ -288,11 +319,13 @@ export function useCharacterManagement({ isClient, setCurrentTabValue }: UseChar
   return {
     // 状态
     currentCharacterId,
+    activeRuleSetId,
     characterList,
     isLoading,
     
     // 方法
     switchToCharacter,
+    switchRuleSetHandler,
     createNewCharacterHandler,
     deleteCharacterHandler,
     duplicateCharacterHandler,

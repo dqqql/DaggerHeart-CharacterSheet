@@ -106,6 +106,7 @@ export default function CharacterSheet() {
   const safeFormData = useSafeSheetData();
   const evasionBreakdown = calculateEvasionBreakdown(safeFormData)
   const armorValueBreakdown = calculateArmorValueBreakdown(safeFormData)
+  const isRhodesIsland = safeFormData.ruleSetId === "rhodes-island"
 
   // 添加一个安全的表达式计算函数
   const safeEvaluateExpression = (expression: string): number => {
@@ -428,7 +429,18 @@ export default function CharacterSheet() {
       const ancestryCard = store.getCardById(value);
       if (ancestryCard && ancestryCard.type === CardType.Ancestry) {
         setFormData((prev) => {
-          const updatedFormData = prev.mixedAncestryEnabled
+          const updatedFormData = prev.ruleSetId === "rhodes-island"
+            ? {
+              ...prev,
+              ancestry1: ancestryCard.id,
+              ancestry1Ref: { id: ancestryCard.id, name: ancestryCard.name },
+              ancestry2: "",
+              ancestry2Ref: { id: "", name: "" },
+              mixedAncestryEnabled: false,
+              ancestryExperience: [""],
+              ancestryExperienceValues: ["2"],
+            }
+            : prev.mixedAncestryEnabled
             ? {
               ...prev,
               [field]: ancestryCard.id,
@@ -744,12 +756,10 @@ export default function CharacterSheet() {
             onToggleMixedAncestry={handleMixedAncestryToggle}
           />
 
-          {/* Main Content - Two Section Layout */}
-          <div className="flex flex-col gap-2 mt-1">
-            {/* Top Section */}
-            <div className="grid grid-cols-2 gap-2">
-              {/* Top Left */}
-              <div className="flex flex-col">
+          {/* Main Content - Two balanced columns */}
+          <div className="mt-1 grid grid-cols-2 items-stretch gap-2 p-1">
+              {/* Left column */}
+              <div className="flex h-full flex-col gap-1">
                 {/* Character Image, Evasion, and Armor */}
                 <div className="flex gap-4">
                   {/* Character Image Upload */}
@@ -857,12 +867,26 @@ export default function CharacterSheet() {
 
                 {/* Hit Points & Stress */}
                 <HitPointsSection />
+
+                {/* Hope */}
+                <HopeSection />
+
+                {/* Experience */}
+                <ExperienceSection />
+
+                {/* Standard rules keep the profession description in the left column. */}
+                {!isRhodesIsland && (
+                  <div className="mt-auto">
+                    <h3 className="text-xs font-bold text-center">职业特性</h3>
+                    <ProfessionDescriptionSection description={safeFormData.cards[0]?.description} />
+                  </div>
+                )}
               </div>
 
-              {/* Top Right */}
-              <div className="flex flex-col space-y-1">
+              {/* Right column */}
+              <div className="flex h-full flex-col gap-1.5">
                 {/* Active Weapons */}
-                <div className="py-0 ">
+                <div className="py-0">
                   <h3 className="text-xs font-bold text-center print:mb-1">装备</h3>
 
                   <div className="flex items-center gap-0.5 mb-1">
@@ -885,54 +909,47 @@ export default function CharacterSheet() {
                     onOpenWeaponModal={openWeaponModal}
                   />
 
-                  <WeaponSection
+                  {!isRhodesIsland && <WeaponSection
                     isPrimary={false}
                     fieldPrefix="secondaryWeapon"
                     onOpenWeaponModal={openWeaponModal}
-                  />
+                  />}
                 </div>
 
                 {/* Active Armor */}
                 <ArmorSection onOpenArmorModal={openArmorModal} />
-              </div>
-            </div>
 
-            {/* Bottom Section */}
-            <div className="grid grid-cols-2 gap-2 p-1">
-              {/* Bottom Left */}
-              <div className="col-span-1 space-y-1 -mt-1">
-                {/* Hope */}
-                <HopeSection />
-
-                {/* Experience */}
-                <ExperienceSection />
-
-                {/* Profession Description */}
-                <h3 className="text-xs font-bold text-center">职业特性</h3>
-                <ProfessionDescriptionSection description={safeFormData.cards[0]?.description} />
-              </div>
-
-              {/* Bottom Right */}
-              <div className="col-span-1 space-y-1.5 -mt-1.5">
                 {/* Inventory */}
                 <InventorySection />
 
                 {/* Inventory Weapons */}
-                <h3 className="text-xs font-bold text-center">备用武器</h3>
-                <InventoryWeaponSection
+                {!isRhodesIsland && <h3 className="text-xs font-bold text-center">备用武器</h3>}
+                {!isRhodesIsland && <InventoryWeaponSection
                   index={1}
                   onOpenWeaponModal={openWeaponModal}
-                />
+                />}
 
-                <InventoryWeaponSection
+                {!isRhodesIsland && <InventoryWeaponSection
                   index={2}
                   onOpenWeaponModal={openWeaponModal}
-                />
+                />}
 
-                {/* Gold */}
-                <GoldSection />
+                {/* Gold sits directly below inventory in the tttri layout. */}
+                <div className={isRhodesIsland ? undefined : "mt-auto"}>
+                  <GoldSection />
+                </div>
+
+                {/* tttri moves the profession description below gold. */}
+                {isRhodesIsland && (
+                  <div>
+                    <h3 className="text-xs font-bold text-center">职业特性</h3>
+                    <ProfessionDescriptionSection
+                      description={safeFormData.cards[0]?.description}
+                      heightClassName="h-[205px]"
+                    />
+                  </div>
+                )}
               </div>
-            </div>
           </div>
         </div>
       </div>
@@ -983,7 +1000,7 @@ export default function CharacterSheet() {
                 ? "选择种族"
                 : currentModal.type === "community"
                   ? "选择社群"
-                  : "选择子职业"
+                  : isRhodesIsland ? "选择分支" : "选择子职业"
           }
           cardType={getModalCardType(currentModal.type)} // Use the helper function here
           field={currentModal.field}

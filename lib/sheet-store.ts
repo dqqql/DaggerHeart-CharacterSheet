@@ -16,6 +16,7 @@ import {
     calculateEvasionBreakdown,
     convertDisplayedEvasionToManualModifier,
 } from "@/lib/domain-card-derived-stats";
+import { applyRhodesIslandAutomation } from "@/lib/rhodes-island-automation";
 
 // 施法属性映射关系
 const SPELLCASTING_ATTRIBUTE_MAP: Record<string, keyof SheetData> = {
@@ -171,9 +172,14 @@ const syncDerivedCombatStats = (data: SheetData, explicitlyClearedFields: Set<De
         ? parseToNumber(data.armorValue ?? "", 0)
         : parseToNumber(armorValueBreakdown.display, 0);
 
-    const thresholdBreakdown = calculateDamageThresholdBreakdown(nextData);
-    nextData.minorThreshold = explicitlyClearedFields.has("minorThreshold") ? "" : thresholdBreakdown.minor.display;
-    nextData.majorThreshold = explicitlyClearedFields.has("majorThreshold") ? "" : thresholdBreakdown.major.display;
+    if (nextData.armorThreshold) {
+        const thresholdBreakdown = calculateDamageThresholdBreakdown(nextData);
+        nextData.minorThreshold = explicitlyClearedFields.has("minorThreshold") ? "" : thresholdBreakdown.minor.display;
+        nextData.majorThreshold = explicitlyClearedFields.has("majorThreshold") ? "" : thresholdBreakdown.major.display;
+    } else {
+        nextData.minorThreshold = explicitlyClearedFields.has("minorThreshold") ? "" : data.minorThreshold;
+        nextData.majorThreshold = explicitlyClearedFields.has("majorThreshold") ? "" : data.majorThreshold;
+    }
 
     return nextData;
 };
@@ -184,7 +190,9 @@ const finalizeSheetData = (
     explicitlyClearedFields: Set<DerivedCombatField> = new Set(),
 ): SheetData => {
     const withSubclassSync = syncSubclassSpellcasting(newData, oldData);
-    return syncDerivedCombatStats(withSubclassSync, explicitlyClearedFields);
+    return applyRhodesIslandAutomation(
+        syncDerivedCombatStats(withSubclassSync, explicitlyClearedFields)
+    );
 };
 
 interface SheetState {
@@ -563,7 +571,11 @@ export const useSheetStore = create<SheetState>((set) => ({
             }, state.sheetData);
 
             return {
-                sheetData: finalData
+                sheetData: {
+                    ...finalData,
+                    minorThreshold: state.sheetData.minorThreshold,
+                    majorThreshold: state.sheetData.majorThreshold,
+                }
             };
         }
 
@@ -609,7 +621,13 @@ export const useSheetStore = create<SheetState>((set) => ({
         }, state.sheetData);
 
         return {
-            sheetData: finalData
+            sheetData: state.sheetData.armorThreshold
+                ? finalData
+                : {
+                    ...finalData,
+                    minorThreshold: state.sheetData.minorThreshold,
+                    majorThreshold: state.sheetData.majorThreshold,
+                }
         };
     }),
 

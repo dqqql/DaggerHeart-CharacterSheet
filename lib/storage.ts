@@ -31,7 +31,7 @@ const STORAGE_KEY = "charactersheet_data"
 export function saveCharacterData(data: SheetData): void {
   try {
     if (typeof window !== "undefined" && window.localStorage) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(migrateSheetData(data)))
     }
   } catch (error) {
     console.error("保存角色数据失败:", error)
@@ -43,7 +43,7 @@ export function loadCharacterData(): SheetData | null {
   try {
     if (typeof window !== "undefined" && window.localStorage) {
       const savedData = localStorage.getItem(STORAGE_KEY)
-      return savedData ? (JSON.parse(savedData) as SheetData) : null
+      return savedData ? migrateSheetData(JSON.parse(savedData)) : null
     }
     return null
   } catch (error) {
@@ -117,7 +117,7 @@ export function importCharacterData(file: File): Promise<SheetData> {
         if (!event.target?.result) {
           throw new Error("读取文件失败")
         }
-        const data = JSON.parse(event.target.result as string) as SheetData
+        const data = migrateSheetData(JSON.parse(event.target.result as string))
         saveCharacterData(data)
         resolve(data)
       } catch (error) {

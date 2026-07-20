@@ -11,6 +11,7 @@ import { BaseCardModal, ModalHeader, ModalFilterBar } from "./base"
 import { ContentStates, CardGrid } from "./display"
 import { MultiSelectFilter } from "./filters"
 import { getSingleAncestrySelectionCards } from "@/lib/ancestry-utils"
+import { cardBelongsToRuleSet, isRhodesIsland } from "@/lib/ruleset"
 
 interface GenericCardSelectionModalProps {
   isOpen: boolean
@@ -66,13 +67,15 @@ export function GenericCardSelectionModal({
       setCardsError(null)
 
       try {
-        const cards = await getStandardCardsByTypeAsync(cardType as CardType)
+        const cards = (await getStandardCardsByTypeAsync(cardType as CardType))
+          .filter(card => cardBelongsToRuleSet(card, formData.ruleSetId))
         if (isMounted) {
           setBaseCards(cards)
         }
 
         if (cardType === "subclass") {
-          const profCards = await getStandardCardsByTypeAsync(CardType.Profession)
+          const profCards = (await getStandardCardsByTypeAsync(CardType.Profession))
+            .filter(card => cardBelongsToRuleSet(card, formData.ruleSetId))
           if (isMounted) {
             setProfessionCards(profCards)
           }
@@ -93,7 +96,7 @@ export function GenericCardSelectionModal({
     return () => {
       isMounted = false
     }
-  }, [isOpen, cardType])
+  }, [isOpen, cardType, formData.ruleSetId])
 
   // Calculate filtered cards based on card type, level filter, and batch filter
   const filteredInitialCards = useMemo(() => {
@@ -119,14 +122,14 @@ export function GenericCardSelectionModal({
         (card): card is StandardCard =>
           card.level === 1 && card.class === professionName
       )
-    } else if (cardType === CardType.Ancestry && !formData.mixedAncestryEnabled) {
+    } else if (cardType === CardType.Ancestry && !formData.mixedAncestryEnabled && !isRhodesIsland(formData)) {
       initialCards = getSingleAncestrySelectionCards(initialCards)
     } else if (levelFilter) {
       initialCards = initialCards.filter(card => card.level === levelFilter)
     }
 
     return initialCards
-  }, [baseCards, professionCards, cardType, levelFilter, formData.professionRef?.id, selectedBatches])
+  }, [baseCards, professionCards, cardType, levelFilter, formData.professionRef?.id, formData.ruleSetId, selectedBatches])
 
   // Calculate available classes for the filter dropdown
   const availableClasses = useMemo(() => {

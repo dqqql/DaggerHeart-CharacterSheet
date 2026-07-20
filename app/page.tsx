@@ -36,6 +36,7 @@ import {
 } from "@/lib/official-image-pack"
 import { useOfficialImagePackStore } from "@/lib/official-image-pack-store"
 import { CardSystemInitializer } from "@/components/card-system-initializer"
+import { RULE_SET_LABELS } from "@/lib/ruleset"
 
 // EyeIcon和EyeOffIcon已移除 - 现在使用PageVisibilityDropdown
 
@@ -313,9 +314,11 @@ export default function Home() {
   // 使用角色管理Hook
   const {
     currentCharacterId,
+    activeRuleSetId,
     characterList,
     isLoading,
     switchToCharacter,
+    switchRuleSetHandler,
     createNewCharacterHandler,
     deleteCharacterHandler,
     duplicateCharacterHandler,
@@ -333,6 +336,8 @@ export default function Home() {
   const announcements = useMemo(() => getAnnouncements(), [])
   const latestAnnouncementId = useMemo(() => getLatestAnnouncementId(), [])
   const hasOfficialImagePack = !!officialImagePackMetadata?.available
+  const isRhodesIsland = activeRuleSetId === "rhodes-island"
+  const hasCardImages = isRhodesIsland || hasOfficialImagePack
   const officialImagePackProgressView = officialImagePackImportProgress
     ? getOfficialImagePackProgressView(officialImagePackImportProgress)
     : null
@@ -389,10 +394,10 @@ export default function Home() {
       return
     }
 
-    if (!hasOfficialImagePack) {
+    if (!isRhodesIsland && !hasOfficialImagePack) {
       setTextMode(true)
     }
-  }, [hasOfficialImagePack, officialImagePackHydrated, setTextMode])
+  }, [hasOfficialImagePack, isRhodesIsland, officialImagePackHydrated, setTextMode])
 
   useEffect(() => {
     if (!isClient || !announcementHydrated || !latestAnnouncementId) {
@@ -495,7 +500,7 @@ export default function Home() {
   }
 
   const handleModeToggle = () => {
-    if (!hasOfficialImagePack && isTextMode) {
+    if (!hasCardImages && isTextMode) {
       showFadeNotification({
         message: "当前为 SRD 版本，请先导入卡图包后再切换图片模式",
         type: "info",
@@ -867,8 +872,11 @@ export default function Home() {
   }
 
   return (
-    <main className={`min-w-0 w-full max-w-full mx-auto px-0 container ${isMobile ? 'pb-32' : 'pb-20'
-      }`}>
+    <main
+      data-ruleset={activeRuleSetId}
+      className={`min-w-0 w-full max-w-full mx-auto px-0 container ${isRhodesIsland ? 'rhodes-island-shell' : ''} ${isMobile ? 'pb-32' : 'pb-20'
+      }`}
+    >
       <CardSystemInitializer />
 
       {/* 底部抽屉式卡牌展示 - 打印时隐藏 */}
@@ -890,8 +898,18 @@ export default function Home() {
           {/* 角色卡区域 - 带相对定位 */}
           <div>
             {/* 页面标题 - 打印时隐藏 */}
-            <div className={`print:hidden mb-3 transition-all duration-300 ${isDualPageMode && !isMobile ? 'w-[425mm] min-w-[425mm]' : 'w-[210mm]'}`}>
+            <div className={`print:hidden mb-3 pt-2 transition-all duration-300 ${isDualPageMode && !isMobile ? 'w-[425mm] min-w-[425mm]' : 'w-[210mm]'}`}>
               <div className="flex items-center justify-center gap-3">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-8 w-auto px-3 text-[13px]"
+                  onClick={() => switchRuleSetHandler(isRhodesIsland ? "daggerheart" : "rhodes-island")}
+                  aria-label={`切换到${RULE_SET_LABELS[isRhodesIsland ? "daggerheart" : "rhodes-island"]}`}
+                  title={`当前：${RULE_SET_LABELS[activeRuleSetId]}`}
+                >
+                  切换规则
+                </Button>
                 <SaveSwitcher
                   characterList={characterList}
                   currentCharacterId={currentCharacterId}
@@ -900,6 +918,7 @@ export default function Home() {
                 <Button
                   size="sm"
                   variant="outline"
+                  className="h-8 w-auto px-3 text-[13px]"
                   onClick={() => setAnnouncementModalOpen(true)}
                 >
                   公告
@@ -931,13 +950,15 @@ export default function Home() {
             <div className="flex items-start justify-between gap-3 rounded-xl border border-slate-200 bg-white/85 px-4 py-3 shadow-sm backdrop-blur">
               <div className="min-w-0">
                 <div className="text-sm font-semibold text-slate-800">
-                  {hasOfficialImagePack ? "卡图包已导入" : "当前为 SRD 纯文字模式"}
+                  {isRhodesIsland ? "罗德岛离线卡库" : hasOfficialImagePack ? "卡图包已导入" : "当前为 SRD 纯文字模式"}
                 </div>
-                <div className="text-xs text-slate-500">
-                  {hasOfficialImagePack
-                    ? `版本 ${officialImagePackMetadata?.version}，共 ${officialImagePackMetadata?.imageCount} 张`
-                    : "导入官方卡图包后可启用图片模式"}
-                </div>
+                {!isRhodesIsland && (
+                  <div className="text-xs text-slate-500">
+                    {hasOfficialImagePack
+                      ? `版本 ${officialImagePackMetadata?.version}，共 ${officialImagePackMetadata?.imageCount} 张`
+                      : "导入官方卡图包后可启用图片模式"}
+                  </div>
+                )}
                 {officialImagePackMetadata?.warnings?.[0] && (
                   <div className="mt-1 text-xs text-amber-600">
                     {officialImagePackMetadata.warnings[0]}
@@ -946,7 +967,7 @@ export default function Home() {
               </div>
             <div
               className={`rounded-full p-0.5 shadow-md transition-all duration-200 hover:shadow-lg scale-90 ${
-                hasOfficialImagePack
+                hasCardImages
                   ? 'cursor-pointer bg-gray-200 dark:bg-gray-700'
                   : 'cursor-not-allowed bg-slate-200 opacity-80'
               }`}
@@ -983,7 +1004,7 @@ export default function Home() {
             </div>
 
             <div className="flex flex-wrap justify-end gap-2">
-              <Button
+              {!isRhodesIsland && <Button
                 size="sm"
                 onClick={handleOpenOfficialImagePackPicker}
                 disabled={isImportingOfficialImagePack}
@@ -991,15 +1012,15 @@ export default function Home() {
                 {isImportingOfficialImagePack && officialImagePackProgressView
                   ? `导入中 ${officialImagePackProgressView.percent}%`
                   : "导入卡图"}
-              </Button>
-              <Button
+              </Button>}
+              {!isRhodesIsland && <Button
                 size="sm"
                 variant="outline"
                 onClick={handleClearOfficialImagePack}
                 disabled={!hasOfficialImagePack || isImportingOfficialImagePack}
               >
                 清除卡图
-              </Button>
+              </Button>}
             </div>
 
             {isImportingOfficialImagePack && officialImagePackProgressView && (
@@ -1037,6 +1058,7 @@ export default function Home() {
       {/* 底部功能按钮区域 */}
       <BottomDock
         mode="main"
+        ruleSetId={activeRuleSetId}
         isMobile={isMobile}
         isCardDrawerOpen={isCardDrawerOpen}
         characterCount={characterList.length}

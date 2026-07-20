@@ -29,6 +29,7 @@ import {
 } from "lucide-react"
 import { DualPageToggle } from "@/components/ui/dual-page-toggle"
 import { cn, navigateToPage } from "@/lib/utils"
+import type { RuleSetId } from "@/lib/sheet-data"
 
 const MAX_CHARACTERS = 10
 
@@ -38,6 +39,7 @@ interface BottomDockBaseProps {
 
 interface MainModeProps extends BottomDockBaseProps {
   mode: "main"
+  ruleSetId?: RuleSetId
   isCardDrawerOpen: boolean
   characterCount: number
   onToggleCardDrawer: () => void
@@ -68,6 +70,7 @@ type BottomDockProps = MainModeProps | PreviewModeProps
 
 function MainModeContent(props: MainModeProps) {
   const { isMobile } = props
+  const isRhodesIsland = props.ruleSetId === "rhodes-island"
 
   return (
     <>
@@ -101,7 +104,7 @@ function MainModeContent(props: MainModeProps) {
           </TooltipContent>
         </Tooltip>
 
-        <Tooltip>
+        {!isRhodesIsland && <Tooltip>
           <TooltipTrigger asChild>
             <Button
               onClick={props.onToggleGuide}
@@ -118,9 +121,9 @@ function MainModeContent(props: MainModeProps) {
             <p>新手建卡指引</p>
             <p className="mt-1 text-xs text-muted-foreground">跟随步骤快速创建你的第一个角色</p>
           </TooltipContent>
-        </Tooltip>
+        </Tooltip>}
 
-        <Tooltip>
+        {!isRhodesIsland && <Tooltip>
           <TooltipTrigger asChild>
             <Button
               onClick={() => navigateToPage("/gm-panel")}
@@ -137,7 +140,7 @@ function MainModeContent(props: MainModeProps) {
             <p>GM 玩家面板</p>
             <p className="mt-1 text-xs text-muted-foreground">上传多个角色 JSON，集中追踪玩家数值</p>
           </TooltipContent>
-        </Tooltip>
+        </Tooltip>}
 
         <Tooltip>
           <TooltipTrigger asChild>
@@ -265,7 +268,7 @@ function MainModeContent(props: MainModeProps) {
       <Separator orientation="vertical" className="h-5 bg-slate-500/30" />
 
       <div className="flex items-center gap-1.5">
-        <Tooltip>
+        {!isRhodesIsland && <Tooltip>
           <TooltipTrigger asChild>
             <Button
               onClick={() => navigateToPage("/card-manager")}
@@ -282,7 +285,7 @@ function MainModeContent(props: MainModeProps) {
             <p>卡包管理</p>
             <p className="mt-1 text-xs text-muted-foreground">管理和导入自定义卡包</p>
           </TooltipContent>
-        </Tooltip>
+        </Tooltip>}
 
         {!isMobile && <DualPageToggle />}
       </div>

@@ -4,6 +4,7 @@ import { useState, useMemo } from "react"
 import { CardType, CardCategory, getCardTypesByCategory, ALL_CARD_TYPES } from "@/card/card-types"
 import { getCardTypeName } from "@/card"
 import { cn } from "@/lib/utils"
+import { useSheetStore } from "@/lib/sheet-store"
 
 interface CardTypeSidebarProps {
   activeTab: string
@@ -19,6 +20,7 @@ interface CardTypeSidebarProps {
  * - 高亮当前选中的卡牌类型
  */
 export function CardTypeSidebar({ activeTab, onTabChange }: CardTypeSidebarProps) {
+  const ruleSetId = useSheetStore(state => state.sheetData.ruleSetId)
   const [expandedCategories, setExpandedCategories] = useState(
     new Set(['standard', 'extended'])
   )
@@ -35,7 +37,7 @@ export function CardTypeSidebar({ activeTab, onTabChange }: CardTypeSidebarProps
     ]
 
     let standard = getCardTypesByCategory(CardCategory.Standard)
-    const extended = getCardTypesByCategory(CardCategory.Extended)
+    const extended = ruleSetId === "rhodes-island" ? [] : getCardTypesByCategory(CardCategory.Extended)
 
     // 对 standard 数组进行排序
     standard.sort((a, b) => {
@@ -51,7 +53,7 @@ export function CardTypeSidebar({ activeTab, onTabChange }: CardTypeSidebarProps
     })
 
     return { standard, extended }
-  }, [])
+  }, [ruleSetId])
 
   // 切换分组展开状态
   const toggleCategory = (category: string) => {
@@ -96,7 +98,7 @@ export function CardTypeSidebar({ activeTab, onTabChange }: CardTypeSidebarProps
                     : "hover:bg-gray-100 text-gray-600"
                 )}
               >
-                {ALL_CARD_TYPES.get(type) || type}
+                {ruleSetId === "rhodes-island" && type === CardType.Subclass ? "分支" : ALL_CARD_TYPES.get(type) || type}
               </button>
             ))}
           </div>

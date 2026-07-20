@@ -2,10 +2,12 @@
 
 import type React from "react"
 import { useMemo, useRef, useState } from "react"
+import { createPortal } from "react-dom"
 import { useAutoResizeFont } from "@/hooks/use-auto-resize-font"
 import { useCardPreview } from "@/hooks/use-card-preview"
-import { SelectableCard } from "@/components/ui/selectable-card"
+import { CardHoverPreview } from "@/components/ui/card-hover-preview"
 import { useSheetStore } from "@/lib/sheet-store"
+import { useTextModeStore } from "@/lib/text-mode-store"
 import { PageHeader } from "@/components/page-header"
 import { getDisplayedCharacterCards } from "@/lib/ancestry-utils"
 
@@ -29,6 +31,8 @@ export function HeaderSection({
   const [editingField, setEditingField] = useState<string | null>(null)
   const [editingValue, setEditingValue] = useState("")
   const [editingStartLevel, setEditingStartLevel] = useState<string | null>(null)
+  const isRhodesIsland = formData.ruleSetId === "rhodes-island"
+  const isTextMode = useTextModeStore((state) => state.isTextMode)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -141,13 +145,15 @@ export function HeaderSection({
     handleMouseLeave
   } = useCardPreview({
     cards: displayCards,
-    containerRef
+    containerRef,
+    previewWidth: isTextMode ? 300 : 520,
+    previewHeight: isTextMode ? 400 : 340,
   })
 
   return (
     <div
       ref={containerRef}
-      className="bg-gray-800 text-white p-2 flex justify-between items-center rounded-t-md relative"
+      className="relative z-20 flex items-center justify-between rounded-t-md bg-gray-800 p-2 text-white"
     >
       <div className="flex flex-col">
         <label className="text-[9px] text-gray-300">职业</label>
@@ -256,7 +262,7 @@ export function HeaderSection({
           <div className="flex flex-col">
             <div className="flex items-center justify-between">
               <label className="text-[9px] text-gray-300">种族</label>
-              <label className="flex items-center gap-1 text-[9px] text-gray-200 print:hidden">
+              <label className={`${isRhodesIsland ? "hidden" : "flex"} items-center gap-1 text-[9px] text-gray-200 print:hidden`}>
                 <input
                   type="checkbox"
                   checked={!!formData.mixedAncestryEnabled}
@@ -304,7 +310,7 @@ export function HeaderSection({
                   )}
                 </div>
               )}
-              <span className="flex items-center text-white text-xs">+</span>
+              <span className={`${isRhodesIsland ? "hidden" : "flex"} items-center text-white text-xs`}>+</span>
               {editingField === 'ancestry2Ref' ? (
                 <input
                   type="text"
@@ -312,12 +318,12 @@ export function HeaderSection({
                   onChange={(e) => setEditingValue(e.target.value)}
                   onKeyDown={handleEditKeyDown}
                   onBlur={saveEditingName}
-                  className="w-24 bg-white border border-gray-400 text-gray-800 rounded p-1 h-7 text-xs px-2 focus:outline-none focus:border-blue-500"
+                  className={`${isRhodesIsland ? "hidden" : ""} w-24 bg-white border border-gray-400 text-gray-800 rounded p-1 h-7 text-xs px-2 focus:outline-none focus:border-blue-500`}
                   autoFocus
                 />
               ) : (
                   <div
-                    className={`group relative flex w-24 border border-gray-400 rounded h-7 bg-white overflow-hidden ${
+                    className={`group relative ${isRhodesIsland ? "hidden" : "flex"} w-24 border border-gray-400 rounded h-7 bg-white overflow-hidden ${
                       formData.mixedAncestryEnabled ? "" : "opacity-60"
                     }`}
                     onMouseEnter={(e) => {
@@ -358,7 +364,7 @@ export function HeaderSection({
             </div>
           </div>
           <div className="flex flex-col">
-            <label className="text-[9px] text-gray-300">子职业</label>
+            <label className="text-[9px] text-gray-300">{isRhodesIsland ? "分支" : "子职业"}</label>
             {editingField === 'subclassRef' ? (
               <input
                 type="text"
@@ -378,7 +384,7 @@ export function HeaderSection({
                     onMouseLeave={handleMouseLeave}
                     className="flex-1 text-gray-800 text-xs text-left px-2 py-0.5 hover:bg-gray-50 focus:outline-none"
                   >
-                    {formData.subclassRef?.name || <span className="print:hidden">选择子职业</span>}
+                    {formData.subclassRef?.name || <span className="print:hidden">{isRhodesIsland ? "选择分支" : "选择子职业"}</span>}
                   </button>
                 {formData.subclassRef?.name && (
                   <>
@@ -446,17 +452,11 @@ export function HeaderSection({
       </div>
 
       {/* 卡牌悬停预览 */}
-      {hoveredCard && (
-        <div
-          className="absolute z-50 pointer-events-none"
-          style={previewPosition}
-        >
-          <SelectableCard
-            card={hoveredCard}
-            onClick={() => { }}
-            isSelected={false}
-          />
-        </div>
+      {hoveredCard && typeof document !== "undefined" && createPortal(
+        <div className="pointer-events-none z-[100]" style={previewPosition}>
+          <CardHoverPreview card={hoveredCard} isTextMode={isTextMode} />
+        </div>,
+        document.body,
       )}
     </div>
   )

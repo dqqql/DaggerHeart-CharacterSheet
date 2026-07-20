@@ -5,9 +5,16 @@ import type { SheetCardReference } from '@/lib/sheet-data'
 export interface UseCardPreviewOptions {
     cards: StandardCard[]
     containerRef?: React.RefObject<HTMLElement | null>
+    previewWidth?: number
+    previewHeight?: number
 }
 
-export function useCardPreview({ cards, containerRef }: UseCardPreviewOptions) {
+export function useCardPreview({
+    cards,
+    containerRef,
+    previewWidth = 300,
+    previewHeight = 400,
+}: UseCardPreviewOptions) {
     const [hoveredCard, setHoveredCard] = useState<StandardCard | null>(null)
     const [previewPosition, setPreviewPosition] = useState<CSSProperties>({})
 
@@ -22,27 +29,16 @@ export function useCardPreview({ cards, containerRef }: UseCardPreviewOptions) {
     // 获取预览位置的函数
     const calculatePreviewPosition = useCallback((element: HTMLElement): CSSProperties => {
         const rect = element.getBoundingClientRect()
-        const containerRect = containerRef?.current?.getBoundingClientRect()
-
-        // 计算相对于容器的位置
-        const relativeLeft = containerRect ? rect.left - containerRect.left : rect.left
-        const relativeTop = containerRect ? rect.top - containerRect.top : rect.top
-
-        // 预览卡牌的固定宽度
-        const previewWidth = 300
-        const previewHeight = 400
-
-        // 获取视口或容器的尺寸
-        const viewportWidth = containerRect?.width || window.innerWidth
-        const viewportHeight = containerRect?.height || window.innerHeight
+        const viewportWidth = window.innerWidth
+        const viewportHeight = window.innerHeight
 
         // 计算最佳位置
-        let left = relativeLeft + rect.width + 10 // 默认在右侧
-        let top = relativeTop
+        let left = rect.right + 10 // 默认在右侧
+        let top = rect.top
 
         // 如果右侧空间不够，显示在左侧
         if (left + previewWidth > viewportWidth) {
-            left = relativeLeft - previewWidth - 10
+            left = rect.left - previewWidth - 10
         }
 
         // 如果底部空间不够，向上调整
@@ -56,12 +52,12 @@ export function useCardPreview({ cards, containerRef }: UseCardPreviewOptions) {
         }
 
         return {
-            position: 'absolute' as const,
+            position: 'fixed' as const,
             left: `${Math.max(10, left)}px`,
             top: `${top}px`,
             zIndex: 50,
         }
-    }, [containerRef])
+    }, [previewHeight, previewWidth])
 
     // 处理鼠标进入
     const handleMouseEnter = useCallback((ref: SheetCardReference | undefined, element: HTMLElement) => {

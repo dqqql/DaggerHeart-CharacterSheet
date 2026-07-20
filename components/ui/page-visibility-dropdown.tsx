@@ -30,6 +30,10 @@ export function PageVisibilityDropdown() {
       </button>
     )
   }
+
+  if (sheetData.ruleSetId === "rhodes-island") {
+    return null
+  }
   
   const pageOptions = getOptionalPageConfigs().map(config => ({
     id: config.visibilityKey!,

@@ -10,7 +10,7 @@
  * 4. 其他历史兼容性处理
  */
 
-import type { SheetData, AttributeValue } from './sheet-data'
+import { normalizeRuleSetId, type SheetData, type AttributeValue } from './sheet-data'
 import { defaultSheetData } from './default-sheet-data'
 import { createEmptyCard, type StandardCard } from '@/card/card-types'
 import { inferMixedAncestryEnabled } from '@/lib/ancestry-utils'
@@ -456,6 +456,35 @@ export function migrateSheetData(
   let migrated: SheetData = {
     ...defaultSheetData,
     ...sourceData
+  }
+
+  // 规则集字段加入前的所有数据均属于原版匕首之心。
+  migrated.ruleSetId = normalizeRuleSetId(sourceData.ruleSetId)
+  migrated.ancestryExperience = Array.isArray(sourceData.ancestryExperience)
+    ? sourceData.ancestryExperience.map(String)
+    : []
+  migrated.ancestryExperienceValues = Array.isArray(sourceData.ancestryExperienceValues)
+    ? sourceData.ancestryExperienceValues.map(String)
+    : []
+  migrated.branchUpgradeCount = Number.isFinite(sourceData.branchUpgradeCount)
+    ? Math.max(0, Math.min(2, Math.trunc(sourceData.branchUpgradeCount)))
+    : 0
+  if (sourceData.selectedModule === 'x' || sourceData.selectedModule === 'y') {
+    migrated.selectedModule = sourceData.selectedModule
+  } else {
+    delete migrated.selectedModule
+  }
+  if (sourceData.multiclassSelection && typeof sourceData.multiclassSelection === 'object') {
+    migrated.multiclassSelection = sourceData.multiclassSelection
+  } else {
+    delete migrated.multiclassSelection
+  }
+  migrated.rulesetAutomationVersions = {
+    daggerheart: 0,
+    'rhodes-island': 0,
+    ...(sourceData.rulesetAutomationVersions && typeof sourceData.rulesetAutomationVersions === 'object'
+      ? sourceData.rulesetAutomationVersions
+      : {}),
   }
 
   // 对旧存档保留“字段缺失”的语义，避免被默认值掩盖后跳过迁移

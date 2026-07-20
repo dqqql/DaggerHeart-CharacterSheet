@@ -25,6 +25,8 @@ import { UpgradeSection } from "@/components/character-sheet-page-two-sections/u
 import { PageHeader } from "@/components/page-header"
 import { CardSelectionModal } from "@/components/modals/card-selection-modal"
 import type { AttributeValue, DomainCardAutomationState } from "@/lib/sheet-data"
+import { RhodesMulticlassModal } from "@/components/modals/rhodes-multiclass-modal"
+import { rhodesIslandCards } from "@/data/rhodes-island"
 
 function createEmptyInventoryCards() {
   return Array(20)
@@ -74,6 +76,7 @@ export default function CharacterSheetPageTwo() {
   const displayedStressMax = getDisplayedStressMax(safeFormData)
   const minDisplayedHpMax = getDisplayedHpMax({ ...safeFormData, hpMax: 0 })
   const minDisplayedStressMax = getDisplayedStressMax({ ...safeFormData, stressMax: 0 })
+  const isRhodesIsland = safeFormData.ruleSetId === "rhodes-island"
 
   const [upgradeDomainModalOpen, setUpgradeDomainModalOpen] = useState(false)
   const [upgradeDomainCardIndex, setUpgradeDomainCardIndex] = useState<number>(-1)
@@ -84,6 +87,8 @@ export default function CharacterSheetPageTwo() {
   const [vitalityDialogOpen, setVitalityDialogOpen] = useState(false)
   const [masterDialogOpen, setMasterDialogOpen] = useState(false)
   const [pendingMasterCardIndex, setPendingMasterCardIndex] = useState<number>(-1)
+  const [multiclassWizardOpen, setMulticlassWizardOpen] = useState(false)
+  const [pendingMulticlassCheck, setPendingMulticlassCheck] = useState<{ key: string; index: number } | null>(null)
 
   const isUpdatingRef = useRef(false)
   const isResolvingAutomationRef = useRef(false)
@@ -168,6 +173,55 @@ export default function CharacterSheetPageTwo() {
 
     if (option) {
       const label = option.label
+
+      if (safeFormData.ruleSetId === "rhodes-island" && label.includes("升级分支")) {
+        const multiclassIndex = options.findIndex(item => item.label.includes("兼职"))
+        const multiclassKey = `${tier}-${multiclassIndex}`
+        if (newCheckedState && multiclassIndex >= 0 && isUpgradeChecked(multiclassKey, multiclassIndex)) {
+          showFadeNotification({ message: "本位阶的“升级分支”与“兼职”互斥", type: "error", position: "middle" })
+          return
+        }
+        setFormData(prev => ({
+          ...prev,
+          branchUpgradeCount: Math.max(0, Math.min(2, (prev.branchUpgradeCount ?? 0) + (newCheckedState ? 1 : -1))),
+        }))
+        toggleUpgradeCheckbox(checkKeyOrTier, index, newCheckedState)
+        return
+      }
+
+      if (safeFormData.ruleSetId === "rhodes-island" && label.includes("兼职")) {
+        const branchIndex = options.findIndex(item => item.label.includes("升级分支"))
+        const branchKey = `${tier}-${branchIndex}-0`
+        if (newCheckedState && branchIndex >= 0 && isUpgradeChecked(branchKey, branchIndex)) {
+          showFadeNotification({ message: "本位阶的“兼职”与“升级分支”互斥", type: "error", position: "middle" })
+          return
+        }
+        if (newCheckedState && safeFormData.multiclassSelection) {
+          showFadeNotification({ message: "每名角色只能取得一次兼职", type: "error", position: "middle" })
+          return
+        }
+        if (currentlyChecked) {
+          const selectedIds = new Set([
+            safeFormData.multiclassSelection?.profession.id,
+            safeFormData.multiclassSelection?.branch.id,
+          ].filter(Boolean))
+          setFormData(prev => ({
+            ...prev,
+            multiclassSelection: undefined,
+            cards: prev.cards.map((card, cardIndex) => cardIndex >= 5 && selectedIds.has(card.id) ? createEmptyCard() : card),
+          }))
+          toggleUpgradeCheckbox(checkKeyOrTier, index, false)
+          return
+        }
+        setPendingMulticlassCheck({ key: checkKeyOrTier, index })
+        setMulticlassWizardOpen(true)
+        return
+      }
+
+      if (safeFormData.ruleSetId === "rhodes-island" && label.includes("获取模组") && !safeFormData.selectedModule) {
+        showFadeNotification({ message: "请在位阶4编辑器中选择 X 或 Y 模组", type: "info", position: "middle" })
+        return
+      }
 
       if (label.includes("角色属性+1") && currentlyChecked) {
         const rollbackAttributeUpgrade = useSheetStore.getState().rollbackAttributeUpgrade
@@ -341,6 +395,17 @@ export default function CharacterSheetPageTwo() {
       ...option,
       label: option.label.replace("{LEVEL_CAP}", levelCap),
     }))
+
+    if (safeFormData.ruleSetId === "rhodes-island") {
+      const branchUpgrade = { label: "升级分支：从预备干员进阶为正式干员，再进阶为资深干员。", doubleBox: false, boxCount: 1 }
+      const proficiency = { label: "(同时标记两格) 获得熟练值+1。", doubleBox: true, boxCount: 2 }
+      const multiclass = { label: "(同时标记两格) 兼职：选择额外职业、其初始分支和一个领域，加入配置卡组。", doubleBox: true, boxCount: 2 }
+      const module = { label: "获取模组：从当前分支的 X / Y 模组中单选一项。", doubleBox: false, boxCount: 1 }
+
+      if (tier === 1) return [...processedBaseUpgrades, branchUpgrade, multiclass]
+      if (tier === 2) return [...processedBaseUpgrades, branchUpgrade, proficiency, multiclass]
+      return [...processedBaseUpgrades, module, proficiency]
+    }
 
     const tierSpecificKey = `tier${tier}` as keyof typeof upgradeOptionsData.tierSpecificUpgrades
     const tierSpecificUpgrades = upgradeOptionsData.tierSpecificUpgrades[tierSpecificKey] || []
@@ -540,7 +605,7 @@ export default function CharacterSheetPageTwo() {
             <UpgradeSection
               tier={1}
               title="位阶2 等级 2-4"
-              description="当你到达 2 级时：获得一项额外 +2 经历，熟练值 +1。"
+              description={isRhodesIsland ? "到达 2 级：获得 +2 经历与熟练值 +1；升级分支与本位阶兼职互斥。" : "当你到达 2 级时：获得一项额外 +2 经历，熟练值 +1。"}
               formData={safeFormData}
               isUpgradeChecked={isUpgradeChecked}
               handleUpgradeCheck={handleUpgradeCheck}
@@ -554,7 +619,7 @@ export default function CharacterSheetPageTwo() {
             <UpgradeSection
               tier={2}
               title="位阶3 等级 5-7"
-              description="当你到达 5 级时：获得一项额外 +2 经历，清除所有属性升级标记，熟练值 +1。"
+              description={isRhodesIsland ? "到达 5 级：应用分支化职业特性提升；兼职整体只能取得一次。" : "当你到达 5 级时：获得一项额外 +2 经历，清除所有属性升级标记，熟练值 +1。"}
               formData={safeFormData}
               isUpgradeChecked={isUpgradeChecked}
               handleUpgradeCheck={handleUpgradeCheck}
@@ -568,7 +633,7 @@ export default function CharacterSheetPageTwo() {
             <UpgradeSection
               tier={3}
               title="位阶4 等级 8-10"
-              description="当你到达 8 级时：获得一项额外 +2 经历，清除所有属性升级标记，熟练值 +1。"
+              description={isRhodesIsland ? "到达 8 级：选择当前分支的 X 或 Y 模组，并自动更新绑定武器。" : "当你到达 8 级时：获得一项额外 +2 经历，清除所有属性升级标记，熟练值 +1。"}
               formData={safeFormData}
               isUpgradeChecked={isUpgradeChecked}
               handleUpgradeCheck={handleUpgradeCheck}
@@ -617,6 +682,32 @@ export default function CharacterSheetPageTwo() {
         onOpenChange={setMasterDialogOpen}
         formData={safeFormData}
         onConfirm={handleMasterConfirm}
+      />
+      <RhodesMulticlassModal
+        open={multiclassWizardOpen}
+        mainProfessionId={safeFormData.professionRef?.id}
+        onOpenChange={(open) => {
+          setMulticlassWizardOpen(open)
+          if (!open) setPendingMulticlassCheck(null)
+        }}
+        onConfirm={(selection) => {
+          const selectedCards = rhodesIslandCards.filter(card =>
+            card.id === selection.profession.id ||
+            card.id === selection.branch.id ||
+            (card.type === "domain" && card.level === 1 && card.class === selection.domain.name)
+          ) as StandardCard[]
+          setFormData(prev => {
+            const cards = [...prev.cards]
+            for (const selectedCard of selectedCards) {
+              const emptyIndex = cards.findIndex((card, index) => index >= 5 && isEmptyCard(card))
+              if (emptyIndex >= 0) cards[emptyIndex] = selectedCard
+            }
+            return { ...prev, multiclassSelection: selection, cards }
+          })
+          if (pendingMulticlassCheck) {
+            toggleUpgradeCheckbox(pendingMulticlassCheck.key, pendingMulticlassCheck.index, true)
+          }
+        }}
       />
     </>
   )

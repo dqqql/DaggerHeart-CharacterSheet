@@ -2,6 +2,7 @@ import { createEmptyCard, type StandardCard } from "@/card/card-types";
 import type { SheetData } from "./sheet-data";
 
 export const defaultSheetData: SheetData = {
+    ruleSetId: "daggerheart",
     name: "",
     characterImage: "",
     level: "1",
@@ -32,6 +33,8 @@ export const defaultSheetData: SheetData = {
     gold: Array(20).fill(false),
     experience: ["", "", "", "", ""],
     experienceValues: ["", "", "", "", ""],
+    ancestryExperience: [],
+    ancestryExperienceValues: [],
     hope: 0,      // 默认0点希望
     hopeMax: 6,   // 默认最大6点
 
@@ -176,5 +179,10 @@ export const defaultSheetData: SheetData = {
     presetEquipmentCalcVersion: 1,
     domainCardAutomation: {
         appliedPermanentCardIds: [],
+    },
+    branchUpgradeCount: 0,
+    rulesetAutomationVersions: {
+        daggerheart: 0,
+        "rhodes-island": 0,
     },
 };

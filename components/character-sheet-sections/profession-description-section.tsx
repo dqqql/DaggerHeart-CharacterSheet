@@ -4,9 +4,13 @@ import { CardMarkdown } from '@/components/ui/card-markdown';
 
 interface ProfessionDescriptionSectionProps {
     description: string | undefined;
+    heightClassName?: string;
 }
 
-const ProfessionDescriptionSection: React.FC<ProfessionDescriptionSectionProps> = ({ description }) => {
+const ProfessionDescriptionSection: React.FC<ProfessionDescriptionSectionProps> = ({
+    description,
+    heightClassName = 'h-[250px]',
+}) => {
     const transformedSections = description ? splitMarkdownRenderSections(description) : [];
 
     const extractText = (child: React.ReactNode): string => {
@@ -30,7 +34,7 @@ const ProfessionDescriptionSection: React.FC<ProfessionDescriptionSectionProps> 
     };
 
     return (
-        <div className="border-2 border-gray-300 rounded-lg p-1.5 text-xs markdown-content h-[250px] overflow-auto">
+        <div className={`border-2 border-gray-300 rounded-lg p-1.5 text-xs markdown-content ${heightClassName} overflow-auto`}>
             {transformedSections.map((section, index) => (
                 <div key={`${index}-${section.isCentered ? 'center' : 'normal'}`} className={section.isCentered ? 'text-center' : undefined}>
                     <CardMarkdown
