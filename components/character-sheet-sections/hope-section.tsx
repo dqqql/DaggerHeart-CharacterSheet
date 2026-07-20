@@ -3,6 +3,8 @@
 import { useSheetStore } from "@/lib/sheet-store";
 import { StandardCard } from "@/card/card-types";
 import ReactMarkdown from 'react-markdown';
+import { getRhodesProfessionHopeFeature } from "@/lib/rhodes-island-automation";
+import { highlightTextChanges } from "@/lib/text-change-highlighter";
 
 export function HopeSection() {
   const { sheetData: formData, updateHope, setSheetData } = useSheetStore();
@@ -41,14 +43,23 @@ export function HopeSection() {
 
   // 获取希望特性
   let hopeTrait = ""
+  let professionCard: StandardCard | undefined
   if (formData && formData.professionRef?.id && formData.cards && Array.isArray(formData.cards)) {
-    const professionCard = formData.cards.find(
+    professionCard = formData.cards.find(
       (card: StandardCard | null) => card && card.id === formData.professionRef?.id && card.type === "profession"
-    ) as StandardCard;
+    ) as StandardCard | undefined;
     if (professionCard && professionCard.professionSpecial && professionCard.professionSpecial["希望特性"]) {
       hopeTrait = String(professionCard.professionSpecial["希望特性"])
     }
   }
+  const baseHopeTrait = formData.ruleSetId === "rhodes-island"
+    ? getRhodesProfessionHopeFeature(formData.professionRef?.id)
+    : ""
+  const highlightedHopeTrait = formData.ruleSetId === "rhodes-island"
+    && formData.selectedModule === "x"
+    && hopeTrait !== baseHopeTrait
+    ? highlightTextChanges(baseHopeTrait, hopeTrait)
+    : null
 
   return (
     <div className="py-1 mb-1 group">
@@ -121,7 +132,22 @@ export function HopeSection() {
 
       <div className="text-center px-2">
         <div className="text-[12px] leading-tight min-h-[30px]">
-          <ReactMarkdown>{hopeTrait}</ReactMarkdown>
+          {highlightedHopeTrait ? (
+            <p className="whitespace-pre-wrap" aria-label="X 模组修改后的希望特性；绿色文字为新增或修改内容">
+              {highlightedHopeTrait.map((segment, index) => segment.changed ? (
+                <mark
+                  key={`${index}-${segment.text}`}
+                  className="bg-transparent font-medium text-emerald-600"
+                >
+                  {segment.text}
+                </mark>
+              ) : (
+                <span key={`${index}-${segment.text}`}>{segment.text}</span>
+              ))}
+            </p>
+          ) : (
+            <ReactMarkdown>{hopeTrait}</ReactMarkdown>
+          )}
         </div>
       </div>
     </div>

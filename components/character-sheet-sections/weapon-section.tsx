@@ -165,7 +165,9 @@ export function WeaponSection({
           name={weaponFields.feature}
           value={formData[weaponFields.feature] || ""}
           onChange={handleInputChange}
-          placeholder=""
+          placeholder={isBoundRhodesWeapon
+            ? "和游戏主持人共同商讨，并在此处填写武器原型的形制"
+            : ""}
           maxLines={isPrimary ? 3 : 2}
         />
       </div>

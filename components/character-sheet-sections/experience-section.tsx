@@ -3,7 +3,6 @@
 import { useSheetStore } from "@/lib/sheet-store";
 import { useAutoResizeFont } from "@/hooks/use-auto-resize-font"
 import type { StandardCard } from "@/card/card-types"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { getRhodesIslandRecommendedExperiences } from "@/lib/rhodes-island-experience"
 
 type RhodesIslandAncestryCard = StandardCard & {
@@ -38,32 +37,7 @@ export function ExperienceSection() {
     <div className="py-1">
       {formData.ruleSetId === "rhodes-island" && (
         <div className="mb-2 border border-slate-300 bg-slate-50 p-1">
-          <div className="mb-1 flex items-center justify-center gap-1">
-            <h3 className="text-[10px] font-bold text-slate-700">种族经历</h3>
-            <TooltipProvider delayDuration={100}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    type="button"
-                    className="flex h-3.5 w-3.5 items-center justify-center rounded-full border border-slate-500 text-[9px] font-bold leading-none text-slate-600 hover:border-cyan-700 hover:text-cyan-700 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-700 print:hidden"
-                    aria-label="查看推荐经历"
-                  >
-                    !
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-64 text-xs">
-                  {recommendedExperiences.length > 0 ? (
-                    <div>
-                      <div className="mb-1 font-semibold">推荐经历</div>
-                      <div>{recommendedExperiences.map((item) => `${item.name} +${item.value}`).join("、")}</div>
-                    </div>
-                  ) : (
-                    <span>选择种族后可查看推荐经历</span>
-                  )}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
+          <h3 className="mb-1 text-center text-[10px] font-bold text-slate-700">种族经历</h3>
           <div className="flex items-center">
             <input
               type="text"

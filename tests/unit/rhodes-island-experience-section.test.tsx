@@ -43,6 +43,7 @@ describe("Rhodes Island ancestry experience field", () => {
       "data-export-default-value",
       String(recommendation.value),
     )
+    expect(screen.queryByLabelText("查看推荐经历")).not.toBeInTheDocument()
 
     fireEvent.change(input, { target: { value: "玩家自定义经历" } })
     expect(setSheetData).toHaveBeenCalledWith({ ancestryExperience: ["玩家自定义经历"] })
