@@ -6,6 +6,7 @@ import Image from "next/image"
 import { StandardCard, getVariantRealType, isVariantCard } from "@/card/card-types"
 import { getCardTypeName } from "@/card/card-ui-config"
 import { getCardImageUrl, getCardImageUrlAsync } from "@/lib/utils"
+import { formatRhodesSubclassDomainRecommendation } from "@/lib/rhodes-island-card-display"
 
 const getDisplayTypeName = (card: StandardCard) => {
   if (isVariantCard(card)) {
@@ -73,7 +74,7 @@ export function SimpleImageCard({
   const displayName = card.name || "Unnamed Card"
   const displayItem1 = card.cardSelectDisplay?.item1 || ""
   const displayItem2 = card.cardSelectDisplay?.item2 || ""
-  const displayItem3 = card.cardSelectDisplay?.item3 || ""
+  const displayItem3 = formatRhodesSubclassDomainRecommendation(card)
   const displayItem4 = card.cardSelectDisplay?.item4 || ""
 
   return (

@@ -8,6 +8,7 @@ import { getStandardCardById } from "@/card"
 import React, { useState, useEffect, useRef } from "react"
 import { CardMarkdown } from "@/components/ui/card-markdown"
 import { getCardRuleSetId } from "@/lib/ruleset"
+import { formatRhodesSubclassDomainRecommendation } from "@/lib/rhodes-island-card-display"
 
 // Helper function to get display type name, moved outside of the component
 const getDisplayTypeName = (card: StandardCard) => {
@@ -133,7 +134,7 @@ export function SelectableCard({ card, onClick, isSelected, showSource = true }:
     // Get display items, providing empty strings as fallbacks
     const displayItem1 = card.cardSelectDisplay?.item1 || "";
     const displayItem2 = card.cardSelectDisplay?.item2 || "";
-    const displayItem3 = card.cardSelectDisplay?.item3 || "";
+    const displayItem3 = formatRhodesSubclassDomainRecommendation(card);
     const displayItem4 = card.cardSelectDisplay?.item4 || "";
 
     // 构建属性徽章数组（只包含非空项）

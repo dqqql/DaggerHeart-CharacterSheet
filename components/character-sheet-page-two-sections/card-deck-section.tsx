@@ -15,6 +15,7 @@ import { usePinnedCardsStore } from "@/lib/pinned-cards-store"
 import { useCardActions } from "@/lib/sheet-store"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { getDisplayedCharacterCards } from "@/lib/ancestry-utils"
+import { formatRhodesSubclassDomainRecommendation } from "@/lib/rhodes-island-card-display"
 
 interface CardDeckSectionProps {
   formData: SheetData
@@ -85,6 +86,7 @@ function Card({
   const standardCard = card && typeof card === 'object' && 'type' in card && 'name' in card 
     ? card as StandardCard 
     : convertToStandardCard(card);
+  const usesRhodesSubclassLayout = isRhodesIsland && standardCard?.type === "subclass"
 
   // Enhanced card type name display for variants
   const displayTypeName = (() => {
@@ -160,12 +162,18 @@ function Card({
 
       {/* 卡牌底部信息 */}
       {card?.name && (
-        <div className="flex justify-between items-center !text-xs text-gray-500">
-          <span className="truncate max-w-[33%]">
+        <div className={usesRhodesSubclassLayout
+          ? "flex items-center gap-x-4 !text-xs text-gray-500"
+          : "flex items-center justify-between !text-xs text-gray-500"}>
+          <span className={usesRhodesSubclassLayout ? "shrink-0 truncate" : "max-w-[33%] truncate"}>
             {standardCard?.cardSelectDisplay?.item1 || ""}
           </span>
-          <span className="truncate max-w-[33%]">{standardCard?.cardSelectDisplay?.item2 || ""}</span>
-          <span className="truncate max-w-[33%]">{standardCard?.cardSelectDisplay?.item3 || ""}</span>
+          <span className={usesRhodesSubclassLayout ? "shrink-0 truncate" : "max-w-[33%] truncate"}>
+            {standardCard?.cardSelectDisplay?.item2 || ""}
+          </span>
+          <span className={usesRhodesSubclassLayout ? "min-w-0 truncate" : "max-w-[33%] truncate"}>
+            {formatRhodesSubclassDomainRecommendation(standardCard)}
+          </span>
         </div>
       )}
 

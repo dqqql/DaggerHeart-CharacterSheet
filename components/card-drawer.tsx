@@ -19,6 +19,7 @@ import { useTextModeStore } from "@/lib/text-mode-store"
 import { getOfficialImageUrl } from "@/lib/official-image-pack"
 import { getBasePath } from "@/lib/utils"
 import { getCardRuleSetId } from "@/lib/ruleset"
+import { formatRhodesSubclassDomainRecommendation } from "@/lib/rhodes-island-card-display"
 
 interface CardDrawerProps {
   cards: Array<StandardCard>
@@ -430,7 +431,9 @@ export function CardDrawer({
                     <div className="flex flex-row flex-wrap gap-x-3 gap-y-1 text-xs text-gray-600">
                       {hoveredCard.cardSelectDisplay?.item1 && <span>{hoveredCard.cardSelectDisplay.item1}</span>}
                       {hoveredCard.cardSelectDisplay?.item2 && <span>{hoveredCard.cardSelectDisplay.item2}</span>}
-                      {hoveredCard.cardSelectDisplay?.item3 && <span>{hoveredCard.cardSelectDisplay.item3}</span>}
+                      {hoveredCard.cardSelectDisplay?.item3 && (
+                        <span>{formatRhodesSubclassDomainRecommendation(hoveredCard)}</span>
+                      )}
                       {hoveredCard.cardSelectDisplay?.item4 && <span>{hoveredCard.cardSelectDisplay.item4}</span>}
                     </div>
                   </div>

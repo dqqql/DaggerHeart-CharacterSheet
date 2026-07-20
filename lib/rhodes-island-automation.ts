@@ -68,6 +68,10 @@ function moduleContent(description: string): string {
   return contentLines.join("\n").trim() || description.trim()
 }
 
+function removeBranchNameFromHopeFeature(content: string, branchName: string): string {
+  return content.replace(`-${branchName}：`, "：")
+}
+
 function replaceCardDescription(
   card: StandardCard | undefined,
   description: string,
@@ -143,7 +147,7 @@ export function applyRhodesIslandAutomation(data: SheetData): SheetData {
     : profession?.classFeature ?? ""
   const selectedModuleContent = selectedModule ? moduleContent(selectedModule.description) : ""
   const hopeFeature = data.selectedModule === "x" && selectedModule
-    ? selectedModuleContent
+    ? removeBranchNameFromHopeFeature(selectedModuleContent, branch.name)
     : profession?.hopeFeature ?? ""
   const professionDescription = [
     professionFeature,

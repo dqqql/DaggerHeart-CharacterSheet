@@ -70,10 +70,16 @@ describe("罗德岛规则幂等自动化", () => {
       selectedModule: "x",
       primaryWeaponFeature: "玩家填写的武器原型形制",
     })
-    const expectedFeature = branch.modules.x.description.split(/\r?\n/).slice(1).join("\n").trim()
+    const expectedFeature = branch.modules.x.description
+      .split(/\r?\n/)
+      .slice(1)
+      .join("\n")
+      .trim()
+      .replace(`-${branch.name}：`, "：")
     expect(x.primaryWeaponFeature).toBe("玩家填写的武器原型形制")
     expect(x.cards[0].professionSpecial?.希望特性).toBe(expectedFeature)
     expect(x.cards[0].professionSpecial?.希望特性).not.toContain("希望特性提升")
+    expect(x.cards[0].professionSpecial?.希望特性).not.toContain(`-${branch.name}`)
     expect(x.cards[0].description).not.toContain(branch.modules.x.description)
   })
 
@@ -93,7 +99,12 @@ describe("罗德岛规则幂等自动化", () => {
 
   it("未选择模组时恢复基础希望特性并清空 Y 职业特性", () => {
     const branch = rhodesIslandCatalog.branches[0]
-    const expectedXFeature = branch.modules.x.description.split(/\r?\n/).slice(1).join("\n").trim()
+    const expectedXFeature = branch.modules.x.description
+      .split(/\r?\n/)
+      .slice(1)
+      .join("\n")
+      .trim()
+      .replace(`-${branch.name}：`, "：")
     const x = applyRhodesIslandAutomation({ ...createBranchSheet(8), selectedModule: "x" })
     const y = applyRhodesIslandAutomation({ ...x, selectedModule: "y" })
     const cleared = applyRhodesIslandAutomation({ ...y, selectedModule: undefined })

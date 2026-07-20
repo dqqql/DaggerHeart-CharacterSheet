@@ -9,6 +9,7 @@ import { getCardImageUrl, getCardImageUrlAsync } from "@/lib/utils"
 import { SelectableCard } from "@/components/ui/selectable-card"
 import { CardMarkdown } from "@/components/ui/card-markdown"
 import { getCardRuleSetId } from "@/lib/ruleset"
+import { formatRhodesSubclassDomainRecommendation } from "@/lib/rhodes-island-card-display"
 
 interface CardHoverPreviewProps {
     card: StandardCard
@@ -95,7 +96,9 @@ export function CardHoverPreview({ card, isTextMode = false }: CardHoverPreviewP
                     <div className="flex flex-row flex-wrap gap-x-3 gap-y-1 text-xs text-gray-600">
                         {card.cardSelectDisplay?.item1 && <span className="truncate">{card.cardSelectDisplay.item1}</span>}
                         {card.cardSelectDisplay?.item2 && <span className="truncate">{card.cardSelectDisplay.item2}</span>}
-                        {card.cardSelectDisplay?.item3 && <span className="truncate">{card.cardSelectDisplay.item3}</span>}
+                        {card.cardSelectDisplay?.item3 && (
+                            <span className="truncate">{formatRhodesSubclassDomainRecommendation(card)}</span>
+                        )}
                         {card.cardSelectDisplay?.item4 && <span className="truncate">{card.cardSelectDisplay.item4}</span>}
                     </div>
                 </div>

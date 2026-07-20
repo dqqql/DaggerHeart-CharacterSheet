@@ -67,7 +67,9 @@ describe("Rhodes Island home fields", () => {
       .join("")
 
     expect(highlightedFeature).toBeInTheDocument()
+    expect(highlightedFeature).not.toHaveTextContent("冲锋手")
     expect(changedText).not.toBe("")
+    expect(changedText).not.toContain("冲锋手")
     expect(container.querySelector("mark")).toHaveClass("text-emerald-600")
   })
 })

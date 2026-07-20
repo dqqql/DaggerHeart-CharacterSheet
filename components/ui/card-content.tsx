@@ -4,6 +4,7 @@ import React from "react"
 import { CardType, StandardCard } from "@/card/card-types"
 import { getCardTypeName } from "@/card/card-ui-config"
 import { CardMarkdown } from "@/components/ui/card-markdown"
+import { formatRhodesSubclassDomainRecommendation } from "@/lib/rhodes-island-card-display"
 
 interface CardContentProps {
     card: StandardCard
@@ -12,6 +13,8 @@ interface CardContentProps {
 
 // 共享的卡牌内容渲染组件
 export const CardContent: React.FC<CardContentProps> = ({ card, className = "" }) => {
+    const displayItem3 = formatRhodesSubclassDomainRecommendation(card)
+
     return (
         <div className={`${className} flex flex-col h-full`}>
             <div className="flex items-center justify-between mb-1">
@@ -25,9 +28,9 @@ export const CardContent: React.FC<CardContentProps> = ({ card, className = "" }
                     {card.cardSelectDisplay.item1 && <span className="text-gray-800">{card.cardSelectDisplay.item1}</span>}
                     {card.cardSelectDisplay.item1 && card.cardSelectDisplay.item2 && <span className="text-gray-400">•</span>}
                     {card.cardSelectDisplay.item2 && <span className="text-gray-800">{card.cardSelectDisplay.item2}</span>}
-                    {card.cardSelectDisplay.item2 && card.cardSelectDisplay.item3 && <span className="text-gray-400">•</span>}
-                    {card.cardSelectDisplay.item3 && <span className="text-gray-800">{card.cardSelectDisplay.item3}</span>}
-                    {card.cardSelectDisplay.item3 && card.cardSelectDisplay.item4 && <span className="text-gray-400">•</span>}
+                    {card.cardSelectDisplay.item2 && displayItem3 && <span className="text-gray-400">•</span>}
+                    {displayItem3 && <span className="text-gray-800">{displayItem3}</span>}
+                    {displayItem3 && card.cardSelectDisplay.item4 && <span className="text-gray-400">•</span>}
                     {card.cardSelectDisplay.item4 && <span className="text-gray-800">{card.cardSelectDisplay.item4}</span>}
                 </div>
             )}

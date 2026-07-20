@@ -6,6 +6,7 @@ import React from "react"
 import Image from "next/image"
 import { getCardImageUrl, getCardImageUrlAsync } from "@/lib/utils"
 import { CardMarkdown } from "@/components/ui/card-markdown"
+import { formatRhodesSubclassDomainRecommendation } from "@/lib/rhodes-island-card-display"
 
 const getDisplayTypeName = (card: StandardCard) => {
     if (isVariantCard(card)) {
@@ -57,7 +58,7 @@ export function PrintImageCard({ card }: PrintImageCardProps) {
     const displayDescription = card.description || "无描述。"
     const displayItem1 = card.cardSelectDisplay?.item1 || ""
     const displayItem2 = card.cardSelectDisplay?.item2 || ""
-    const displayItem3 = card.cardSelectDisplay?.item3 || ""
+    const displayItem3 = formatRhodesSubclassDomainRecommendation(card)
     const displayItem4 = card.cardSelectDisplay?.item4 || ""
 
     return (
