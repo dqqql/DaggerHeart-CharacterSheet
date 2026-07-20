@@ -218,6 +218,10 @@ export function ImageCard({ card, onClick, isSelected, showSource = true, priori
                 // 子职业卡：保留主职、等级和施法属性（施法属性需要补全"施法"后缀）
                 const subclassItems = [displayItem1, displayItem2].filter(Boolean);
                 if (displayItem3) {
+                    if (isRhodesIslandCard) {
+                        subclassItems.push(displayItem3);
+                        return subclassItems;
+                    }
                     // 补全施法属性格式：如果是"不可施法"则保持原样，否则添加"施法"后缀
                     const castingAttr = displayItem3 === '不可施法' ? displayItem3 : `${displayItem3}施法`;
                     subclassItems.push(castingAttr);

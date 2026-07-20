@@ -11,7 +11,8 @@
     "domainCards": 262
   },
   "normalizationNotes": [
-    "工业领域源文件有三张卡将‘回想费用1’误写为‘回想等级1’；按发布清单262张保留首张，另两张保存在 catalog.unpublishedSourceEntries 中。"
+    "工业领域源文件有三张卡将‘回想费用1’误写为‘回想等级1’；按发布清单262张保留首张，另两张保存在 catalog.unpublishedSourceEntries 中。",
+    "失乡之民的社群能力补全了旧导入结果遗漏的永久替换社群卡规则。"
   ],
   "files": {
     "catalog": "./catalog.json",

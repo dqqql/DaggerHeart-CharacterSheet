@@ -2,6 +2,7 @@ import { useCallback } from "react"
 import { exportCharacterCode } from "@/lib/character-code"
 import { exportCharacterData } from "@/lib/storage"
 import type { SheetData } from "@/lib/sheet-data"
+import { withRhodesIslandDefaultAncestryExperience } from "@/lib/rhodes-island-experience"
 
 const WAIT_TIMEOUT = 10000
 const CHECK_INTERVAL = 100
@@ -85,7 +86,7 @@ export function useExportHandlers({
     try {
       console.log("[ExportHandlers] Starting HTML export")
       const { exportToHTML } = await import("@/lib/html-exporter")
-      await exportToHTML(formData)
+      await exportToHTML(withRhodesIslandDefaultAncestryExperience(formData))
       console.log("[ExportHandlers] HTML export completed")
     } catch (error) {
       console.error("[ExportHandlers] HTML export failed:", error)
@@ -95,7 +96,7 @@ export function useExportHandlers({
 
   const handleExportJSON = useCallback(() => {
     try {
-      exportCharacterData(formData)
+      exportCharacterData(withRhodesIslandDefaultAncestryExperience(formData))
       console.log("[ExportHandlers] JSON export completed")
     } catch (error) {
       console.error("[ExportHandlers] JSON export failed:", error)

@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils"
 
 interface MultiSelectFilterProps<T extends string = string> {
   label: string
-  options: Array<{ value: T; label: string }>
+  options: Array<{ value: T; label: string; separatorBefore?: string }>
   selected: T[]
   onChange: (selected: T[]) => void
   placeholder?: string
@@ -112,16 +112,26 @@ export function MultiSelectFilter<T extends string = string>({
               <p className="text-sm text-muted-foreground text-center py-2">无匹配结果</p>
             )}
             {filteredOptions.map((option) => (
-              <label
-                key={option.value}
-                className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-accent cursor-pointer"
-              >
-                <Checkbox
-                  checked={selected.includes(option.value)}
-                  onCheckedChange={() => toggleOption(option.value)}
-                />
-                <span className="text-sm">{option.label}</span>
-              </label>
+              <React.Fragment key={option.value}>
+                {option.separatorBefore && (
+                  <div
+                    role="separator"
+                    aria-label={option.separatorBefore}
+                    className="flex items-center gap-2 px-2 py-1 text-xs text-muted-foreground"
+                  >
+                    <span className="h-px flex-1 bg-border" />
+                    <span>{option.separatorBefore}</span>
+                    <span className="h-px flex-1 bg-border" />
+                  </div>
+                )}
+                <label className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-accent cursor-pointer">
+                  <Checkbox
+                    checked={selected.includes(option.value)}
+                    onCheckedChange={() => toggleOption(option.value)}
+                  />
+                  <span className="text-sm">{option.label}</span>
+                </label>
+              </React.Fragment>
             ))}
           </div>
         </ScrollArea>

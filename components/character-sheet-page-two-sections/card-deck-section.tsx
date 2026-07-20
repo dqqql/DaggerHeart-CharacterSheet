@@ -36,7 +36,7 @@ const getSpecialSlotLabel = (index: number, isRhodesIsland = false): string => {
     case 1:
       return isRhodesIsland ? "分支" : "子职业";
     case 2:
-      return "种族一";
+      return "种族";
     case 3:
       return "种族二";
     case 4:

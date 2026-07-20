@@ -7,6 +7,7 @@ import { getBatchName } from "@/card"
 import { getStandardCardById } from "@/card"
 import React, { useState, useEffect, useRef } from "react"
 import { CardMarkdown } from "@/components/ui/card-markdown"
+import { getCardRuleSetId } from "@/lib/ruleset"
 
 // Helper function to get display type name, moved outside of the component
 const getDisplayTypeName = (card: StandardCard) => {
@@ -140,7 +141,9 @@ export function SelectableCard({ card, onClick, isSelected, showSource = true }:
 
     // 子职业卡特殊处理：为施法属性添加"施法"后缀
     if (card.type === CardType.Subclass && displayItem3) {
-        const castingAttr = displayItem3 === '不可施法' ? displayItem3 : `${displayItem3}施法`;
+        const castingAttr = getCardRuleSetId(card) === "rhodes-island"
+            ? displayItem3
+            : displayItem3 === '不可施法' ? displayItem3 : `${displayItem3}施法`;
         badges = [displayItem1, displayItem2, castingAttr].filter(Boolean);
     }
 

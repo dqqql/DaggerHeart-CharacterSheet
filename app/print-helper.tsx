@@ -10,6 +10,11 @@ export default function PrintHelper() {
       // Process all input fields and textareas
       document.querySelectorAll("input, textarea").forEach((element) => {
         const input = element as HTMLInputElement | HTMLTextAreaElement;
+        const exportDefaultValue = input.dataset.exportDefaultValue;
+        if (input.value === "" && exportDefaultValue) {
+          input.value = exportDefaultValue;
+          input.dataset.printDefaultApplied = "true";
+        }
         if (input.value === "") {
           input.classList.add("print-empty");
           input.style.borderColor = "transparent";
@@ -80,6 +85,11 @@ export default function PrintHelper() {
       });
       document.querySelectorAll(".print-empty-text").forEach((element) => {
         element.classList.remove("print-empty-text");
+      });
+      document.querySelectorAll('[data-print-default-applied="true"]').forEach((element) => {
+        const input = element as HTMLInputElement | HTMLTextAreaElement;
+        input.value = "";
+        delete input.dataset.printDefaultApplied;
       });
 
       // Restore selection buttons

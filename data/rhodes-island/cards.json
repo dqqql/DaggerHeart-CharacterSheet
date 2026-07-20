@@ -273,7 +273,7 @@
     "cardSelectDisplay": {
       "item1": "先锋",
       "item2": "预备干员",
-      "item3": "秘行 / 攻坚"
+      "item3": "第二领域推荐：秘行/攻坚"
     },
     "rhodesIsland": {
       "id": "ri-branch-31deedbbdc7e",
@@ -373,7 +373,7 @@
     "cardSelectDisplay": {
       "item1": "先锋",
       "item2": "预备干员",
-      "item3": "心界 / 秘行"
+      "item3": "第二领域推荐：心界/秘行"
     },
     "rhodesIsland": {
       "id": "ri-branch-6a6d897995ca",
@@ -473,7 +473,7 @@
     "cardSelectDisplay": {
       "item1": "先锋",
       "item2": "预备干员",
-      "item3": "支柱 / 奇迹"
+      "item3": "第二领域推荐：支柱/奇迹"
     },
     "rhodesIsland": {
       "id": "ri-branch-0f5f5dfd3337",
@@ -573,7 +573,7 @@
     "cardSelectDisplay": {
       "item1": "先锋",
       "item2": "预备干员",
-      "item3": "工业 / 奇迹"
+      "item3": "第二领域推荐：工业/奇迹"
     },
     "rhodesIsland": {
       "id": "ri-branch-ade950ae6f3e",
@@ -673,7 +673,7 @@
     "cardSelectDisplay": {
       "item1": "近卫",
       "item2": "预备干员",
-      "item3": "坚阵 / 迅攻"
+      "item3": "第二领域推荐：坚阵/迅攻"
     },
     "rhodesIsland": {
       "id": "ri-branch-e1682fc4bea1",
@@ -773,7 +773,7 @@
     "cardSelectDisplay": {
       "item1": "近卫",
       "item2": "预备干员",
-      "item3": "迅攻 / 坚阵"
+      "item3": "第二领域推荐：迅攻/坚阵"
     },
     "rhodesIsland": {
       "id": "ri-branch-158fae98d46e",
@@ -873,7 +873,7 @@
     "cardSelectDisplay": {
       "item1": "近卫",
       "item2": "预备干员",
-      "item3": "迅攻 / 秘行"
+      "item3": "第二领域推荐：迅攻/秘行"
     },
     "rhodesIsland": {
       "id": "ri-branch-4535bc3a9f8a",
@@ -973,7 +973,7 @@
     "cardSelectDisplay": {
       "item1": "近卫",
       "item2": "预备干员",
-      "item3": "秘行 / 迅攻"
+      "item3": "第二领域推荐：秘行/迅攻"
     },
     "rhodesIsland": {
       "id": "ri-branch-1d8b2f148b1d",
@@ -1073,7 +1073,7 @@
     "cardSelectDisplay": {
       "item1": "狙击",
       "item2": "预备干员",
-      "item3": "迅攻 / 奇迹"
+      "item3": "第二领域推荐：迅攻/奇迹"
     },
     "rhodesIsland": {
       "id": "ri-branch-2300d77af447",
@@ -1173,7 +1173,7 @@
     "cardSelectDisplay": {
       "item1": "狙击",
       "item2": "预备干员",
-      "item3": "迅攻 / 攻坚"
+      "item3": "第二领域推荐：迅攻/攻坚"
     },
     "rhodesIsland": {
       "id": "ri-branch-c461b1011227",
@@ -1273,7 +1273,7 @@
     "cardSelectDisplay": {
       "item1": "狙击",
       "item2": "预备干员",
-      "item3": "奇迹 / 攻坚"
+      "item3": "第二领域推荐：奇迹/攻坚"
     },
     "rhodesIsland": {
       "id": "ri-branch-379d15d85d03",
@@ -1373,7 +1373,7 @@
     "cardSelectDisplay": {
       "item1": "狙击",
       "item2": "预备干员",
-      "item3": "攻坚 / 坚阵"
+      "item3": "第二领域推荐：攻坚/坚阵"
     },
     "rhodesIsland": {
       "id": "ri-branch-c725d1c4dc65",
@@ -1473,7 +1473,7 @@
     "cardSelectDisplay": {
       "item1": "术师",
       "item2": "预备干员",
-      "item3": "心界 / 远见"
+      "item3": "第二领域推荐：心界/远见"
     },
     "rhodesIsland": {
       "id": "ri-branch-61f8dc3f83dd",
@@ -1573,7 +1573,7 @@
     "cardSelectDisplay": {
       "item1": "术师",
       "item2": "预备干员",
-      "item3": "坚阵 / 支柱"
+      "item3": "第二领域推荐：坚阵/支柱"
     },
     "rhodesIsland": {
       "id": "ri-branch-d61ab871e1de",
@@ -1673,7 +1673,7 @@
     "cardSelectDisplay": {
       "item1": "术师",
       "item2": "预备干员",
-      "item3": "奇迹 / 精准"
+      "item3": "第二领域推荐：奇迹/精准"
     },
     "rhodesIsland": {
       "id": "ri-branch-0b7a558fab52",
@@ -1773,7 +1773,7 @@
     "cardSelectDisplay": {
       "item1": "术师",
       "item2": "预备干员",
-      "item3": "奇迹 / 工业"
+      "item3": "第二领域推荐：奇迹/工业"
     },
     "rhodesIsland": {
       "id": "ri-branch-13aa29002693",
@@ -1873,7 +1873,7 @@
     "cardSelectDisplay": {
       "item1": "特种",
       "item2": "预备干员",
-      "item3": "迅攻 / 心界"
+      "item3": "第二领域推荐：迅攻/心界"
     },
     "rhodesIsland": {
       "id": "ri-branch-dfef3492021e",
@@ -1973,7 +1973,7 @@
     "cardSelectDisplay": {
       "item1": "特种",
       "item2": "预备干员",
-      "item3": "攻坚 / 心界"
+      "item3": "第二领域推荐：攻坚/心界"
     },
     "rhodesIsland": {
       "id": "ri-branch-a02c4c5bf3f5",
@@ -2073,7 +2073,7 @@
     "cardSelectDisplay": {
       "item1": "特种",
       "item2": "预备干员",
-      "item3": "精准 / 迅攻"
+      "item3": "第二领域推荐：精准/迅攻"
     },
     "rhodesIsland": {
       "id": "ri-branch-f19352986485",
@@ -2173,7 +2173,7 @@
     "cardSelectDisplay": {
       "item1": "特种",
       "item2": "预备干员",
-      "item3": "心界 / 坚阵"
+      "item3": "第二领域推荐：心界/坚阵"
     },
     "rhodesIsland": {
       "id": "ri-branch-e61109c784a6",
@@ -2273,7 +2273,7 @@
     "cardSelectDisplay": {
       "item1": "重装",
       "item2": "预备干员",
-      "item3": "攻坚 / 支柱"
+      "item3": "第二领域推荐：攻坚/支柱"
     },
     "rhodesIsland": {
       "id": "ri-branch-97014a65f041",
@@ -2373,7 +2373,7 @@
     "cardSelectDisplay": {
       "item1": "重装",
       "item2": "预备干员",
-      "item3": "攻坚 / 工业"
+      "item3": "第二领域推荐：攻坚/工业"
     },
     "rhodesIsland": {
       "id": "ri-branch-d759df051266",
@@ -2473,7 +2473,7 @@
     "cardSelectDisplay": {
       "item1": "重装",
       "item2": "预备干员",
-      "item3": "攻坚 / 心界"
+      "item3": "第二领域推荐：攻坚/心界"
     },
     "rhodesIsland": {
       "id": "ri-branch-825d304445ff",
@@ -2573,7 +2573,7 @@
     "cardSelectDisplay": {
       "item1": "重装",
       "item2": "预备干员",
-      "item3": "精准 / 远见"
+      "item3": "第二领域推荐：精准/远见"
     },
     "rhodesIsland": {
       "id": "ri-branch-c12851638cb8",
@@ -2673,7 +2673,7 @@
     "cardSelectDisplay": {
       "item1": "辅助",
       "item2": "预备干员",
-      "item3": "远见 / 心界"
+      "item3": "第二领域推荐：远见/心界"
     },
     "rhodesIsland": {
       "id": "ri-branch-f992c670ea4f",
@@ -2773,7 +2773,7 @@
     "cardSelectDisplay": {
       "item1": "辅助",
       "item2": "预备干员",
-      "item3": "坚阵 / 心界"
+      "item3": "第二领域推荐：坚阵/心界"
     },
     "rhodesIsland": {
       "id": "ri-branch-f7bff3b071bf",
@@ -2873,7 +2873,7 @@
     "cardSelectDisplay": {
       "item1": "辅助",
       "item2": "预备干员",
-      "item3": "心界 / 远见"
+      "item3": "第二领域推荐：心界/远见"
     },
     "rhodesIsland": {
       "id": "ri-branch-592611f69f30",
@@ -2973,7 +2973,7 @@
     "cardSelectDisplay": {
       "item1": "辅助",
       "item2": "预备干员",
-      "item3": "工业 / 坚阵"
+      "item3": "第二领域推荐：工业/坚阵"
     },
     "rhodesIsland": {
       "id": "ri-branch-8694b0fab08f",
@@ -3068,7 +3068,7 @@
     "class": "乌萨斯",
     "level": 1,
     "description": "乌萨斯的身高相对人类平均而言较高，力量也更强。此外，大部分乌萨斯居住的大地北方每年有着漫长的冬天，恶劣的自然环境塑造了他们强韧的耐力。\n\n乌萨斯有着为数不少的分支，主要通过毛发颜色的不同体现。在常见的黑色、棕色和白色之外，炎国境内还分布有一支毛发颜色黑白相间的乌萨斯。",
-    "hint": "强韧耐力+2，雪地行者+2",
+    "hint": "推荐种族特性：强韧耐力+2，雪地行者+2",
     "imageUrl": "/rhodes-island/ancestries/01-eae561990633.webp",
     "headerDisplay": "乌萨斯",
     "cardSelectDisplay": {
@@ -3103,7 +3103,7 @@
     "class": "菲林",
     "level": 1,
     "description": "菲林族群最主要的体貌特征就是他们的尖耳与长尾，二者不仅是身体器官的一部分，也是他们表达自身情绪的工具。\n\n普遍而言，菲林的感官发达，有着较好的肢体协调能力。一部分菲林拥有并不十分显著但颇为独特的遗传特征——他们的瞳孔在不同光线环境下会发生形态上的微妙变化。\n\n---\n\n阿斯兰在生物学上的分类是完完全全的菲林，阿斯兰和菲林的差异甚至远小于菲林先民种与菲林神民种之间的区别。\n\n但就社会认知和行政分类来说，阿斯兰是独立的种族，这起源于阿斯兰征服——阿斯兰用暴力强迫其他种族承认了其在种族分类上的独立。",
-    "hint": "敏锐感官+2，利爪出击+2，王族威名+2",
+    "hint": "推荐种族特性：敏锐感官+2，利爪出击+2，王族威名+2",
     "imageUrl": "/rhodes-island/ancestries/02-afa05776edb0.webp",
     "headerDisplay": "菲林",
     "cardSelectDisplay": {
@@ -3142,7 +3142,7 @@
     "class": "佩洛",
     "level": 1,
     "description": "佩洛的人口基数十分庞大，这其中包括了神民和先民的众多分支。如今，奎尔莎、刻俄柏洛斯和乌瑞狄姆等神民分支大都与先民佩洛一起居住，佩洛以外的人很难直接分辨出他们之间的差别。\n\n在佩洛的传统中，人们非常注重维持良好的人际关系，总是尝试着友善待人。",
-    "hint": "轻快步伐+2，友善待人+2",
+    "hint": "推荐种族特性：轻快步伐+2，友善待人+2",
     "imageUrl": "/rhodes-island/ancestries/03-83cebeff7e27.webp",
     "headerDisplay": "佩洛",
     "cardSelectDisplay": {
@@ -3177,7 +3177,7 @@
     "class": "鲁珀",
     "level": 1,
     "description": "鲁珀的生理特征与佩洛差距甚小，但鲁珀是最早从“佩洛”的概念中被区分出来的种族，也是最不容易被误认为佩洛的种族。\n\n不同于佩洛，家族观念并不使鲁珀倾向于友善待人，反而使他们产生了高度排外的意识。在一些以鲁珀为主体种族的地区，家族之间具有非常明晰的分界，不同家族的成员间常常抱有敌意。",
-    "hint": "家族意识+2，猎杀本能+2",
+    "hint": "推荐种族特性：家族意识+2，猎杀本能+2",
     "imageUrl": "/rhodes-island/ancestries/04-1a263fb0d127.webp",
     "headerDisplay": "鲁珀",
     "cardSelectDisplay": {
@@ -3212,7 +3212,7 @@
     "class": "沃尔珀",
     "level": 1,
     "description": "在各类种族中，沃尔珀属于体型较为中等的类型。沃尔珀的反应速度以及身体柔韧性都名列前茅，而且善于在复杂环境下侦察并感知危险，经过训练后也有着不凡的战斗能力。沃尔珀的一个“特征”便是尾部拥有极为突出的蓬松毛发。\n\n沃尔珀也有神民和先民的分支，其中最为著名的神民分支便是如今多生活在遥远东国的九尾沃尔珀。",
-    "hint": "柔韧身形+2，危机意识+2",
+    "hint": "推荐种族特性：柔韧身形+2，危机意识+2",
     "imageUrl": "/rhodes-island/ancestries/05-da79de298b9f.webp",
     "headerDisplay": "沃尔珀",
     "cardSelectDisplay": {
@@ -3247,7 +3247,7 @@
     "class": "瑞柏巴",
     "level": 1,
     "description": "瑞柏巴的身体素质在泰拉人中属于中等水平，大部分瑞柏巴长着带有绒毛的耳朵和尾巴，部分身上长有斑点或条状花纹。一般而言，瑞柏巴女性的力量显著强于男性。\n\n由于长期生活在萨尔贡的沙漠及附近地区，瑞柏巴普遍有着极为丰富的荒地生活传统，并拥有着由女性主导的大家族概念。",
-    "hint": "荒地生存+2，团队协同+2",
+    "hint": "推荐种族特性：荒地生存+2，团队协同+2",
     "imageUrl": "/rhodes-island/ancestries/06-c5e5b3b12361.webp",
     "headerDisplay": "瑞柏巴",
     "cardSelectDisplay": {
@@ -3282,7 +3282,7 @@
     "class": "黎博利",
     "level": 1,
     "description": "黎博利最大的特征是生在体表的羽毛。通常来说，黎博利的头部和躯干的一部分毛发会被羽毛所替代。黎博利一般中等身高，女性会略微矮小一些。他们的体重也较轻。黎博利的身体素质较为普通，没有什么特别之处。",
-    "hint": "轻盈身形+2，覆体外羽+2",
+    "hint": "推荐种族特性：轻盈身形+2，覆体外羽+2",
     "imageUrl": "/rhodes-island/ancestries/07-8ee421eedf3b.webp",
     "headerDisplay": "黎博利",
     "cardSelectDisplay": {
@@ -3317,7 +3317,7 @@
     "class": "卡特斯",
     "level": 1,
     "description": "卡特斯具有长耳和毛绒短尾的外貌特征，发达的听觉器官以及灵活的反应力弥补了平均体型较小带来的一系列不足。\n\n为了弥补个体身体素质的不足，生活在如今之雷姆必拓的卡特斯们普遍选择了群聚群居的社会生活方式，在部落时代形成了富有活力的屯堡聚落。",
-    "hint": "听力发达+2，“幸运”使者+2",
+    "hint": "推荐种族特性：听力发达+2，“幸运”使者+2",
     "imageUrl": "/rhodes-island/ancestries/08-756a592507f7.webp",
     "headerDisplay": "卡特斯",
     "cardSelectDisplay": {
@@ -3352,7 +3352,7 @@
     "class": "库兰塔",
     "level": 1,
     "description": "库兰塔有着相较于泰拉人平均水平来说更为健壮的身体和优秀的体能。古代的库兰塔凭借优秀的身体素质，在平原上过着四处迁移的生活。\n\n游牧的传统使得库兰塔需要迅速响应随时可能遭到的突袭，因此他们形成了全民习武的军事传统，这就是后来骑士团文化的早期雏形。",
-    "hint": "天马精神+2，全民习武+2",
+    "hint": "推荐种族特性：天马精神+2，全民习武+2",
     "imageUrl": "/rhodes-island/ancestries/09-6be34dd11ab6.webp",
     "headerDisplay": "库兰塔",
     "cardSelectDisplay": {
@@ -3387,7 +3387,7 @@
     "class": "丰蹄",
     "level": 1,
     "description": "风靡一时的丰蹄能量饮料鲜明地展现出了人们对丰蹄这一种族抱有怎样的刻板印象。但在许多以丰蹄为主体种族的地区，智慧才是更受重视的美德。\n\n米诺斯之外广泛分布的丰蹄通常以劳动者的身份出现。生活在炎国的丰蹄族群很可能是泰拉最早开始从事农耕生产的群体之一。",
-    "hint": "以智为美+2，勤劳之族+2",
+    "hint": "推荐种族特性：以智为美+2，勤劳之族+2",
     "imageUrl": "/rhodes-island/ancestries/10-7c531121fe5a.webp",
     "headerDisplay": "丰蹄",
     "cardSelectDisplay": {
@@ -3422,7 +3422,7 @@
     "class": "卡普里尼",
     "level": 1,
     "description": "卡普里尼以对源石技艺优秀的掌握能力而著称，他们的平均身体素质在各种族中算不上出类拔萃。就个人而言，卡普里尼中也存在着无法使用源石技艺的个体。\n\n卡普里尼十分爱护他们头上的角，并对其有一套独特的审美评判标准。",
-    "hint": "技艺掌握者+2，爱护头角+2",
+    "hint": "推荐种族特性：技艺掌握者+2，爱护头角+2",
     "imageUrl": "/rhodes-island/ancestries/11-0a126121b256.webp",
     "headerDisplay": "卡普里尼",
     "cardSelectDisplay": {
@@ -3457,7 +3457,7 @@
     "class": "埃拉菲亚",
     "level": 1,
     "description": "如今主要分布在乌萨斯、莱塔尼亚、卡西米尔等多林地国家的埃拉菲亚大都源自萨米地区，但在一些国家的边远地区，仍有少数以埃拉菲亚为主体的聚落在林中过着游猎的生活。\n\n在萨米地区的一些埃拉菲亚部族中，角被认为是感知自然的媒介。那里有些个体的角甚至终其一生都保持着缓慢生长，并具有知觉。\n\n---\n\n麒麟的外貌特征与埃拉菲亚非常相似，他们在炎国的社会中历来享有很高的威望。早在百氏之乱前，麒麟就在炎氏的部族里担任侍卫和术师。\n\n麒麟术师所使用的招引雷电的源石技艺传承至今，被称为“雷法”。",
-    "hint": "感知自然+2，优雅浪漫+2，御雷之术+2",
+    "hint": "推荐种族特性：感知自然+2，优雅浪漫+2，御雷之术+2",
     "imageUrl": "/rhodes-island/ancestries/12-0fd13733d4ca.webp",
     "headerDisplay": "埃拉菲亚",
     "cardSelectDisplay": {
@@ -3496,7 +3496,7 @@
     "class": "瓦伊凡",
     "level": 1,
     "description": "大部分传统的瓦伊凡会让年轻一代接受严格的战斗培训和作为护卫的专项训练，将其中资质最好的送去萨尔贡宫廷担任阿斯兰皇族的贴身侍卫。落选者中的大部分则会靠着自身的本领成为雇佣兵。",
-    "hint": "瓦伊凡之躯+2，战地佣兵+2",
+    "hint": "推荐种族特性：瓦伊凡之躯+2，战地佣兵+2",
     "imageUrl": "/rhodes-island/ancestries/13-f870df5cf79c.webp",
     "headerDisplay": "瓦伊凡",
     "cardSelectDisplay": {
@@ -3531,7 +3531,7 @@
     "class": "德拉克",
     "level": 1,
     "description": "德拉克的人口大多拥有华丽的角和尾巴，且在源石技艺适应性和某些身体素质方面具有优势。“德拉克”这一名称的指代及其认同曾经是极度松散的，直到近一千年来核心圈才形成了对这一强大族群的统称。",
-    "hint": "德拉克之威+2，华丽身姿+2",
+    "hint": "推荐种族特性：德拉克之威+2，华丽身姿+2",
     "imageUrl": "/rhodes-island/ancestries/14-40683b758fce.webp",
     "headerDisplay": "德拉克",
     "cardSelectDisplay": {
@@ -3566,7 +3566,7 @@
     "class": "龙",
     "level": 1,
     "description": "龙是炎国独有的神民种族。数千年来，他们生活在大地的东方，他们缔造了古老的文明，他们统治着一个繁荣且开明的帝国。\n\n龙族百姓热爱自己的历史，他们不论老少都或多或少知晓自己祖先的故事，并骄傲地把这些历史和传统视作珍宝。这与龙，或者说炎国自炎氏以来就有的、用文字保存历史的传统有关。",
-    "hint": "大炎子民+2，薪火传承+2",
+    "hint": "推荐种族特性：大炎子民+2，薪火传承+2",
     "imageUrl": "/rhodes-island/ancestries/15-3af69d5881a8.webp",
     "headerDisplay": "龙",
     "cardSelectDisplay": {
@@ -3601,7 +3601,7 @@
     "class": "曼提柯",
     "level": 1,
     "description": "一般而言，曼提柯最显著的外表特征有两点：一是头部左右两侧长有成对的膜状翅；二是躯干有延伸出来的节肢状甲壳尾部，通常尾部的最后一节是长有一根刺针的尾节，且部分曼提柯的尾针上可能会带有毒液。",
-    "hint": "隐匿伏击+2，戳刺攻势+2",
+    "hint": "推荐种族特性：隐匿伏击+2，戳刺攻势+2",
     "imageUrl": "/rhodes-island/ancestries/16-3b9e385f1d50.webp",
     "headerDisplay": "曼提柯",
     "cardSelectDisplay": {
@@ -3636,7 +3636,7 @@
     "class": "精灵",
     "level": 1,
     "description": "具有特殊能力的种族，容貌不易随年龄增长产生较大变化，体质对源石极为敏感，一旦感染矿石病，几个月内便会恶化致命。",
-    "hint": "源石敏感+2，青春常驻+2",
+    "hint": "推荐种族特性：源石敏感+2，青春常驻+2",
     "imageUrl": "/rhodes-island/ancestries/17-94ed0e430cba.webp",
     "headerDisplay": "精灵",
     "cardSelectDisplay": {
@@ -3671,7 +3671,7 @@
     "class": "斐迪亚",
     "level": 1,
     "description": "斐迪亚是泰拉较不常见的种族之一，但他们的居所遍布泰拉。\n\n斐迪亚的特点是仅生有一对的尖耳和带有鳞片的长尾。他们的身高普遍高于泰拉人平均水平，而体重又往往处于平均水平以下。斐迪亚人口相对较少，没有集中聚居的习俗。",
-    "hint": "离群独索+2，行事专注+2",
+    "hint": "推荐种族特性：离群独索+2，行事专注+2",
     "imageUrl": "/rhodes-island/ancestries/18-a5f9042bcf90.webp",
     "headerDisplay": "斐迪亚",
     "cardSelectDisplay": {
@@ -3706,7 +3706,7 @@
     "class": "萨弗拉",
     "level": 1,
     "description": "萨弗拉是一支身体和尾巴都长有鳞片的种族。他们身手矫健，眼光敏锐。有很大一部分萨弗拉全身都被鳞片覆盖，有改变体表鳞片颜色的能力。搭配合适的服装，他们可以做到和沙漠、荒地等周边环境完全融为一体。\n\n在一般认识中，萨弗拉最大的两个特点是“长寿”和“来自萨尔贡”。",
-    "hint": "光学伪装+2，敏锐视线+2",
+    "hint": "推荐种族特性：光学伪装+2，敏锐视线+2",
     "imageUrl": "/rhodes-island/ancestries/19-3802adc3aceb.webp",
     "headerDisplay": "萨弗拉",
     "cardSelectDisplay": {
@@ -3741,7 +3741,7 @@
     "class": "札拉克",
     "level": 1,
     "description": "札拉克一般头顶生有一对显眼的圆耳朵。对于一小部分札拉克而言，这对耳朵往往又因为毛发而显得尖。札拉克耳朵上的这一束束毛发并非长自头皮，而是生长自耳朵本身，又被称为“耳簇”。\n\n就泰拉平均水平而言，札拉克体型普遍较小，动作大多较为灵活。他们往往具备优异的听力和反应能力，对空气的振动、气流的改变也很敏感。",
-    "hint": "灵巧身形+2，流向感知+2",
+    "hint": "推荐种族特性：灵巧身形+2，流向感知+2",
     "imageUrl": "/rhodes-island/ancestries/20-48ad232e706e.webp",
     "headerDisplay": "札拉克",
     "cardSelectDisplay": {
@@ -3776,7 +3776,7 @@
     "class": "杜林",
     "level": 1,
     "description": "杜林人和其他种族相比较为矮小。拥有先进的科技。\n\n杜林人的社会以城市为单位，称为“城邦”的居住地分布在泰拉各处的地表之下。不同城邦之间的社会形态和文化都有不少差异，但杜林人有自己的方法来保持城邦间的交流。只有少数杜林人愿意离开地底。",
-    "hint": "小小个子+2，杜林科技+2",
+    "hint": "推荐种族特性：小小个子+2，杜林科技+2",
     "imageUrl": "/rhodes-island/ancestries/21-0b7a852068ce.webp",
     "headerDisplay": "杜林",
     "cardSelectDisplay": {
@@ -3811,7 +3811,7 @@
     "class": "塞拉托",
     "level": 1,
     "description": "塞拉托以强健的体格著称，他们和库兰塔一样善于奔跑，但不经常长途跋涉。\n\n塞拉托非常珍视自己头上的。自部落时期以来角就是塞拉托的重要武器，他们爱护角的方式是面对面短途冲锋，用额上的角进行对抗，以此来把角磨砺得更加坚韧。近年来，也有塞拉托选择为自己的角加装护甲，来获得更高的强度。",
-    "hint": "强健体格+2，短途冲锋者+2",
+    "hint": "推荐种族特性：强健体格+2，短途冲锋者+2",
     "imageUrl": "/rhodes-island/ancestries/22-a4d28cd96297.webp",
     "headerDisplay": "塞拉托",
     "cardSelectDisplay": {
@@ -3846,7 +3846,7 @@
     "class": "安努拉",
     "level": 1,
     "description": "安努拉主要居住在萨尔贡和玻利瓦尔，是较为少见的种族，安努拉喜欢潮湿而又水草丰沛的地方，他们通常倾向于定居在绿化率较高且水道治理良好的城市。\n\n大部分安努拉传承着有关潜行和隐身的源石技艺，而少部分则可以使用自身分泌的独特剧毒物质作为强大的武器来攻击敌人。安努拉能够完全控制自身毒素的分泌和使用。",
-    "hint": "喜好湿润+2，毒素知识+2",
+    "hint": "推荐种族特性：喜好湿润+2，毒素知识+2",
     "imageUrl": "/rhodes-island/ancestries/23-16ed703d46ae.webp",
     "headerDisplay": "安努拉",
     "cardSelectDisplay": {
@@ -3881,7 +3881,7 @@
     "class": "阿达克利斯",
     "level": 1,
     "description": "阿达克利斯常常表现出对自身能力的充分自信，有相当一部分阿达克利斯喜欢自称“提亚卡乌”，意为“骁勇善战之人”。\n\n阿达克利斯有着出众的水中行动能力，游泳是大多数阿达克利斯与生俱来的天赋，这使他们常常选择从水中向敌人或猎物发起伏击。",
-    "hint": "水中行者+2，骁勇善战+2",
+    "hint": "推荐种族特性：水中行者+2，骁勇善战+2",
     "imageUrl": "/rhodes-island/ancestries/24-478cd56336ae.webp",
     "headerDisplay": "阿达克利斯",
     "cardSelectDisplay": {
@@ -3916,7 +3916,7 @@
     "class": "依特拉",
     "level": 1,
     "description": "依特拉的外观与卡普里尼、埃拉菲亚和库兰塔极其相似。依特拉与前两者的区别在于头上的角——依特拉并不会长角。而依特拉与库兰塔相比则在身体素质上略逊一筹。据说依特拉的祖先长有狭长的尖齿，但如今这一特征已不再明显。\n\n在高寒地区的危险生活经历让依特拉这个族群变得多疑和警惕，许多地区的依特拉族群仍然保留着相对排外的传统。",
-    "hint": "山涧跃者+2，多疑警惕+2",
+    "hint": "推荐种族特性：山涧跃者+2，多疑警惕+2",
     "imageUrl": "/rhodes-island/ancestries/25-7e1d75a65738.webp",
     "headerDisplay": "依特拉",
     "cardSelectDisplay": {
@@ -3951,7 +3951,7 @@
     "class": "匹特拉姆",
     "level": 1,
     "description": "匹特拉姆是极其少见的种族，大都避世并且居住在水源丰富的地区。\n\n匹特拉姆的生理构造极其独特，没有尾巴、角或者鳞片等具有明显特点的外观，极少出现在公众视野之中。\n\n匹特拉姆与源石的融合度非常高，源石极大程度上改造了他们的身体。这也是他们生理构造独特的原因。",
-    "hint": "源石重构+2，壳状防御+2",
+    "hint": "推荐种族特性：源石重构+2，壳状防御+2",
     "imageUrl": "/rhodes-island/ancestries/26-e1a9b7885c41.webp",
     "headerDisplay": "匹特拉姆",
     "cardSelectDisplay": {
@@ -3986,7 +3986,7 @@
     "class": "阿纳缇",
     "level": 1,
     "description": "阿纳缇善奔走，部分生活在偏远地区的阿纳缇族群有着严格的“成年礼”传统，长辈会把即将成年的阿纳提放逐到一片荒山野岭中独立生存一段时间。\n\n住在山中的阿纳缇善于在山间土壁上开凿别具一格的洞穴式居所，它不同于移动城市或者在其他定居点中的建筑——整个洞穴系统依山体而建，挖掘多于建构。",
-    "hint": "荒野“成年礼”+2，洞穴专家+2",
+    "hint": "推荐种族特性：荒野“成年礼”+2，洞穴专家+2",
     "imageUrl": "/rhodes-island/ancestries/27-b05f35e75252.webp",
     "headerDisplay": "阿纳缇",
     "cardSelectDisplay": {
@@ -4021,7 +4021,7 @@
     "class": "皮洛萨",
     "level": 1,
     "description": "皮洛萨很容易被误认，也极少出现在人群中。他们由于沉默寡言很少交流，常被当作异类。\n\n皮洛萨在行动上缓慢，好处是非常细心，往往能取得优秀的工作成果。",
-    "hint": "沉默寡言+2，慢工细活+2",
+    "hint": "推荐种族特性：沉默寡言+2，慢工细活+2",
     "imageUrl": "/rhodes-island/ancestries/28-e4fa17c00a04.webp",
     "headerDisplay": "皮洛萨",
     "cardSelectDisplay": {
@@ -4056,7 +4056,7 @@
     "class": "阿戈尔",
     "level": 1,
     "description": "阿戈尔拥有许多分支，不同的分支之间在享有相似特征的同时也有截然不同的体质。阿戈尔大多亲近水体，有的阿戈尔能在水下呼吸。\n\n阿戈尔大量失水的后果比其他种族要严重，他们的呼吸道更加依赖空气中的水分，他们的皮肤经受风吹日晒之后也更容易干燥皲裂，最严重时甚至可能威胁生命。",
-    "hint": "亲近水体+2，相性感知+2",
+    "hint": "推荐种族特性：亲近水体+2，相性感知+2",
     "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp",
     "headerDisplay": "阿戈尔",
     "cardSelectDisplay": {
@@ -4091,7 +4091,7 @@
     "class": "萨科塔",
     "level": 1,
     "description": "萨科塔的头部正上方悬有光环，光环并非与生俱来，而是在萨科塔族第一次开口说话的时才会显现，其位置可能会因大脑海马体的异常而发生偏移，光环与头部之间存在遮挡物会使大部分萨科塔感到不适。萨科塔头顶的光环与身后的光翼是他们荣受律法的象征。\n\n萨科塔们最为人知晓的、最神秘的就是他们的共感能力。通过光环，萨科塔之间可以感受到彼此的情绪尽管并不能用于读心，但“共感”会使萨科塔人更好地理解彼此的想法，提高交流的效率。\n\n萨科塔另一个标志性的特点就是他们随身携带的铳。这种特殊的器械对萨科塔来说已经远远超出了武器的范畴，他们认为铳械来自律法的赐予，是信仰的象征，那支伴随萨科塔终生的铳械故此称为“守护铳”。",
-    "hint": "萨科塔共感+2，守护铳+2",
+    "hint": "推荐种族特性：萨科塔共感+2，守护铳+2",
     "imageUrl": "/rhodes-island/ancestries/30-b2eab1280278.webp",
     "headerDisplay": "萨科塔",
     "cardSelectDisplay": {
@@ -4126,7 +4126,7 @@
     "class": "萨卡兹",
     "level": 1,
     "description": "纵观历史，大多数时间内萨卡兹都保持着四处迁徙的流浪生活，而大部分萨卡兹也很少向外人介绍自己的文化。在这种情况下，很多带有萨卡兹烙印的传统都悄无声息地消失了。现代人熟悉的萨卡兹雇佣兵其实也受到了族群长期流浪的影响。\n\n萨卡兹极易感染矿石病，许多学者相信这与萨卡兹天生的高源石技艺适应性有关，也有人认为这与萨卡兹内部依靠血脉传承的源石技艺有关。萨卡兹间口口相传的传说则将他们的先祖提卡兹摆在神民和先民的对立面，并将矿石病视为敌人对自己施加的疾病和诅咒。\n\n萨卡兹有着名为“十王庭”的十支重要氏族，根据某些萨卡兹的说法，这十支氏族是近代以来卡兹戴尔的基石。千余年来的动荡生活让萨卡兹不再团结，王庭也接近分崩离析。绝大多数萨卡兹都是各氏族的混血。\n\n---\n\n东国有许多“鬼族在战斗中失去理智，嗜血地乱砍乱杀”的记录，这样的记录当然是有所本的，只不过因为没有王庭，这种能力一直没有得到正视，更遑论研究和打磨，鬼族只能靠自己探索与这种能力共同生存的方式。\n\n但反过来说，也正因为没有王庭，鬼族才能深深嵌入东国的社会之中，放眼整片大地的萨卡兹，这都是一种极为独特的生活方式。\n\n---\n\n原萨卡兹部族之一，一支东行的萨卡兹部族，因为一场天灾与队伍分散，留在了临近炎国西北部的沙漠之中。在随后的历史变迁中，这些在此流浪的萨卡兹更名阿纳萨，随同这片荒野一起被纳入大炎的疆域，无意中融入了炎国社会。\n\n但戒心极重的他们并没有选择靠近移动城市，而是固守自己的传统，继续留在荒野上，过着居无定所的漂泊生活。",
-    "hint": "苦难摇篮+2，“邪恶”象征+2，怒火业果+2，漂泊浪行+2",
+    "hint": "推荐种族特性：苦难摇篮+2，“邪恶”象征+2，怒火业果+2，漂泊浪行+2",
     "imageUrl": "/rhodes-island/ancestries/31-eb09f67c8759.webp",
     "headerDisplay": "萨卡兹",
     "cardSelectDisplay": {
@@ -4629,7 +4629,7 @@
     "name": "失乡之民",
     "type": "community",
     "class": "失乡之民",
-    "description": "每场游戏一次，你可以花费 1 希望点来使用一名盟友的社群能力。当你如此做时，你的盟友获得 1 希望点。",
+    "description": "每场游戏一次，你可以花费 1 希望点来使用一名盟友的社群能力。当你如此做时，你的盟友获得 1 希望点。\n\n在任何时候，当你发现自己曾经所属的社群，或者加入了一个新的社群时，你可以永久使用那张社群卡替换这张社群卡。",
     "hint": "你曾是另一个社群的一员，但你再也记不起它了。",
     "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp",
     "headerDisplay": "失乡之民",
@@ -4643,7 +4643,7 @@
       "introduction": "你曾是另一个社群的一员，但你再也记不起它了。",
       "feature": {
         "name": "亲如家人",
-        "description": "每场游戏一次，你可以花费 1 希望点来使用一名盟友的社群能力。当你如此做时，你的盟友获得 1 希望点。"
+        "description": "每场游戏一次，你可以花费 1 希望点来使用一名盟友的社群能力。当你如此做时，你的盟友获得 1 希望点。\n\n在任何时候，当你发现自己曾经所属的社群，或者加入了一个新的社群时，你可以永久使用那张社群卡替换这张社群卡。"
       },
       "referenceOrigins": [
         "失去记忆或记忆紊乱的罗德岛干员",

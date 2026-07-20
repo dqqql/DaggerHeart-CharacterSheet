@@ -19,6 +19,9 @@ const sourceFiles = {
 const professionFiles = ["先锋", "近卫", "狙击", "术师", "特种", "重装", "辅助"]
 const domainNames = ["奥术", "攻坚", "坚阵", "精准", "秘行", "迅攻", "支柱", "工业", "奇迹", "心界", "远见"]
 const mainDomains = new Set(["奥术", "攻坚", "坚阵", "精准", "秘行", "迅攻", "支柱"])
+const communityFeatureAppendices = new Map([
+  ["失乡之民", "在任何时候，当你发现自己曾经所属的社群，或者加入了一个新的社群时，你可以永久使用那张社群卡替换这张社群卡。"],
+])
 
 function stableId(kind, value) {
   const digest = createHash("sha256").update(`${kind}:${value}`, "utf8").digest("hex").slice(0, 12)
@@ -27,9 +30,11 @@ function stableId(kind, value) {
 
 function cleanMarkdown(value = "") {
   return value
-    .replace(/<grid>[\s\S]*?<\/grid>/gi, "")
-    .replace(/^.*https?:\/\/.*$/gm, "")
+    // Grid containers can hold prose as well as images. The generic tag and image
+    // cleanup below removes their markup without silently dropping their text.
     .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
+    .replace(/\[([^\]]+)\]\(https?:\/\/[^)]+\)/g, "$1")
+    .replace(/https?:\/\/[^\s)>]+/g, "")
     .replace(/<[^>]+>/g, "\n")
     .replace(/\\([+&])/g, "$1")
     .replace(/\*+/g, "")
@@ -186,12 +191,28 @@ async function parseCommunities() {
     const featureMatch = body.match(/^([^\n]+?)[：:]\s*([\s\S]*?)(?=\n参考出身|$)/m)
     const intro = body.split("\n")[0] || ""
     const origins = body.split("参考出身")[1]?.split("\n").map((line) => line.replace(/^·/, "").trim()).filter(Boolean) || []
+    const feature = featureMatch ? { name: featureMatch[1].trim(), description: featureMatch[2].trim() } : { name: "", description: body }
+    const appendix = communityFeatureAppendices.get(name)
+    if (appendix && !feature.description.includes(appendix)) feature.description = `${feature.description}\n\n${appendix}`
     return {
       id: stableId("community", name), ruleset: "rhodes-island", name, introduction: intro,
-      feature: featureMatch ? { name: featureMatch[1].trim(), description: featureMatch[2].trim() } : { name: "", description: body },
+      feature,
       referenceOrigins: origins, imageUrl: placeholderImage,
     }
   })
+}
+
+function validateCommunityContent(communities) {
+  for (const community of communities) {
+    if (!community.introduction || !community.feature.name || !community.feature.description) {
+      throw new Error(`community ${community.name}: introduction and feature fields must not be empty`)
+    }
+    if (community.referenceOrigins.length === 0) throw new Error(`community ${community.name}: reference origins must not be empty`)
+    const appendix = communityFeatureAppendices.get(community.name)
+    if (appendix && !community.feature.description.includes(appendix)) {
+      throw new Error(`community ${community.name}: required feature appendix is missing`)
+    }
+  }
 }
 
 async function parseDomains() {
@@ -235,8 +256,8 @@ function makeStandardCards(catalog) {
   const shared = { standarized: true, source: "builtin", ruleset: "rhodes-island" }
   return [
     ...catalog.professions.map((item) => ({ ...shared, id: item.id, name: item.name, type: "profession", class: item.name, description: item.classFeature, hint: item.hopeFeature, imageUrl: item.imageUrl, headerDisplay: item.name, cardSelectDisplay: { item1: item.primaryDomain }, professionSpecial: { 起始生命: item.hitPoints, 起始闪避: item.evasion, 起始物品: "", 希望特性: item.hopeFeature }, rhodesIsland: item })),
-    ...catalog.branches.map((item) => ({ ...shared, id: item.id, name: item.name, type: "subclass", class: item.profession, level: 1, description: item.stages[0].branchFeature, imageUrl: item.imageUrl, headerDisplay: item.name, cardSelectDisplay: { item1: item.profession, item2: "预备干员", item3: item.recommendedDomains.join(" / ") }, rhodesIsland: item })),
-    ...catalog.ancestries.map((item) => ({ ...shared, id: item.id, name: item.name, type: "ancestry", class: item.name, level: 1, description: item.description, hint: item.recommendedExperiences.map((experience) => `${experience.name}+${experience.value}`).join("，"), imageUrl: item.imageUrl, headerDisplay: item.name, cardSelectDisplay: { item1: item.name }, rhodesIsland: item })),
+    ...catalog.branches.map((item) => ({ ...shared, id: item.id, name: item.name, type: "subclass", class: item.profession, level: 1, description: item.stages[0].branchFeature, imageUrl: item.imageUrl, headerDisplay: item.name, cardSelectDisplay: { item1: item.profession, item2: "预备干员", item3: `第二领域推荐：${item.recommendedDomains.join("/")}` }, rhodesIsland: item })),
+    ...catalog.ancestries.map((item) => ({ ...shared, id: item.id, name: item.name, type: "ancestry", class: item.name, level: 1, description: item.description, hint: `推荐种族特性：${item.recommendedExperiences.map((experience) => `${experience.name}+${experience.value}`).join("，")}`, imageUrl: item.imageUrl, headerDisplay: item.name, cardSelectDisplay: { item1: item.name }, rhodesIsland: item })),
     ...catalog.communities.map((item) => ({ ...shared, id: item.id, name: item.name, type: "community", class: item.name, description: item.feature.description, hint: item.introduction, imageUrl: item.imageUrl, headerDisplay: item.name, cardSelectDisplay: { item1: item.feature.name }, rhodesIsland: item })),
     ...catalog.domainCards.map((item) => ({ ...shared, id: item.id, name: item.name, type: "domain", class: item.domain, level: item.level, description: item.description, imageUrl: item.imageUrl, cardSelectDisplay: { item1: item.domain, item2: item.category, item3: `RC.${item.recallCost}`, item4: `LV.${item.level}` }, rhodesIsland: item })),
   ]
@@ -250,12 +271,13 @@ async function main() {
     parseProfessions(), parseAncestries(), parseCommunities(), parseDomains(),
   ])
   const catalog = { schemaVersion: 1, ruleset: "rhodes-island", source: "共赴明日：罗德岛旅记", placeholderImage, professions, branches, ancestries, communities, domains, domainCards, unpublishedSourceEntries }
+  validateCommunityContent(communities)
   const counts = { professions: professions.length, branches: branches.length, ancestries: ancestries.length, communities: communities.length, domains: domains.length, domainCards: domainCards.length }
   const expected = { professions: 7, branches: 28, ancestries: 31, communities: 15, domains: 11, domainCards: 262 }
   for (const [key, value] of Object.entries(expected)) if (counts[key] !== value) throw new Error(`${key}: expected ${value}, got ${counts[key]}`)
   await writeFile(join(outputRoot, "catalog.json"), `${JSON.stringify(catalog, null, 2)}\n`, "utf8")
   await writeFile(join(outputRoot, "cards.json"), `${JSON.stringify(makeStandardCards(catalog), null, 2)}\n`, "utf8")
-  await writeFile(join(outputRoot, "manifest.json"), `${JSON.stringify({ schemaVersion: 1, ruleset: "rhodes-island", generatedFrom: "tttri", counts, normalizationNotes: ["工业领域源文件有三张卡将‘回想费用1’误写为‘回想等级1’；按发布清单262张保留首张，另两张保存在 catalog.unpublishedSourceEntries 中。"], files: { catalog: "./catalog.json", cards: "./cards.json" }, placeholderImage }, null, 2)}\n`, "utf8")
+  await writeFile(join(outputRoot, "manifest.json"), `${JSON.stringify({ schemaVersion: 1, ruleset: "rhodes-island", generatedFrom: "tttri", counts, normalizationNotes: ["工业领域源文件有三张卡将‘回想费用1’误写为‘回想等级1’；按发布清单262张保留首张，另两张保存在 catalog.unpublishedSourceEntries 中。", "失乡之民的社群能力补全了旧导入结果遗漏的永久替换社群卡规则。"], files: { catalog: "./catalog.json", cards: "./cards.json" }, placeholderImage }, null, 2)}\n`, "utf8")
   console.log(`Rhodes Island data generated: ${JSON.stringify(counts)}`)
 }
 

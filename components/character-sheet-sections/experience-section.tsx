@@ -4,6 +4,7 @@ import { useSheetStore } from "@/lib/sheet-store";
 import { useAutoResizeFont } from "@/hooks/use-auto-resize-font"
 import type { StandardCard } from "@/card/card-types"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { getRhodesIslandRecommendedExperiences } from "@/lib/rhodes-island-experience"
 
 type RhodesIslandAncestryCard = StandardCard & {
   rhodesIsland?: {
@@ -26,7 +27,12 @@ export function ExperienceSection() {
   const selectedAncestry = formData.cards?.find(
     (card) => card?.id === formData.ancestry1Ref?.id,
   ) as RhodesIslandAncestryCard | undefined
-  const recommendedExperiences = selectedAncestry?.rhodesIsland?.recommendedExperiences ?? []
+  const recommendedExperiences = selectedAncestry?.rhodesIsland?.recommendedExperiences
+    ?? getRhodesIslandRecommendedExperiences(formData.ancestry1Ref?.id)
+  const recommendedExperience = recommendedExperiences[0]
+  const recommendedExperiencePlaceholder = recommendedExperiences.length > 0
+    ? `推荐：${recommendedExperiences.map((item) => `${item.name} +${item.value}`).join(" / ")}`
+    : "选择种族后显示推荐经历"
 
   return (
     <div className="py-1">
@@ -63,6 +69,8 @@ export function ExperienceSection() {
               type="text"
               value={ancestryExperience}
               onChange={(event) => setSheetData({ ancestryExperience: [event.target.value] })}
+              placeholder={recommendedExperiencePlaceholder}
+              data-export-default-value={recommendedExperience?.name}
               className="flex-grow border-b border-slate-400 bg-transparent p-0.5 text-xs focus:outline-none print-empty-hide"
               aria-label="种族经历"
             />
@@ -70,6 +78,7 @@ export function ExperienceSection() {
               type="text"
               value={ancestryExperienceValue}
               onChange={(event) => setSheetData({ ancestryExperienceValues: [event.target.value] })}
+              data-export-default-value={recommendedExperience ? String(recommendedExperience.value) : undefined}
               className="ml-1 w-8 border border-slate-400 bg-white text-center text-xs print-empty-hide"
               aria-label="种族经历加值"
             />

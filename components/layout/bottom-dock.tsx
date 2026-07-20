@@ -58,6 +58,7 @@ interface MainModeProps extends BottomDockBaseProps {
 
 interface PreviewModeProps extends BottomDockBaseProps {
   mode: "preview"
+  ruleSetId?: RuleSetId
   onExportPDF: () => void
   onExportHTML: () => void
   onExportJSON: () => void
@@ -183,27 +184,29 @@ function MainModeContent(props: MainModeProps) {
             </TooltipTrigger>
             <TooltipContent side="top">
               <p>导出角色卡</p>
-              <p className="mt-1 text-xs text-muted-foreground">导出为 PDF、HTML、JSON 或角色码</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {isRhodesIsland ? "导出为 PDF、HTML 或 JSON" : "导出为 PDF、HTML、JSON 或角色码"}
+              </p>
             </TooltipContent>
           </Tooltip>
           <DropdownMenuContent align="end" side="top" className={cn("w-56", isMobile && "text-base")}>
-            <DropdownMenuItem onClick={props.onPrintAll} className={cn(isMobile && "px-4 py-3")}>
+            {!isRhodesIsland && <DropdownMenuItem onClick={props.onPrintAll} className={cn(isMobile && "px-4 py-3")}>
               <FileText className={cn("mr-2", isMobile ? "h-5 w-5" : "h-4 w-4")} />
               打开导出预览界面
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
+            </DropdownMenuItem>}
+            {!isRhodesIsland && <DropdownMenuSeparator />}
+            {!isRhodesIsland && <DropdownMenuItem
               data-testid="export-character-code-item"
               onClick={props.onOpenCharacterCodeExport}
               className={cn(isMobile && "px-4 py-3")}
             >
               <KeyRound className={cn("mr-2", isMobile ? "h-5 w-5" : "h-4 w-4")} />
               导出角色码
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={props.onOpenSealDiceExport} className={cn(isMobile && "px-4 py-3")}>
+            </DropdownMenuItem>}
+            {!isRhodesIsland && <DropdownMenuItem onClick={props.onOpenSealDiceExport} className={cn(isMobile && "px-4 py-3")}>
               <Dice5 className={cn("mr-2", isMobile ? "h-5 w-5" : "h-4 w-4")} />
               导出到骰子
-            </DropdownMenuItem>
+            </DropdownMenuItem>}
             <DropdownMenuItem onClick={props.onQuickExportJSON} className={cn(isMobile && "px-4 py-3")}>
               <FileJson className={cn("mr-2", isMobile ? "h-5 w-5" : "h-4 w-4")} />
               导出 JSON
@@ -295,6 +298,7 @@ function MainModeContent(props: MainModeProps) {
 
 function PreviewModeContent(props: PreviewModeProps) {
   const { isMobile } = props
+  const isRhodesIsland = props.ruleSetId === "rhodes-island"
 
   return (
     <div className="flex items-center gap-4">
@@ -325,7 +329,7 @@ function PreviewModeContent(props: PreviewModeProps) {
       >
         导出为 JSON
       </Button>
-      <Button
+      {!isRhodesIsland && <Button
         onClick={props.onOpenCharacterCodeExport}
         className={cn(
           "whitespace-nowrap bg-primary text-primary-foreground hover:bg-primary/90 focus:outline-none",
@@ -333,8 +337,8 @@ function PreviewModeContent(props: PreviewModeProps) {
         )}
       >
         导出角色码
-      </Button>
-      <Button
+      </Button>}
+      {!isRhodesIsland && <Button
         onClick={props.onOpenSealDiceExport}
         className={cn(
           "whitespace-nowrap bg-primary text-primary-foreground hover:bg-primary/90 focus:outline-none",
@@ -342,7 +346,7 @@ function PreviewModeContent(props: PreviewModeProps) {
         )}
       >
         导出到骰子
-      </Button>
+      </Button>}
       <Button
         onClick={props.onClose}
         className={cn(

@@ -85,4 +85,36 @@ describe("Rhodes Island static rules data", () => {
     expect(serialized).not.toMatch(/https?:\/\//)
     expect(serialized).not.toContain("feishu")
   })
+
+  it("keeps every community feature complete and synchronized with its runtime card", () => {
+    const communityCards = rhodesIslandCards.filter((card) => card.type === "community")
+    expect(communityCards).toHaveLength(rhodesIslandCatalog.communities.length)
+
+    for (const community of rhodesIslandCatalog.communities) {
+      const feature = community.feature as { name: string; description: string }
+      const introduction = community.introduction as string
+      const origins = community.referenceOrigins as string[]
+      const card = communityCards.find((item) => item.id === community.id)
+      expect(introduction, `${community.name} introduction`).not.toBe("")
+      expect(feature.name, `${community.name} feature name`).not.toBe("")
+      expect(feature.description, `${community.name} feature description`).not.toBe("")
+      expect(origins.length, `${community.name} reference origins`).toBeGreaterThan(0)
+      expect(card?.hint).toBe(introduction)
+      expect(card?.description).toBe(feature.description)
+      expect(card?.cardSelectDisplay.item1).toBe(feature.name)
+    }
+
+    const reborne = rhodesIslandCatalog.communities.find((community) => community.name === "失乡之民")
+    const reborneFeature = reborne?.feature as { description: string } | undefined
+    expect(reborneFeature?.description).toContain("你可以永久使用那张社群卡替换这张社群卡")
+  })
+
+  it("labels branch recommendations and ancestry recommendations explicitly", () => {
+    const branchCards = rhodesIslandCards.filter((card) => card.type === "subclass")
+    const ancestryCards = rhodesIslandCards.filter((card) => card.type === "ancestry")
+
+    expect(branchCards.every((card) => card.cardSelectDisplay.item3?.startsWith("第二领域推荐："))).toBe(true)
+    expect(branchCards.every((card) => !card.cardSelectDisplay.item3?.endsWith("施法"))).toBe(true)
+    expect(ancestryCards.every((card) => card.hint?.startsWith("推荐种族特性："))).toBe(true)
+  })
 })

@@ -818,6 +818,7 @@ export default function Home() {
             {/* 打印预览控制按钮 */}
             <BottomDock
               mode="preview"
+              ruleSetId={activeRuleSetId}
               isMobile={isMobile}
               onExportPDF={() => window.print()}
               onExportHTML={handleExportHTML}

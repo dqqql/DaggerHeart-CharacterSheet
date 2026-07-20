@@ -701,6 +701,12 @@ function extractPrintPreviewHTML(onProgress?: ProgressCallback): Promise<string>
       const allInputs = clonedContainer.querySelectorAll('input, textarea')
       allInputs.forEach(input => {
         const type = input.getAttribute('type')
+        const formInput = input as HTMLInputElement | HTMLTextAreaElement
+        const exportDefaultValue = (input as HTMLElement).dataset.exportDefaultValue
+        if (formInput.value === '' && exportDefaultValue) {
+          formInput.value = exportDefaultValue
+          input.setAttribute('value', exportDefaultValue)
+        }
         if (type === 'text' || type === 'number' || input.tagName === 'TEXTAREA') {
           input.removeAttribute('readonly')
         }
