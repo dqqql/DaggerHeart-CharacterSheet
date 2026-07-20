@@ -8,6 +8,7 @@ import React, { useState } from "react"
 import { getCardImageUrl, getCardImageUrlAsync } from "@/lib/utils"
 import { SelectableCard } from "@/components/ui/selectable-card"
 import { CardMarkdown } from "@/components/ui/card-markdown"
+import { getCardRuleSetId } from "@/lib/ruleset"
 
 interface CardHoverPreviewProps {
     card: StandardCard
@@ -28,6 +29,7 @@ const getDisplayTypeName = (card: StandardCard) => {
 export function CardHoverPreview({ card, isTextMode = false }: CardHoverPreviewProps) {
     const [imageError, setImageError] = useState(false)
     const [imageSrc, setImageSrc] = useState<string>('')
+    const isRhodesIslandCard = getCardRuleSetId(card) === "rhodes-island"
     
     // 异步获取图片URL
     React.useEffect(() => {
@@ -71,12 +73,12 @@ export function CardHoverPreview({ card, isTextMode = false }: CardHoverPreviewP
             <div className="flex flex-col w-[220px] flex-shrink-0">
                 {/* Image Section */}
                 {imageSrc && (
-                    <div className="relative w-full h-40">
+                    <div className={`relative w-full ${isRhodesIslandCard ? "h-[220px] bg-white" : "h-40"}`}>
                         <Image
                             src={imageSrc}
                             alt={`Image for ${card.name}`}
                             fill
-                            className="object-cover"
+                            className={isRhodesIslandCard ? "object-contain p-2" : "object-cover"}
                             sizes="220px"
                             onError={() => setImageError(true)}
                         />

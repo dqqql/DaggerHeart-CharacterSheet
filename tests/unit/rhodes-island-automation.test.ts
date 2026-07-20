@@ -57,13 +57,35 @@ describe("罗德岛规则幂等自动化", () => {
       .toBe(branch.stages[2].branchFeature)
   })
 
-  it("8 级只应用当前选中的一个模组", () => {
+  it("X 模组把具体希望特性写入主武器下方", () => {
+    const branch = rhodesIslandCatalog.branches[0]
+    const x = applyRhodesIslandAutomation({ ...createBranchSheet(8), selectedModule: "x" })
+    const expectedFeature = branch.modules.x.description.split(/\r?\n/).slice(1).join("\n").trim()
+    expect(x.primaryWeaponFeature).toBe(`${branch.modules.x.name}：${expectedFeature}`)
+    expect(x.primaryWeaponFeature).not.toContain("希望特性提升")
+    expect(x.primaryWeaponFeature).not.toContain(branch.modules.y.description)
+    expect(x.cards[0].description).not.toContain(branch.modules.x.description)
+  })
+
+  it("Y 模组把新职业特性追加到第一页职业特性下方", () => {
     const branch = rhodesIslandCatalog.branches[0]
     const x = applyRhodesIslandAutomation({ ...createBranchSheet(8), selectedModule: "x" })
     const y = applyRhodesIslandAutomation({ ...x, selectedModule: "y" })
-    expect(x.cards[0].description).toContain(branch.modules.x.description)
-    expect(x.cards[0].description).not.toContain(branch.modules.y.description)
-    expect(y.cards[0].description).toContain(branch.modules.y.description)
+    const expectedFeature = branch.modules.y.description.split(/\r?\n/).slice(1).join("\n").trim()
+    expect(y.primaryWeaponFeature).toBe("")
+    expect(y.cards[0].description).toContain(`${branch.modules.y.name}：${expectedFeature}`)
+    expect(y.cards[0].description).not.toContain("追加第二职业特性")
     expect(y.cards[0].description).not.toContain(branch.modules.x.description)
+  })
+
+  it("未选择模组时清空 X 武器说明和 Y 职业特性", () => {
+    const branch = rhodesIslandCatalog.branches[0]
+    const x = applyRhodesIslandAutomation({ ...createBranchSheet(8), selectedModule: "x" })
+    const y = applyRhodesIslandAutomation({ ...x, selectedModule: "y" })
+    const cleared = applyRhodesIslandAutomation({ ...y, selectedModule: undefined })
+    expect(x.primaryWeaponFeature).toContain("X模组：")
+    expect(y.cards[0].description).toContain("Y模组：")
+    expect(cleared.primaryWeaponFeature).toBe("")
+    expect(cleared.cards[0].description).not.toContain(branch.modules.y.description.split(/\r?\n/).slice(1).join("\n").trim())
   })
 })

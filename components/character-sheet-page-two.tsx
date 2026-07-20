@@ -218,8 +218,11 @@ export default function CharacterSheetPageTwo() {
         return
       }
 
-      if (safeFormData.ruleSetId === "rhodes-island" && label.includes("获取模组") && !safeFormData.selectedModule) {
-        showFadeNotification({ message: "请在位阶4编辑器中选择 X 或 Y 模组", type: "info", position: "middle" })
+      if (safeFormData.ruleSetId === "rhodes-island" && label.includes("获取模组")) {
+        if (currentlyChecked) {
+          setFormData({ selectedModule: undefined })
+        }
+        toggleUpgradeCheckbox(checkKeyOrTier, index, newCheckedState)
         return
       }
 

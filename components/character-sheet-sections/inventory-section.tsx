@@ -14,6 +14,7 @@ export function InventorySection() {
   // 确保 inventory 是一个包含5个元素的数组
   const safeInventory =
     Array.isArray(formData.inventory) && formData.inventory.length >= 5 ? formData.inventory : ["", "", "", "", ""]
+  const visibleRowCount = formData.ruleSetId === "rhodes-island" ? 4 : 5
 
   // 检测是否有内容
   const hasContent = safeInventory.some(item => item.trim() !== "");
@@ -63,7 +64,7 @@ export function InventorySection() {
       </div>
 
       <div className="space-y-1">
-        {safeInventory.slice(0, 5).map((item: string, i: number) => (
+        {safeInventory.slice(0, visibleRowCount).map((item: string, i: number) => (
           <input
             key={`inventory-${i}`}
             type="text"

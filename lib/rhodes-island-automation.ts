@@ -57,6 +57,11 @@ function stageForBranchUpgrades(branch: RhodesBranch, count: number): RhodesStag
   return branch.stages[Math.max(0, Math.min(2, count))] ?? branch.stages[0]
 }
 
+function moduleContent(description: string): string {
+  const [, ...contentLines] = description.split(/\r?\n/)
+  return contentLines.join("\n").trim() || description.trim()
+}
+
 function replaceCardDescription(
   card: StandardCard | undefined,
   description: string,
@@ -109,9 +114,16 @@ export function applyRhodesIslandAutomation(data: SheetData): SheetData {
   const professionFeature = level >= 5 && weaponStage.professionFeature
     ? weaponStage.professionFeature
     : profession?.classFeature ?? ""
-  const professionDescription = [professionFeature, selectedModule?.description]
-    .filter(Boolean)
-    .join("\n\n")
+  const selectedModuleContent = selectedModule ? moduleContent(selectedModule.description) : ""
+  const professionDescription = [
+    professionFeature,
+    data.selectedModule === "y" && selectedModule
+      ? `${selectedModule.name}：${selectedModuleContent}`
+      : "",
+  ].filter(Boolean).join("\n\n")
+  const moduleFeature = data.selectedModule === "x" && selectedModule
+    ? `${selectedModule.name}：${selectedModuleContent}`
+    : ""
 
   const cards = [...(data.cards ?? [])]
   cards[0] = replaceCardDescription(cards[0], professionDescription || cards[0]?.description || "") as StandardCard
@@ -131,7 +143,7 @@ export function applyRhodesIslandAutomation(data: SheetData): SheetData {
       weaponStage.weapon.range,
     ].filter(Boolean).join("/"),
     primaryWeaponDamage: weaponStage.weapon.damage,
-    primaryWeaponFeature: "",
+    primaryWeaponFeature: moduleFeature,
     secondaryWeaponName: "",
     secondaryWeaponSelection: { mode: "none" },
     secondaryWeaponTrait: "",

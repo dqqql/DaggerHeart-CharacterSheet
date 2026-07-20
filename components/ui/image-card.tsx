@@ -10,6 +10,7 @@ import React, { useState, useEffect, useRef } from "react"
 import Image from "next/image"
 import { getCardImageUrl } from "@/lib/utils"
 import { CardMarkdown } from "@/components/ui/card-markdown"
+import { getCardRuleSetId } from "@/lib/ruleset"
 
 // Helper function to get display type name, moved outside of the component
 const getDisplayTypeName = (card: StandardCard) => {
@@ -198,6 +199,7 @@ export function ImageCard({ card, onClick, isSelected, showSource = true, priori
     const displayItem2 = card.cardSelectDisplay?.item2 || "";
     const displayItem3 = card.cardSelectDisplay?.item3 || "";
     const displayItem4 = card.cardSelectDisplay?.item4 || "";
+    const isRhodesIslandCard = getCardRuleSetId(card) === "rhodes-island"
 
     // 根据卡牌类型过滤需要显示的标签信息（去重逻辑）
     const getFilteredDisplayItems = (): string[] => {
@@ -254,14 +256,17 @@ export function ImageCard({ card, onClick, isSelected, showSource = true, priori
             }}
         >
             {/* Image Container */}
-            <div className="relative w-full aspect-[1.4] overflow-hidden">
+            <div className={`relative w-full overflow-hidden bg-white ${isRhodesIslandCard ? "aspect-square" : "aspect-[1.4]"}`}>
                 {imageSrc && (
                     <Image
                         src={imageSrc}
                         alt={displayName}
                         width={300}
                         height={420}
-                        className="w-full h-auto object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+                        className={isRhodesIslandCard
+                            ? "h-full w-full object-contain p-2"
+                            : "h-auto w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+                        }
                         priority={priority}
                         sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
                         onLoad={() => setImageLoaded(true)}

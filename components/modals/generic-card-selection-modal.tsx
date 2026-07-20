@@ -12,6 +12,7 @@ import { ContentStates, CardGrid } from "./display"
 import { MultiSelectFilter } from "./filters"
 import { getSingleAncestrySelectionCards } from "@/lib/ancestry-utils"
 import { cardBelongsToRuleSet, isRhodesIsland } from "@/lib/ruleset"
+import { getRuleSetBatchOptions } from "@/lib/ruleset-card-batches"
 
 interface GenericCardSelectionModalProps {
   isOpen: boolean
@@ -49,12 +50,21 @@ export function GenericCardSelectionModal({
       name: string
       cardCount: number
     }>
-    return batches.map(b => ({
+    const options = batches.map(b => ({
       id: b.id,
       name: b.name,
       cardCount: b.cardCount,
     }))
-  }, [cardStore.initialized])
+    return getRuleSetBatchOptions(options, cardStore.loadAllCards(), formData.ruleSetId)
+  }, [cardStore.initialized, formData.ruleSetId])
+
+  useEffect(() => {
+    const allowedIds = new Set(batchOptions.map(batch => batch.id))
+    setSelectedBatches(current => {
+      const validSelection = current.filter(id => allowedIds.has(id))
+      return validSelection.length === current.length ? current : validSelection
+    })
+  }, [batchOptions])
 
   // Load cards asynchronously when modal opens or card type changes
   useEffect(() => {

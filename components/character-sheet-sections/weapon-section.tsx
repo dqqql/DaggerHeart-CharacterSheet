@@ -166,7 +166,7 @@ export function WeaponSection({
           value={formData[weaponFields.feature] || ""}
           onChange={handleInputChange}
           placeholder=""
-          maxLines={2}
+          maxLines={isPrimary ? 3 : 2}
         />
       </div>
     </div>

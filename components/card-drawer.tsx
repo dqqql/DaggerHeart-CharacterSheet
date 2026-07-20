@@ -18,6 +18,7 @@ import {
 import { useTextModeStore } from "@/lib/text-mode-store"
 import { getOfficialImageUrl } from "@/lib/official-image-pack"
 import { getBasePath } from "@/lib/utils"
+import { getCardRuleSetId } from "@/lib/ruleset"
 
 interface CardDrawerProps {
   cards: Array<StandardCard>
@@ -402,12 +403,18 @@ export function CardDrawer({
             {previewImageSrc ? (
               <div className="flex w-[520px] max-w-[90vw] flex-row overflow-auto rounded-lg border border-gray-200 bg-white text-gray-800 shadow-lg">
                 <div className="flex w-[220px] flex-shrink-0 flex-col">
-                  <div className="relative h-40 w-full">
+                  <div
+                    className={`relative w-full ${
+                      getCardRuleSetId(hoveredCard) === "rhodes-island" ? "h-[220px] bg-white" : "h-40"
+                    }`}
+                  >
                     <Image
                       src={previewImageSrc}
                       alt={hoveredCard.name}
                       fill
-                      className="object-cover"
+                      className={
+                        getCardRuleSetId(hoveredCard) === "rhodes-island" ? "object-contain p-2" : "object-cover"
+                      }
                       sizes="220px"
                     />
                   </div>

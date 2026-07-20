@@ -7,6 +7,7 @@ import type { ExtendedStandardCard } from "@/card/card-types"
 import { isVariantType, CARD_LEVEL_OPTIONS } from "@/card/card-types"
 import { cardBelongsToRuleSet } from "@/lib/ruleset"
 import { useSheetStore } from "@/lib/sheet-store"
+import { getRuleSetBatchOptions } from "@/lib/ruleset-card-batches"
 
 /**
  * 筛选状态
@@ -193,12 +194,22 @@ export function useCardFiltering(initialTab?: string): UseCardFilteringReturn {
       name: string
       cardCount: number
     }>
-    return batches.map(b => ({
+    const options = batches.map(b => ({
       id: b.id,
       name: b.name,
       cardCount: b.cardCount,
     }))
-  }, [cardStore.initialized])
+    return getRuleSetBatchOptions(options, cardStore.loadAllCards(), ruleSetId)
+  }, [cardStore.initialized, ruleSetId])
+
+  // 切换规则集时清除在当前规则下不可见的历史卡包筛选。
+  useEffect(() => {
+    const allowedIds = new Set(batchOptions.map(batch => batch.id))
+    const validSelection = state.selectedBatches.filter(id => allowedIds.has(id))
+    if (validSelection.length !== state.selectedBatches.length) {
+      useCardFilterStore.getState().setBatches(validSelection)
+    }
+  }, [batchOptions, state.selectedBatches])
 
   return {
     filteredCards,

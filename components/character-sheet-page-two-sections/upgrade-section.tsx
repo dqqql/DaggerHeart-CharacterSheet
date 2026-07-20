@@ -297,9 +297,12 @@ export function UpgradeSection({
                       {Array(option.boxCount).fill(null).map((_, i) => {
                   const checkKey = option.doubleBox ? `${tierKey}-${index}` : `${tierKey}-${index}-${i}`
                   return (
-                    <div
+                    <button
+                      type="button"
                       key={i}
                       data-testid={`checkbox-${checkKey}`}
+                      aria-label={option.label}
+                      aria-pressed={isUpgradeChecked(checkKey, index)}
                       className={`w-3 h-3 cursor-pointer ${option.doubleBox && option.boxCount === 2
                         ? `${i === 0
                           ? 'border-l-2 border-t-2 border-b-2 border-r border-gray-800'
@@ -334,7 +337,7 @@ export function UpgradeSection({
                           handleUpgradeCheck(checkKey, index)
                         }
                       }}
-                    ></div>
+                    />
                   )
                 })}
                     </span>
@@ -353,9 +356,12 @@ export function UpgradeSection({
                   {Array(option.boxCount).fill(null).map((_, i) => {
                     const checkKey = option.doubleBox ? `${tierKey}-${index}` : `${tierKey}-${index}-${i}`
                     return (
-                      <div
+                      <button
+                        type="button"
                         key={i}
                         data-testid={`checkbox-${checkKey}`}
+                        aria-label={option.label}
+                        aria-pressed={isUpgradeChecked(checkKey, index)}
                         className={`w-3 h-3 cursor-pointer ${option.doubleBox && option.boxCount === 2
                           ? `${i === 0
                             ? 'border-l-2 border-t-2 border-b-2 border-r border-gray-800'
@@ -378,7 +384,7 @@ export function UpgradeSection({
                           // 其他选项：保持原有逻辑
                           handleUpgradeCheck(checkKey, index)
                         }}
-                      ></div>
+                      />
                     )
                   })}
                 </span>
@@ -438,6 +444,7 @@ export function UpgradeSection({
           const moduleOptionIndex = getUpgradeOptions(tier).findIndex(option => option.label.includes("获取模组"))
           if (!branch || moduleOptionIndex < 0) return null
           const moduleCheckKey = `${tierKey}-${moduleOptionIndex}-0`
+          if (!isUpgradeChecked(moduleCheckKey, moduleOptionIndex)) return null
           return (
             <div className="mt-2 border-l-4 border-cyan-700 bg-slate-50 p-2 print:border-slate-500">
               <div className="mb-1 text-[10px] font-bold text-slate-700">模组编辑器（单选）</div>
@@ -454,7 +461,6 @@ export function UpgradeSection({
                       title={module.description}
                       onClick={() => {
                         setSheetData({ selectedModule: moduleId })
-                        toggleUpgradeCheckbox(moduleCheckKey, moduleOptionIndex, true)
                       }}
                     >
                       {module.name}

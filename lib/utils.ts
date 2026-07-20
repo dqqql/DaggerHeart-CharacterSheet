@@ -3,6 +3,7 @@ import { twMerge } from "tailwind-merge";
 import type { StandardCard } from "@/card/card-types";
 import { useUnifiedCardStore } from "@/card/stores/unified-card-store";
 import { getOfficialImageUrl, isBuiltinCard } from "@/lib/official-image-pack";
+import { getCardRuleSetId } from "@/lib/ruleset";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -81,6 +82,11 @@ export function getCardImageUrl(
   // 确保路径以斜杠开头（用于相对路径）
   const normalizedUrl = imageUrl.startsWith('/') ? imageUrl : '/' + imageUrl;
 
+  // 罗德岛卡图随应用一起发布，不经过原版官方图片包的 /image 路径。
+  if (getCardRuleSetId(card) === 'rhodes-island') {
+    return `${basePath}${normalizedUrl}`;
+  }
+
   // 返回完整的图片路径
   return `${basePath}/image${normalizedUrl}`;
 }
@@ -103,7 +109,12 @@ export async function getCardImageUrlAsync(
     return emptyCardUrl;
   }
 
-  // Builtin cards now prefer the locally imported official image pack.
+  // 罗德岛内置卡直接使用随应用发布的本地图片。
+  if (getCardRuleSetId(card) === 'rhodes-island') {
+    return getCardImageUrl(card, false);
+  }
+
+  // 原版内置卡优先使用用户导入的官方图片包。
   if (isBuiltinCard(card) && card.id) {
     try {
       const blobUrl = await getOfficialImageUrl(card.id);

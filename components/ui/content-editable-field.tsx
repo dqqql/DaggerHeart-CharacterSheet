@@ -25,47 +25,44 @@ export function ContentEditableField({
 }: ContentEditableFieldProps) {
   const [isFocused, setIsFocused] = useState(false)
   
-  // 智能分割文本为两行显示（用于打印）
-  const splitValueToLines = (value: string): [string, string] => {
-    if (!value) return ["", ""];
+  // 根据可见行数智能分割文本（用于打印）
+  const splitValueToLines = (value: string): string[] => {
+    if (!value) return Array(maxLines).fill("")
     
     // 如果包含换行符，按换行符分割
     if (value.includes('\n')) {
-      const parts = value.split('\n', 2);
-      return [parts[0] || "", parts[1] || ""];
+      return Array.from({ length: maxLines }, (_, index) => value.split('\n')[index] || "")
     }
     
-    // 如果长度超过29字符，智能分割
+    // 如果长度超过29字符，逐行智能分割
     const maxCharsPerLine = 29;
-    if (value.length <= maxCharsPerLine) {
-      return [value, ""];
-    }
-    
-    // 寻找合适的分割点
-    let splitIndex = maxCharsPerLine;
-    for (let i = maxCharsPerLine; i >= Math.max(0, maxCharsPerLine - 5); i--) {
-      const char = value[i];
-      const nextChar = value[i + 1];
-      
-      if (char === ' ') {
-        splitIndex = i + 1;
-        break;
+    const lines: string[] = []
+    let remaining = value.trim()
+
+    while (lines.length < maxLines) {
+      if (lines.length === maxLines - 1 || remaining.length <= maxCharsPerLine) {
+        lines.push(remaining)
+        remaining = ""
+        break
       }
-      
-      const punctuation = ['，', '。', '：', ';', ',', ':'];
-      if (punctuation.includes(char) && nextChar && punctuation.includes(nextChar)) {
-        splitIndex = i + 1;
-        break;
+
+      let splitIndex = maxCharsPerLine
+      for (let i = maxCharsPerLine; i >= Math.max(0, maxCharsPerLine - 5); i--) {
+        const char = remaining[i]
+        if (char === ' ' || ['，', '。', '：', ';', ',', ':'].includes(char)) {
+          splitIndex = i + 1
+          break
+        }
       }
+
+      lines.push(remaining.substring(0, splitIndex).trim())
+      remaining = remaining.substring(splitIndex).trim()
     }
-    
-    return [
-      value.substring(0, splitIndex).trim(),
-      value.substring(splitIndex).trim()
-    ];
-  };
-  
-  const [line1, line2] = splitValueToLines(value)
+
+    return [...lines, ...Array(Math.max(0, maxLines - lines.length)).fill("")]
+  }
+
+  const printLines = splitValueToLines(value)
   
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value
@@ -216,20 +213,17 @@ export function ContentEditableField({
         style={notebookStyles}
       />
       
-      {/* 打印显示：两个input模拟双行效果 */}
+      {/* 打印显示：按 maxLines 生成对应行数 */}
       <div className="notebook-print-div space-y-1">
-        <input 
-          type="text" 
-          value={line1} 
-          readOnly
-          className="w-full border-b border-gray-400 text-sm bg-transparent outline-none block print-empty-hide"
-        />
-        <input 
-          type="text" 
-          value={line2} 
-          readOnly
-          className="w-full border-b border-gray-400 text-sm bg-transparent outline-none block print-empty-hide"
-        />
+        {printLines.map((line, index) => (
+          <input
+            key={`${name}-print-line-${index}`}
+            type="text"
+            value={line}
+            readOnly
+            className="w-full border-b border-gray-400 text-sm bg-transparent outline-none block print-empty-hide"
+          />
+        ))}
       </div>
       
       {isFocused && maxLength && (
