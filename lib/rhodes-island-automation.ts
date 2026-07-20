@@ -117,6 +117,7 @@ export function applyRhodesIslandAutomation(data: SheetData): SheetData {
   const selectedModuleContent = selectedModule ? moduleContent(selectedModule.description) : ""
   const professionDescription = [
     professionFeature,
+    rankStage.branchFeature,
     data.selectedModule === "y" && selectedModule
       ? `${selectedModule.name}：${selectedModuleContent}`
       : "",

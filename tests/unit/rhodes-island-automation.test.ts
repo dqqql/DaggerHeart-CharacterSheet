@@ -49,12 +49,18 @@ describe("罗德岛规则幂等自动化", () => {
   it("分支升级可逆切换预备、正式和资深特性", () => {
     const base = createBranchSheet(5)
     const branch = rhodesIslandCatalog.branches[0]
-    expect(applyRhodesIslandAutomation({ ...base, branchUpgradeCount: 0 }).cards[1].description)
-      .toBe(branch.stages[0].branchFeature)
-    expect(applyRhodesIslandAutomation({ ...base, branchUpgradeCount: 1 }).cards[1].description)
-      .toBe(branch.stages[1].branchFeature)
-    expect(applyRhodesIslandAutomation({ ...base, branchUpgradeCount: 2 }).cards[1].description)
-      .toBe(branch.stages[2].branchFeature)
+    const trainee = applyRhodesIslandAutomation({ ...base, branchUpgradeCount: 0 })
+    const operator = applyRhodesIslandAutomation({ ...base, branchUpgradeCount: 1 })
+    const senior = applyRhodesIslandAutomation({ ...base, branchUpgradeCount: 2 })
+
+    expect(trainee.cards[1].description).toBe(branch.stages[0].branchFeature)
+    expect(operator.cards[1].description).toBe(branch.stages[1].branchFeature)
+    expect(senior.cards[1].description).toBe(branch.stages[2].branchFeature)
+    expect(trainee.cards[0].description).toContain(branch.stages[0].branchFeature)
+    expect(operator.cards[0].description).toContain(branch.stages[1].branchFeature)
+    expect(operator.cards[0].description).not.toContain(branch.stages[0].branchFeature)
+    expect(senior.cards[0].description).toContain(branch.stages[2].branchFeature)
+    expect(senior.cards[0].description).not.toContain(branch.stages[1].branchFeature)
   })
 
   it("X 模组把具体希望特性写入主武器下方", () => {
