@@ -68,6 +68,7 @@ export function BaseCardModal({
             role="dialog"
             aria-modal="true"
             aria-label="卡牌选择窗口"
+            data-card-selection-modal
             className={cn(
               "relative bg-white rounded-lg shadow-lg w-full overflow-hidden flex flex-col",
               sizeClasses[size], className
@@ -76,14 +77,19 @@ export function BaseCardModal({
             initial="hidden" animate="visible" exit="exit"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="border-b border-gray-200">{header}</div>
+            <div data-card-modal-header className="border-b border-gray-200">{header}</div>
             <div className="flex-1 flex overflow-hidden">
               {sidebar && (
-                <div className={cn("border-r border-gray-200 overflow-y-auto", sidebarWidth)}>
+                <div
+                  data-card-modal-sidebar
+                  className={cn("border-r border-gray-200 overflow-y-auto", sidebarWidth)}
+                >
                   {sidebar}
                 </div>
               )}
-              <div className="flex-1 overflow-hidden flex flex-col">{children}</div>
+              <div data-card-modal-content className="flex-1 overflow-hidden flex flex-col">
+                {children}
+              </div>
             </div>
           </motion.div>
         </motion.div>

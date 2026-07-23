@@ -74,7 +74,7 @@ export function MultiSelectFilter<T extends string = string>({
           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="start">
+      <DropdownMenuContent data-card-filter-menu className="z-[100] w-56" align="start">
         {showSearch && options.length > 10 && (
           <div className="p-2 border-b">
             <div className="relative">

@@ -21,7 +21,10 @@ export function ModalFilterBar({
 
   if (!collapsible) {
     return (
-      <div className={cn("p-4 border-b border-gray-200 flex flex-wrap gap-3", className)}>
+      <div
+        data-card-modal-filter-bar
+        className={cn("p-4 border-b border-gray-200 flex flex-wrap gap-3", className)}
+      >
         {children}
       </div>
     )
@@ -29,7 +32,7 @@ export function ModalFilterBar({
 
   return (
     <Collapsible.Root open={isOpen} onOpenChange={setIsOpen}>
-      <div className={cn("border-b border-gray-200", className)}>
+      <div data-card-modal-filter-bar className={cn("border-b border-gray-200", className)}>
         <Collapsible.Trigger className="w-full p-4 flex items-center justify-between hover:bg-gray-50 md:hidden">
           <div className="flex items-center gap-2">
             <Filter className="h-4 w-4" />
