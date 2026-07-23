@@ -4,14 +4,25 @@ import { CardMarkdown } from '@/components/ui/card-markdown';
 
 interface ProfessionDescriptionSectionProps {
     description: string | undefined;
+    subclassDescription?: string;
     heightClassName?: string;
 }
 
 const ProfessionDescriptionSection: React.FC<ProfessionDescriptionSectionProps> = ({
     description,
+    subclassDescription,
     heightClassName = 'h-[250px]',
 }) => {
-    const transformedSections = description ? splitMarkdownRenderSections(description) : [];
+    const subclassStart = description && subclassDescription
+        ? description.indexOf(subclassDescription)
+        : -1;
+    const shouldSeparateSubclass = subclassStart > 0;
+    const professionDescription = shouldSeparateSubclass
+        ? description?.slice(0, subclassStart).trim()
+        : description;
+    const subclassFeatureDescription = shouldSeparateSubclass
+        ? description?.slice(subclassStart).trim()
+        : undefined;
 
     const extractText = (child: React.ReactNode): string => {
         if (typeof child === 'string') {
@@ -33,10 +44,11 @@ const ProfessionDescriptionSection: React.FC<ProfessionDescriptionSectionProps> 
         return '';
     };
 
-    return (
-        <div className={`border-2 border-gray-300 rounded-lg p-1.5 text-xs markdown-content ${heightClassName} overflow-auto`}>
-            {transformedSections.map((section, index) => (
-                <div key={`${index}-${section.isCentered ? 'center' : 'normal'}`} className={section.isCentered ? 'text-center' : undefined}>
+    const renderDescription = (content: string | undefined, keyPrefix: string) => {
+        const transformedSections = content ? splitMarkdownRenderSections(content) : [];
+
+        return transformedSections.map((section, index) => (
+                <div key={`${keyPrefix}-${index}-${section.isCentered ? 'center' : 'normal'}`} className={section.isCentered ? 'text-center' : undefined}>
                     <CardMarkdown
                         customComponents={{
                             p: ({ children }) => <p className="first:mt-0 mb-0 mt-1">{children}</p>,
@@ -110,7 +122,25 @@ const ProfessionDescriptionSection: React.FC<ProfessionDescriptionSectionProps> 
                         {section.content}
                     </CardMarkdown>
                 </div>
-            ))}
+            ));
+    };
+
+    return (
+        <div className={`border-2 border-gray-300 rounded-lg p-1.5 text-xs markdown-content ${heightClassName} overflow-auto`}>
+            {renderDescription(professionDescription, 'profession')}
+            {subclassFeatureDescription && (
+                <>
+                    <div
+                        data-subclass-feature-divider
+                        className="my-2 flex w-full items-center gap-2 text-center text-[10px] font-bold leading-none text-cyan-700"
+                    >
+                        <span aria-hidden="true" className="h-px flex-1 bg-cyan-600" />
+                        <span className="shrink-0">——以下为子职特性——</span>
+                        <span aria-hidden="true" className="h-px flex-1 bg-cyan-600" />
+                    </div>
+                    {renderDescription(subclassFeatureDescription, 'subclass')}
+                </>
+            )}
         </div>
     );
 };

@@ -945,6 +945,7 @@ export default function CharacterSheet() {
                     <h3 className="text-xs font-bold text-center">职业特性</h3>
                     <ProfessionDescriptionSection
                       description={safeFormData.cards[0]?.description}
+                      subclassDescription={safeFormData.cards[1]?.description}
                       heightClassName="h-[205px]"
                     />
                   </div>

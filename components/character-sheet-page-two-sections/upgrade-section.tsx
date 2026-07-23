@@ -237,6 +237,11 @@ export function UpgradeSection({
 
   // 检测 description 是否包含"获得一项额外+2经历"
   const hasNewExperienceText = description.includes("获得一项额外+2经历")
+  const upgradeOptions = getUpgradeOptions(tier)
+  const moduleOptionIndex = formData.ruleSetId === "rhodes-island" && tier === 3
+    ? upgradeOptions.findIndex(option => option.label.includes("获取模组"))
+    : -1
+  const moduleOption = moduleOptionIndex >= 0 ? upgradeOptions[moduleOptionIndex] : undefined
 
   return (
     <div className="border border-gray-300 rounded-md shadow-sm">
@@ -275,7 +280,9 @@ export function UpgradeSection({
         </p>
 
         <div className="space-y-1">
-          {getUpgradeOptions(tier).map((option, index) => {
+          {upgradeOptions.map((option, index) => {
+            if (index === moduleOptionIndex) return null
+
             const isAttrUpgrade = isAttributeUpgradeOption(option.label)
             const isExpUpgrade = isExperienceUpgradeOption(option.label)
             const isEvasionUpgrade = isDodgeUpgradeOption(option.label)
@@ -439,44 +446,6 @@ export function UpgradeSection({
           })}
         </div>
 
-        {formData.ruleSetId === "rhodes-island" && tier === 3 && (() => {
-          const branch = getRhodesBranch(formData.subclassRef?.id)
-          const moduleOptionIndex = getUpgradeOptions(tier).findIndex(option => option.label.includes("获取模组"))
-          if (!branch || moduleOptionIndex < 0) return null
-          const moduleCheckKey = `${tierKey}-${moduleOptionIndex}-0`
-          if (!isUpgradeChecked(moduleCheckKey, moduleOptionIndex)) return null
-          return (
-            <div className="mt-2 border-l-4 border-cyan-700 bg-slate-50 p-2 print:border-slate-500">
-              <div className="mb-1 text-[10px] font-bold text-slate-700">模组编辑器（单选）</div>
-              <div className="grid grid-cols-2 gap-1">
-                {(["x", "y"] as const).map(moduleId => {
-                  const module = branch.modules[moduleId]
-                  const selected = formData.selectedModule === moduleId
-                  return (
-                    <button
-                      key={moduleId}
-                      type="button"
-                      aria-pressed={selected}
-                      className={`border px-1 py-1 text-[9px] font-bold transition-colors ${selected ? "border-cyan-800 bg-cyan-800 text-white" : "border-slate-400 bg-white text-slate-700"}`}
-                      title={module.description}
-                      onClick={() => {
-                        setSheetData({ selectedModule: moduleId })
-                      }}
-                    >
-                      {module.name}
-                    </button>
-                  )
-                })}
-              </div>
-              {formData.selectedModule && (
-                <p className="mt-1 whitespace-pre-line text-[8px] leading-snug text-slate-600">
-                  {branch.modules[formData.selectedModule].description}
-                </p>
-              )}
-            </div>
-          )
-        })()}
-
         <div className="mt-3 !text-xs">
           {tier === 1 && (
             <>
@@ -521,6 +490,66 @@ export function UpgradeSection({
             </>
           )}
         </div>
+
+        {moduleOption && (() => {
+          const branch = getRhodesBranch(formData.subclassRef?.id)
+          const moduleCheckKey = `${tierKey}-${moduleOptionIndex}-0`
+          const moduleChecked = isUpgradeChecked(moduleCheckKey, moduleOptionIndex)
+
+          return (
+            <div
+              data-module-upgrade-section
+              className="mt-3 border-t-2 border-cyan-700 pt-2"
+            >
+              <div className="flex items-start text-[10px] leading-[1.6]">
+                <span className="mt-px flex min-w-[3.2em] flex-shrink-0 items-center justify-end">
+                  <button
+                    type="button"
+                    data-testid={`checkbox-${moduleCheckKey}`}
+                    aria-label={moduleOption.label}
+                    aria-pressed={moduleChecked}
+                    className={`h-3 w-3 cursor-pointer border border-gray-800 ${moduleChecked ? "bg-gray-800" : "bg-white"}`}
+                    onClick={() => handleUpgradeCheck(moduleCheckKey, moduleOptionIndex)}
+                  />
+                </span>
+                <span className="ml-2 flex-1 text-gray-800 dark:text-gray-200">
+                  {moduleOption.label}
+                </span>
+              </div>
+
+              {branch && moduleChecked && (
+                <div className="mt-2 border-l-4 border-cyan-700 bg-slate-50 p-2 print:border-slate-500">
+                  <div className="mb-1 text-[10px] font-bold text-slate-700">模组编辑器（单选）</div>
+                  <div className="grid grid-cols-2 gap-1">
+                    {(["x", "y"] as const).map(moduleId => {
+                      const module = branch.modules[moduleId]
+                      const selected = formData.selectedModule === moduleId
+                      return (
+                        <button
+                          key={moduleId}
+                          type="button"
+                          aria-pressed={selected}
+                          className={`border px-1 py-1 text-[9px] font-bold transition-colors ${selected ? "border-cyan-800 bg-cyan-800 text-white" : "border-slate-400 bg-white text-slate-700"}`}
+                          title={module.description}
+                          onClick={() => {
+                            setSheetData({ selectedModule: moduleId })
+                          }}
+                        >
+                          {module.name}
+                        </button>
+                      )
+                    })}
+                  </div>
+                  {formData.selectedModule && (
+                    <p className="mt-1 whitespace-pre-line text-[8px] leading-snug text-slate-600">
+                      {branch.modules[formData.selectedModule].description}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          )
+        })()}
 
         {tier === 1 && (
           <div

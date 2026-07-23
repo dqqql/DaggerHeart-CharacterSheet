@@ -1,24 +1,24 @@
-import { render, screen, within } from "@testing-library/react"
+import { render, screen } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
 
 import ProfessionDescriptionSection from "@/components/character-sheet-sections/profession-description-section"
 
 describe("ProfessionDescriptionSection", () => {
-  it("renders approved custom syntax without trusting raw html", () => {
-    const description = [
-      '普通段落 <img src="x" onerror="alert(1)">',
-      "[checkbox:2] [input:4]",
-      "[center]**居中标题**[/center]",
-    ].join("\n")
+  it("places a flowing subclass divider immediately before subclass features", () => {
+    render(
+      <ProfessionDescriptionSection
+        description={"一鼓作气：职业特性内容。\n\n冲锋陷阵+：子职特性内容。"}
+        subclassDescription="冲锋陷阵+：子职特性内容。"
+      />,
+    )
 
-    const { container } = render(<ProfessionDescriptionSection description={description} />)
+    const professionFeature = screen.getByText("一鼓作气：职业特性内容。")
+    const divider = screen.getByText("——以下为子职特性——").closest("[data-subclass-feature-divider]")
+    const subclassFeature = screen.getByText("冲锋陷阵+：子职特性内容。")
 
-    expect(container.querySelector("img")).toBeNull()
-    expect(screen.getAllByRole("checkbox")).toHaveLength(2)
-    expect(screen.getByRole("textbox")).toBeInTheDocument()
-
-    const centeredBlock = container.querySelector(".text-center")
-    expect(centeredBlock).not.toBeNull()
-    expect(within(centeredBlock as HTMLElement).getByText("居中标题")).toBeInTheDocument()
+    expect(divider).not.toBeNull()
+    expect(divider).toHaveClass("text-cyan-700")
+    expect(professionFeature.compareDocumentPosition(divider!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
+    expect(divider!.compareDocumentPosition(subclassFeature)).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
   })
 })

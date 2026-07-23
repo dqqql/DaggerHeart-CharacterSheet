@@ -155,8 +155,17 @@ export function ArmorSelectionModal({
     <div className="fixed inset-0 z-[90] flex items-center justify-center">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
-      <div role="dialog" aria-modal="true" aria-labelledby="armor-selection-title" className="relative flex max-h-[95vh] w-full max-w-6xl flex-col overflow-hidden rounded-lg bg-white shadow-lg sm:max-h-[85vh]">
-        <div className="flex flex-col items-start gap-3 border-b border-gray-200 p-3 sm:flex-row sm:items-center sm:p-4">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="armor-selection-title"
+        data-armor-selection-modal
+        className="relative flex max-h-[95vh] w-full max-w-6xl flex-col overflow-hidden rounded-lg bg-white shadow-lg sm:max-h-[85vh]"
+      >
+        <div
+          data-armor-modal-header
+          className="flex flex-col items-start gap-3 border-b border-gray-200 p-3 sm:flex-row sm:items-center sm:p-4"
+        >
           <h2 id="armor-selection-title" className="text-lg font-bold sm:text-xl">{title}</h2>
           <Button
             variant="destructive"
@@ -167,7 +176,10 @@ export function ArmorSelectionModal({
           </Button>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 border-b border-gray-200 bg-gray-50 px-3 py-3 sm:px-4">
+        <div
+          data-armor-modal-filter-bar
+          className="flex flex-wrap items-center gap-3 border-b border-gray-200 bg-gray-50 px-3 py-3 sm:px-4"
+        >
           <select
             className="rounded-lg border px-3 py-2 text-sm sm:px-4 sm:text-base"
             value={levelFilter}
@@ -333,7 +345,7 @@ export function ArmorSelectionModal({
           </div>
         )}
 
-        <ScrollArea className="flex-1 overflow-auto">
+        <ScrollArea data-armor-modal-table className="flex-1 overflow-auto">
           <div className="p-1 sm:p-2">
             <table className="min-w-[max-content] w-full border-collapse">
               <thead className="sticky top-0 z-10 bg-gray-800 text-white">
