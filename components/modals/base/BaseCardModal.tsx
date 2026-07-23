@@ -1,8 +1,10 @@
 "use client"
 
 import React from "react"
+import { createPortal } from "react-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import { useModalKeyboard } from "@/hooks/use-modal-keyboard"
+import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock"
 import { cn } from "@/lib/utils"
 
 const sizeClasses = {
@@ -47,12 +49,14 @@ export function BaseCardModal({
   className, overlayClassName,
 }: BaseCardModalProps) {
   useModalKeyboard(isOpen, onClose, closeOnEscape)
+  useBodyScrollLock(isOpen)
 
-  return (
+  const modal = (
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className={cn("fixed inset-0 z-50 flex items-center justify-center", overlayClassName)}
+          data-modal-root
+          className={cn("fixed inset-0 z-[90] flex items-center justify-center", overlayClassName)}
           variants={overlayVariants}
           initial="hidden" animate="visible" exit="hidden"
         >
@@ -61,6 +65,9 @@ export function BaseCardModal({
             onClick={closeOnOverlayClick ? onClose : undefined}
           />
           <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label="卡牌选择窗口"
             className={cn(
               "relative bg-white rounded-lg shadow-lg w-full overflow-hidden flex flex-col",
               sizeClasses[size], className
@@ -83,4 +90,6 @@ export function BaseCardModal({
       )}
     </AnimatePresence>
   )
+
+  return typeof document === "undefined" ? null : createPortal(modal, document.body)
 }

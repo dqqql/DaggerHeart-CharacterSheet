@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { createPortal } from "react-dom"
 import { Button } from "@/components/ui/button"
 import { promptDialog } from "@/components/ui/confirm-dialog"
 import { toast } from "@/hooks/use-toast"
@@ -10,6 +11,7 @@ import { importCharacterFromHTMLFile } from "@/lib/html-importer"
 import { validateJSONCharacterData } from "@/lib/character-data-validator"
 import { useSheetStore } from "@/lib/sheet-store"
 import { defaultSheetData } from "@/lib/default-sheet-data"
+import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock"
 
 interface CharacterManagementModalProps {
     isOpen: boolean
@@ -34,6 +36,7 @@ export function CharacterManagementModal({
     onDuplicateCharacter,
     onRenameCharacter,
 }: CharacterManagementModalProps) {
+    useBodyScrollLock(isOpen)
     const { sheetData: formData, replaceSheetData } = useSheetStore()
     const [characterDisplayNames, setCharacterDisplayNames] = useState<Record<string, string>>({})
     
@@ -126,10 +129,10 @@ export function CharacterManagementModal({
         input.click()
     }
 
-    return (
+    return createPortal(
         <div
             data-ri-archive-overlay
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[90]"
             onClick={onClose}
         >
             <div
@@ -335,6 +338,7 @@ export function CharacterManagementModal({
                     </div>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body,
     )
 }

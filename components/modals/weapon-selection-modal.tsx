@@ -2,7 +2,9 @@
 import { allWeapons } from "@/data/list/all-weapons";
 import { Button } from "@/components/ui/button";
 import { useMemo, useEffect, useState, useRef } from 'react'; // Added useRef
+import { createPortal } from "react-dom";
 import InfiniteScroll from 'react-infinite-scroll-component'; // Added import
+import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock";
 
 const ITEMS_PER_PAGE = 30; // Define items per page
 
@@ -47,6 +49,7 @@ interface Weapon {
 }
 
 export function WeaponSelectionModal({ isOpen, onClose, onSelect, title, weaponSlotType }: WeaponModalProps) {
+  useBodyScrollLock(isOpen);
   const [customName, setCustomName] = useState("");
   const [customLevel, setCustomLevel] = useState<Level | "">("");
   const [customCheck, setCustomCheck] = useState<Check | "">("");
@@ -169,12 +172,12 @@ export function WeaponSelectionModal({ isOpen, onClose, onSelect, title, weaponS
   // 选择自定义武器类型
   const customWeaponType: 'primary' | 'secondary' = weaponSlotType === 'secondary' ? 'secondary' : 'primary';
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
+  return createPortal(
+    <div className="fixed inset-0 z-[90] flex items-center justify-center p-2 sm:p-4">
       <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onClose}></div>
-      <div className="relative bg-white rounded-lg shadow-lg w-full max-w-6xl max-h-[95vh] sm:max-h-[85vh] overflow-hidden flex flex-col">
+      <div role="dialog" aria-modal="true" aria-labelledby="weapon-selection-title" className="relative bg-white rounded-lg shadow-lg w-full max-w-6xl max-h-[95vh] sm:max-h-[85vh] overflow-hidden flex flex-col">
         <div className="p-3 sm:p-4 border-b border-gray-200 flex flex-col sm:flex-row items-start sm:items-center gap-2">
-          <h2 className="text-lg sm:text-xl font-bold flex-1">{title}</h2>
+          <h2 id="weapon-selection-title" className="text-lg sm:text-xl font-bold flex-1">{title}</h2>
           <Button
             variant="destructive"
             onClick={() => {
@@ -492,6 +495,7 @@ export function WeaponSelectionModal({ isOpen, onClose, onSelect, title, weaponS
           {/* Removed ScrollArea and ScrollBar as InfiniteScroll handles its own scroll container */}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

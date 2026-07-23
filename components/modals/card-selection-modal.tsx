@@ -48,7 +48,7 @@ export function CardSelectionModal({
     actions,
     loading,
     error,
-  } = useCardFiltering(initialTab)
+  } = useCardFiltering(initialTab, isOpen)
 
 
   // 本地搜索词（modal 关闭后自动清空）

@@ -1,9 +1,11 @@
 "use client"
 
 import React, { useState, useRef, useEffect } from "react"
+import { createPortal } from "react-dom"
 import ReactCrop, { centerCrop, makeAspectCrop, type Crop } from "react-image-crop"
 import "react-image-crop/dist/ReactCrop.css"
 import { toast } from "@/hooks/use-toast"
+import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock"
 
 interface ImageUploadCropProps {
     /** 当前图片的 base64 字符串 */
@@ -51,6 +53,7 @@ export const ImageUploadCrop: React.FC<ImageUploadCropProps> = ({
     const [crop, setCrop] = useState<Crop>()
     const [completedCrop, setCompletedCrop] = useState<Crop | null>(null)
     const imgRef = useRef<HTMLImageElement>(null)
+    useBodyScrollLock(isCropModalOpen)
 
     // 生成唯一的输入框 ID
     const uniqueInputId = inputId || `image-upload-${Math.random().toString(36).substr(2, 9)}`
@@ -233,13 +236,13 @@ export const ImageUploadCrop: React.FC<ImageUploadCropProps> = ({
             </div>
 
             {/* 图片裁剪模态框 */}
-            {isCropModalOpen && (
+            {isCropModalOpen && createPortal(
                 <div
-                    className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50"
+                    className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-[90]"
                     onClick={() => setIsCropModalOpen(false)} // 点击蒙版关闭
                 >
-                    <div className="bg-white p-4 rounded-lg max-w-lg w-full" onClick={(e) => e.stopPropagation()}>
-                        <h2 className="text-lg font-bold mb-4">裁剪图片</h2>
+                    <div role="dialog" aria-modal="true" aria-labelledby="image-crop-title" className="bg-white p-4 rounded-lg max-w-lg w-full" onClick={(e) => e.stopPropagation()}>
+                        <h2 id="image-crop-title" className="text-lg font-bold mb-4">裁剪图片</h2>
                         {sourceImage ? (
                             <ReactCrop
                                 crop={crop}
@@ -274,7 +277,8 @@ export const ImageUploadCrop: React.FC<ImageUploadCropProps> = ({
                             </button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body,
             )}
         </>
     )

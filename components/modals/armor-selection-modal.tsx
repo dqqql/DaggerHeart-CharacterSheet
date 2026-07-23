@@ -1,10 +1,12 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import { createPortal } from "react-dom"
 
 import { Button } from "@/components/ui/button"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { type ArmorItem, armorItems } from "@/data/list/armor"
+import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock"
 
 interface ArmorModalProps {
   isOpen: boolean
@@ -31,6 +33,7 @@ export function ArmorSelectionModal({
   onSelect,
   title,
 }: ArmorModalProps) {
+  useBodyScrollLock(isOpen)
   const [customName, setCustomName] = useState("")
   const [customLevel, setCustomLevel] = useState<Level | "">("")
   const [customDamageThreshold1, setCustomDamageThreshold1] = useState("")
@@ -148,13 +151,13 @@ export function ArmorSelectionModal({
     setCustomDescription("")
   }
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+  return createPortal(
+    <div className="fixed inset-0 z-[90] flex items-center justify-center">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
-      <div className="relative flex max-h-[95vh] w-full max-w-6xl flex-col overflow-hidden rounded-lg bg-white shadow-lg sm:max-h-[85vh]">
+      <div role="dialog" aria-modal="true" aria-labelledby="armor-selection-title" className="relative flex max-h-[95vh] w-full max-w-6xl flex-col overflow-hidden rounded-lg bg-white shadow-lg sm:max-h-[85vh]">
         <div className="flex flex-col items-start gap-3 border-b border-gray-200 p-3 sm:flex-row sm:items-center sm:p-4">
-          <h2 className="text-lg font-bold sm:text-xl">{title}</h2>
+          <h2 id="armor-selection-title" className="text-lg font-bold sm:text-xl">{title}</h2>
           <Button
             variant="destructive"
             onClick={handleClearSelection}
@@ -389,6 +392,7 @@ export function ArmorSelectionModal({
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }
