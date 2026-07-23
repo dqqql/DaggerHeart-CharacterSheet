@@ -105,11 +105,20 @@ body:has(main[data-ruleset="rhodes-island"])::before {
 
 body:has(main[data-ruleset="rhodes-island"])::after {
   z-index: -1;
-  opacity: 0.78;
+  opacity: 0.9;
   background:
     radial-gradient(circle at 8% 85%, rgb(35 185 232 / 28%) 0 1px, transparent 1.8px) 0 0 / 18px 18px,
+    linear-gradient(90deg, rgb(35 185 232 / 11%) 1px, transparent 1px) 0 0 / 46px 46px,
+    linear-gradient(rgb(35 185 232 / 9%) 1px, transparent 1px) 0 0 / 46px 46px,
+    radial-gradient(ellipse at 90% 48%, rgb(35 185 232 / 12%), transparent 54%),
     linear-gradient(90deg, transparent 0 72%, rgb(35 185 232 / 7%) 72% 72.15%, transparent 72.15%);
-  mask-image: radial-gradient(circle at 8% 85%, #000, transparent 42%);
+  filter: drop-shadow(0 0 7px rgb(35 185 232 / 24%));
+  -webkit-mask-image:
+    radial-gradient(circle at 8% 85%, #000, transparent 42%),
+    radial-gradient(ellipse at 90% 48%, #000 0 20%, transparent 58%);
+  mask-image:
+    radial-gradient(circle at 8% 85%, #000, transparent 42%),
+    radial-gradient(ellipse at 90% 48%, #000 0 20%, transparent 58%);
 }
 
 .rhodes-island-shell::before,
