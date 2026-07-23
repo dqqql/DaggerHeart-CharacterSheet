@@ -13,7 +13,7 @@ describe("ProfessionDescriptionSection", () => {
     )
 
     const professionFeature = screen.getByText("一鼓作气：职业特性内容。")
-    const divider = screen.getByText("——以下为子职特性——").closest("[data-subclass-feature-divider]")
+    const divider = screen.getByText("以下为子职特性").closest("[data-subclass-feature-divider]")
     const subclassFeature = screen.getByText("冲锋陷阵+：子职特性内容。")
 
     expect(divider).not.toBeNull()

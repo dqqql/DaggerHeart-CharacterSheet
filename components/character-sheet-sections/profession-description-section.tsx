@@ -135,7 +135,7 @@ const ProfessionDescriptionSection: React.FC<ProfessionDescriptionSectionProps> 
                         className="my-2 flex w-full items-center gap-2 text-center text-[10px] font-bold leading-none text-cyan-700"
                     >
                         <span aria-hidden="true" className="h-px flex-1 bg-cyan-600" />
-                        <span className="shrink-0">——以下为子职特性——</span>
+                        <span className="shrink-0">以下为子职特性</span>
                         <span aria-hidden="true" className="h-px flex-1 bg-cyan-600" />
                     </div>
                     {renderDescription(subclassFeatureDescription, 'subclass')}
