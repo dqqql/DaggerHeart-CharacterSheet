@@ -2,6 +2,7 @@
 
 import type React from "react"
 import { useState, useRef, memo, useCallback } from "react"
+import { createPortal } from "react-dom"
 import { getCardTypeName, convertToStandardCard } from "@/card"
 import { createEmptyCard, StandardCard, isEmptyCard } from "@/card/card-types"
 import { isVariantCard, getVariantRealType } from "@/card/card-types"
@@ -217,10 +218,11 @@ function Card({
       )}
 
       {/* Hover preview */}
-      {hoveredCard === index && card?.name && (
-        <div className="absolute z-50 pointer-events-none" style={getPreviewPosition(index)}>
+      {hoveredCard === index && card?.name && typeof document !== "undefined" && createPortal(
+        <div className="pointer-events-none" style={getPreviewPosition(index)}>
           <CardHoverPreview card={standardCard} isTextMode={isTextMode} />
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   )

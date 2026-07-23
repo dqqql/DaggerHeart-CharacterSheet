@@ -591,6 +591,7 @@ export default function CharacterSheetPageTwo() {
 
       <div className="w-full max-w-[210mm] mx-auto">
         <div
+          data-ri-sheet-page="cards"
           className="a4-page p-2 bg-white text-gray-800 shadow-lg print:shadow-none rounded-md"
           style={{ width: "210mm" }}
         >

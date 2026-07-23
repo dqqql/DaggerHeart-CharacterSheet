@@ -245,7 +245,7 @@ export function CardDrawer({
   return (
     <>
       {(finalIsOpen || isClosing) && (
-        <div className="fixed inset-0 z-50 flex items-end">
+        <div data-ri-card-drawer className="fixed inset-0 z-50 flex items-end">
           <div
             className={`fixed inset-0 bg-black transition-opacity duration-300 ${isClosing ? "bg-opacity-0" : "bg-opacity-50"}`}
             onClick={handleClose}

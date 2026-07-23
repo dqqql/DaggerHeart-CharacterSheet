@@ -37,6 +37,7 @@ export function PageDisplay({
   onSwitchToNextPage,
 }: PageDisplayProps) {
   const showPageSettings = formData.ruleSetId !== "rhodes-island"
+  const isRhodesIsland = formData.ruleSetId === "rhodes-island"
   
   // 生成可见的tab配置
   const getVisibleTabs = () => {
@@ -47,7 +48,7 @@ export function PageDisplay({
   }
 
   return (
-    <div className={`relative w-full mx-auto transition-all duration-300 ${isDualPageMode && !isMobile ? 'md:max-w-[425mm]' : 'md:max-w-[210mm]'}`}>
+    <div data-ri-page-display className={`relative w-full mx-auto transition-all duration-300 ${isDualPageMode && !isMobile ? 'md:max-w-[425mm]' : 'md:max-w-[210mm]'}`}>
       
       {/* 双页模式布局 */}
       {isDualPageMode && !isMobile ? (
@@ -57,7 +58,7 @@ export function PageDisplay({
           <div className="w-[210mm]">
             <Tabs value={leftTabValue} onValueChange={onSetLeftTab} className="w-[210mm]">
               {/* 左页Tab导航 */}
-              <div className="w-full overflow-x-auto tabs-container">
+              <div data-ri-tabs className="w-full overflow-x-auto tabs-container">
                 <TabsList className="grid w-full transition-all duration-300 ease-in-out h-10"
                   style={{
                     gridTemplateColumns: `repeat(${getVisibleTabs().length}, 1fr)${showPageSettings ? " auto" : ""}`
@@ -99,7 +100,7 @@ export function PageDisplay({
           <div className="w-[210mm]">
             <Tabs value={rightTabValue} onValueChange={onSetRightTab} className="w-[210mm]">
               {/* 右页Tab导航 */}
-              <div className="w-full overflow-x-auto tabs-container">
+              <div data-ri-tabs className="w-full overflow-x-auto tabs-container">
                 <TabsList className="grid w-full transition-all duration-300 ease-in-out h-10"
                   style={{
                     gridTemplateColumns: `repeat(${getVisibleTabs().length}, 1fr)${showPageSettings ? " auto" : ""}`
@@ -142,7 +143,7 @@ export function PageDisplay({
         /* 单页模式布局（原有布局） */
         <Tabs value={currentTabValue} onValueChange={onSetCurrentTab} className="w-[210mm]">
           {/* 支持移动端滚动的Tab容器 */}
-          <div className="w-full overflow-x-auto tabs-container">
+          <div data-ri-tabs className="w-full overflow-x-auto tabs-container">
             <TabsList className={`grid w-full transition-all duration-300 ease-in-out ${isMobile ? 'h-12' : 'h-10'}`}
               style={{
                 gridTemplateColumns: `repeat(${getVisibleTabs().length}, 1fr)${showPageSettings ? " auto" : ""}`
@@ -183,9 +184,19 @@ export function PageDisplay({
       {/* 左侧切换区域 - 仅桌面端单页模式显示 */}
       {!isDualPageMode && (
         <div
+          data-ri-page-arrow="previous"
+          role={isRhodesIsland ? "button" : undefined}
+          tabIndex={isRhodesIsland ? 0 : undefined}
+          aria-label={isRhodesIsland ? "上一页" : undefined}
           className="print:hidden hidden md:block absolute -left-20 w-16 flex items-center justify-center cursor-pointer group z-20"
           style={{ top: '48px', bottom: 0 }}
           onClick={onSwitchToPrevPage}
+          onKeyDown={isRhodesIsland ? (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault()
+              onSwitchToPrevPage()
+            }
+          } : undefined}
           title="上一页 (←) - 循环切换"
         >
           {/* 悬停时显示的背景 */}
@@ -202,9 +213,19 @@ export function PageDisplay({
       {/* 右侧切换区域 - 仅桌面端单页模式显示 */}
       {!isDualPageMode && (
         <div
+          data-ri-page-arrow="next"
+          role={isRhodesIsland ? "button" : undefined}
+          tabIndex={isRhodesIsland ? 0 : undefined}
+          aria-label={isRhodesIsland ? "下一页" : undefined}
           className="print:hidden hidden md:block absolute -right-20 w-16 flex items-center justify-center cursor-pointer group z-20"
           style={{ top: '48px', bottom: 0 }}
           onClick={onSwitchToNextPage}
+          onKeyDown={isRhodesIsland ? (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault()
+              onSwitchToNextPage()
+            }
+          } : undefined}
           title="下一页 (→) - 循环切换"
         >
           {/* 悬停时显示的背景 */}

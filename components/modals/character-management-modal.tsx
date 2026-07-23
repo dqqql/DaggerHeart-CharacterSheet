@@ -128,15 +128,20 @@ export function CharacterManagementModal({
 
     return (
         <div
+            data-ri-archive-overlay
             className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
             onClick={onClose}
         >
             <div
+                data-ri-archive-manager
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="character-management-title"
                 className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] flex flex-col"
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-semibold">存档管理</h2>
+                    <h2 id="character-management-title" className="text-2xl font-semibold">存档管理</h2>
                     <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
                         ✕
                     </button>
@@ -176,6 +181,7 @@ export function CharacterManagementModal({
                             return (
                                 <div
                                     key={character.id}
+                                    data-ri-archive-entry={currentCharacterId === character.id ? "active" : "idle"}
                                     className={`flex items-center justify-between p-3 rounded-lg border transition-colors ${currentCharacterId === character.id
                                         ? 'bg-blue-100 border-blue-300'
                                         : 'bg-gray-50 hover:bg-gray-100 border-gray-200'

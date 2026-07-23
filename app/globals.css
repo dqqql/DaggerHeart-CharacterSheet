@@ -54,74 +54,654 @@ html {
   }
 }
 
-/* 共赴明日：罗德岛旅记。仅在对应规则外层生效，不改动原版外观。 */
+/*
+ * 共赴明日：罗德岛旅记 / 战术终端方案 B。
+ * 所有页面内样式限定于规则外壳；浮层样式通过 :has() 只在该外壳存在时启用。
+ */
 .rhodes-island-shell {
-  --ri-graphite: #222a2e;
-  --ri-steel: #dfe5e6;
-  --ri-cyan: #168aa3;
-  --ri-warning: #e4b928;
-  color: #20282c;
-  background:
-    linear-gradient(135deg, rgba(22, 138, 163, 0.07) 0 1px, transparent 1px 18px),
-    #eef1f1;
+  --ri-cyan: #23b9e8;
+  --ri-ink: #080c0e;
+  --ri-ink-2: #101619;
+  --ri-ink-3: #172025;
+  --ri-panel: #202a2f;
+  --ri-paper: #e8eceb;
+  --ri-paper-bright: #f6f8f7;
+  --ri-line: #879397;
+  --ri-line-soft: #b5bec1;
+  --ri-text: #171c1f;
+  --ri-muted: #626d72;
+  --ri-warning: #f2c94c;
+  --ri-fast: 140ms;
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  color: #e8eef0;
+  background: transparent;
+  font-family: "Microsoft YaHei UI", "Microsoft YaHei", Arial, sans-serif;
 }
 
-.rhodes-island-shell .a4-page {
-  border: 1px solid #aeb9bc;
-  border-top: 4px solid var(--ri-cyan);
-  background-color: #f7f8f7 !important;
-  box-shadow: 0 18px 44px rgba(25, 38, 43, 0.16);
+body:has(main[data-ruleset="rhodes-island"]) {
+  color: #e8eef0;
+  background-color: #0d1418;
 }
 
-.rhodes-island-shell .bg-gray-800 {
-  background-color: var(--ri-graphite) !important;
-}
-
-.rhodes-island-shell .bg-gray-600 {
-  background-color: #536166 !important;
-}
-
-.rhodes-island-shell button:focus-visible,
-.rhodes-island-shell [role="button"]:focus-visible {
-  outline: 3px solid var(--ri-warning);
-  outline-offset: 2px;
-}
-
-.rhodes-island-shell input:focus-visible {
-  border-color: var(--ri-cyan);
-  box-shadow: 0 0 0 1px var(--ri-cyan);
-  outline: none;
-}
-
-.rhodes-island-shell [data-radix-collection-item][data-state="active"] {
-  box-shadow: inset 0 -3px 0 var(--ri-cyan);
-}
-
-.rhodes-island-shell .a4-page > .rounded-t-md {
-  border-radius: 0;
-}
-
-.rhodes-island-shell .a4-page > .rounded-t-md::after {
+body:has(main[data-ruleset="rhodes-island"])::before,
+body:has(main[data-ruleset="rhodes-island"])::after {
   content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 0;
-  height: 0;
-  border-top: 10px solid #f7f8f7;
-  border-left: 10px solid transparent;
+  position: fixed;
+  inset: 0;
+  z-index: -2;
   pointer-events: none;
 }
 
+body:has(main[data-ruleset="rhodes-island"])::before {
+  background:
+    linear-gradient(90deg, rgb(35 185 232 / 6%) 1px, transparent 1px),
+    linear-gradient(rgb(35 185 232 / 6%) 1px, transparent 1px),
+    repeating-linear-gradient(135deg, transparent 0 82px, rgb(255 255 255 / 3%) 82px 83px),
+    #0d1418;
+  background-size: 42px 42px, 42px 42px, auto, auto;
+}
+
+body:has(main[data-ruleset="rhodes-island"])::after {
+  z-index: -1;
+  opacity: 0.78;
+  background:
+    radial-gradient(circle at 8% 85%, rgb(35 185 232 / 28%) 0 1px, transparent 1.8px) 0 0 / 18px 18px,
+    linear-gradient(90deg, transparent 0 72%, rgb(35 185 232 / 7%) 72% 72.15%, transparent 72.15%);
+  mask-image: radial-gradient(circle at 8% 85%, #000, transparent 42%);
+}
+
+.rhodes-island-shell::before,
+.rhodes-island-shell::after {
+  position: fixed;
+  top: 50%;
+  z-index: -1;
+  color: rgb(35 185 232 / 76%);
+  font-family: "Bahnschrift Condensed", "Arial Narrow", "Microsoft YaHei UI", sans-serif;
+  font-size: clamp(30px, 3.8vh, 38px);
+  font-weight: 900;
+  line-height: 1.55;
+  letter-spacing: .1em;
+  text-shadow:
+    0 0 12px rgb(35 185 232 / 30%),
+    0 0 32px rgb(35 185 232 / 18%);
+  white-space: pre;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  pointer-events: none;
+}
+
+.rhodes-island-shell::before {
+  content: "TOWARD\A  TOMORROW";
+  left: clamp(24px, 4vw, 76px);
+  writing-mode: vertical-lr;
+  transform: translateY(-50%);
+}
+
+.rhodes-island-shell::after {
+  content: "TRAVELOGUE\A     OF\A RHODE ISLAND";
+  right: clamp(24px, 4vw, 76px);
+  transform: translateY(-50%);
+}
+
+@media (max-width: 1200px) {
+  .rhodes-island-shell::before,
+  .rhodes-island-shell::after {
+    display: none;
+  }
+}
+
+/* Utility controls and tabs */
+.rhodes-island-shell [data-ri-utility-bar] {
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.rhodes-island-shell [data-ri-utility-bar]::before {
+  content: "// PERSONNEL FILE ACCESS";
+  position: absolute;
+  top: 50%;
+  left: 2px;
+  color: rgb(232 238 240 / 34%);
+  font: 700 8px/1 "Bahnschrift Condensed", "Arial Narrow", sans-serif;
+  letter-spacing: 0.16em;
+  transform: translateY(-50%);
+}
+
+.rhodes-island-shell [data-ri-utility-bar] button,
+.rhodes-island-shell [data-ri-utility-bar] h1 {
+  min-height: 32px;
+  border: 1px solid rgb(255 255 255 / 18%) !important;
+  border-radius: 0 !important;
+  color: #edf3f5 !important;
+  background: rgb(16 22 25 / 90%) !important;
+  box-shadow: 0 6px 20px rgb(0 0 0 / 25%);
+  clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 7px 100%, 0 calc(100% - 7px));
+}
+
+.rhodes-island-shell [data-ri-utility-bar] h1 {
+  position: relative;
+  min-width: 112px;
+  padding: 4px 24px 4px 12px;
+  text-align: center;
+  font-family: "Bahnschrift Condensed", "Arial Narrow", sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.rhodes-island-shell [data-ri-utility-bar] h1::after {
+  content: "01";
+  position: absolute;
+  top: 6px;
+  right: 7px;
+  color: var(--ri-cyan);
+  font-size: 8px;
+  letter-spacing: .08em;
+}
+
+.rhodes-island-shell [data-ri-utility-bar] button:hover {
+  border-color: var(--ri-cyan) !important;
+  color: #fff !important;
+  background: rgb(35 185 232 / 10%) !important;
+  transform: translateY(-1px);
+}
+
+.rhodes-island-shell [data-ri-tabs] {
+  border: 1px solid rgb(255 255 255 / 10%);
+  background: rgb(255 255 255 / 4%);
+}
+
+.rhodes-island-shell [data-ri-tabs] [role="tablist"] {
+  border-radius: 0;
+  color: rgb(255 255 255 / 58%);
+  background: transparent;
+}
+
+.rhodes-island-shell [data-ri-tabs] [role="tab"] {
+  position: relative;
+  border-radius: 0;
+  color: rgb(255 255 255 / 58%);
+  background: transparent;
+  box-shadow: none;
+}
+
+.rhodes-island-shell [data-ri-tabs] [role="tab"]::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 3px;
+  background: var(--ri-cyan);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 360ms cubic-bezier(.2, .8, .2, 1);
+}
+
+.rhodes-island-shell [data-ri-tabs] [role="tab"]:hover {
+  color: #fff;
+  background: rgb(255 255 255 / 4%);
+}
+
+.rhodes-island-shell [data-ri-tabs] [role="tab"][data-state="active"] {
+  color: #fff;
+  background: rgb(255 255 255 / 8%);
+  font-weight: 700;
+}
+
+.rhodes-island-shell [data-ri-tabs] [role="tab"][data-state="active"]::after {
+  transform: scaleX(1);
+}
+
+/* A4 paper */
+.rhodes-island-shell .a4-page {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--ri-cyan);
+  border-radius: 0 !important;
+  color: var(--ri-text);
+  background-color: var(--ri-paper) !important;
+  background-image:
+    linear-gradient(90deg, rgb(16 25 29 / 7%) 1px, transparent 1px),
+    linear-gradient(rgb(16 25 29 / 4%) 1px, transparent 1px) !important;
+  background-size: 32px 32px !important;
+  box-shadow:
+    0 0 0 4px rgb(35 185 232 / 7%),
+    0 28px 90px rgb(0 0 0 / 58%) !important;
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+}
+
+.rhodes-island-shell .a4-page[data-ri-sheet-page="cards"] {
+  background-image: none !important;
+}
+
+.rhodes-island-shell .a4-page::after {
+  content: "RHODES ISLAND // PERSONNEL RECORD";
+  position: absolute;
+  right: -112px;
+  bottom: 136px;
+  color: rgb(12 17 19 / 11%);
+  font: 700 9px/1 "Bahnschrift Condensed", "Arial Narrow", sans-serif;
+  letter-spacing: .2em;
+  transform: rotate(-90deg);
+  pointer-events: none;
+}
+
+.rhodes-island-shell .a4-page > * {
+  position: relative;
+  z-index: 1;
+}
+
+.rhodes-island-shell .a4-page > .bg-gray-800,
+.rhodes-island-shell .a4-page > [class*="bg-gray-800"] {
+  border-left: 6px solid var(--ri-cyan);
+  background:
+    linear-gradient(90deg, rgb(35 185 232 / 8%) 1px, transparent 1px),
+    linear-gradient(#101619 1px, transparent 1px),
+    var(--ri-ink-2) !important;
+  background-size: 26px 100%, 100% 26px, auto !important;
+}
+
+.rhodes-island-shell .a4-page .bg-gray-800 {
+  border-left: 3px solid var(--ri-cyan);
+  border-radius: 0 !important;
+  background-color: var(--ri-ink-3) !important;
+}
+
+.rhodes-island-shell .a4-page .bg-gray-600 {
+  border-radius: 0 !important;
+  background-color: #46545a !important;
+}
+
+.rhodes-island-shell .a4-page h3,
+.rhodes-island-shell .a4-page h4 {
+  letter-spacing: .025em;
+}
+
+.rhodes-island-shell .a4-page h3:not(.bg-gray-800) {
+  text-decoration-color: var(--ri-cyan);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+.rhodes-island-shell .a4-page .rounded,
+.rhodes-island-shell .a4-page .rounded-md,
+.rhodes-island-shell .a4-page .rounded-lg,
+.rhodes-island-shell .a4-page .rounded-xl,
+.rhodes-island-shell .a4-page .rounded-t-md,
+.rhodes-island-shell .a4-page .rounded-t-lg {
+  border-radius: 0 !important;
+}
+
+.rhodes-island-shell .a4-page .border-gray-300,
+.rhodes-island-shell .a4-page .border-gray-400,
+.rhodes-island-shell .a4-page .border-gray-800 {
+  border-color: var(--ri-line) !important;
+}
+
+/* Form controls and resource cells */
+.rhodes-island-shell .a4-page input:not([type="checkbox"]):not([type="radio"]),
+.rhodes-island-shell .a4-page textarea,
+.rhodes-island-shell .a4-page select,
+.rhodes-island-shell .a4-page [role="combobox"] {
+  border-radius: 0 !important;
+  border-color: var(--ri-line) !important;
+  color: #1b2327 !important;
+  background-color: rgb(250 252 251 / 88%) !important;
+  transition:
+    border-color var(--ri-fast),
+    box-shadow var(--ri-fast),
+    background-color var(--ri-fast);
+}
+
+.rhodes-island-shell .a4-page input:hover,
+.rhodes-island-shell .a4-page textarea:hover,
+.rhodes-island-shell .a4-page select:hover,
+.rhodes-island-shell .a4-page [role="combobox"]:hover {
+  border-color: #5f6d72 !important;
+  background-color: #fff !important;
+}
+
+.rhodes-island-shell .a4-page input::placeholder,
+.rhodes-island-shell .a4-page textarea::placeholder {
+  color: #687378;
+  opacity: 1;
+}
+
+.rhodes-island-shell .a4-page input[type="checkbox"],
+.rhodes-island-shell .a4-page input[type="radio"],
+.rhodes-island-shell .a4-page [class*="w-3"][class*="h-3"],
+.rhodes-island-shell .a4-page [class*="w-4"][class*="h-4"],
+.rhodes-island-shell .a4-page [class*="w-5"][class*="h-5"] {
+  border-radius: 0;
+}
+
+.rhodes-island-shell .a4-page input[type="checkbox"]:checked,
+.rhodes-island-shell .a4-page input[type="radio"]:checked,
+.rhodes-island-shell .a4-page .bg-gray-800.border-gray-800 {
+  box-shadow: inset 0 0 0 2px var(--ri-paper-bright);
+}
+
+.rhodes-island-shell button,
+.rhodes-island-shell [role="button"] {
+  transition:
+    color var(--ri-fast),
+    border-color var(--ri-fast),
+    background-color var(--ri-fast),
+    opacity var(--ri-fast),
+    transform var(--ri-fast);
+}
+
+.rhodes-island-shell button:active,
+.rhodes-island-shell [role="button"]:active {
+  transform: translateY(1px);
+}
+
+.rhodes-island-shell button:disabled,
+.rhodes-island-shell [aria-disabled="true"],
+.rhodes-island-shell [data-disabled] {
+  cursor: not-allowed !important;
+  opacity: .42 !important;
+  filter: grayscale(.75);
+}
+
+/* Page arrows */
+.rhodes-island-shell [data-ri-page-arrow] > div:first-child {
+  border-radius: 0;
+  background: transparent !important;
+}
+
+.rhodes-island-shell [data-ri-page-arrow] > div:last-child {
+  border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: 0;
+  color: rgb(255 255 255 / 58%);
+  background: rgb(16 22 25 / 88%);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 28%);
+  clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 7px 100%, 0 calc(100% - 7px));
+}
+
+.rhodes-island-shell [data-ri-page-arrow] svg {
+  color: currentColor;
+}
+
+.rhodes-island-shell [data-ri-page-arrow]:hover > div:last-child {
+  border-color: var(--ri-cyan);
+  color: #fff;
+  transform: translateX(3px);
+}
+
+.rhodes-island-shell [data-ri-page-arrow="previous"]:hover > div:last-child {
+  transform: translateX(-3px);
+}
+
+/* Card display mode */
+.rhodes-island-shell [data-ri-mode-card] {
+  border: 1px solid rgb(255 255 255 / 16%) !important;
+  border-radius: 0 !important;
+  color: #dfe7e9;
+  background: rgb(16 22 25 / 90%) !important;
+  box-shadow: 0 10px 28px rgb(0 0 0 / 25%);
+  clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px));
+}
+
+.rhodes-island-shell [data-ri-mode-card] .text-slate-800 {
+  color: #edf3f5 !important;
+}
+
+.rhodes-island-shell [data-ri-mode-card] .text-slate-500 {
+  color: #9eaaae !important;
+}
+
+.rhodes-island-shell [data-ri-mode-toggle] {
+  border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: 0 !important;
+  background: #11191d !important;
+  box-shadow: none;
+}
+
+.rhodes-island-shell [data-ri-mode-toggle] > div > div {
+  border-radius: 0 !important;
+  color: #9ba8ad !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.rhodes-island-shell [data-ri-mode-toggle] > div > div.bg-white {
+  color: #071015 !important;
+  background: var(--ri-cyan) !important;
+  font-weight: 800;
+}
+
+/* Bottom dock */
+.rhodes-island-shell [data-ri-bottom-dock] {
+  color: #eff5f7;
+}
+
+.rhodes-island-shell [data-ri-dock-panel] {
+  position: relative;
+  border: 1px solid rgb(255 255 255 / 18%) !important;
+  border-radius: 0 !important;
+  background: rgb(10 15 18 / 90%) !important;
+  box-shadow: 0 14px 36px rgb(0 0 0 / 42%) !important;
+  backdrop-filter: blur(16px) saturate(130%) !important;
+  clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px));
+}
+
+.rhodes-island-shell [data-ri-dock-panel]::before {
+  content: "// QUICK ACCESS";
+  position: absolute;
+  bottom: calc(100% + 5px);
+  left: 0;
+  color: rgb(255 255 255 / 34%);
+  font: 700 8px/1 "Bahnschrift Condensed", "Arial Narrow", sans-serif;
+  letter-spacing: .16em;
+}
+
+.rhodes-island-shell [data-ri-dock-panel] button {
+  border: 1px solid transparent;
+  border-radius: 0 !important;
+  color: #eef4f6;
+  background: #192126;
+}
+
+.rhodes-island-shell [data-ri-dock-panel] button:hover {
+  border-color: var(--ri-cyan);
+  color: #fff;
+  background: #202b30;
+  transform: translateY(-2px);
+}
+
+/* Drawer remains inside the app shell. */
+.rhodes-island-shell [data-ri-card-drawer] > div:first-child {
+  background: rgb(3 7 9 / 76%);
+  backdrop-filter: blur(2px);
+}
+
+.rhodes-island-shell [data-ri-card-drawer] .card-drawer-content {
+  border-top: 2px solid var(--ri-cyan);
+  border-radius: 0;
+  color: #e6edef;
+  background:
+    linear-gradient(90deg, rgb(35 185 232 / 4%) 1px, transparent 1px),
+    #10171b;
+  background-size: 42px 100%;
+  box-shadow: 0 -18px 54px rgb(0 0 0 / 48%);
+}
+
+.rhodes-island-shell [data-ri-card-drawer] .card-drawer-content button {
+  border-radius: 0;
+}
+
+/* Keyboard focus is warning yellow and intentionally wins over cyan input focus. */
+.rhodes-island-shell :where(button, input, textarea, select, [role="button"], [role="tab"], [role="combobox"]):focus-visible,
+body:has(main[data-ruleset="rhodes-island"]) :where([role="dialog"], [role="menu"], [role="menuitem"], [role="listbox"], [role="option"], [role="tooltip"], button, input, textarea, select):focus-visible {
+  outline: 3px solid var(--ri-warning, #f2c94c) !important;
+  outline-offset: 2px !important;
+  box-shadow: none !important;
+}
+
+.rhodes-island-shell .a4-page :where(input, textarea, select, [role="combobox"]):focus:not(:focus-visible) {
+  outline: none;
+  border-color: var(--ri-cyan) !important;
+  box-shadow: inset 3px 0 0 var(--ri-cyan) !important;
+}
+
+.rhodes-island-shell .a4-page [data-ri-attribute-input]:focus-visible {
+  outline-width: 2px !important;
+  outline-offset: -2px !important;
+}
+
+/* Portaled Radix surfaces */
+body:has(main[data-ruleset="rhodes-island"]) [data-radix-popper-content-wrapper] > div,
+body:has(main[data-ruleset="rhodes-island"]) [role="dialog"],
+body:has(main[data-ruleset="rhodes-island"]) [role="menu"],
+body:has(main[data-ruleset="rhodes-island"]) [role="listbox"],
+body:has(main[data-ruleset="rhodes-island"]) [role="tooltip"] {
+  --background: 198 21% 9%;
+  --foreground: 195 20% 94%;
+  --popover: 198 21% 9%;
+  --popover-foreground: 195 20% 94%;
+  --accent: 194 31% 18%;
+  --accent-foreground: 195 20% 98%;
+  --border: 195 17% 29%;
+  border-color: #405158 !important;
+  border-radius: 0 !important;
+  color: #edf3f5;
+  background-color: #10171b !important;
+  background-image: linear-gradient(90deg, rgb(35 185 232 / 5%) 1px, transparent 1px);
+  background-size: 32px 100%;
+  box-shadow: 0 18px 56px rgb(0 0 0 / 52%);
+  clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px));
+}
+
+body:has(main[data-ruleset="rhodes-island"]) [role="dialog"] {
+  border-top: 3px solid var(--ri-cyan, #23b9e8) !important;
+}
+
+body:has(main[data-ruleset="rhodes-island"]) :where([role="menuitem"], [role="option"], [data-radix-collection-item]) {
+  border-radius: 0 !important;
+}
+
+body:has(main[data-ruleset="rhodes-island"]) :where([role="menuitem"], [role="option"], [data-radix-collection-item]):is(:hover, :focus, [data-highlighted]) {
+  color: #fff !important;
+  background: #1c2b31 !important;
+  box-shadow: inset 3px 0 0 var(--ri-cyan, #23b9e8);
+}
+
+body:has(main[data-ruleset="rhodes-island"]) [data-state="checked"],
+body:has(main[data-ruleset="rhodes-island"]) [data-state="active"] {
+  text-decoration-color: var(--ri-cyan, #23b9e8);
+}
+
+/* Portaled archive manager */
+body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-overlay] {
+  background: rgb(3 7 9 / 72%) !important;
+  backdrop-filter: blur(3px);
+}
+
+body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] {
+  border: 1px solid #405158 !important;
+  border-top: 3px solid var(--ri-cyan, #23b9e8) !important;
+  border-radius: 0 !important;
+  color: #dce5e8 !important;
+  background:
+    linear-gradient(90deg, rgb(35 185 232 / 5%) 1px, transparent 1px),
+    #10171b !important;
+  background-size: 42px 100% !important;
+  box-shadow: 0 24px 80px rgb(0 0 0 / 58%) !important;
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+}
+
+body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] h2 {
+  color: #f2f7f8;
+  font-family: "Bahnschrift Condensed", "Arial Narrow", sans-serif;
+  font-weight: 800;
+  letter-spacing: .06em;
+}
+
+body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] h3 {
+  color: #b9c7cb;
+}
+
+body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] .text-gray-500,
+body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] .text-gray-600,
+body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] .text-gray-700 {
+  color: #9eaaae !important;
+}
+
+body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] .bg-gray-100,
+body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] .bg-gray-200 {
+  color: #c6d1d4 !important;
+  background: #1b252a !important;
+}
+
+body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] [data-ri-archive-entry] {
+  border-color: #35454c !important;
+  border-radius: 0 !important;
+  color: #dce5e8;
+  background: rgb(24 33 38 / 88%) !important;
+}
+
+body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] [data-ri-archive-entry="active"] {
+  border-color: var(--ri-cyan, #23b9e8) !important;
+  background: rgb(35 185 232 / 10%) !important;
+  box-shadow: inset 4px 0 0 var(--ri-cyan, #23b9e8);
+}
+
+body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] [data-ri-archive-entry] > div > div:first-child {
+  border: 1px solid #405158;
+  border-radius: 0 !important;
+}
+
+body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] [class*="border-dashed"] {
+  border-color: rgb(35 185 232 / 48%) !important;
+  border-radius: 0 !important;
+  color: #dce5e8;
+  background: rgb(35 185 232 / 5%) !important;
+}
+
+body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] [class*="border-dashed"]:hover {
+  border-color: var(--ri-cyan, #23b9e8) !important;
+  background: rgb(35 185 232 / 10%) !important;
+}
+
+body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] button {
+  border-color: #405158 !important;
+  border-radius: 0 !important;
+  color: #dce5e8 !important;
+  background: #192227 !important;
+  box-shadow: none !important;
+}
+
+body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] button:hover {
+  border-color: var(--ri-cyan, #23b9e8) !important;
+  color: #fff !important;
+  background: #202d33 !important;
+}
+
+body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] button:disabled {
+  opacity: .38 !important;
+}
+
+body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] .border-t {
+  border-color: #35454c !important;
+}
+
 /*
- * 角色纸以 A4 实际尺寸排版。小屏不压缩可点击区域或缩小正文，而是在规则
- * 外壳内提供明确的横向浏览区域；底部通用操作栏仍固定在视口中。
+ * A4 remains 210 mm wide on phones. The ruleset shell is the deliberate horizontal
+ * viewport; controls stay at their original touch sizes.
  */
 @media (max-width: 800px) {
-  .rhodes-island-shell {
+  body:has(main[data-ruleset="rhodes-island"]) {
     overflow-x: auto;
+  }
+
+  .rhodes-island-shell {
+    min-width: 210mm;
+    overflow: visible;
     overscroll-behavior-inline: contain;
-    scrollbar-color: var(--ri-cyan) #d5dddf;
+    scrollbar-color: var(--ri-cyan) #172025;
     scrollbar-width: thin;
     -webkit-overflow-scrolling: touch;
   }
@@ -130,31 +710,90 @@ html {
     height: 8px;
   }
 
+  .rhodes-island-shell::-webkit-scrollbar-track {
+    background: #172025;
+  }
+
   .rhodes-island-shell::-webkit-scrollbar-thumb {
     background: var(--ri-cyan);
+  }
+
+  .rhodes-island-shell [data-ri-utility-bar]::before,
+  .rhodes-island-shell::before,
+  .rhodes-island-shell::after {
+    display: none;
+  }
+
+  .rhodes-island-shell [data-ri-dock-panel] {
+    max-width: calc(100vw - 20px);
+    overflow-x: auto;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .rhodes-island-shell *,
   .rhodes-island-shell *::before,
-  .rhodes-island-shell *::after {
+  .rhodes-island-shell *::after,
+  body:has(main[data-ruleset="rhodes-island"]) [data-state][class*="fixed"][class*="inset-0"],
+  body:has(main[data-ruleset="rhodes-island"]) [data-radix-portal],
+  body:has(main[data-ruleset="rhodes-island"]) [data-radix-portal] *,
+  body:has(main[data-ruleset="rhodes-island"]) [data-radix-popper-content-wrapper],
+  body:has(main[data-ruleset="rhodes-island"]) [data-radix-popper-content-wrapper] > *,
+  body:has(main[data-ruleset="rhodes-island"]) [data-radix-popper-content-wrapper] *,
+  body:has(main[data-ruleset="rhodes-island"]) [role="dialog"],
+  body:has(main[data-ruleset="rhodes-island"]) [role="dialog"] *,
+  body:has(main[data-ruleset="rhodes-island"]) [role="menu"],
+  body:has(main[data-ruleset="rhodes-island"]) [role="menu"] *,
+  body:has(main[data-ruleset="rhodes-island"]) [role="listbox"],
+  body:has(main[data-ruleset="rhodes-island"]) [role="listbox"] *,
+  body:has(main[data-ruleset="rhodes-island"]) [role="tooltip"],
+  body:has(main[data-ruleset="rhodes-island"]) [role="tooltip"] * {
     scroll-behavior: auto !important;
     animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
   }
 }
 
 @media print {
+  body:has(main[data-ruleset="rhodes-island"]) {
+    color: #111 !important;
+    background: #fff !important;
+  }
+
+  body:has(main[data-ruleset="rhodes-island"])::before,
+  body:has(main[data-ruleset="rhodes-island"])::after,
+  .rhodes-island-shell::before,
+  .rhodes-island-shell::after {
+    display: none !important;
+  }
+
   .rhodes-island-shell {
-    background: white !important;
+    color: #111 !important;
+    background: #fff !important;
   }
 
   .rhodes-island-shell .a4-page {
+    overflow: visible;
+    border-color: #999 !important;
+    background: #fff !important;
     box-shadow: none !important;
+    clip-path: none;
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
+  }
+
+  .rhodes-island-shell .a4-page::after {
+    display: none;
+  }
+
+  .rhodes-island-shell *,
+  .rhodes-island-shell *::before,
+  .rhodes-island-shell *::after {
+    animation: none !important;
+    transition: none !important;
   }
 }
 

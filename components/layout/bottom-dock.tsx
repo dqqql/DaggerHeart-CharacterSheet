@@ -366,6 +366,7 @@ export function BottomDock(props: BottomDockProps) {
 
   return (
     <div
+      data-ri-bottom-dock
       className={cn(
         "fixed left-0 right-0 print:hidden",
         isMobile ? "bottom-8" : "bottom-4",
@@ -375,6 +376,7 @@ export function BottomDock(props: BottomDockProps) {
       <div className="flex justify-center px-4">
         <TooltipProvider>
           <div
+            data-ri-dock-panel
             className={cn(
               "flex items-center gap-2 rounded-full border px-2.5 py-1.5 shadow-md transition-all duration-200",
               isPreviewMode && "gap-4",

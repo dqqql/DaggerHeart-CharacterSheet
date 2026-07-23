@@ -146,6 +146,7 @@ export function AttributesSection() {
             <div className="w-full h-14 relative">
               <div className="absolute inset-0 rounded-b-md bg-white border border-t-0 border-gray-800 flex flex-col items-center justify-center">
                 <input
+                  data-ri-attribute-input
                   type="text"
                   value={draftValues[attr.key] ?? displayedValues[attr.key]}
                   onChange={(e) => handleAttributeInputChange(attr.key, e.target.value)}

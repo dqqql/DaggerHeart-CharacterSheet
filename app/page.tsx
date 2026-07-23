@@ -875,6 +875,7 @@ export default function Home() {
   return (
     <main
       data-ruleset={activeRuleSetId}
+      data-ri-app={isRhodesIsland ? "terminal" : undefined}
       className={`min-w-0 w-full max-w-full mx-auto px-0 container ${isRhodesIsland ? 'rhodes-island-shell' : ''} ${isMobile ? 'pb-32' : 'pb-20'
       }`}
     >
@@ -899,7 +900,7 @@ export default function Home() {
           {/* 角色卡区域 - 带相对定位 */}
           <div>
             {/* 页面标题 - 打印时隐藏 */}
-            <div className={`print:hidden mb-3 pt-2 transition-all duration-300 ${isDualPageMode && !isMobile ? 'w-[425mm] min-w-[425mm]' : 'w-[210mm]'}`}>
+            <div data-ri-utility-bar className={`print:hidden mb-3 pt-2 transition-all duration-300 ${isDualPageMode && !isMobile ? 'w-[425mm] min-w-[425mm]' : 'w-[210mm]'}`}>
               <div className="flex items-center justify-center gap-3">
                 <Button
                   size="sm"
@@ -947,8 +948,8 @@ export default function Home() {
           </div>
 
           {/* 文字模式切换开关 - 胶囊型，在容器外右下角 */}
-          <div className={`print:hidden mt-3 flex flex-col gap-3 transition-all duration-300 ${isDualPageMode && !isMobile ? 'w-[425mm] min-w-[425mm]' : 'w-[210mm]'}`}>
-            <div className="flex items-start justify-between gap-3 rounded-xl border border-slate-200 bg-white/85 px-4 py-3 shadow-sm backdrop-blur">
+          <div data-ri-mode-region className={`print:hidden mt-3 flex flex-col gap-3 transition-all duration-300 ${isDualPageMode && !isMobile ? 'w-[425mm] min-w-[425mm]' : 'w-[210mm]'}`}>
+            <div data-ri-mode-card className="flex items-start justify-between gap-3 rounded-xl border border-slate-200 bg-white/85 px-4 py-3 shadow-sm backdrop-blur">
               <div className="min-w-0">
                 <div className="text-sm font-semibold text-slate-800">
                   {isRhodesIsland ? "罗德岛离线卡库" : hasOfficialImagePack ? "卡图包已导入" : "当前为 SRD 纯文字模式"}
@@ -967,6 +968,7 @@ export default function Home() {
                 )}
               </div>
             <div
+              data-ri-mode-toggle
               className={`rounded-full p-0.5 shadow-md transition-all duration-200 hover:shadow-lg scale-90 ${
                 hasCardImages
                   ? 'cursor-pointer bg-gray-200 dark:bg-gray-700'
