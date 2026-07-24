@@ -591,7 +591,8 @@ body:has(main[data-ruleset="rhodes-island"]) [role="dialog"] {
 /* Card selectors use a light personnel-terminal panel within the dark shell. */
 body:has(main[data-ruleset="rhodes-island"]) [role="dialog"]:is(
   [data-card-selection-modal],
-  [data-armor-selection-modal]
+  [data-armor-selection-modal],
+  [data-rhodes-multiclass-modal]
 ) {
   --background: 0 0% 100%;
   --foreground: 207 33% 16%;
@@ -614,11 +615,13 @@ body:has(main[data-ruleset="rhodes-island"]) [role="dialog"]:is(
 
 body:has(main[data-ruleset="rhodes-island"]) [role="dialog"]:is(
   [data-card-selection-modal],
-  [data-armor-selection-modal]
+  [data-armor-selection-modal],
+  [data-rhodes-multiclass-modal]
 )::before,
 body:has(main[data-ruleset="rhodes-island"]) [role="dialog"]:is(
   [data-card-selection-modal],
-  [data-armor-selection-modal]
+  [data-armor-selection-modal],
+  [data-rhodes-multiclass-modal]
 )::after {
   position: absolute;
   z-index: 3;
@@ -633,14 +636,16 @@ body:has(main[data-ruleset="rhodes-island"]) [role="dialog"]:is(
 
 body:has(main[data-ruleset="rhodes-island"]) [role="dialog"]:is(
   [data-card-selection-modal],
-  [data-armor-selection-modal]
+  [data-armor-selection-modal],
+  [data-rhodes-multiclass-modal]
 )::before {
   left: 18px;
 }
 
 body:has(main[data-ruleset="rhodes-island"]) [role="dialog"]:is(
   [data-card-selection-modal],
-  [data-armor-selection-modal]
+  [data-armor-selection-modal],
+  [data-rhodes-multiclass-modal]
 )::after {
   right: 18px;
 }
@@ -734,6 +739,67 @@ body:has(main[data-ruleset="rhodes-island"]) [role="menu"][data-card-filter-menu
 body:has(main[data-ruleset="rhodes-island"]) [role="menu"][data-card-filter-menu] button:hover {
   color: #075f82;
   background: #eaf8fd;
+}
+
+body:has(main[data-ruleset="rhodes-island"]) [data-multiclass-modal-header] {
+  position: relative;
+  color: #172a35;
+  background:
+    linear-gradient(90deg, rgb(35 185 232 / 13%), transparent 60%),
+    #fff;
+}
+
+body:has(main[data-ruleset="rhodes-island"]) [data-multiclass-modal-header]::after {
+  position: absolute;
+  right: 24px;
+  bottom: 0;
+  width: 112px;
+  height: 2px;
+  content: "";
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--ri-cyan, #23b9e8));
+}
+
+body:has(main[data-ruleset="rhodes-island"]) [data-multiclass-modal-body] {
+  border-color: #c8e9f4 !important;
+  background:
+    linear-gradient(90deg, rgb(35 185 232 / 6%) 1px, transparent 1px),
+    #f7fbfd;
+  background-size: 48px 100%;
+}
+
+body:has(main[data-ruleset="rhodes-island"]) [data-multiclass-field] {
+  border-color: #c8e9f4 !important;
+  color: #29434f;
+  box-shadow: 0 4px 14px rgb(18 71 91 / 6%);
+}
+
+body:has(main[data-ruleset="rhodes-island"]) [data-multiclass-field] select {
+  color-scheme: light;
+  border-color: #9fcbdc;
+  color: #1f3743 !important;
+  background: #fff !important;
+}
+
+body:has(main[data-ruleset="rhodes-island"]) [data-multiclass-field] select:hover:not(:disabled) {
+  border-color: var(--ri-cyan, #23b9e8);
+}
+
+body:has(main[data-ruleset="rhodes-island"]) [data-multiclass-field] select:disabled {
+  border-color: #d5e3e8;
+  color: #84959d !important;
+  background: #f1f5f7 !important;
+}
+
+body:has(main[data-ruleset="rhodes-island"]) [data-multiclass-field] option {
+  color: #1f3743 !important;
+  background: #fff !important;
+}
+
+body:has(main[data-ruleset="rhodes-island"]) [data-multiclass-modal-footer] {
+  background:
+    linear-gradient(90deg, rgb(35 185 232 / 5%), transparent 50%),
+    #fff;
 }
 
 body:has(main[data-ruleset="rhodes-island"]) [data-armor-modal-header] {
