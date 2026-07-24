@@ -1553,10 +1553,10 @@ body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] .border-t
   animation: ri-shaft-down .35s .05s cubic-bezier(.34,1.56,.64,1) forwards, ri-shaft-ping 2.5s .7s ease-in-out 2;
 }
 .rhodes-domain-precision.rhodes-domain-icon--animated .ak-wing-l {
-  animation: ri-wing-snap-l .35s .18s cubic-bezier(.34,1.56,.64,1) forwards;
+  animation: ri-wing-snap-left .35s .18s cubic-bezier(.34,1.56,.64,1) forwards;
 }
 .rhodes-domain-precision.rhodes-domain-icon--animated .ak-wing-r {
-  animation: ri-wing-snap-r .35s .18s cubic-bezier(.34,1.56,.64,1) forwards;
+  animation: ri-wing-snap-right .35s .18s cubic-bezier(.34,1.56,.64,1) forwards;
 }
 .rhodes-domain-precision.rhodes-domain-icon--animated .ak-bar {
   animation: ri-bar-expand .35s .28s cubic-bezier(.34,1.56,.64,1) forwards;
