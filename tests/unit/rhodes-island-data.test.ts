@@ -18,14 +18,14 @@ describe("Rhodes Island static rules data", () => {
       ancestries: 31,
       communities: 15,
       domains: 11,
-      domainCards: 262,
+      domainCards: 228,
     })
     expect(rhodesIslandCatalog.professions).toHaveLength(7)
     expect(rhodesIslandCatalog.branches).toHaveLength(28)
     expect(rhodesIslandCatalog.ancestries).toHaveLength(31)
     expect(rhodesIslandCatalog.communities).toHaveLength(15)
     expect(rhodesIslandCatalog.domains).toHaveLength(11)
-    expect(rhodesIslandCatalog.domainCards).toHaveLength(262)
+    expect(rhodesIslandCatalog.domainCards).toHaveLength(228)
   })
 
   it("uses stable unique IDs and valid profession/branch/domain relations", () => {
@@ -79,7 +79,7 @@ describe("Rhodes Island static rules data", () => {
   })
 
   it("marks every runtime card for this ruleset and contains no remote dependency", () => {
-    expect(rhodesIslandCards).toHaveLength(343)
+    expect(rhodesIslandCards).toHaveLength(309)
     expect(rhodesIslandCards.every((card) => card.ruleset === "rhodes-island")).toBe(true)
     const serialized = readFileSync(join(process.cwd(), "data", "rhodes-island", "cards.json"), "utf8")
     expect(serialized).not.toMatch(/https?:\/\//)

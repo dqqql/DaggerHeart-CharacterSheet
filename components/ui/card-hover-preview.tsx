@@ -10,6 +10,12 @@ import { SelectableCard } from "@/components/ui/selectable-card"
 import { CardMarkdown } from "@/components/ui/card-markdown"
 import { getCardRuleSetId } from "@/lib/ruleset"
 import { formatRhodesSubclassDomainRecommendation } from "@/lib/rhodes-island-card-display"
+import {
+    getRhodesDomainEnglish,
+    isRhodesDomainName,
+    RhodesDomainIcon,
+    type RhodesDomainName,
+} from "@/components/rhodes-island/domain-icon"
 
 interface CardHoverPreviewProps {
     card: StandardCard
@@ -31,6 +37,25 @@ export function CardHoverPreview({ card, isTextMode = false }: CardHoverPreviewP
     const [imageError, setImageError] = useState(false)
     const [imageSrc, setImageSrc] = useState<string>('')
     const isRhodesIslandCard = getCardRuleSetId(card) === "rhodes-island"
+    const domainNames: RhodesDomainName[] = (() => {
+        if (!isRhodesIslandCard) return []
+
+        if (card.type === "profession") {
+            const domain = card.cardSelectDisplay?.item1?.trim() || ""
+            return isRhodesDomainName(domain) ? [domain] : []
+        }
+
+        if (card.type === "subclass") {
+            return (card.cardSelectDisplay?.item3 || "")
+                .replace(/^第二领域推荐：\s*/, "")
+                .replace(/^推荐\s*/, "")
+                .split(/\s*\/\s*/)
+                .filter(isRhodesDomainName)
+        }
+
+        return []
+    })()
+    const isRhodesDomainPreview = domainNames.length > 0
     
     // 异步获取图片URL
     React.useEffect(() => {
@@ -67,13 +92,28 @@ export function CardHoverPreview({ card, isTextMode = false }: CardHoverPreviewP
     }
 
     const displayTypeName = getDisplayTypeName(card)
-
     return (
         <div className="flex flex-row bg-white border border-gray-200 rounded-lg shadow-lg w-[520px] text-gray-800 overflow-auto">
             {/* Left Column: Image and Info Section */}
             <div className="flex flex-col w-[220px] flex-shrink-0">
                 {/* Image Section */}
-                {imageSrc && (
+                {isRhodesDomainPreview ? (
+                    <div className="relative flex h-[220px] w-full items-center justify-center gap-5 overflow-hidden bg-slate-950 text-cyan-50">
+                        <div aria-hidden="true" className="absolute inset-0 opacity-40 [background-image:linear-gradient(rgba(103,232,249,.12)_1px,transparent_1px),linear-gradient(90deg,rgba(103,232,249,.12)_1px,transparent_1px)] [background-size:24px_24px]" />
+                        {domainNames.map((domain) => (
+                            <div key={domain} className="relative flex min-w-0 flex-col items-center">
+                                <RhodesDomainIcon
+                                    domain={domain}
+                                    className={domainNames.length > 1 ? "h-20 w-20" : "h-28 w-28"}
+                                />
+                                <span className="mt-3 text-xs font-semibold tracking-[0.22em]">{domain}</span>
+                                <span className="mt-1 text-[8px] tracking-[0.14em] text-cyan-200/70">
+                                    {getRhodesDomainEnglish(domain)}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                ) : imageSrc && (
                     <div className={`relative w-full ${isRhodesIslandCard ? "h-[220px] bg-white" : "h-40"}`}>
                         <Image
                             src={imageSrc}

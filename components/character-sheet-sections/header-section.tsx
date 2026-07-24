@@ -8,8 +8,8 @@ import { useCardPreview } from "@/hooks/use-card-preview"
 import { CardHoverPreview } from "@/components/ui/card-hover-preview"
 import { useSheetStore } from "@/lib/sheet-store"
 import { useTextModeStore } from "@/lib/text-mode-store"
-import { PageHeader } from "@/components/page-header"
 import { getDisplayedCharacterCards } from "@/lib/ancestry-utils"
+import { ProfessionDomainAnimation } from "@/components/rhodes-island/domain-icon"
 
 interface HeaderSectionProps {
   onOpenProfessionModal: () => void;
@@ -17,6 +17,7 @@ interface HeaderSectionProps {
   onOpenCommunityModal: () => void;
   onOpenSubclassModal: () => void;
   onToggleMixedAncestry: (enabled: boolean) => void;
+  professionAnimationReplayKey?: number;
 }
 
 export function HeaderSection({
@@ -25,6 +26,7 @@ export function HeaderSection({
   onOpenCommunityModal,
   onOpenSubclassModal,
   onToggleMixedAncestry,
+  professionAnimationReplayKey = 0,
 }: HeaderSectionProps) {
   const { sheetData: formData, setSheetData, updateLevel } = useSheetStore()
   const containerRef = useRef<HTMLDivElement>(null)
@@ -153,9 +155,9 @@ export function HeaderSection({
   return (
     <div
       ref={containerRef}
-      className="relative z-20 flex items-center justify-between rounded-t-md bg-gray-800 p-2 text-white"
+      className="relative z-20 flex items-start justify-between rounded-t-md bg-gray-800 p-2 text-white"
     >
-      <div className="flex flex-col">
+      <div className="flex h-[90px] w-56 flex-col">
         <label className="text-[9px] text-gray-300">职业</label>
         <div className="flex items-center gap-2">
           {editingField === 'professionRef' ? (
@@ -199,7 +201,13 @@ export function HeaderSection({
             </div>
           )}
         </div>
-        <PageHeader />
+        <div className="mt-1 flex min-h-0 flex-1 print:hidden">
+          <ProfessionDomainAnimation
+            professionId={isRhodesIsland ? formData.professionRef?.id : undefined}
+            professionName={isRhodesIsland ? formData.professionRef?.name : undefined}
+            replayKey={professionAnimationReplayKey}
+          />
+        </div>
       </div>
       <div className="flex flex-col items-center gap-1">
         <div className="flex gap-2">

@@ -3,10 +3,11 @@
 import React, { useState } from "react"
 import Image from "next/image"
 
-import { StandardCard, getVariantRealType, isVariantCard } from "@/card/card-types"
+import { CardType, StandardCard, getVariantRealType, isVariantCard } from "@/card/card-types"
 import { getCardTypeName } from "@/card/card-ui-config"
 import { getCardImageUrl, getCardImageUrlAsync } from "@/lib/utils"
 import { formatRhodesSubclassDomainRecommendation } from "@/lib/rhodes-island-card-display"
+import { getCardRuleSetId } from "@/lib/ruleset"
 
 const getDisplayTypeName = (card: StandardCard) => {
   if (isVariantCard(card)) {
@@ -76,6 +77,13 @@ export function SimpleImageCard({
   const displayItem2 = card.cardSelectDisplay?.item2 || ""
   const displayItem3 = formatRhodesSubclassDomainRecommendation(card)
   const displayItem4 = card.cardSelectDisplay?.item4 || ""
+  const hasRhodesIslandDomainCardFace =
+    getCardRuleSetId(card) === "rhodes-island"
+    && card.type === CardType.Domain
+    && card.imageUrl?.startsWith("/rhodes-island/domains/")
+  const isRhodesIslandDomainIcon =
+    getCardRuleSetId(card) === "rhodes-island"
+    && card.imageUrl?.startsWith("/rhodes-island/domain-icons/")
 
   return (
     <div
@@ -83,40 +91,49 @@ export function SimpleImageCard({
       className={`group relative flex w-full max-w-sm flex-col overflow-hidden rounded-xl bg-white shadow-md transition-all duration-300 ease-in-out hover:shadow-xl ${isSelected ? "ring-2 ring-blue-500" : "border"}`}
       onClick={() => onClick(cardId)}
     >
-      <div className="relative w-full aspect-[1.4] overflow-hidden">
+      <div className={`relative w-full overflow-hidden ${isRhodesIslandDomainIcon ? "flex items-center justify-center" : ""} ${hasRhodesIslandDomainCardFace ? "aspect-[5/7]" : "aspect-[1.4]"}`}>
         {imageSrc && (
           <Image
             src={imageSrc}
             alt={displayName}
             width={300}
             height={420}
-            className="h-auto w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+            className={hasRhodesIslandDomainCardFace
+              ? "h-full w-full object-contain"
+              : isRhodesIslandDomainIcon
+                ? "h-2/5 w-2/5 object-contain"
+              : "h-auto w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+            }
             priority={priority}
             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
             onError={() => setImageError(true)}
           />
         )}
 
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/25 to-transparent" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end p-4">
-          <div className="space-y-0.5">
-            <h3
-              className="text-xl font-extrabold leading-none text-white"
-              style={{ textShadow: "0 2px 10px rgba(0,0,0,1)" }}
-            >
-              {displayName}
-            </h3>
-            <span
-              className="block text-xs font-normal leading-tight tracking-widest text-gray-200"
-              style={{ textShadow: "0 1px 5px rgba(0,0,0,1)" }}
-            >
-              {getDisplayTypeName(card)}
-            </span>
-          </div>
-        </div>
+        {!hasRhodesIslandDomainCardFace && (
+          <>
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/25 to-transparent" />
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end p-4">
+              <div className="space-y-0.5">
+                <h3
+                  className="text-xl font-extrabold leading-none text-white"
+                  style={{ textShadow: "0 2px 10px rgba(0,0,0,1)" }}
+                >
+                  {displayName}
+                </h3>
+                <span
+                  className="block text-xs font-normal leading-tight tracking-widest text-gray-200"
+                  style={{ textShadow: "0 1px 5px rgba(0,0,0,1)" }}
+                >
+                  {getDisplayTypeName(card)}
+                </span>
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
-      {(displayItem1 || displayItem2 || displayItem3 || displayItem4) && (
+      {!hasRhodesIslandDomainCardFace && (displayItem1 || displayItem2 || displayItem3 || displayItem4) && (
         <div className="p-3">
           <div className="flex flex-row flex-wrap items-center gap-2 text-xs">
             {displayItem1 && (

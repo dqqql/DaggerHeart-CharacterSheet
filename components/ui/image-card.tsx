@@ -201,6 +201,13 @@ export function ImageCard({ card, onClick, isSelected, showSource = true, priori
     const displayItem3 = formatRhodesSubclassDomainRecommendation(card);
     const displayItem4 = card.cardSelectDisplay?.item4 || "";
     const isRhodesIslandCard = getCardRuleSetId(card) === "rhodes-island"
+    const hasRhodesIslandDomainCardFace =
+        isRhodesIslandCard
+        && card.type === CardType.Domain
+        && card.imageUrl?.startsWith("/rhodes-island/domains/")
+    const isRhodesIslandDomainIcon =
+        isRhodesIslandCard
+        && card.imageUrl?.startsWith("/rhodes-island/domain-icons/")
 
     // 根据卡牌类型过滤需要显示的标签信息（去重逻辑）
     const getFilteredDisplayItems = (): string[] => {
@@ -248,7 +255,7 @@ export function ImageCard({ card, onClick, isSelected, showSource = true, priori
         <div
             ref={cardRef}
             key={cardId}
-            className={`group relative flex w-full max-w-sm flex-col overflow-hidden rounded-xl bg-white shadow-md transition-all duration-300 ease-in-out hover:shadow-xl min-h-[520px] ${isSelected ? 'ring-2 ring-blue-500' : 'border'}`}
+            className={`group relative flex w-full max-w-sm flex-col overflow-hidden rounded-xl bg-white shadow-md transition-all duration-300 ease-in-out hover:shadow-xl ${hasRhodesIslandDomainCardFace ? "" : "min-h-[520px]"} ${isSelected ? 'ring-2 ring-blue-500' : 'border'}`}
             style={{
                 transform: cardScale,
                 transition: 'transform 100ms ease-out'
@@ -261,16 +268,26 @@ export function ImageCard({ card, onClick, isSelected, showSource = true, priori
             }}
         >
             {/* Image Container */}
-            <div className={`relative w-full overflow-hidden bg-white ${isRhodesIslandCard ? "aspect-square" : "aspect-[1.4]"}`}>
+            <div className={`relative w-full overflow-hidden bg-white ${isRhodesIslandDomainIcon ? "flex items-center justify-center" : ""} ${
+                hasRhodesIslandDomainCardFace
+                    ? "aspect-[5/7]"
+                    : isRhodesIslandCard
+                        ? "aspect-square"
+                        : "aspect-[1.4]"
+            }`}>
                 {imageSrc && (
                     <Image
                         src={imageSrc}
                         alt={displayName}
                         width={300}
                         height={420}
-                        className={isRhodesIslandCard
-                            ? "h-full w-full object-contain p-2"
-                            : "h-auto w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+                        className={hasRhodesIslandDomainCardFace
+                            ? "h-full w-full object-contain"
+                            : isRhodesIslandDomainIcon
+                                ? "h-2/5 w-2/5 object-contain"
+                            : isRhodesIslandCard
+                                ? "h-full w-full object-contain p-2"
+                                : "h-auto w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
                         }
                         priority={priority}
                         sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
@@ -280,7 +297,7 @@ export function ImageCard({ card, onClick, isSelected, showSource = true, priori
                 )}
 
                 {/* Level badge for Domain cards with frosted glass effect */}
-                {card.type === CardType.Domain && card.level && card.level > 0 && (
+                {!hasRhodesIslandDomainCardFace && card.type === CardType.Domain && card.level && card.level > 0 && (
                     <div className="absolute top-2 right-2 bg-black/40 backdrop-blur-md text-white text-xs font-bold px-2.5 py-1 rounded-lg shadow-lg border border-white/20 pointer-events-none">
                         <span style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
                             Lv.{card.level}
@@ -289,9 +306,10 @@ export function ImageCard({ card, onClick, isSelected, showSource = true, priori
                 )}
 
 
-                {/* 轻度遮罩 + 文字阴影 */}
-                <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/25 to-transparent pointer-events-none" />
-                <div className="absolute inset-x-0 bottom-0 flex items-end p-4 pointer-events-none">
+                {!hasRhodesIslandDomainCardFace && <>
+                    {/* 轻度遮罩 + 文字阴影 */}
+                    <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/25 to-transparent pointer-events-none" />
+                    <div className="absolute inset-x-0 bottom-0 flex items-end p-4 pointer-events-none">
                     <div className="w-full space-y-0.5">
                         <h3 className="text-xl font-extrabold text-white leading-none" style={{ textShadow: '0 2px 10px rgba(0,0,0,1)' }}>{displayName}</h3>
                         {/* 种族卡特殊处理：副标题只显示具体种族名称 */}
@@ -308,11 +326,12 @@ export function ImageCard({ card, onClick, isSelected, showSource = true, priori
                             <span className="text-xs font-normal tracking-widest text-gray-200 leading-tight block" style={{ textShadow: '0 1px 5px rgba(0,0,0,1)' }}>{getDisplayTypeName(card)}</span>
                         )}
                     </div>
-                </div>
+                    </div>
+                </>}
             </div>
 
             {/* Content Container */}
-            <div className="flex flex-1 flex-col p-4">
+            {!hasRhodesIslandDomainCardFace && <div className="flex flex-1 flex-col p-4">
                 {/* Display Items - 使用去重后的标签（胶囊样式） */}
                 {card.type === CardType.Ancestry ? (
                     /* 种族卡特殊处理：显示"种族"和具体种族名称两个标签 */
@@ -356,7 +375,7 @@ export function ImageCard({ card, onClick, isSelected, showSource = true, priori
                         </div>
                     ) : null}
                 </div>
-            </div>
+            </div>}
         </div>
     )
 }

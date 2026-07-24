@@ -162,6 +162,7 @@ export default function CharacterSheet() {
   const [currentModal, setCurrentModal] = useState<{ type: "profession" | "ancestry" | "community" | "subclass"; field?: string; levelFilter?: number }>({ type: "profession" })
   const [mixedAncestryNoticeOpen, setMixedAncestryNoticeOpen] = useState(false)
   const [hasShownMixedAncestryNotice, setHasShownMixedAncestryNotice] = useState(false)
+  const [professionAnimationReplayKey, setProfessionAnimationReplayKey] = useState(0)
 
   const needsSyncRef = useRef(true)
   const initialRenderRef = useRef(true)
@@ -396,6 +397,7 @@ export default function CharacterSheet() {
 
         // 选择职业时调用自动填写
         autofillProfessionData(newRef, professionCard);
+        setProfessionAnimationReplayKey((current) => current + 1)
       } else {
         console.warn(`handleProfessionChange: Profession card not found for ID: ${value}`);
       }
@@ -754,6 +756,7 @@ export default function CharacterSheet() {
             onOpenCommunityModal={openCommunityModal}
             onOpenSubclassModal={openSubclassModal}
             onToggleMixedAncestry={handleMixedAncestryToggle}
+            professionAnimationReplayKey={professionAnimationReplayKey}
           />
 
           {/* Main Content - Two balanced columns */}

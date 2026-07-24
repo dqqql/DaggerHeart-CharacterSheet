@@ -1472,3 +1472,220 @@ body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] .border-t
     display: none !important;
   }
 }
+/* Rhodes Island domain icon entrance animations.
+   The selected profession icon is remounted for every selection, so these
+   finite animations replay and then hold the complete symbol. */
+.rhodes-domain-icon {
+  display: block;
+  overflow: visible;
+}
+
+.rhodes-domain-icon .ak-part,
+.rhodes-domain-icon .ak-hex-group {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.rhodes-domain-icon--animated .ak-part {
+  opacity: 0;
+}
+
+.rhodes-domain-foresight.rhodes-domain-icon--animated .ak-crown,
+.rhodes-domain-foresight.rhodes-domain-icon--animated .ak-core,
+.rhodes-domain-foresight.rhodes-domain-icon--animated .ak-spike {
+  animation: ri-center-fade-in .4s .05s ease-out forwards, ri-center-float 3s .95s ease-in-out 2;
+}
+.rhodes-domain-foresight.rhodes-domain-icon--animated .ak-left-wing {
+  transform-origin: right center;
+  animation: ri-wing-spread-l .5s .3s cubic-bezier(.34,1.56,.64,1) forwards, ri-wing-flutter-l 3s .95s ease-in-out 2;
+}
+.rhodes-domain-foresight.rhodes-domain-icon--animated .ak-right-wing {
+  transform-origin: left center;
+  animation: ri-wing-spread-r .5s .3s cubic-bezier(.34,1.56,.64,1) forwards, ri-wing-flutter-r 3s .95s ease-in-out 2;
+}
+
+.rhodes-domain-assault.rhodes-domain-icon--animated .ak-core {
+  animation: ri-core-slam .45s .05s cubic-bezier(.05,.9,.25,1) forwards;
+}
+.rhodes-domain-assault.rhodes-domain-icon--animated .ak-trail {
+  animation: ri-trail-slam .45s .1s cubic-bezier(.05,.9,.25,1) forwards;
+}
+.rhodes-domain-assault.rhodes-domain-icon--animated .ak-wedge {
+  animation: ri-shock-right .45s .3s cubic-bezier(.34,1.56,.64,1) forwards, ri-quiver-right 2.5s 1s ease-in-out 2;
+}
+.rhodes-domain-assault.rhodes-domain-icon--animated .ak-blade {
+  animation: ri-shock-left .45s .3s cubic-bezier(.34,1.56,.64,1) forwards, ri-quiver-left 2.5s 1s ease-in-out 2;
+}
+
+.rhodes-domain-bulwark.rhodes-domain-icon--animated .ak-base {
+  animation: ri-base-plant .5s .05s cubic-bezier(.05,.9,.25,1) forwards, ri-shield-pulse 3s 1.2s ease-in-out 2;
+}
+.rhodes-domain-bulwark.rhodes-domain-icon--animated .ak-pillar-l,
+.rhodes-domain-bulwark.rhodes-domain-icon--animated .ak-pillar-r {
+  transform-origin: center bottom;
+  animation: ri-pillar-rise .5s .25s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+.rhodes-domain-bulwark.rhodes-domain-icon--animated .ak-arch {
+  animation: ri-arch-lock .5s .4s cubic-bezier(.05,.9,.25,1) forwards;
+}
+
+.rhodes-domain-stealth.rhodes-domain-icon--animated .ak-blade {
+  animation: ri-blade-dash .35s .05s cubic-bezier(.05,.9,.25,1) forwards, ri-blade-flicker 2.8s .7s ease-in-out 2;
+}
+.rhodes-domain-stealth.rhodes-domain-icon--animated .ak-cloak {
+  transform-origin: left center;
+  animation: ri-cloak-unfurl .8s .2s ease-out forwards, ri-cloak-billow 4s 1.2s ease-in-out 2;
+}
+
+.rhodes-domain-miracle.rhodes-domain-icon--animated .ak-ring {
+  animation: ri-path-ring .6s .05s ease-out forwards;
+}
+.rhodes-domain-miracle.rhodes-domain-icon--animated .ak-starburst {
+  animation: ri-starburst-appear .4s .15s ease-out forwards, ri-divine-float 3.5s .8s ease-in-out 2;
+}
+
+.rhodes-domain-precision.rhodes-domain-icon--animated .ak-crown {
+  transform-origin: center bottom;
+  animation: ri-crown-up .35s .05s cubic-bezier(.34,1.56,.64,1) forwards, ri-crown-pulse 2.5s .7s ease-in-out 2;
+}
+.rhodes-domain-precision.rhodes-domain-icon--animated .ak-shaft {
+  transform-origin: center top;
+  animation: ri-shaft-down .35s .05s cubic-bezier(.34,1.56,.64,1) forwards, ri-shaft-ping 2.5s .7s ease-in-out 2;
+}
+.rhodes-domain-precision.rhodes-domain-icon--animated .ak-wing-l {
+  animation: ri-wing-snap-l .35s .18s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+.rhodes-domain-precision.rhodes-domain-icon--animated .ak-wing-r {
+  animation: ri-wing-snap-r .35s .18s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+.rhodes-domain-precision.rhodes-domain-icon--animated .ak-bar {
+  animation: ri-bar-expand .35s .28s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+
+.rhodes-domain-pillar.rhodes-domain-icon--animated .ak-pillar-l,
+.rhodes-domain-pillar.rhodes-domain-icon--animated .ak-pillar-r {
+  transform-origin: center bottom;
+  animation: ri-pillar-rise .55s .05s cubic-bezier(.34,1.56,.64,1) forwards, ri-pillar-impact .3s .68s ease-out;
+}
+.rhodes-domain-pillar.rhodes-domain-icon--animated .ak-cap {
+  animation: ri-cap-slam .45s .3s cubic-bezier(.05,.9,.25,1) forwards, ri-cap-breathe 3s 1.2s ease-in-out 2;
+}
+
+.rhodes-domain-arcane.rhodes-domain-icon--animated .ak-crystal {
+  animation: ri-crystal-form .5s .05s cubic-bezier(.34,1.56,.64,1) forwards, ri-crystal-pulse 2.8s .8s ease-in-out 2;
+}
+.rhodes-domain-arcane.rhodes-domain-icon--animated .ak-arc-top {
+  animation: ri-arc-sweep-top .5s .2s cubic-bezier(.34,1.56,.64,1) forwards, ri-arc-orbit-top 3.5s 1s ease-in-out 2;
+}
+.rhodes-domain-arcane.rhodes-domain-icon--animated .ak-arc-bot {
+  animation: ri-arc-sweep-bottom .5s .2s cubic-bezier(.34,1.56,.64,1) forwards, ri-arc-orbit-bottom 3.5s 1s ease-in-out 2;
+}
+.rhodes-domain-arcane.rhodes-domain-icon--animated .ak-rune-l {
+  animation: ri-rune-slide-left .4s .32s ease-out forwards;
+}
+.rhodes-domain-arcane.rhodes-domain-icon--animated .ak-rune-r {
+  animation: ri-rune-slide-right .4s .32s ease-out forwards;
+}
+
+.rhodes-domain-industrial.rhodes-domain-icon--animated .ak-gear-t,
+.rhodes-domain-industrial.rhodes-domain-icon--animated .ak-gear-br,
+.rhodes-domain-industrial.rhodes-domain-icon--animated .ak-gear-bl {
+  animation: ri-gear-click .35s .05s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+.rhodes-domain-industrial.rhodes-domain-icon--animated .ak-hex-core {
+  animation: ri-hex-core .35s .15s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+.rhodes-domain-industrial.rhodes-domain-icon--animated .ak-hex-ring {
+  animation: ri-hex-ring .35s .15s ease-out forwards;
+}
+.rhodes-domain-industrial.rhodes-domain-icon--animated .ak-hex-group {
+  transform-origin: 17.75px 17.535px;
+  animation: ri-hex-twist .8s .55s ease-in-out forwards;
+}
+
+.rhodes-domain-mindsphere.rhodes-domain-icon--animated .ak-frame {
+  animation: ri-frame-manifest .55s .05s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+.rhodes-domain-mindsphere.rhodes-domain-icon--animated .ak-core {
+  animation: ri-core-drift .45s .22s ease-out forwards;
+}
+.rhodes-domain-mindsphere.rhodes-domain-icon--animated .ak-eye-c {
+  animation: ri-eye-open .45s .35s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+.rhodes-domain-mindsphere.rhodes-domain-icon--animated .ak-eye-l {
+  animation: ri-eye-wing-left .4s .45s ease-out forwards;
+}
+.rhodes-domain-mindsphere.rhodes-domain-icon--animated .ak-eye-r {
+  animation: ri-eye-wing-right .4s .45s ease-out forwards;
+}
+
+.rhodes-domain-blitz.rhodes-domain-icon--animated .ak-bolt,
+.rhodes-domain-blitz.rhodes-domain-icon--animated .ak-sweep {
+  animation: ri-bolt-strike .25s .05s cubic-bezier(.05,.9,.25,1) forwards;
+}
+.rhodes-domain-blitz.rhodes-domain-icon--animated .ak-slash-l,
+.rhodes-domain-blitz.rhodes-domain-icon--animated .ak-accent {
+  animation: ri-slash-fly-in .25s .35s ease-out forwards;
+}
+
+@keyframes ri-center-fade-in { from { opacity: 0; transform: scale(.85); } to { opacity: 1; transform: scale(1); } }
+@keyframes ri-center-float { 0%,100% { opacity: 1; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-2.5px); } }
+@keyframes ri-wing-spread-l { from { opacity: 0; transform: scaleX(.15); } to { opacity: 1; transform: scaleX(1); } }
+@keyframes ri-wing-spread-r { from { opacity: 0; transform: scaleX(.15); } to { opacity: 1; transform: scaleX(1); } }
+@keyframes ri-wing-flutter-l { 0%,100% { opacity: 1; transform: scaleX(1); } 50% { opacity: 1; transform: scaleX(.9); } }
+@keyframes ri-wing-flutter-r { 0%,100% { opacity: 1; transform: scaleX(1); } 50% { opacity: 1; transform: scaleX(.9); } }
+@keyframes ri-core-slam { from { opacity: 0; transform: translate(30px,-24px) rotate(18deg); } to { opacity: 1; transform: none; } }
+@keyframes ri-trail-slam { from { opacity: 0; transform: translate(28px,-28px) rotate(15deg); } to { opacity: 1; transform: none; } }
+@keyframes ri-shock-right { from { opacity: 0; transform: translate(-12px,4px) scale(.4); } to { opacity: 1; transform: none; } }
+@keyframes ri-shock-left { from { opacity: 0; transform: translate(12px,4px) scale(.4); } to { opacity: 1; transform: none; } }
+@keyframes ri-quiver-right { 0%,100% { opacity: 1; transform: translate(0); } 35% { opacity: 1; transform: translate(1.5px,-.5px); } 70% { opacity: 1; transform: translate(-1px,1px); } }
+@keyframes ri-quiver-left { 0%,100% { opacity: 1; transform: translate(0); } 35% { opacity: 1; transform: translate(-1.5px,.5px); } 70% { opacity: 1; transform: translate(1px,-1px); } }
+@keyframes ri-base-plant { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+@keyframes ri-pillar-rise { from { opacity: 0; transform: translateY(14px) scaleY(.3); } to { opacity: 1; transform: none; } }
+@keyframes ri-arch-lock { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: none; } }
+@keyframes ri-shield-pulse { 0%,100% { opacity: 1; transform: scaleY(1); } 50% { opacity: 1; transform: scaleY(1.03); } }
+@keyframes ri-blade-dash { from { opacity: 0; transform: translate(22px,-20px); } to { opacity: 1; transform: none; } }
+@keyframes ri-cloak-unfurl { from { opacity: 0; transform: scaleX(.4); } to { opacity: 1; transform: scaleX(1); } }
+@keyframes ri-blade-flicker { 0%,100% { opacity: 1; transform: translate(0); } 50% { opacity: .65; transform: translate(1px,-1px); } }
+@keyframes ri-cloak-billow { 0%,100% { opacity: 1; transform: translateX(0) scaleX(1); } 50% { opacity: 1; transform: translateX(1px) scaleX(.97); } }
+@keyframes ri-path-ring { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(1.35); } }
+@keyframes ri-starburst-appear { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ri-divine-float { 0%,100% { opacity: 1; transform: translateY(0) scale(1); } 50% { opacity: .95; transform: translateY(-1.5px) scale(1.015); } }
+@keyframes ri-crown-up { from { opacity: 0; transform: translateY(5px) scaleY(.3); } to { opacity: 1; transform: none; } }
+@keyframes ri-shaft-down { from { opacity: 0; transform: translateY(-6px) scaleY(.3); } to { opacity: 1; transform: none; } }
+@keyframes ri-wing-snap-left { from { opacity: 0; transform: translateX(10px) rotate(18deg); } to { opacity: 1; transform: none; } }
+@keyframes ri-wing-snap-right { from { opacity: 0; transform: translateX(-10px) rotate(-18deg); } to { opacity: 1; transform: none; } }
+@keyframes ri-bar-expand { from { opacity: 0; transform: scaleX(.2); } to { opacity: 1; transform: none; } }
+@keyframes ri-crown-pulse { 0%,100% { opacity: 1; transform: scaleY(1); } 50% { opacity: 1; transform: scaleY(1.04); } }
+@keyframes ri-shaft-ping { 0%,100% { opacity: 1; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-1px); } }
+@keyframes ri-cap-slam { 0% { opacity: 0; transform: translateY(-14px); } 70% { opacity: 1; transform: translateY(1px); } 85% { opacity: 1; transform: translateY(-.5px); } 100% { opacity: 1; transform: none; } }
+@keyframes ri-pillar-impact { 0%,100% { opacity: 1; transform: scaleY(1); } 50% { opacity: 1; transform: scaleY(.97); } }
+@keyframes ri-cap-breathe { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 1; transform: scale(1.03); } }
+@keyframes ri-crystal-form { from { opacity: 0; transform: scale(0); } to { opacity: 1; transform: scale(1); } }
+@keyframes ri-arc-sweep-top { from { opacity: 0; transform: translateY(-10px) rotate(-15deg); } to { opacity: 1; transform: none; } }
+@keyframes ri-arc-sweep-bottom { from { opacity: 0; transform: translateY(10px) rotate(15deg); } to { opacity: 1; transform: none; } }
+@keyframes ri-rune-slide-left { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
+@keyframes ri-rune-slide-right { from { opacity: 0; transform: translateX(8px); } to { opacity: 1; transform: none; } }
+@keyframes ri-crystal-pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .75; transform: scale(1.08); } }
+@keyframes ri-arc-orbit-top { 0%,100% { opacity: 1; transform: none; } 50% { opacity: 1; transform: translate(1px,-1px) rotate(1deg); } }
+@keyframes ri-arc-orbit-bottom { 0%,100% { opacity: 1; transform: none; } 50% { opacity: 1; transform: translate(-1px,1px) rotate(-1deg); } }
+@keyframes ri-gear-click { from { opacity: 0; transform: scale(0); } to { opacity: 1; transform: scale(1); } }
+@keyframes ri-hex-core { from { opacity: 0; transform: scale(.3); } to { opacity: 1; transform: scale(1); } }
+@keyframes ri-hex-ring { from { opacity: 0; transform: scale(.85); } to { opacity: 1; transform: scale(1); } }
+@keyframes ri-hex-twist { 0%,100% { transform: rotate(0); } 35%,65% { transform: rotate(15deg); } }
+@keyframes ri-frame-manifest { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: scale(1); } }
+@keyframes ri-core-drift { from { opacity: 0; transform: translateY(-24px); } to { opacity: 1; transform: none; } }
+@keyframes ri-eye-open { from { opacity: 0; transform: scaleY(.1); } to { opacity: 1; transform: scaleY(1); } }
+@keyframes ri-eye-wing-left { from { opacity: 0; transform: translateX(6px); } to { opacity: 1; transform: none; } }
+@keyframes ri-eye-wing-right { from { opacity: 0; transform: translateX(-6px); } to { opacity: 1; transform: none; } }
+@keyframes ri-bolt-strike { from { opacity: 0; transform: translate(14px,-12px); } to { opacity: 1; transform: none; } }
+@keyframes ri-slash-fly-in { from { opacity: 0; transform: translate(-10px,8px); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .rhodes-domain-icon--animated .ak-part,
+  .rhodes-domain-icon--animated .ak-hex-group {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

@@ -18,6 +18,7 @@
     "test:review-gates": "vitest run tests/unit/card-system-init-scope.test.ts tests/unit/multi-character-storage.test.ts tests/unit/use-character-management.test.tsx tests/unit/card-markdown.test.tsx tests/unit/profession-description-section.test.tsx tests/unit/character-creation-guide.test.tsx tests/unit/card-package-import-transaction.test.ts",
     "test:unit": "vitest run tests/unit",
     "test:integration": "vitest run tests/integration",
+    "import:rhodes-domain-images": "node scripts/import-rhodes-island-domain-images.mjs",
     "optimize:images": "node scripts/optimize-images.js"
   },
   "dependencies": {

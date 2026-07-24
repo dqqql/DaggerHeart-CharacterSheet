@@ -19,7 +19,7 @@ describe("ruleset card batch options", () => {
     expect(getRuleSetBatchOptions(batches, cards, "rhodes-island")).toEqual([{
       id: BUILTIN_BATCH_ID,
       name: "内置卡牌包",
-      cardCount: 343,
+      cardCount: rhodesIslandCards.length,
     }])
   })
 

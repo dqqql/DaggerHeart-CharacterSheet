@@ -7,6 +7,7 @@ import Image from "next/image"
 import { getCardImageUrl, getCardImageUrlAsync } from "@/lib/utils"
 import { CardMarkdown } from "@/components/ui/card-markdown"
 import { formatRhodesSubclassDomainRecommendation } from "@/lib/rhodes-island-card-display"
+import { getCardRuleSetId } from "@/lib/ruleset"
 
 const getDisplayTypeName = (card: StandardCard) => {
     if (isVariantCard(card)) {
@@ -60,6 +61,28 @@ export function PrintImageCard({ card }: PrintImageCardProps) {
     const displayItem2 = card.cardSelectDisplay?.item2 || ""
     const displayItem3 = formatRhodesSubclassDomainRecommendation(card)
     const displayItem4 = card.cardSelectDisplay?.item4 || ""
+    const hasRhodesIslandDomainCardFace =
+        getCardRuleSetId(card) === "rhodes-island"
+        && card.type === CardType.Domain
+        && card.imageUrl?.startsWith("/rhodes-island/domains/")
+
+    if (hasRhodesIslandDomainCardFace) {
+        return (
+            <div className="relative aspect-[5/7] h-full overflow-hidden rounded-lg border border-gray-400 bg-white shadow-sm print-card">
+                {imageSrc && (
+                    <Image
+                        src={imageSrc}
+                        alt={displayName}
+                        fill
+                        className="h-full w-full object-contain"
+                        sizes="30vw"
+                        onError={() => setImageError(true)}
+                        priority
+                    />
+                )}
+            </div>
+        )
+    }
 
     return (
         <div className="flex flex-col overflow-hidden rounded-lg border border-gray-400 bg-white h-full shadow-sm print-card">
