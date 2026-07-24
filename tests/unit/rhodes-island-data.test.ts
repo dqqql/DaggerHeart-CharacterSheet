@@ -15,14 +15,14 @@ describe("Rhodes Island static rules data", () => {
     expect(rhodesIslandManifest.counts).toEqual({
       professions: 7,
       branches: 28,
-      ancestries: 31,
+      ancestries: 35,
       communities: 15,
       domains: 11,
       domainCards: 228,
     })
     expect(rhodesIslandCatalog.professions).toHaveLength(7)
     expect(rhodesIslandCatalog.branches).toHaveLength(28)
-    expect(rhodesIslandCatalog.ancestries).toHaveLength(31)
+    expect(rhodesIslandCatalog.ancestries).toHaveLength(35)
     expect(rhodesIslandCatalog.communities).toHaveLength(15)
     expect(rhodesIslandCatalog.domains).toHaveLength(11)
     expect(rhodesIslandCatalog.domainCards).toHaveLength(228)
@@ -79,7 +79,7 @@ describe("Rhodes Island static rules data", () => {
   })
 
   it("marks every runtime card for this ruleset and contains no remote dependency", () => {
-    expect(rhodesIslandCards).toHaveLength(309)
+    expect(rhodesIslandCards).toHaveLength(313)
     expect(rhodesIslandCards.every((card) => card.ruleset === "rhodes-island")).toBe(true)
     const serialized = readFileSync(join(process.cwd(), "data", "rhodes-island", "cards.json"), "utf8")
     expect(serialized).not.toMatch(/https?:\/\//)
@@ -116,5 +116,27 @@ describe("Rhodes Island static rules data", () => {
     expect(branchCards.every((card) => card.cardSelectDisplay.item3?.startsWith("第二领域推荐："))).toBe(true)
     expect(branchCards.every((card) => !card.cardSelectDisplay.item3?.endsWith("施法"))).toBe(true)
     expect(ancestryCards.every((card) => card.hint?.startsWith("推荐种族特性："))).toBe(true)
+  })
+
+  it("keeps formerly merged ancestries independent with exact recommendations", () => {
+    const expectedRecommendations = {
+      菲林: ["敏锐感官", "利爪出击"],
+      阿斯兰: ["王族威名", "敏锐感官"],
+      埃拉菲亚: ["感知自然", "优雅浪漫"],
+      麒麟: ["御雷之术", "感知自然"],
+      鬼: ["怒火业果", "苦难摇篮"],
+      阿纳萨: ["漂泊浪行", "苦难摇篮"],
+      萨卡兹: ["苦难摇篮", "“邪恶”象征"],
+    }
+
+    for (const [name, recommendations] of Object.entries(expectedRecommendations)) {
+      const ancestry = rhodesIslandCatalog.ancestries.find((item) => item.name === name)
+      expect(ancestry, name).toBeDefined()
+      expect(ancestry?.recommendedExperiences).toEqual(
+        recommendations.map((recommendation) => ({ name: recommendation, value: 2 })),
+      )
+    }
+
+    expect(rhodesIslandCatalog.ancestries.some((item) => item.name.includes("&"))).toBe(false)
   })
 })

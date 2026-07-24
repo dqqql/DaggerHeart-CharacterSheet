@@ -7,6 +7,7 @@ const projectRoot = resolve(import.meta.dirname, "..")
 const sourceRoot = process.env.RHODES_SOURCE_ROOT || "D:\\Dql\\Desktop\\tttri"
 const outputRoot = join(projectRoot, "data", "rhodes-island")
 const imageOutputRoot = join(projectRoot, "public", "rhodes-island", "ancestries")
+const bundledAncestryImageRoot = join(projectRoot, "assets", "rhodes-island", "ancestries")
 const placeholderImage = "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
 const sourceFiles = {
   professions: join(sourceRoot, "已写子职一览"),
@@ -21,6 +22,21 @@ const domainNames = ["奥术", "攻坚", "坚阵", "精准", "秘行", "迅攻",
 const mainDomains = new Set(["奥术", "攻坚", "坚阵", "精准", "秘行", "迅攻", "支柱"])
 const communityFeatureAppendices = new Map([
   ["失乡之民", "在任何时候，当你发现自己曾经所属的社群，或者加入了一个新的社群时，你可以永久使用那张社群卡替换这张社群卡。"],
+])
+const mergedAncestrySplits = new Map([
+  ["菲林&阿斯兰", [
+    { name: "菲林", sourceHeading: "菲林 Feline", experiences: ["敏锐感官", "利爪出击"] },
+    { name: "阿斯兰", sourceHeading: "阿斯兰 Aslan", experiences: ["王族威名", "敏锐感官"], bundledImage: "阿斯兰.png" },
+  ]],
+  ["埃拉菲亚", [
+    { name: "埃拉菲亚", sourceHeading: "埃拉菲亚 Elafia", experiences: ["感知自然", "优雅浪漫"] },
+    { name: "麒麟", sourceHeading: "麒麟 Kylin", experiences: ["御雷之术", "感知自然"], bundledImage: "麒麟.png" },
+  ]],
+  ["萨卡兹", [
+    { name: "萨卡兹", sourceHeading: "萨卡兹 Sarkaz", experiences: ["苦难摇篮", "“邪恶”象征"] },
+    { name: "鬼", sourceHeading: "鬼 Oni", experiences: ["怒火业果", "苦难摇篮"], bundledImage: "鬼.png" },
+    { name: "阿纳萨", sourceHeading: "阿纳萨 Anasa", experiences: ["漂泊浪行", "苦难摇篮"], bundledImage: "阿纳萨.png" },
+  ]],
 ])
 
 function stableId(kind, value) {
@@ -177,8 +193,40 @@ async function makeAncestryEntry(heading, body, index, nameOverride, imageOverri
 async function parseAncestries() {
   const markdown = await readFile(sourceFiles.ancestries, "utf8")
   const entries = []
-  for (const [, heading, body] of ancestrySections(markdown)) {
-    entries.push(await makeAncestryEntry(heading, body, entries.length))
+  const sections = ancestrySections(markdown)
+  for (const [sourceIndex, [, heading, body]] of sections.entries()) {
+    const mergedEntry = await makeAncestryEntry(heading, body, sourceIndex)
+    const splitDefinitions = mergedAncestrySplits.get(mergedEntry.name)
+      || (mergedEntry.sourceHeading.includes("菲林") && mergedEntry.sourceHeading.includes("阿斯兰")
+        ? mergedAncestrySplits.get("菲林&阿斯兰")
+        : undefined)
+    if (!splitDefinitions) {
+      entries.push(mergedEntry)
+      continue
+    }
+
+    const descriptions = mergedEntry.description.split(/\n+---\n+/)
+    for (const [splitIndex, definition] of splitDefinitions.entries()) {
+      const id = stableId("ancestry", definition.name)
+      let imageUrl = mergedEntry.imageUrl
+      if (definition.bundledImage) {
+        const fileName = `${id.slice(-12)}.webp`
+        await sharp(join(bundledAncestryImageRoot, definition.bundledImage))
+          .resize({ width: 960, height: 1280, fit: "inside", withoutEnlargement: true })
+          .webp({ quality: 82, effort: 5 })
+          .toFile(join(imageOutputRoot, fileName))
+        imageUrl = `/rhodes-island/ancestries/${fileName}`
+      }
+      entries.push({
+        ...mergedEntry,
+        id,
+        name: definition.name,
+        sourceHeading: definition.sourceHeading,
+        description: descriptions[splitIndex]?.trim() || mergedEntry.description,
+        recommendedExperiences: definition.experiences.map((name) => ({ name, value: 2 })),
+        imageUrl,
+      })
+    }
   }
   return entries
 }
@@ -273,11 +321,11 @@ async function main() {
   const catalog = { schemaVersion: 1, ruleset: "rhodes-island", source: "共赴明日：罗德岛旅记", placeholderImage, professions, branches, ancestries, communities, domains, domainCards, unpublishedSourceEntries }
   validateCommunityContent(communities)
   const counts = { professions: professions.length, branches: branches.length, ancestries: ancestries.length, communities: communities.length, domains: domains.length, domainCards: domainCards.length }
-  const expected = { professions: 7, branches: 28, ancestries: 31, communities: 15, domains: 11, domainCards: 262 }
+  const expected = { professions: 7, branches: 28, ancestries: 35, communities: 15, domains: 11, domainCards: 262 }
   for (const [key, value] of Object.entries(expected)) if (counts[key] !== value) throw new Error(`${key}: expected ${value}, got ${counts[key]}`)
   await writeFile(join(outputRoot, "catalog.json"), `${JSON.stringify(catalog, null, 2)}\n`, "utf8")
   await writeFile(join(outputRoot, "cards.json"), `${JSON.stringify(makeStandardCards(catalog), null, 2)}\n`, "utf8")
-  await writeFile(join(outputRoot, "manifest.json"), `${JSON.stringify({ schemaVersion: 1, ruleset: "rhodes-island", generatedFrom: "tttri", counts, normalizationNotes: ["工业领域源文件有三张卡将‘回想费用1’误写为‘回想等级1’；按发布清单262张保留首张，另两张保存在 catalog.unpublishedSourceEntries 中。", "失乡之民的社群能力补全了旧导入结果遗漏的永久替换社群卡规则。"], files: { catalog: "./catalog.json", cards: "./cards.json" }, placeholderImage }, null, 2)}\n`, "utf8")
+  await writeFile(join(outputRoot, "manifest.json"), `${JSON.stringify({ schemaVersion: 1, ruleset: "rhodes-island", generatedFrom: "tttri", counts, normalizationNotes: ["工业领域源文件有三张卡将‘回想费用1’误写为‘回想等级1’；按发布清单262张保留首张，另两张保存在 catalog.unpublishedSourceEntries 中。", "失乡之民的社群能力补全了旧导入结果遗漏的永久替换社群卡规则。", "将来源中合并描述的菲林/阿斯兰、埃拉菲亚/麒麟、萨卡兹/鬼/阿纳萨拆分为独立种族，并分别配置推荐经历。"], files: { catalog: "./catalog.json", cards: "./cards.json" }, placeholderImage }, null, 2)}\n`, "utf8")
   console.log(`Rhodes Island data generated: ${JSON.stringify(counts)}`)
 }
 
