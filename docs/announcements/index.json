@@ -1,5 +1,12 @@
 [
   {
+    "id": "2026-07-25-rhodes-island-mode",
+    "title": "V2.2.0",
+    "file": "2026-07-25-rhodes-island-mode.md",
+    "publishedAt": "2026-07-25",
+    "priority": 1
+  },
+  {
     "id": "2026-06-09-card-package-admin-and-import",
     "title": "V2.1.0",
     "file": "2026-06-09-card-package-admin-and-import.md",

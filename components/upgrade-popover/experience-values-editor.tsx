@@ -150,9 +150,9 @@ export function ExperienceValuesEditor({
   const canApply = selectedCount === 2
 
   return (
-    <div className="w-48">
+    <div className="w-48 rounded-md bg-white p-1 text-gray-800">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-semibold text-gray-700">经历加值升级</span>
+        <span className="text-xs font-semibold text-gray-900">经历加值升级</span>
         <button
           onClick={onClose}
           className="p-0.5 hover:bg-gray-100 rounded transition-colors"
@@ -196,7 +196,7 @@ export function ExperienceValuesEditor({
                   `}
                 >
                   <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <span className="text-xs text-gray-700 truncate" title={content}>
+                    <span className="text-xs text-gray-800 truncate" title={content}>
                       {content}
                     </span>
                   </div>
@@ -228,7 +228,7 @@ export function ExperienceValuesEditor({
                         w-14 px-1 py-0.5 text-xs text-center border rounded
                         ${isSelected
                           ? "bg-white border-blue-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          : "bg-gray-50 border-gray-200 text-gray-600"
+                          : "bg-gray-50 border-gray-200 text-gray-700"
                         }
                       `}
                       placeholder="+0"

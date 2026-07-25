@@ -26,6 +26,7 @@ import { BottomDock } from "@/components/layout/bottom-dock"
 import { PrintPageRenderer } from "@/components/print/print-page-renderer"
 import { SaveSwitcher } from "@/components/ui/save-switcher"
 import { Button } from "@/components/ui/button"
+import { AnnouncementModal } from "@/components/modals/announcement-modal"
 import { useAnnouncementStore } from "@/lib/announcement-store"
 import { getAnnouncements } from "@/lib/announcements"
 import { getLatestAnnouncementId } from "@/lib/announcement-index"
@@ -131,13 +132,6 @@ import { useCharacterManagement } from "@/hooks/use-character-management"
 import { useExportHandlers } from "@/hooks/use-export-handlers"
 import PrintHelper from "./print-helper"
 
-const AnnouncementModal = dynamic(
-  () =>
-    import("@/components/modals/announcement-modal").then(
-      (mod) => mod.AnnouncementModal,
-    ),
-  { ssr: false },
-)
 const CharacterCreationGuide = dynamic(
   () =>
     import("@/components/guide/character-creation-guide").then(

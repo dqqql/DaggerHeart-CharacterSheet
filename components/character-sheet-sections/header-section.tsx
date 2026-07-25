@@ -455,7 +455,7 @@ export function HeaderSection({
           </div>
           {isRhodesIsland && (
             <div className="flex flex-col print:hidden">
-              <span aria-hidden="true" className="h-[14px]" />
+              <label className="text-[9px] text-gray-300">次选领域</label>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
