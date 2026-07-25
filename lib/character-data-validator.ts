@@ -101,6 +101,9 @@ export function cleanAndNormalizeData(data: any): SheetData {
     ancestry2Ref: data.ancestry2Ref || undefined,
     communityRef: data.communityRef || undefined,
     subclassRef: data.subclassRef || undefined,
+    rhodesSecondaryDomain: ["远见", "奇迹", "心界", "工业"].includes(data.rhodesSecondaryDomain)
+      ? data.rhodesSecondaryDomain
+      : undefined,
 
     // 属性值 - 添加施法标记迁移逻辑
     evasion: data.evasion ? String(data.evasion) : undefined,

@@ -195,9 +195,9 @@ export function AttributeUpgradeEditor({
   const canApply = selectedCount === 2
 
   return (
-    <div className="w-48">
+    <div className="w-48 rounded-md bg-white p-1 text-gray-800">
       <div className="mb-2 flex items-center justify-between">
-        <span className="text-xs font-semibold text-gray-700">属性升级</span>
+        <span className="text-xs font-semibold text-gray-900">属性升级</span>
         <button
           onClick={handleClose}
           className="rounded p-0.5 transition-colors hover:bg-gray-100"
@@ -241,10 +241,10 @@ export function AttributeUpgradeEditor({
                   ].join(" ")}
                 >
                   <div className="flex items-center gap-2">
-                    <span className="flex items-center gap-0.5 text-xs font-medium">
+                    <span className="flex items-center gap-0.5 text-xs font-medium text-gray-800">
                       {name}
                       {isSpellcasting && <span className="text-[11px] font-bold text-gray-800">◆</span>}
-                      {isUpgraded && <span className="ml-1 text-[10px] text-gray-500">(已升级)</span>}
+                      {isUpgraded && <span className="ml-1 text-[10px] text-gray-600">(已升级)</span>}
                     </span>
                   </div>
 
@@ -277,7 +277,7 @@ export function AttributeUpgradeEditor({
                         "w-16 rounded border px-1 py-0.5 text-center text-xs",
                         isSelected
                           ? "border-blue-300 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          : "border-gray-200 bg-gray-50 text-gray-600",
+                          : "border-gray-200 bg-gray-50 text-gray-700",
                       ].join(" ")}
                     />
                   </div>

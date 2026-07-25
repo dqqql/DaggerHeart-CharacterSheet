@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest"
 import type { StandardCard } from "@/card/card-types"
 import { CardHoverPreview } from "@/components/ui/card-hover-preview"
 import {
+  DualDomainAnimation,
   getRhodesProfessionDomain,
   ProfessionDomainAnimation,
   RhodesDomainIcon,
@@ -62,6 +63,70 @@ describe("Rhodes Island domain icons", () => {
       vi.advanceTimersByTime(1)
     })
     expect(screen.getByRole("img", { name: "迅攻领域图标" })).toBeInTheDocument()
+
+    vi.useRealTimers()
+  })
+
+  it("mounts both domain screens together on entry and keeps them visually joined", () => {
+    vi.useFakeTimers()
+
+    const { container } = render(
+      <DualDomainAnimation
+        professionId="ri-profession-102152bab2bd"
+        secondaryDomain="奇迹"
+      />,
+    )
+
+    expect(screen.queryByRole("img", { name: "精准领域图标" })).not.toBeInTheDocument()
+    expect(screen.queryByRole("img", { name: "奇迹领域图标" })).not.toBeInTheDocument()
+
+    act(() => {
+      vi.advanceTimersByTime(500)
+    })
+
+    expect(screen.getByRole("img", { name: "精准领域图标" })).toBeInTheDocument()
+    expect(screen.getByRole("img", { name: "奇迹领域图标" })).toBeInTheDocument()
+    expect(container.querySelector('[aria-label="主职业与次选领域动画"]')?.children).toHaveLength(4)
+
+    vi.useRealTimers()
+  })
+
+  it("replays the secondary screen without remounting the profession screen", () => {
+    vi.useFakeTimers()
+
+    const { rerender } = render(
+      <DualDomainAnimation
+        professionId="ri-profession-102152bab2bd"
+        replayKey={1}
+        secondaryDomain="奇迹"
+        secondaryReplayKey={1}
+      />,
+    )
+
+    act(() => {
+      vi.advanceTimersByTime(500)
+    })
+
+    const professionIcon = screen.getByRole("img", { name: "精准领域图标" })
+
+    rerender(
+      <DualDomainAnimation
+        professionId="ri-profession-102152bab2bd"
+        replayKey={1}
+        secondaryDomain="奇迹"
+        secondaryReplayKey={2}
+      />,
+    )
+
+    expect(screen.getByRole("img", { name: "精准领域图标" })).toBe(professionIcon)
+    expect(screen.queryByRole("img", { name: "奇迹领域图标" })).not.toBeInTheDocument()
+
+    act(() => {
+      vi.advanceTimersByTime(500)
+    })
+
+    expect(screen.getByRole("img", { name: "精准领域图标" })).toBe(professionIcon)
+    expect(screen.getByRole("img", { name: "奇迹领域图标" })).toBeInTheDocument()
 
     vi.useRealTimers()
   })

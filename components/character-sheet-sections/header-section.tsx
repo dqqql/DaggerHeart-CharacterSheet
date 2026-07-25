@@ -9,7 +9,16 @@ import { CardHoverPreview } from "@/components/ui/card-hover-preview"
 import { useSheetStore } from "@/lib/sheet-store"
 import { useTextModeStore } from "@/lib/text-mode-store"
 import { getDisplayedCharacterCards } from "@/lib/ancestry-utils"
-import { ProfessionDomainAnimation } from "@/components/rhodes-island/domain-icon"
+import { DualDomainAnimation } from "@/components/rhodes-island/domain-icon"
+import type { RhodesSecondaryDomainName } from "@/lib/sheet-data"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
+const RHODES_SECONDARY_DOMAINS: RhodesSecondaryDomainName[] = ["远见", "奇迹", "心界", "工业"]
 
 interface HeaderSectionProps {
   onOpenProfessionModal: () => void;
@@ -33,6 +42,7 @@ export function HeaderSection({
   const [editingField, setEditingField] = useState<string | null>(null)
   const [editingValue, setEditingValue] = useState("")
   const [editingStartLevel, setEditingStartLevel] = useState<string | null>(null)
+  const [secondaryDomainReplayKey, setSecondaryDomainReplayKey] = useState(0)
   const isRhodesIsland = formData.ruleSetId === "rhodes-island"
   const isTextMode = useTextModeStore((state) => state.isTextMode)
 
@@ -92,6 +102,11 @@ export function HeaderSection({
 
   const openSubclassModal = () => {
     onOpenSubclassModal()
+  }
+
+  const selectSecondaryDomain = (domain: RhodesSecondaryDomainName) => {
+    setSheetData({ rhodesSecondaryDomain: domain })
+    setSecondaryDomainReplayKey((current) => current + 1)
   }
 
   const startEditingName = (field: string, currentValue: string) => {
@@ -202,10 +217,12 @@ export function HeaderSection({
           )}
         </div>
         <div className="mt-1 flex min-h-0 flex-1 print:hidden">
-          <ProfessionDomainAnimation
+          <DualDomainAnimation
             professionId={isRhodesIsland ? formData.professionRef?.id : undefined}
             professionName={isRhodesIsland ? formData.professionRef?.name : undefined}
             replayKey={professionAnimationReplayKey}
+            secondaryDomain={isRhodesIsland ? formData.rhodesSecondaryDomain : undefined}
+            secondaryReplayKey={secondaryDomainReplayKey}
           />
         </div>
       </div>
@@ -412,6 +429,39 @@ export function HeaderSection({
               </div>
             )}
           </div>
+          {isRhodesIsland && (
+            <div className="flex flex-col print:hidden">
+              <span aria-hidden="true" className="h-[14px]" />
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    aria-label="次选领域"
+                    className="h-7 w-24 rounded border border-gray-400 bg-white px-2 text-left text-xs text-gray-800 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
+                  >
+                    <span className="flex items-center justify-between gap-1">
+                      <span className="truncate">{formData.rhodesSecondaryDomain || "次选领域"}</span>
+                      <span aria-hidden="true" className="text-[9px] text-gray-500">▼</span>
+                    </span>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="min-w-24">
+                  {RHODES_SECONDARY_DOMAINS.map((domain) => (
+                    <DropdownMenuItem
+                      key={domain}
+                      onSelect={() => selectSecondaryDomain(domain)}
+                      className="text-xs"
+                    >
+                      <span className="w-3" aria-hidden="true">
+                        {formData.rhodesSecondaryDomain === domain ? "✓" : ""}
+                      </span>
+                      {domain}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          )}
         </div>
       </div>
       <div className="flex flex-col items-center">

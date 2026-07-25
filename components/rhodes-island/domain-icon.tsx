@@ -212,12 +212,17 @@ interface ProfessionDomainAnimationProps {
   replayKey?: React.Key
 }
 
-export function ProfessionDomainAnimation({
-  professionId,
-  professionName,
+interface DomainAnimationScreenProps {
+  domain?: RhodesDomainName
+  replayKey?: React.Key
+  emptyLabel: string
+}
+
+function DomainAnimationScreen({
+  domain,
   replayKey,
-}: ProfessionDomainAnimationProps) {
-  const domain = getRhodesProfessionDomain(professionId, professionName)
+  emptyLabel,
+}: DomainAnimationScreenProps) {
   const [animationStarted, setAnimationStarted] = useState(false)
 
   useEffect(() => {
@@ -230,29 +235,67 @@ export function ProfessionDomainAnimation({
     }, 500)
 
     return () => window.clearTimeout(startTimer)
-  }, [domain, professionId, replayKey])
+  }, [domain, replayKey])
 
   return (
-    <div
-      className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded border border-slate-600/80 bg-slate-950/70"
-      aria-live="polite"
-    >
-      <div aria-hidden="true" className="absolute inset-0 opacity-35 [background-image:linear-gradient(rgba(103,232,249,.13)_1px,transparent_1px),linear-gradient(90deg,rgba(103,232,249,.13)_1px,transparent_1px)] [background-size:18px_18px]" />
+    <div className="relative flex min-w-0 flex-1 items-center justify-center overflow-hidden" aria-live="polite">
       {domain ? (
-        <div className="relative flex h-full w-full items-center justify-center gap-3 px-3 py-1 text-cyan-50">
-          <div className="h-9 w-11 shrink-0">
+        <div className="relative flex h-full w-full items-center justify-center gap-1.5 px-1 py-1 text-cyan-50">
+          <div className="h-8 w-9 shrink-0">
             {animationStarted && (
-              <RhodesDomainIcon domain={domain} animated className="h-9 w-11 drop-shadow-[0_0_7px_rgba(165,243,252,.75)]" />
+              <RhodesDomainIcon domain={domain} animated className="h-8 w-9 drop-shadow-[0_0_7px_rgba(165,243,252,.75)]" />
             )}
           </div>
-          <div className="leading-none">
-            <div className="text-[11px] font-semibold tracking-[0.28em]">{domain}</div>
-            <div className="mt-1 text-[7px] tracking-[0.18em] text-cyan-200/70">{getRhodesDomainEnglish(domain)}</div>
+          <div className="min-w-0 leading-none">
+            <div className="text-[10px] font-semibold tracking-[0.2em]">{domain}</div>
+            <div className="mt-1 truncate text-[6px] tracking-[0.08em] text-cyan-200/70">{getRhodesDomainEnglish(domain)}</div>
           </div>
         </div>
       ) : (
-        <span className="relative text-[8px] tracking-[0.3em] text-slate-400 print:hidden">等待职业同步</span>
+        <span className="relative px-1 text-center text-[7px] tracking-[0.16em] text-slate-400 print:hidden">{emptyLabel}</span>
       )}
+    </div>
+  )
+}
+
+export function ProfessionDomainAnimation({
+  professionId,
+  professionName,
+  replayKey,
+}: ProfessionDomainAnimationProps) {
+  const domain = getRhodesProfessionDomain(professionId, professionName)
+
+  return (
+    <div className="relative flex min-h-0 flex-1 overflow-hidden rounded border border-slate-600/80 bg-slate-950/70">
+      <div aria-hidden="true" className="absolute inset-0 opacity-35 [background-image:linear-gradient(rgba(103,232,249,.13)_1px,transparent_1px),linear-gradient(90deg,rgba(103,232,249,.13)_1px,transparent_1px)] [background-size:18px_18px]" />
+      <DomainAnimationScreen domain={domain} replayKey={replayKey} emptyLabel="等待职业同步" />
+    </div>
+  )
+}
+
+interface DualDomainAnimationProps extends ProfessionDomainAnimationProps {
+  secondaryDomain?: RhodesDomainName
+  secondaryReplayKey?: React.Key
+}
+
+export function DualDomainAnimation({
+  professionId,
+  professionName,
+  replayKey,
+  secondaryDomain,
+  secondaryReplayKey,
+}: DualDomainAnimationProps) {
+  const professionDomain = getRhodesProfessionDomain(professionId, professionName)
+
+  return (
+    <div
+      className="relative flex min-h-0 flex-1 overflow-hidden rounded border border-slate-600/80 bg-slate-950/70"
+      aria-label="主职业与次选领域动画"
+    >
+      <div aria-hidden="true" className="absolute inset-0 opacity-35 [background-image:linear-gradient(rgba(103,232,249,.13)_1px,transparent_1px),linear-gradient(90deg,rgba(103,232,249,.13)_1px,transparent_1px)] [background-size:18px_18px]" />
+      <DomainAnimationScreen domain={professionDomain} replayKey={replayKey} emptyLabel="等待职业同步" />
+      <div aria-hidden="true" className="relative w-px shrink-0 bg-slate-600/80" />
+      <DomainAnimationScreen domain={secondaryDomain} replayKey={secondaryReplayKey} emptyLabel="等待次选领域" />
     </div>
   )
 }

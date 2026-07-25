@@ -39,6 +39,8 @@ export interface SheetCardReference {
   name: string
 }
 
+export type RhodesSecondaryDomainName = "远见" | "奇迹" | "心界" | "工业"
+
 export interface MulticlassSelection {
   profession: SheetCardReference
   branch: SheetCardReference
@@ -292,6 +294,7 @@ export interface SheetData {
   ancestry2Ref?: SheetCardReference
   communityRef?: SheetCardReference
   subclassRef?: SheetCardReference
+  rhodesSecondaryDomain?: RhodesSecondaryDomainName
 
   evasion?: string
   evasionManualModifier?: string
