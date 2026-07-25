@@ -101,7 +101,7 @@ export function cleanAndNormalizeData(data: any): SheetData {
     ancestry2Ref: data.ancestry2Ref || undefined,
     communityRef: data.communityRef || undefined,
     subclassRef: data.subclassRef || undefined,
-    rhodesSecondaryDomain: ["远见", "奇迹", "心界", "工业"].includes(data.rhodesSecondaryDomain)
+    rhodesSecondaryDomain: ["迅攻", "攻坚", "坚阵", "精准", "奥术", "支柱", "秘行", "远见", "奇迹", "心界", "工业"].includes(data.rhodesSecondaryDomain)
       ? data.rhodesSecondaryDomain
       : undefined,
 

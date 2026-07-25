@@ -22,10 +22,10 @@ export const RHODES_SECONDARY_DOMAIN_ORDER = [
   "工业",
 ] as const
 
-const RHODES_DOMAIN_ORDER = [
+export const RHODES_DOMAIN_ORDER = [
   ...RHODES_PRIMARY_DOMAIN_ORDER,
   ...RHODES_SECONDARY_DOMAIN_ORDER,
-]
+] as const
 
 const RHODES_DOMAIN_ORDER_INDEX = new Map(
   RHODES_DOMAIN_ORDER.map((domain, index) => [domain, index]),
@@ -56,4 +56,11 @@ export function getRhodesDomainFilterOptions(
       ? { separatorBefore: "主次领域分界线" }
       : {}),
   }))
+}
+
+export function getRhodesSecondaryDomainSelectionOptions(
+  primaryDomain?: string,
+): RhodesDomainFilterOption[] {
+  return getRhodesDomainFilterOptions(RHODES_DOMAIN_ORDER)
+    .filter(option => option.value !== primaryDomain)
 }

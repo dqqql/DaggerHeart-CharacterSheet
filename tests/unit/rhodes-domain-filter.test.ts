@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest"
 
-import { getRhodesDomainFilterOptions } from "@/lib/rhodes-domain-filter"
+import {
+  getRhodesDomainFilterOptions,
+  getRhodesSecondaryDomainSelectionOptions,
+} from "@/lib/rhodes-domain-filter"
 
 describe("getRhodesDomainFilterOptions", () => {
   it("orders primary and secondary domains and marks their boundary", () => {
@@ -34,5 +37,20 @@ describe("getRhodesDomainFilterOptions", () => {
         { value: "奇迹", label: "奇迹", separatorBefore: "主次领域分界线" },
         { value: "心界", label: "心界" },
       ])
+  })
+
+  it("offers every domain except the profession primary domain in selector order", () => {
+    const options = getRhodesSecondaryDomainSelectionOptions("精准")
+
+    expect(options.map(option => option.value)).toEqual([
+      "迅攻", "攻坚", "坚阵", "奥术", "支柱", "秘行",
+      "远见", "奇迹", "心界", "工业",
+    ])
+    expect(options.some(option => option.value === "精准")).toBe(false)
+    expect(options.find(option => option.separatorBefore)).toEqual({
+      value: "远见",
+      label: "远见",
+      separatorBefore: "主次领域分界线",
+    })
   })
 })

@@ -294,7 +294,11 @@ export function DualDomainAnimation({
     >
       <div aria-hidden="true" className="absolute inset-0 opacity-35 [background-image:linear-gradient(rgba(103,232,249,.13)_1px,transparent_1px),linear-gradient(90deg,rgba(103,232,249,.13)_1px,transparent_1px)] [background-size:18px_18px]" />
       <DomainAnimationScreen domain={professionDomain} replayKey={replayKey} emptyLabel="等待职业同步" />
-      <div aria-hidden="true" className="relative w-px shrink-0 bg-slate-600/80" />
+      <div
+        role="separator"
+        aria-label="主次领域分界线"
+        className="relative w-px shrink-0 bg-cyan-200/50 shadow-[0_0_5px_rgba(165,243,252,.35)]"
+      />
       <DomainAnimationScreen domain={secondaryDomain} replayKey={secondaryReplayKey} emptyLabel="等待次选领域" />
     </div>
   )

@@ -39,7 +39,18 @@ export interface SheetCardReference {
   name: string
 }
 
-export type RhodesSecondaryDomainName = "远见" | "奇迹" | "心界" | "工业"
+export type RhodesSecondaryDomainName =
+  | "迅攻"
+  | "攻坚"
+  | "坚阵"
+  | "精准"
+  | "奥术"
+  | "支柱"
+  | "秘行"
+  | "远见"
+  | "奇迹"
+  | "心界"
+  | "工业"
 
 export interface MulticlassSelection {
   profession: SheetCardReference

@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useMemo, useRef, useState } from "react"
+import { Fragment, useEffect, useMemo, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import { useAutoResizeFont } from "@/hooks/use-auto-resize-font"
 import { useCardPreview } from "@/hooks/use-card-preview"
@@ -9,16 +9,20 @@ import { CardHoverPreview } from "@/components/ui/card-hover-preview"
 import { useSheetStore } from "@/lib/sheet-store"
 import { useTextModeStore } from "@/lib/text-mode-store"
 import { getDisplayedCharacterCards } from "@/lib/ancestry-utils"
-import { DualDomainAnimation } from "@/components/rhodes-island/domain-icon"
+import {
+  DualDomainAnimation,
+  getRhodesProfessionDomain,
+} from "@/components/rhodes-island/domain-icon"
 import type { RhodesSecondaryDomainName } from "@/lib/sheet-data"
+import {
+  getRhodesSecondaryDomainSelectionOptions,
+} from "@/lib/rhodes-domain-filter"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-
-const RHODES_SECONDARY_DOMAINS: RhodesSecondaryDomainName[] = ["远见", "奇迹", "心界", "工业"]
 
 interface HeaderSectionProps {
   onOpenProfessionModal: () => void;
@@ -45,6 +49,22 @@ export function HeaderSection({
   const [secondaryDomainReplayKey, setSecondaryDomainReplayKey] = useState(0)
   const isRhodesIsland = formData.ruleSetId === "rhodes-island"
   const isTextMode = useTextModeStore((state) => state.isTextMode)
+  const professionDomain = isRhodesIsland
+    ? getRhodesProfessionDomain(formData.professionRef?.id, formData.professionRef?.name)
+    : undefined
+  const secondaryDomainOptions = useMemo(
+    () => getRhodesSecondaryDomainSelectionOptions(professionDomain),
+    [professionDomain],
+  )
+
+  useEffect(() => {
+    if (
+      professionDomain
+      && formData.rhodesSecondaryDomain === professionDomain
+    ) {
+      setSheetData({ rhodesSecondaryDomain: undefined })
+    }
+  }, [formData.rhodesSecondaryDomain, professionDomain, setSheetData])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -221,7 +241,11 @@ export function HeaderSection({
             professionId={isRhodesIsland ? formData.professionRef?.id : undefined}
             professionName={isRhodesIsland ? formData.professionRef?.name : undefined}
             replayKey={professionAnimationReplayKey}
-            secondaryDomain={isRhodesIsland ? formData.rhodesSecondaryDomain : undefined}
+            secondaryDomain={
+              isRhodesIsland && formData.rhodesSecondaryDomain !== professionDomain
+                ? formData.rhodesSecondaryDomain
+                : undefined
+            }
             secondaryReplayKey={secondaryDomainReplayKey}
           />
         </div>
@@ -446,18 +470,33 @@ export function HeaderSection({
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="min-w-24">
-                  {RHODES_SECONDARY_DOMAINS.map((domain) => (
-                    <DropdownMenuItem
-                      key={domain}
-                      onSelect={() => selectSecondaryDomain(domain)}
-                      className="text-xs"
-                    >
-                      <span className="w-3" aria-hidden="true">
-                        {formData.rhodesSecondaryDomain === domain ? "✓" : ""}
-                      </span>
-                      {domain}
-                    </DropdownMenuItem>
-                  ))}
+                  {secondaryDomainOptions.map((option) => {
+                    const domain = option.value as RhodesSecondaryDomainName
+                    return (
+                      <Fragment key={domain}>
+                        {option.separatorBefore && (
+                          <div
+                            role="separator"
+                            aria-label={option.separatorBefore}
+                            className="flex items-center gap-1 px-1 py-1 text-[9px] text-muted-foreground"
+                          >
+                            <span className="h-px flex-1 bg-border" />
+                            <span>{option.separatorBefore}</span>
+                            <span className="h-px flex-1 bg-border" />
+                          </div>
+                        )}
+                        <DropdownMenuItem
+                          onSelect={() => selectSecondaryDomain(domain)}
+                          className="text-xs"
+                        >
+                          <span className="w-3" aria-hidden="true">
+                            {formData.rhodesSecondaryDomain === domain ? "✓" : ""}
+                          </span>
+                          {domain}
+                        </DropdownMenuItem>
+                      </Fragment>
+                    )
+                  })}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
