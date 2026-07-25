@@ -17,4 +17,13 @@ describe("CardMarkdown", () => {
     const safeLink = screen.getByRole("link", { name: "安全链接" })
     expect(safeLink).toHaveAttribute("href", "/safe-path")
   })
+
+  it("renders backslash-prefixed rules notes as annotations", () => {
+    const { container } = render(
+      <CardMarkdown>{"规则正文。\n\n\\这是一条规则补充。"}</CardMarkdown>,
+    )
+
+    expect(container.querySelector("blockquote")).toHaveTextContent("这是一条规则补充。")
+    expect(container).not.toHaveTextContent("\\这是一条规则补充。")
+  })
 })

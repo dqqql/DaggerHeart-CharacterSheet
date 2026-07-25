@@ -5,6 +5,7 @@ import ReactMarkdown from "react-markdown"
 import type { Components } from "react-markdown"
 import remarkGfm from "remark-gfm"
 import remarkBreaks from "remark-breaks"
+import { transformCustomSyntax } from "@/lib/md-component"
 
 interface CardMarkdownProps {
     children: string
@@ -41,6 +42,11 @@ export function CardMarkdown({ children, className = "", customComponents }: Car
         ul: ({ children }) => <ul className="mb-2 list-outside list-disc pl-5">{children}</ul>,
         ol: ({ children }) => <ol className="mb-2 list-outside list-decimal pl-5">{children}</ol>,
         li: ({ children }) => <li className="mb-1">{children}</li>,
+        blockquote: ({ children }) => (
+            <blockquote className="my-2 border-l-2 border-cyan-500/70 bg-cyan-50/70 py-1 pl-2 text-slate-700 italic">
+                {children}
+            </blockquote>
+        ),
         strong: ({ children }) => {
             // 检查子节点类型
             const childArray = React.Children.toArray(children);
@@ -91,7 +97,7 @@ export function CardMarkdown({ children, className = "", customComponents }: Car
                 skipHtml
                 urlTransform={sanitizeMarkdownUrl}
             >
-                {children}
+                {transformCustomSyntax(children)}
             </ReactMarkdown>
         </div>
     );

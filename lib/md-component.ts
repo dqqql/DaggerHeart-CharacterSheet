@@ -7,6 +7,11 @@ const CENTER_BLOCK_PATTERN = /\[center\]([\s\S]*?)\[\/center\]/gi;
 
 function transformInlineCustomSyntax(text: string): string {
     return text
+        // 罗德岛卡库以独占段落开头的反斜杠表示规则补充或释义。
+        // 转为 Markdown 引用块，让所有卡牌视图都以注释样式呈现，而非显示原始标记。
+        .replace(/(^|\r?\n\s*\r?\n)[\t ]*\\(?!~)(?=\S)/g, "$1> ")
+        // 卡库中的 `\\~` 是名称与说明之间的旧分隔符。
+        .replace(/\\~/g, "：")
         .replace(/\[(input|box):(\d+)\]/g, (_, type: string, value: string) => `\`card-${type}:${value}\``)
         .replace(/\[(checkbox):(\d+)\]/g, (_, type: string, value: string) => `\`card-${type}:${value}\``)
         .replace(/\[(checkbox)\]/g, (_, type: string) => `\`card-${type}\``);
