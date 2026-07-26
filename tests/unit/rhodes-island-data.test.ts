@@ -42,17 +42,17 @@ describe("Rhodes Island static rules data", () => {
     const domainIds = new Set(rhodesIslandCatalog.domains.map((item) => item.id))
     for (const branch of rhodesIslandCatalog.branches) expect(professionIds.has(branch.professionId)).toBe(true)
     for (const card of rhodesIslandCatalog.domainCards) expect(domainIds.has(card.domainId)).toBe(true)
-    const expectedBranchCounts = new Map([
-      ["先锋", 6],
-      ["近卫", 7],
-      ["狙击", 7],
-      ["术师", 7],
-      ["特种", 7],
-      ["重装", 7],
-      ["辅助", 7],
-    ])
+    const expectedBranchCounts: Record<string, number> = {
+      先锋: 6,
+      近卫: 7,
+      狙击: 7,
+      术师: 7,
+      特种: 7,
+      重装: 7,
+      辅助: 7,
+    }
     for (const profession of rhodesIslandCatalog.professions) {
-      expect(getRhodesIslandBranchesForProfession(profession.id)).toHaveLength(expectedBranchCounts.get(profession.name))
+      expect(getRhodesIslandBranchesForProfession(profession.id)).toHaveLength(expectedBranchCounts[profession.name])
     }
   })
 

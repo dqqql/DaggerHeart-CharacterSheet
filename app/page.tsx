@@ -17,6 +17,7 @@ import ArmorTemplatePage from "@/components/character-sheet-page-iknis"
 import { useSheetStore, useCardActions } from "@/lib/sheet-store"
 import { PrintReadyChecker } from "@/components/print/print-ready-checker"
 import { PrintProvider } from "@/contexts/print-context"
+import { ExportPreviewShell } from "@/components/print/export-preview-shell"
 import { usePinnedCardsStore } from "@/lib/pinned-cards-store"
 import { PinnedCardWindow } from "@/components/ui/pinned-card-window"
 import { useTextModeStore } from "@/lib/text-mode-store"
@@ -807,18 +808,22 @@ export default function Home() {
     return (
       <PrintProvider containerRef={printContainerRef}>
         <PrintReadyChecker onSkipWaiting={handleSkipWaiting}>
-          <div className="print-all-pages">
+          <ExportPreviewShell ruleSetId={activeRuleSetId}>
             <PrintHelper />
 
             {/* 顶部提示横条 - 只在屏幕上显示，打印时隐藏 */}
             <div className="fixed top-0 left-0 right-0 z-[70] print:hidden">
               <div
-                className="bg-black bg-opacity-50 text-white px-6 py-3 text-center cursor-pointer hover:bg-opacity-70 transition-all duration-200"
+                data-export-preview-banner={activeRuleSetId}
+                className="export-preview-banner px-6 py-3 text-center cursor-pointer transition-all duration-200"
                 onClick={() => setIsPrintingAll(false)}
               >
-                <div className="flex items-center justify-center gap-3">
+                <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+                  <span className="export-preview-ruleset-label text-xs font-semibold tracking-[0.14em]">
+                    {activeRuleSetId === "rhodes-island" ? "罗德岛终端 · 导出预览" : "DAGGERHEART · 导出预览"}
+                  </span>
                   <span className="text-sm">
-                    按 <kbd className="px-2 py-1 bg-gray-700 rounded text-xs mx-1">ESC</kbd> 键或点击此处退出预览
+                    按 <kbd className="export-preview-kbd px-2 py-1 rounded text-xs mx-1">ESC</kbd> 键或点击此处退出预览
                   </span>
                 </div>
               </div>
@@ -847,7 +852,7 @@ export default function Home() {
             <div ref={printContainerRef}>
               <PrintPageRenderer sheetData={formData} />
             </div>
-          </div>
+          </ExportPreviewShell>
         </PrintReadyChecker>
       </PrintProvider>
     )
