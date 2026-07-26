@@ -9,6 +9,12 @@ import {
   RhodesDomainIcon,
 } from "@/components/rhodes-island/domain-icon"
 
+vi.mock("next/image", () => ({
+  default: ({ fill: _fill, ...props }: React.ImgHTMLAttributes<HTMLImageElement> & { fill?: boolean }) => (
+    <img {...props} />
+  ),
+}))
+
 function createRhodesCard(overrides: Partial<StandardCard>): StandardCard {
   return {
     standarized: true,
@@ -168,5 +174,31 @@ describe("Rhodes Island domain icons", () => {
       expect(screen.getByText("STEALTH")).toBeInTheDocument()
       expect(screen.getByText("ASSAULT")).toBeInTheDocument()
     })
+  })
+
+  it("shows only the card image for a domain card hover preview", async () => {
+    render(
+      <CardHoverPreview
+        card={createRhodesCard({
+          name: "一心双响",
+          type: "domain",
+          description: "不应在卡图旁重复展示的规则文本",
+          imageUrl: "/rhodes-island/domains/arcane/32065fe36e1c.webp",
+          cardSelectDisplay: {
+            item1: "奥术",
+            item2: "能力",
+            item3: "RC.2",
+          },
+        })}
+        isTextMode
+      />,
+    )
+
+    const preview = await screen.findByTestId("domain-card-image-preview")
+    expect(screen.getByRole("img", { name: "一心双响卡图" })).toBeInTheDocument()
+    expect(preview).toHaveClass("aspect-[5/7]")
+    expect(screen.queryByText("一心双响")).not.toBeInTheDocument()
+    expect(screen.queryByText("不应在卡图旁重复展示的规则文本")).not.toBeInTheDocument()
+    expect(screen.queryByText("奥术")).not.toBeInTheDocument()
   })
 })

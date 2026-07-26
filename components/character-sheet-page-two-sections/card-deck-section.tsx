@@ -360,8 +360,9 @@ export function CardDeckSection({
     if (!card) return {}
 
     const rect = card.getBoundingClientRect()
-    const previewWidth = 520 // CardHoverPreview 的宽度
-    const previewHeight = 450 // CardHoverPreview 的估计高度（提高以覆盖文字模式的 350px + 内容）
+    const isDomainImagePreview = cards[index]?.type === "domain"
+    const previewWidth = isDomainImagePreview ? 240 : 520
+    const previewHeight = isDomainImagePreview ? 336 : 450
     const gap = 10 // 间距
 
     // 计算各个方向的可用空间

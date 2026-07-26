@@ -1,8 +1,7 @@
 "use client"
 
-import type { StandardCard } from "@/card/card-types"
+import { CardType, getVariantRealType, isVariantCard, type StandardCard } from "@/card/card-types"
 import { getCardTypeName } from "@/card/card-ui-config"
-import { getVariantRealType, isVariantCard } from "@/card/card-types"
 import Image from "next/image"
 import React, { useState } from "react"
 import { getCardImageUrl, getCardImageUrlAsync } from "@/lib/utils"
@@ -77,6 +76,27 @@ export function CardHoverPreview({ card, isTextMode = false }: CardHoverPreviewP
     }, [imageError, card, imageSrc]);
     
     if (!card) return null
+
+    // 领域卡图本身已经包含完整规则信息，悬浮时无需再重复拼接卡名和说明。
+    if (card.type === CardType.Domain) {
+        return (
+            <div
+                className="relative aspect-[5/7] w-[240px] max-w-[calc(100vw-20px)] overflow-hidden rounded-lg bg-white shadow-xl ring-1 ring-black/10"
+                data-testid="domain-card-image-preview"
+            >
+                {imageSrc && (
+                    <Image
+                        src={imageSrc}
+                        alt={`${card.name}卡图`}
+                        fill
+                        className="object-contain"
+                        sizes="240px"
+                        onError={() => setImageError(true)}
+                    />
+                )}
+            </div>
+        )
+    }
 
     // 文字模式下使用 SelectableCard 组件
     if (isTextMode) {
