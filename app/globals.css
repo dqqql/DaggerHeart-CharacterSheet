@@ -1089,6 +1089,7 @@ body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] .border-t
 /* 打印所有页面的特殊样式 - 默认都有分页符 */
 .print-all-pages .page-one,
 .print-all-pages .page-two,
+.print-all-pages .page-rhodes-relationships,
 .print-all-pages .page-three,
 .print-all-pages .page-adventure-notes,
 .print-all-pages .page-four,
@@ -1105,6 +1106,7 @@ body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] .border-t
 /* 在打印预览模式下确保每个页面居中 */
 .print-all-pages .page-one,
 .print-all-pages .page-two,
+.print-all-pages .page-rhodes-relationships,
 .print-all-pages .page-three,
 .print-all-pages .page-adventure-notes,
 .print-all-pages .page-four,
@@ -1178,6 +1180,7 @@ body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] .border-t
 @media print {
   .print-all-pages .page-one,
   .print-all-pages .page-two,
+  .print-all-pages .page-rhodes-relationships,
   .print-all-pages .page-three,
   .print-all-pages .page-adventure-notes,
   .print-all-pages .page-four,

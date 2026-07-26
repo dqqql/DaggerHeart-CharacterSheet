@@ -31,24 +31,31 @@ export function PageVisibilityDropdown() {
     )
   }
 
-  if (sheetData.ruleSetId === "rhodes-island") {
-    return null
-  }
-  
-  const pageOptions = getOptionalPageConfigs().map(config => ({
-    id: config.visibilityKey!,
-    label: config.label,
-    description: config.description,
-    visible: sheetData.pageVisibility?.[config.visibilityKey!] || false
-  }))
+  const isRhodesIsland = sheetData.ruleSetId === "rhodes-island"
+  const pageOptions = isRhodesIsland
+    ? [{
+        id: "relationshipQuestions" as const,
+        label: "关系与问题",
+        description: "职业背景问题与同伴关系",
+        visible: sheetData.pageVisibility?.relationshipQuestions || false,
+      }]
+    : getOptionalPageConfigs().map(config => ({
+        id: config.visibilityKey!,
+        label: config.label,
+        description: config.description,
+        visible: sheetData.pageVisibility?.[config.visibilityKey!] || false
+      }))
 
-  const togglePageVisibility = (pageId: 'rangerCompanion' | 'armorTemplate' | 'adventureNotes') => {
+  const togglePageVisibility = (
+    pageId: 'rangerCompanion' | 'armorTemplate' | 'adventureNotes' | 'relationshipQuestions',
+  ) => {
     const currentValue = sheetData.pageVisibility?.[pageId]
     setSheetData({
       pageVisibility: {
         rangerCompanion: pageId === 'rangerCompanion' ? !currentValue : (sheetData.pageVisibility?.rangerCompanion ?? false),
         armorTemplate: pageId === 'armorTemplate' ? !currentValue : (sheetData.pageVisibility?.armorTemplate ?? false),
-        adventureNotes: pageId === 'adventureNotes' ? !currentValue : (sheetData.pageVisibility?.adventureNotes ?? false)
+        adventureNotes: pageId === 'adventureNotes' ? !currentValue : (sheetData.pageVisibility?.adventureNotes ?? false),
+        relationshipQuestions: pageId === 'relationshipQuestions' ? !currentValue : (sheetData.pageVisibility?.relationshipQuestions ?? false),
       }
     })
   }
@@ -66,6 +73,7 @@ export function PageVisibilityDropdown() {
             "h-10 min-w-[40px]"
           )}
           title="管理页面显示"
+          aria-label="管理页面显示"
         >
           <Settings className="h-4 w-4" />
         </button>

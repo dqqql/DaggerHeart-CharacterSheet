@@ -46,7 +46,8 @@ function migratePageVisibility(data: SheetData): SheetData {
     migrated.pageVisibility = {
       rangerCompanion: data.includePageThreeInExport,
       armorTemplate: false, // 默认隐藏护甲模板页
-      adventureNotes: false // 默认隐藏冒险笔记页
+      adventureNotes: false, // 默认隐藏冒险笔记页
+      relationshipQuestions: false
     }
     console.log('[Migration] Migrated includePageThreeInExport to pageVisibility')
   } else {
@@ -54,7 +55,8 @@ function migratePageVisibility(data: SheetData): SheetData {
     migrated.pageVisibility = {
       rangerCompanion: false,
       armorTemplate: false,
-      adventureNotes: false
+      adventureNotes: false,
+      relationshipQuestions: false
     }
     console.log('[Migration] Added default pageVisibility')
   }
@@ -142,16 +144,20 @@ function migratePageVisibilityFields(data: SheetData): SheetData {
   const migrated = { ...data }
   let needsSave = false
 
-  // 确保 adventureNotes 字段存在
-  if (!('adventureNotes' in data.pageVisibility)) {
+  // 确保后续加入的可选页面字段存在
+  if (
+    !('adventureNotes' in data.pageVisibility) ||
+    !('relationshipQuestions' in data.pageVisibility)
+  ) {
     const currentVisibility = data.pageVisibility as Record<string, boolean>
     migrated.pageVisibility = {
       rangerCompanion: currentVisibility.rangerCompanion ?? false,
       armorTemplate: currentVisibility.armorTemplate ?? false,
-      adventureNotes: false // 默认隐藏冒险笔记页
+      adventureNotes: currentVisibility.adventureNotes ?? false,
+      relationshipQuestions: currentVisibility.relationshipQuestions ?? false
     }
     needsSave = true
-    console.log('[Migration] Added missing adventureNotes field to pageVisibility')
+    console.log('[Migration] Added missing fields to pageVisibility')
   }
 
   return migrated

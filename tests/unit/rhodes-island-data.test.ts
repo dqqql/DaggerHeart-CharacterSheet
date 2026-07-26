@@ -14,14 +14,14 @@ describe("Rhodes Island static rules data", () => {
   it("matches the normalized release inventory", () => {
     expect(rhodesIslandManifest.counts).toEqual({
       professions: 7,
-      branches: 28,
+      branches: 48,
       ancestries: 35,
       communities: 15,
       domains: 11,
       domainCards: 228,
     })
     expect(rhodesIslandCatalog.professions).toHaveLength(7)
-    expect(rhodesIslandCatalog.branches).toHaveLength(28)
+    expect(rhodesIslandCatalog.branches).toHaveLength(48)
     expect(rhodesIslandCatalog.ancestries).toHaveLength(35)
     expect(rhodesIslandCatalog.communities).toHaveLength(15)
     expect(rhodesIslandCatalog.domains).toHaveLength(11)
@@ -42,7 +42,18 @@ describe("Rhodes Island static rules data", () => {
     const domainIds = new Set(rhodesIslandCatalog.domains.map((item) => item.id))
     for (const branch of rhodesIslandCatalog.branches) expect(professionIds.has(branch.professionId)).toBe(true)
     for (const card of rhodesIslandCatalog.domainCards) expect(domainIds.has(card.domainId)).toBe(true)
-    for (const profession of rhodesIslandCatalog.professions) expect(getRhodesIslandBranchesForProfession(profession.id)).toHaveLength(4)
+    const expectedBranchCounts = new Map([
+      ["先锋", 6],
+      ["近卫", 7],
+      ["狙击", 7],
+      ["术师", 7],
+      ["特种", 7],
+      ["重装", 7],
+      ["辅助", 7],
+    ])
+    for (const profession of rhodesIslandCatalog.professions) {
+      expect(getRhodesIslandBranchesForProfession(profession.id)).toHaveLength(expectedBranchCounts.get(profession.name))
+    }
   })
 
   it("contains four complete branch stages, bound weapons, and exclusive X/Y modules", () => {
@@ -79,7 +90,7 @@ describe("Rhodes Island static rules data", () => {
   })
 
   it("marks every runtime card for this ruleset and contains no remote dependency", () => {
-    expect(rhodesIslandCards).toHaveLength(313)
+    expect(rhodesIslandCards).toHaveLength(333)
     expect(rhodesIslandCards.every((card) => card.ruleset === "rhodes-island")).toBe(true)
     const serialized = readFileSync(join(process.cwd(), "data", "rhodes-island", "cards.json"), "utf8")
     expect(serialized).not.toMatch(/https?:\/\//)

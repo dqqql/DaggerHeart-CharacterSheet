@@ -58,6 +58,7 @@ export const defaultSheetData: SheetData = {
     characterBackground: "",
     characterAppearance: "",
     characterMotivation: "",
+    rhodesIslandRelationshipAnswers: {},
 
     cards: Array(20).fill(0).map(() => createEmptyCard()),          // 聚焦卡组（20张）
     inventory_cards: Array(20).fill(0).map(() => createEmptyCard()), // 库存卡组（20张）
@@ -129,7 +130,8 @@ export const defaultSheetData: SheetData = {
     pageVisibility: {
         rangerCompanion: false,  // 默认隐藏游侠伙伴页
         armorTemplate: false,    // 默认隐藏护甲模板页
-        adventureNotes: false    // 默认隐藏冒险笔记页
+        adventureNotes: false,   // 默认隐藏冒险笔记页
+        relationshipQuestions: false // 默认隐藏罗德岛关系与问题页
     },
 
     // 护甲模板默认数据

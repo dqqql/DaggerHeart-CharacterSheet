@@ -36,7 +36,7 @@ export function PageDisplay({
   onSwitchToPrevPage,
   onSwitchToNextPage,
 }: PageDisplayProps) {
-  const showPageSettings = formData.ruleSetId !== "rhodes-island"
+  const showPageSettings = true
   const isRhodesIsland = formData.ruleSetId === "rhodes-island"
   
   // 生成可见的tab配置

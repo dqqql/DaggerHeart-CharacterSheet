@@ -2,32 +2,47 @@
 
 import { useEffect } from 'react';
 
+const CHUNK_RELOAD_STORAGE_KEY = 'character-sheet:chunk-reload-at';
+const CHUNK_RELOAD_COOLDOWN_MS = 10_000;
+
+function reloadAfterChunkLoadError(message: string) {
+  const lastReloadAt = Number(sessionStorage.getItem(CHUNK_RELOAD_STORAGE_KEY) || 0);
+  const now = Date.now();
+
+  if (now - lastReloadAt < CHUNK_RELOAD_COOLDOWN_MS) {
+    console.error(
+      '[ChunkLoadErrorHandler] Chunk loading is still failing after a reload. Automatic reload paused:',
+      message,
+    );
+    return;
+  }
+
+  sessionStorage.setItem(CHUNK_RELOAD_STORAGE_KEY, String(now));
+  console.warn('[ChunkLoadErrorHandler] Chunk load error detected, reloading once:', message);
+  window.setTimeout(() => window.location.reload(), 100);
+}
+
 /**
  * 处理 Next.js chunk 加载失败的组件
  *
  * 问题：当部署新版本后，旧页面请求的 chunk 文件（带旧 hash）会 404
- * 解决：检测 chunk 加载错误，自动刷新页面获取最新版本
+ * 解决：检测 chunk 加载错误，最多自动刷新一次获取最新版本
  */
 export function ChunkLoadErrorHandler() {
   useEffect(() => {
-    // 注册 Service Worker
+    // 旧版 Service Worker 会在短暂的网络错误后让所有标签页无限刷新。
+    // 分块错误由下方的页面级监听器处理，因此清理旧注册即可。
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
       navigator.serviceWorker
-        .register('/sw.js')
+        .getRegistration()
         .then((registration) => {
-          console.log('[ChunkLoadErrorHandler] Service Worker registered:', registration.scope);
+          if (registration) {
+            void registration.unregister();
+          }
         })
         .catch((error) => {
-          console.error('[ChunkLoadErrorHandler] Service Worker registration failed:', error);
+          console.warn('[ChunkLoadErrorHandler] Service Worker cleanup failed:', error);
         });
-
-      // 监听来自 Service Worker 的消息
-      navigator.serviceWorker.addEventListener('message', (event) => {
-        if (event.data?.type === 'CHUNK_LOAD_ERROR') {
-          console.warn('[ChunkLoadErrorHandler] Chunk load error detected, reloading page...');
-          window.location.reload();
-        }
-      });
     }
 
     // 全局错误处理：捕获 chunk 加载失败
@@ -38,13 +53,8 @@ export function ChunkLoadErrorHandler() {
         event.message?.includes('Importing a module script failed');
 
       if (isChunkLoadError) {
-        console.warn('[ChunkLoadErrorHandler] Detected chunk load error, reloading...', event.message);
         event.preventDefault();
-
-        // 延迟刷新，避免无限循环
-        setTimeout(() => {
-          window.location.reload();
-        }, 100);
+        reloadAfterChunkLoadError(event.message);
       }
     };
 
@@ -60,12 +70,8 @@ export function ChunkLoadErrorHandler() {
         reason.includes('/_next/static/');
 
       if (isChunkLoadError) {
-        console.warn('[ChunkLoadErrorHandler] Detected chunk load rejection, reloading...', reason);
         event.preventDefault();
-
-        setTimeout(() => {
-          window.location.reload();
-        }, 100);
+        reloadAfterChunkLoadError(reason);
       }
     };
 

@@ -6,6 +6,7 @@ import CharacterSheet from "@/components/character-sheet"
 import CharacterSheetPageTwo from "@/components/character-sheet-page-two"
 import CharacterSheetPageThree from "@/components/character-sheet-page-ranger-companion"
 import CharacterSheetPageAdventureNotes from "@/components/character-sheet-page-adventure-notes"
+import CharacterSheetPageRhodesRelationships from "@/components/character-sheet-page-rhodes-relationships"
 import { isEmptyCard, type StandardCard } from "@/card/card-types"
 import { CardDrawer } from "@/components/card-drawer"
 import { showFadeNotification } from "@/components/ui/fade-notification"
@@ -162,7 +163,7 @@ const SealDiceExportModal = dynamic(
 )
 const FloatingNotebook = dynamic(
   () => import("@/components/notebook").then((mod) => mod.FloatingNotebook),
-  { ssr: false },
+  { ssr: false, loading: () => null },
 )
 
 // 注册所有页面
@@ -186,12 +187,26 @@ registerPages([
     showInTabs: true
   },
   {
+    id: 'rhodes-relationships',
+    label: '关系与问题',
+    component: CharacterSheetPageRhodesRelationships,
+    printClass: 'page-rhodes-relationships',
+    visibility: {
+      type: 'data',
+      dataCheck: (data) =>
+        data.ruleSetId === 'rhodes-island' &&
+        !!data.pageVisibility?.relationshipQuestions
+    },
+    printOrder: 3,
+    showInTabs: true
+  },
+  {
     id: 'page3',
     label: '游侠伙伴',
     component: CharacterSheetPageThree,
     printClass: 'page-three',
     visibility: { type: 'config', configKey: 'rangerCompanion' },
-    printOrder: 3,
+    printOrder: 4,
     showInTabs: true
   },
   {
@@ -200,7 +215,7 @@ registerPages([
     component: ArmorTemplatePage,
     printClass: 'page-iknis',
     visibility: { type: 'config', configKey: 'armorTemplate' },
-    printOrder: 4,
+    printOrder: 5,
     showInTabs: true
   },
   {
@@ -209,7 +224,7 @@ registerPages([
     component: CharacterSheetPageAdventureNotes,
     printClass: 'page-adventure-notes',
     visibility: { type: 'config', configKey: 'adventureNotes' },
-    printOrder: 5,
+    printOrder: 6,
     showInTabs: true
   },
   {
@@ -225,7 +240,7 @@ registerPages([
           data.cards.slice(1).some(card => card && !isEmptyCard(card))
       }
     },
-    printOrder: 6,
+    printOrder: 7,
     showInTabs: false  // 不在Tab中显示
   },
   {
@@ -241,7 +256,7 @@ registerPages([
           data.inventory_cards.some(card => card && !isEmptyCard(card)))
       }
     },
-    printOrder: 7,
+    printOrder: 8,
     showInTabs: false  // 不在Tab中显示
   }
 ])
@@ -1160,7 +1175,7 @@ export default function Home() {
       ))}
 
       {/* 悬浮笔记本 */}
-      {formData.notebook?.isOpen && <FloatingNotebook />}
+      <FloatingNotebook />
     </main>
   )
 }

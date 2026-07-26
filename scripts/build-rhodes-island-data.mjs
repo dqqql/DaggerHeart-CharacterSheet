@@ -10,7 +10,9 @@ const imageOutputRoot = join(projectRoot, "public", "rhodes-island", "ancestries
 const bundledAncestryImageRoot = join(projectRoot, "assets", "rhodes-island", "ancestries")
 const placeholderImage = "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
 const sourceFiles = {
-  professions: join(sourceRoot, "已写子职一览"),
+  // Profession manuscripts are occasionally delivered separately from the
+  // complete source archive, so allow their directory to be overridden.
+  professions: process.env.RHODES_PROFESSIONS_ROOT || join(sourceRoot, "已写子职一览"),
   ancestries: join(sourceRoot, "明日方舟种族", "明日方舟种族.md"),
   ancestryImages: join(sourceRoot, "明日方舟种族", "图片和附件"),
   communities: join(sourceRoot, "明日方舟社群（众生行记）.md"),
@@ -20,6 +22,15 @@ const sourceFiles = {
 const professionFiles = ["先锋", "近卫", "狙击", "术师", "特种", "重装", "辅助"]
 const domainNames = ["奥术", "攻坚", "坚阵", "精准", "秘行", "迅攻", "支柱", "工业", "奇迹", "心界", "远见"]
 const mainDomains = new Set(["奥术", "攻坚", "坚阵", "精准", "秘行", "迅攻", "支柱"])
+const professionImageUrls = {
+  先锋: "/rhodes-island/domain-icons/blitz.png",
+  近卫: "/rhodes-island/domain-icons/assault.png",
+  狙击: "/rhodes-island/domain-icons/precision.png",
+  术师: "/rhodes-island/domain-icons/arcane.png",
+  特种: "/rhodes-island/domain-icons/shadow.png",
+  重装: "/rhodes-island/domain-icons/bulwark.png",
+  辅助: "/rhodes-island/domain-icons/pillar.png",
+}
 const communityFeatureAppendices = new Map([
   ["失乡之民", "在任何时候，当你发现自己曾经所属的社群，或者加入了一个新的社群时，你可以永久使用那张社群卡替换这张社群卡。"],
 ])
@@ -121,7 +132,7 @@ async function parseProfessions() {
       startingItems: [],
       hopeFeature: cleanMarkdown(hopeFeature?.[1]),
       classFeature: cleanMarkdown(classFeature?.[1]),
-      imageUrl: placeholderImage,
+      imageUrl: professionImageUrls[professionName] || placeholderImage,
     })
 
     const branchPattern = /^# 〖([^〗]+)〗\s*$([\s\S]*?)(?=^# 〖|(?![\s\S]))/gm
@@ -159,7 +170,7 @@ async function parseProfessions() {
         recommendedDomains: domains,
         stages,
         modules,
-        imageUrl: placeholderImage,
+        imageUrl: professionImageUrls[professionName] || placeholderImage,
       })
     }
   }
@@ -313,6 +324,42 @@ function makeStandardCards(catalog) {
 
 async function main() {
   await mkdir(outputRoot, { recursive: true })
+  if (process.env.RHODES_ONLY_PROFESSIONS === "1") {
+    const existingCatalog = JSON.parse(await readFile(join(outputRoot, "catalog.json"), "utf8"))
+    const parsed = await parseProfessions()
+    // Keep the locally imported art for existing entries. New branches use the
+    // same profession icon, matching the visual treatment of existing branches.
+    const professionImages = new Map(existingCatalog.professions.map((item) => [item.id, item.imageUrl]))
+    const branchImages = new Map(existingCatalog.branches.map((item) => [item.id, item.imageUrl]))
+    const professions = parsed.professions.map((item) => ({ ...item, imageUrl: professionImages.get(item.id) || item.imageUrl }))
+    const branches = parsed.branches.map((item) => {
+      const existingImage = branchImages.get(item.id)
+      return {
+        ...item,
+        imageUrl: existingImage && existingImage !== placeholderImage
+          ? existingImage
+          : professionImages.get(item.professionId) || item.imageUrl,
+      }
+    })
+    const catalog = { ...existingCatalog, professions, branches }
+    const counts = {
+      professions: professions.length,
+      branches: branches.length,
+      ancestries: catalog.ancestries.length,
+      communities: catalog.communities.length,
+      domains: catalog.domains.length,
+      domainCards: catalog.domainCards.length,
+    }
+    // This focused update must preserve every non-profession collection exactly
+    // as it exists in the installed data set.
+    const expected = { professions: 7, branches: 48 }
+    for (const [key, value] of Object.entries(expected)) if (counts[key] !== value) throw new Error(`${key}: expected ${value}, got ${counts[key]}`)
+    await writeFile(join(outputRoot, "catalog.json"), `${JSON.stringify(catalog, null, 2)}\n`, "utf8")
+    await writeFile(join(outputRoot, "cards.json"), `${JSON.stringify(makeStandardCards(catalog), null, 2)}\n`, "utf8")
+    await writeFile(join(outputRoot, "manifest.json"), `${JSON.stringify({ ...JSON.parse(await readFile(join(outputRoot, "manifest.json"), "utf8")), counts }, null, 2)}\n`, "utf8")
+    console.log(`Rhodes Island profession data updated: ${JSON.stringify(counts)}`)
+    return
+  }
   await rm(imageOutputRoot, { recursive: true, force: true })
   await mkdir(imageOutputRoot, { recursive: true })
   const [{ professions, branches }, ancestries, communities, { domains, cards: domainCards, unpublishedSourceEntries }] = await Promise.all([
@@ -321,7 +368,7 @@ async function main() {
   const catalog = { schemaVersion: 1, ruleset: "rhodes-island", source: "共赴明日：罗德岛旅记", placeholderImage, professions, branches, ancestries, communities, domains, domainCards, unpublishedSourceEntries }
   validateCommunityContent(communities)
   const counts = { professions: professions.length, branches: branches.length, ancestries: ancestries.length, communities: communities.length, domains: domains.length, domainCards: domainCards.length }
-  const expected = { professions: 7, branches: 28, ancestries: 35, communities: 15, domains: 11, domainCards: 262 }
+  const expected = { professions: 7, branches: 48, ancestries: 35, communities: 15, domains: 11, domainCards: 262 }
   for (const [key, value] of Object.entries(expected)) if (counts[key] !== value) throw new Error(`${key}: expected ${value}, got ${counts[key]}`)
   await writeFile(join(outputRoot, "catalog.json"), `${JSON.stringify(catalog, null, 2)}\n`, "utf8")
   await writeFile(join(outputRoot, "cards.json"), `${JSON.stringify(makeStandardCards(catalog), null, 2)}\n`, "utf8")

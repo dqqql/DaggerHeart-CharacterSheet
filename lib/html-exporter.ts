@@ -143,7 +143,7 @@ function getBasicFallbackStyles(): string {
     input, textarea { border: 1px solid #ccc; padding: 4px; }
     input[type="checkbox"] { width: 16px; height: 16px; }
     button { padding: 8px 12px; border: 1px solid #ccc; background: #f5f5f5; cursor: pointer; }
-    .page-one, .page-two, .page-three, .page-four, .page-adventure-notes { page-break-after: always; }
+    .page-one, .page-two, .page-rhodes-relationships, .page-three, .page-four, .page-adventure-notes { page-break-after: always; }
   `
 }
 
@@ -991,6 +991,7 @@ function generateInlineCSS(extractedStyles: string): string {
     /* 页面样式 */
     .print-all-pages .page-one,
     .print-all-pages .page-two,
+    .print-all-pages .page-rhodes-relationships,
     .print-all-pages .page-three,
     .print-all-pages .page-four,
     .print-all-pages .page-adventure-notes {
@@ -1097,6 +1098,7 @@ function generateInlineCSS(extractedStyles: string): string {
 
       .print-all-pages .page-one,
       .print-all-pages .page-two,
+      .print-all-pages .page-rhodes-relationships,
       .print-all-pages .page-three,
       .print-all-pages .page-four,
       .print-all-pages .page-five,

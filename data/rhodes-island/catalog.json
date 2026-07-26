@@ -440,6 +440,170 @@
       "imageUrl": "/rhodes-island/domain-icons/blitz.png"
     },
     {
+      "id": "ri-branch-462e48d8f20d",
+      "ruleset": "rhodes-island",
+      "professionId": "ri-profession-2d1b8c4a3249",
+      "profession": "先锋",
+      "name": "尖兵",
+      "recommendedDomains": [
+        "坚阵",
+        "攻坚"
+      ],
+      "stages": [
+        {
+          "tier": 1,
+          "level": 1,
+          "rank": "预备干员",
+          "weapon": {
+            "name": "刀剑",
+            "range": "近距离",
+            "burden": "单手",
+            "damageType": "物理",
+            "damage": "d8"
+          },
+          "branchFeature": "振奋希望：在你的一次取得希望成功的攻击掷骰中，你可以额外使得一名希望点为0-2的盟友获得 1 希望点。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 2,
+          "level": 2,
+          "rank": "正式干员",
+          "weapon": {
+            "name": "刀剑",
+            "range": "近距离",
+            "burden": "单手",
+            "damageType": "物理",
+            "damage": "d8+3"
+          },
+          "branchFeature": "振奋希望+：在你的一次取得希望成功的攻击掷骰中，你可以额外使得一名希望点为0-4的盟友获得 1 希望点。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 3,
+          "level": 5,
+          "rank": "资深干员",
+          "weapon": {
+            "name": "刀剑",
+            "range": "近距离",
+            "burden": "单手",
+            "damageType": "物理",
+            "damage": "d8+6"
+          },
+          "branchFeature": "振奋希望++：在你的一次取得希望成功的攻击掷骰中，你可以额外使得一至两名希望点为0-4的盟友各获得 1 希望点。",
+          "professionFeature": "一鼓作气-尖兵：每次休息一次，标记 1 压力点或花费 1 希望点，你可以重掷一次攻击掷骰。若此次重掷取得关键成功，你可以在攻击完成后进行一次近距离移动。"
+        },
+        {
+          "tier": 4,
+          "level": 8,
+          "rank": "精英干员",
+          "weapon": {
+            "name": "刀剑",
+            "range": "近距离",
+            "burden": "单手",
+            "damageType": "物理",
+            "damage": "d8+9"
+          },
+          "branchFeature": "",
+          "professionFeature": ""
+        }
+      ],
+      "modules": {
+        "x": {
+          "id": "ri-module-89da1ff18fc8",
+          "name": "X模组",
+          "description": "希望特性提升\n\n临危寻变-尖兵：花费 3 希望点，你立即进行1至2次回想费用恒定为 0 的回想。你可以在自身成为一次攻击的目标时使用本希望特性，此时你可以改为标记 3 压力点而非花费 3 希望点。"
+        },
+        "y": {
+          "id": "ri-module-eebb7f4db337",
+          "name": "Y模组",
+          "description": "追加第二职业特性\n\n当先之锋：当你使用武器进行攻击时，你的身后每有一名盟友，你的此次攻击掷骰便忽略1点减值且此次攻击命中时会额外造成1d6点物理伤害。"
+        }
+      },
+      "imageUrl": "/rhodes-island/domain-icons/blitz.png"
+    },
+    {
+      "id": "ri-branch-94b689d15238",
+      "ruleset": "rhodes-island",
+      "professionId": "ri-profession-2d1b8c4a3249",
+      "profession": "先锋",
+      "name": "策士",
+      "recommendedDomains": [
+        "远见",
+        "支柱"
+      ],
+      "stages": [
+        {
+          "tier": 1,
+          "level": 1,
+          "rank": "预备干员",
+          "weapon": {
+            "name": "双刃剑",
+            "range": "近距离",
+            "burden": "单手",
+            "damageType": "物理",
+            "damage": "d8"
+          },
+          "branchFeature": "谋事在人：每当你进行一次回想后，你可以花费 1 希望点，让一名近距离内的自愿盟友获得 1 希望点。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 2,
+          "level": 2,
+          "rank": "正式干员",
+          "weapon": {
+            "name": "刀剑",
+            "range": "近距离",
+            "burden": "单手",
+            "damageType": "物理",
+            "damage": "d8+3"
+          },
+          "branchFeature": "谋事在人+：每当你进行一次回想后，你可以花费 1 希望点或标记 1 压力点，让一名近距离内的自愿盟友获得 1 希望点。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 3,
+          "level": 5,
+          "rank": "资深干员",
+          "weapon": {
+            "name": "刀剑",
+            "range": "近距离",
+            "burden": "单手",
+            "damageType": "物理",
+            "damage": "d8+6"
+          },
+          "branchFeature": "谋事在人++：每当你进行一次回想后，你可以花费 1 希望点或标记 1 压力点，让一名自愿盟友获得 1 希望点。",
+          "professionFeature": "一鼓作气-策士：每次休息一次，标记 1 压力点，你可以重掷一名友方自愿角色的一次攻击掷骰。若此次重掷取得关键成功，你可以在攻击完成后进行一次近距离移动。"
+        },
+        {
+          "tier": 4,
+          "level": 8,
+          "rank": "精英干员",
+          "weapon": {
+            "name": "刀剑",
+            "range": "近距离",
+            "burden": "单手",
+            "damageType": "物理",
+            "damage": "d8+9"
+          },
+          "branchFeature": "",
+          "professionFeature": ""
+        }
+      ],
+      "modules": {
+        "x": {
+          "id": "ri-module-3a8985a57817",
+          "name": "X模组",
+          "description": "希望特性提升\n\n临危寻变-策士：花费 3 希望点，你立即进行1至2次回想费用恒定为 0 的回想，或让你中距离内的任意名盟友各进行1次回想费用恒定为 0 的回想。"
+        },
+        "y": {
+          "id": "ri-module-b56c4253cd4d",
+          "name": "Y模组",
+          "description": "追加第二职业特性\n\n全局调度：你视为具有其他盟友所属职业的希望特性。你使用希望特性时，当前场景内具有此特性的盟友可以立即进行一次无需掷骰的近距离移动。"
+        }
+      },
+      "imageUrl": "/rhodes-island/domain-icons/blitz.png"
+    },
+    {
       "id": "ri-branch-e1682fc4bea1",
       "ruleset": "rhodes-island",
       "professionId": "ri-profession-81bb919f5f13",
@@ -768,6 +932,252 @@
       "imageUrl": "/rhodes-island/domain-icons/assault.png"
     },
     {
+      "id": "ri-branch-a65717b148f1",
+      "ruleset": "rhodes-island",
+      "professionId": "ri-profession-81bb919f5f13",
+      "profession": "近卫",
+      "name": "领主",
+      "recommendedDomains": [
+        "精准",
+        "秘行"
+      ],
+      "stages": [
+        {
+          "tier": 1,
+          "level": 1,
+          "rank": "预备干员",
+          "weapon": {
+            "name": "多模式武装",
+            "range": "近距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d12"
+          },
+          "branchFeature": "远战模式：你可以攻击中距离内的敌人（视为该敌人处于你的攻击范围内），则此时武器伤害骰降低两级（降至d8），且此时攻击仅视为远程攻击而非近战攻击。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 2,
+          "level": 2,
+          "rank": "正式干员",
+          "weapon": {
+            "name": "多模式武装",
+            "range": "近距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d12+3"
+          },
+          "branchFeature": "远战模式+：你可以攻击远距离内的敌人（视为该敌人处于你的攻击范围内），则此时武器伤害骰降低两级（降至d8），且此时攻击仅视为远程攻击而非近战攻击。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 3,
+          "level": 5,
+          "rank": "资深干员",
+          "weapon": {
+            "name": "多模式武装",
+            "range": "近距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d12+6"
+          },
+          "branchFeature": "远战模式++：你可以攻击远距离内的敌人（视为该敌人处于你的攻击范围内），则此时武器伤害骰降低两级（降至d8），且此时攻击同时视为近战攻击和远程攻击。",
+          "professionFeature": "狭路相逢-领主：每次休息一次，标记 1 压力点，在你的一次攻击掷骰中孤立你和其中一个目标。若此次攻击掷骰取得成功结果，则该目标将保持孤立直至其进行一次行动后。"
+        },
+        {
+          "tier": 4,
+          "level": 8,
+          "rank": "精英干员",
+          "weapon": {
+            "name": "多模式武装",
+            "range": "近距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d12+9"
+          },
+          "branchFeature": "",
+          "professionFeature": ""
+        }
+      ],
+      "modules": {
+        "x": {
+          "id": "ri-module-1060b8373435",
+          "name": "X模组",
+          "description": "希望特性提升\n\n短兵相接-领主：在一个敌人对你进行了一次攻击掷骰后，你可以花费 3 希望点对攻击范围内的该敌人进行一次攻击反应掷骰。此次攻击中，你的熟练值获得+1加值。"
+        },
+        "y": {
+          "id": "ri-module-d135cf2f8f8f",
+          "name": "Y模组",
+          "description": "追加第二职业特性\n\n武装优化：你的武器伤害骰不会低于d10。当你在一次攻击掷骰中取得关键成功时，你的武器伤害骰在此次攻击中提升一级（不超过d20）。"
+        }
+      },
+      "imageUrl": "/rhodes-island/domain-icons/assault.png"
+    },
+    {
+      "id": "ri-branch-6a9fc6976365",
+      "ruleset": "rhodes-island",
+      "professionId": "ri-profession-81bb919f5f13",
+      "profession": "近卫",
+      "name": "术战者",
+      "recommendedDomains": [
+        "奥术",
+        "奇迹"
+      ],
+      "stages": [
+        {
+          "tier": 1,
+          "level": 1,
+          "rank": "预备干员",
+          "weapon": {
+            "name": "能量剑",
+            "range": "近距离",
+            "burden": "单手",
+            "damageType": "法术",
+            "damage": "d10"
+          },
+          "branchFeature": "秘法剑术：每当你在一次施法掷骰中获得希望成功或关键成功时，你可以为本武器原型注入法术能量以提升其强度，标记 2 压力点并在本武器原型上放置一个术战指示物。你至多持有当前位阶数目的术战指示物。你通过攻击掷骰造成伤害时，此次伤害掷骰额外造成使用你术战指示物的d6点法术伤害。每场游戏结束时以及你每次休息时，移除所有术战指示物。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 2,
+          "level": 2,
+          "rank": "正式干员",
+          "weapon": {
+            "name": "能量剑",
+            "range": "近距离",
+            "burden": "单手",
+            "damageType": "法术",
+            "damage": "d10+3"
+          },
+          "branchFeature": "秘法剑术+：每当你在一次施法掷骰中获得希望成功或关键成功时，你可以为本武器原型注入法术能量以提升其强度，标记 2 压力点并在本武器原型上放置一个术战指示物。你至多持有当前位阶数目的术战指示物。你通过攻击掷骰造成伤害时，此次伤害掷骰额外造成使用你术战指示物的d8点法术伤害。每场游戏结束时，移除所有术战指示物。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 3,
+          "level": 5,
+          "rank": "资深干员",
+          "weapon": {
+            "name": "能量剑",
+            "range": "近距离",
+            "burden": "单手",
+            "damageType": "法术",
+            "damage": "d10+6"
+          },
+          "branchFeature": "秘法剑术++：每当你在一次施法掷骰中获得希望成功或关键成功时，你可以为本武器原型注入法术能量以提升其强度，标记 2 压力点并在本武器原型上放置一个术战指示物。你至多持有当前位阶数目+1的术战指示物。你通过攻击掷骰造成伤害时，此次伤害掷骰额外造成使用你术战指示物的d10点法术伤害。每场游戏结束时，移除所有术战指示物。",
+          "professionFeature": "狭路相逢-术战者：每次休息一次，标记 1 压力点，在你的一次攻击掷骰中孤立你和其中一个目标。此次攻击取得恐惧成功时，在你的武器原型上放置一个术战指示物。"
+        },
+        {
+          "tier": 4,
+          "level": 8,
+          "rank": "精英干员",
+          "weapon": {
+            "name": "能量剑",
+            "range": "近距离",
+            "burden": "单手",
+            "damageType": "法术",
+            "damage": "d10+9"
+          },
+          "branchFeature": "",
+          "professionFeature": ""
+        }
+      ],
+      "modules": {
+        "x": {
+          "id": "ri-module-c56c688e9a4f",
+          "name": "X模组",
+          "description": "希望特性提升\n\n短兵相接-术战者：在一个敌人对你进行了一次攻击掷骰后，你可以花费 3 希望点或移除一个术战指示物，对攻击范围内的该敌人进行一次攻击反应掷骰。"
+        },
+        "y": {
+          "id": "ri-module-7d2327c1d55f",
+          "name": "Y模组",
+          "description": "追加第二职业特性\n\n术能转变：每场景限一次，你可以在团队获得聚焦时，将任意数量的术战指示物转变为你配置中领域卡上已存在的其他指示物。"
+        }
+      },
+      "imageUrl": "/rhodes-island/domain-icons/assault.png"
+    },
+    {
+      "id": "ri-branch-f4162da267f0",
+      "ruleset": "rhodes-island",
+      "professionId": "ri-profession-81bb919f5f13",
+      "profession": "近卫",
+      "name": "重剑手",
+      "recommendedDomains": [
+        "坚阵",
+        "秘行"
+      ],
+      "stages": [
+        {
+          "tier": 1,
+          "level": 1,
+          "rank": "预备干员",
+          "weapon": {
+            "name": "重剑",
+            "range": "近距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d20"
+          },
+          "branchFeature": "承此重负：你获得两个生命槽和一个压力槽。你的重度伤害阈值失效。每当你进行攻击掷骰以及你的掷骰获得恐惧结果时，你必须被迫标记 1 压力点。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 2,
+          "level": 2,
+          "rank": "正式干员",
+          "weapon": {
+            "name": "重剑",
+            "range": "中距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d20"
+          },
+          "branchFeature": "承此重负+：你获得两个生命槽和一个压力槽。你的重度伤害阈值失效。每当你进行攻击掷骰以及你的掷骰获得恐惧失败结果时，你必须被迫标记 1 压力点。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 3,
+          "level": 5,
+          "rank": "资深干员",
+          "weapon": {
+            "name": "重剑",
+            "range": "中距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d20+3"
+          },
+          "branchFeature": "承此重负++：你获得三个生命槽和三个压力槽。你的重度伤害阈值失效。每当你进行攻击掷骰以及你的掷骰获得恐惧失败结果时，你必须被迫标记 1 压力点。",
+          "professionFeature": "狭路相逢-重剑手：每次聚焦一次，标记 1 压力点，在你的一次攻击掷骰中孤立你和其中一个目标。"
+        },
+        {
+          "tier": 4,
+          "level": 8,
+          "rank": "精英干员",
+          "weapon": {
+            "name": "重剑",
+            "range": "中距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d20+6"
+          },
+          "branchFeature": "",
+          "professionFeature": ""
+        }
+      ],
+      "modules": {
+        "x": {
+          "id": "ri-module-648983689224",
+          "name": "X模组",
+          "description": "希望特性提升\n\n短兵相接-重剑手：在一个敌人对你进行了一次攻击掷骰后，你可以花费 3 希望点对攻击范围内的该敌人进行一次攻击反应掷骰，且你在此次攻击掷骰中额外造成你重度阈值数目点物理伤害。"
+        },
+        "y": {
+          "id": "ri-module-a651844a8321",
+          "name": "Y模组",
+          "description": "追加第二职业特性\n\n剑身所庇：当你受到伤害时，你可以投掷你等同于你熟练值数量的d8，并减少掷骰结果点伤害。"
+        }
+      },
+      "imageUrl": "/rhodes-island/domain-icons/assault.png"
+    },
+    {
       "id": "ri-branch-2300d77af447",
       "ruleset": "rhodes-island",
       "professionId": "ri-profession-102152bab2bd",
@@ -783,7 +1193,7 @@
           "level": 1,
           "rank": "预备干员",
           "weapon": {
-            "name": "手枪或轻弩",
+            "name": "小型铳械或轻弩",
             "range": "远距离",
             "burden": "单手",
             "damageType": "物理",
@@ -797,7 +1207,7 @@
           "level": 2,
           "rank": "正式干员",
           "weapon": {
-            "name": "手枪或轻弩",
+            "name": "小型铳械或轻弩",
             "range": "远距离",
             "burden": "单手",
             "damageType": "物理",
@@ -811,7 +1221,7 @@
           "level": 5,
           "rank": "资深干员",
           "weapon": {
-            "name": "手枪或轻弩",
+            "name": "小型铳械或轻弩",
             "range": "远距离",
             "burden": "单手",
             "damageType": "物理",
@@ -825,7 +1235,7 @@
           "level": 8,
           "rank": "精英干员",
           "weapon": {
-            "name": "手枪或轻弩",
+            "name": "小型铳械或轻弩",
             "range": "远距离",
             "burden": "单手",
             "damageType": "物理",
@@ -947,7 +1357,7 @@
           "level": 1,
           "rank": "预备干员",
           "weapon": {
-            "name": "狙击枪或狙击弩",
+            "name": "狙击铳械或狙击弩",
             "range": "远距离",
             "burden": "双手",
             "damageType": "物理",
@@ -961,7 +1371,7 @@
           "level": 2,
           "rank": "正式干员",
           "weapon": {
-            "name": "狙击枪或狙击弩",
+            "name": "狙击铳械或狙击弩",
             "range": "远距离",
             "burden": "双手",
             "damageType": "物理",
@@ -975,7 +1385,7 @@
           "level": 5,
           "rank": "资深干员",
           "weapon": {
-            "name": "狙击枪或狙击弩",
+            "name": "狙击铳械或狙击弩",
             "range": "远距离",
             "burden": "双手",
             "damageType": "物理",
@@ -989,7 +1399,7 @@
           "level": 8,
           "rank": "精英干员",
           "weapon": {
-            "name": "狙击枪或狙击弩",
+            "name": "狙击铳械或狙击弩",
             "range": "远距离",
             "burden": "双手",
             "damageType": "物理",
@@ -1029,7 +1439,7 @@
           "level": 1,
           "rank": "预备干员",
           "weapon": {
-            "name": "攻城弩",
+            "name": "攻城铳械或攻城弩",
             "range": "远距离",
             "burden": "双手",
             "damageType": "物理",
@@ -1043,7 +1453,7 @@
           "level": 2,
           "rank": "正式干员",
           "weapon": {
-            "name": "攻城弩",
+            "name": "攻城铳械或攻城弩",
             "range": "远距离",
             "burden": "双手",
             "damageType": "物理",
@@ -1057,7 +1467,7 @@
           "level": 5,
           "rank": "资深干员",
           "weapon": {
-            "name": "攻城弩",
+            "name": "攻城铳械或攻城弩",
             "range": "远距离",
             "burden": "双手",
             "damageType": "物理",
@@ -1071,7 +1481,7 @@
           "level": 8,
           "rank": "精英干员",
           "weapon": {
-            "name": "攻城弩",
+            "name": "攻城铳械或攻城弩",
             "range": "远距离",
             "burden": "双手",
             "damageType": "物理",
@@ -1091,6 +1501,252 @@
           "id": "ri-module-cca7bb291aec",
           "name": "Y模组",
           "description": "追加第二职业特性\n\n溃弱追射：当你掷物理伤害骰时，若目标处于脆弱状态，则额外对其造成2d12+5点物理伤害。"
+        }
+      },
+      "imageUrl": "/rhodes-island/domain-icons/precision.png"
+    },
+    {
+      "id": "ri-branch-77a0b2e95b42",
+      "ruleset": "rhodes-island",
+      "professionId": "ri-profession-102152bab2bd",
+      "profession": "狙击",
+      "name": "散射手",
+      "recommendedDomains": [
+        "攻坚",
+        "迅攻"
+      ],
+      "stages": [
+        {
+          "tier": 1,
+          "level": 1,
+          "rank": "预备干员",
+          "weapon": {
+            "name": "散射铳械",
+            "range": "中距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d8"
+          },
+          "branchFeature": "霰弹爆发：如果你的近距离内没有敌人，你进行的攻击会同时攻击所有中距离内的敌人。你攻击近距离内的敌人时，熟练值获得+1加值。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 2,
+          "level": 2,
+          "rank": "正式干员",
+          "weapon": {
+            "name": "散射铳械",
+            "range": "中距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d10+3"
+          },
+          "branchFeature": "霰弹爆发+：如果你的近距离内没有敌人，你进行的攻击会同时攻击所有中距离内的敌人。你攻击近距离内的敌人时，攻击掷骰和熟练值均获得+1加值。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 3,
+          "level": 5,
+          "rank": "资深干员",
+          "weapon": {
+            "name": "散射铳械",
+            "range": "中距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d12+6"
+          },
+          "branchFeature": "霰弹爆发++：你进行的攻击会同时攻击所有中距离内的敌人。你攻击近距离内的敌人时，攻击掷骰和熟练值均获得+1加值。",
+          "professionFeature": "找准时机-散射手：每次休息一次，当你标记压力点或进行一次攻击时，你可以将宝库中一张回想费用不大于此次标记压力点或此次攻击敌人数目的领域卡加入配置中。"
+        },
+        {
+          "tier": 4,
+          "level": 8,
+          "rank": "精英干员",
+          "weapon": {
+            "name": "散射铳械",
+            "range": "中距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d12+9"
+          },
+          "branchFeature": "",
+          "professionFeature": ""
+        }
+      ],
+      "modules": {
+        "x": {
+          "id": "ri-module-78ba58a29b95",
+          "name": "X模组",
+          "description": "希望特性提升\n\n动态瞄准-散射手：花费 2 希望点，锁定你攻击范围内的一个敌人，你能持续地确认其所在的位置且你对其进行攻击时熟练值获得+1加值，直至其消失在你的视野中或切换场景时。"
+        },
+        "y": {
+          "id": "ri-module-81023d2803ed",
+          "name": "Y模组",
+          "description": "追加第二职业特性\n\n抵近抽射：每次聚焦限一次，在你进行一次移动后，若你的近距离内有敌人，你可以标记 2 压力点并立即进行一次攻击反应掷骰。"
+        }
+      },
+      "imageUrl": "/rhodes-island/domain-icons/precision.png"
+    },
+    {
+      "id": "ri-branch-d775ac66c920",
+      "ruleset": "rhodes-island",
+      "professionId": "ri-profession-102152bab2bd",
+      "profession": "狙击",
+      "name": "投掷手",
+      "recommendedDomains": [
+        "迅攻",
+        "远见"
+      ],
+      "stages": [
+        {
+          "tier": 1,
+          "level": 1,
+          "rank": "预备干员",
+          "weapon": {
+            "name": "发射装置",
+            "range": "远距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d10"
+          },
+          "branchFeature": "抛射武装：你的发射装置中携带了足量的可用于投掷的物体，它们算作武器的一部分。每当你投掷武器进行攻击时，你可以使用你的攻击属性。此次攻击造成伤害时，在武器落地点产生一次余震。每次余震会额外对目标近距离内的其他敌人各造成一半的伤害。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 2,
+          "level": 2,
+          "rank": "正式干员",
+          "weapon": {
+            "name": "发射装置",
+            "range": "远距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d10+3"
+          },
+          "branchFeature": "抛射武装+：你的发射装置中携带了足量的可用于投掷的物体，它们算作武器的一部分。每当你投掷武器进行攻击时，你可以使用你的攻击属性。此次攻击造成伤害时，在武器落地点产生一次余震。每次余震会额外对目标近距离内的其他敌人各造成一半的伤害，迫使这些敌人暂时处于脆弱状态，同时摧毁目标近距离内的所有可摧毁障碍物。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 3,
+          "level": 5,
+          "rank": "资深干员",
+          "weapon": {
+            "name": "发射装置",
+            "range": "远距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d10+6"
+          },
+          "branchFeature": "抛射武装++：你的发射装置中携带了足量的可用于投掷的物体，它们算作武器的一部分。每当你投掷武器进行攻击时，你可以使用你的攻击属性。此次攻击造成伤害时，在武器落地点产生一次余震。每次余震会额外对目标以及其近距离内的其他敌人造成一半的伤害（对同一目标的伤害合并计算），迫使这些敌人暂时处于脆弱状态，同时摧毁目标近距离内的所有可摧毁障碍物。",
+          "professionFeature": "找准时机-投掷手：每次休息一次，当你标记压力点时，你可以立即回想一张费用不大于此次标记压力点数目的领域卡，且无需支付回想费用。"
+        },
+        {
+          "tier": 4,
+          "level": 8,
+          "rank": "精英干员",
+          "weapon": {
+            "name": "发射装置",
+            "range": "远距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d10+9"
+          },
+          "branchFeature": "",
+          "professionFeature": ""
+        }
+      ],
+      "modules": {
+        "x": {
+          "id": "ri-module-46340471082e",
+          "name": "X模组",
+          "description": "希望特性提升\n\n动态瞄准-投掷手：花费 3 希望点，锁定你攻击范围内的一个敌人，你能持续地确认其所在的位置且你对其进行攻击时熟练值获得+1加值，直至其消失在你的视野中、离开你的攻击范围一段时间后或切换场景时。你对锁定目标进行攻击时产生的余震次数提升至两次。"
+        },
+        "y": {
+          "id": "ri-module-43a9858ab2c3",
+          "name": "Y模组",
+          "description": "追加第二职业特性\n\n势能强震：当你进行一次回想后，你可以花费 1 希望点，启动隐藏在发射装置内的特殊共振装置，在一名友方自愿角色的近距离内产生一次特殊的余震。特殊余震和【抛射武装】中的余震保持一致，除了其造成的伤害会迫使目标标记压力点而非生命点。"
+        }
+      },
+      "imageUrl": "/rhodes-island/domain-icons/precision.png"
+    },
+    {
+      "id": "ri-branch-a09a98f48a77",
+      "ruleset": "rhodes-island",
+      "professionId": "ri-profession-102152bab2bd",
+      "profession": "狙击",
+      "name": "猎手",
+      "recommendedDomains": [
+        "远见",
+        "奇迹"
+      ],
+      "stages": [
+        {
+          "tier": 1,
+          "level": 1,
+          "rank": "预备干员",
+          "weapon": {
+            "name": "猎兽铳械或猎兽弩",
+            "range": "远距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d10"
+          },
+          "branchFeature": "猎手本能：当你在一次攻击掷骰中获得成功结果时，你可以标记 3 压力点，迫使目标敌人暂时处于束缚状态并引导一名友方自愿角色进行一次无需掷骰的的近距离移动。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 2,
+          "level": 2,
+          "rank": "正式干员",
+          "weapon": {
+            "name": "猎兽铳械或猎兽弩",
+            "range": "远距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d10+3"
+          },
+          "branchFeature": "猎手本能+：当你在一次攻击掷骰中获得成功结果或一个敌人针对你进行的一次攻击掷骰失败时，你可以标记 3 压力点，迫使目标敌人暂时处于束缚状态并引导一名友方自愿角色进行一次无需掷骰的的近距离移动。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 3,
+          "level": 5,
+          "rank": "资深干员",
+          "weapon": {
+            "name": "猎兽铳械或猎兽弩",
+            "range": "远距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d10+6"
+          },
+          "branchFeature": "猎手本能++：当你在一次攻击掷骰中获得成功结果或一个敌人针对你进行的一次攻击掷骰失败时，你可以标记 3 压力点，迫使目标敌人暂时处于束缚状态并引导一名友方自愿角色进行一次无需掷骰的的中距离移动。",
+          "professionFeature": "找准时机-猎手：每场景限一次，当你标记压力点时，你可以将宝库中一张回想费用不大于此次标记压力点数目的领域卡加入配置中。"
+        },
+        {
+          "tier": 4,
+          "level": 8,
+          "rank": "精英干员",
+          "weapon": {
+            "name": "猎兽铳械或猎兽弩",
+            "range": "远距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d10+9"
+          },
+          "branchFeature": "",
+          "professionFeature": ""
+        }
+      ],
+      "modules": {
+        "x": {
+          "id": "ri-module-4bb81a19b0cc",
+          "name": "X模组",
+          "description": "希望特性提升\n\n动态瞄准-猎手：花费 3 希望点，锁定你攻击范围内的一个敌人，你能持续地确认其所在的位置、使其在锁定持续期间始终处于脆弱状态且你对其进行攻击时熟练值获得+1加值，直至其消失在你的视野中、离开你的攻击范围一段时间后或切换场景时。"
+        },
+        "y": {
+          "id": "ri-module-ca682827ebb7",
+          "name": "Y模组",
+          "description": "追加第二职业特性\n\n小兽出没：你已经与一些小型生物形成了良好关系。描述你饲养或驯化了一只怎样的小型生物，它将作为友方生物与你一同行动。你可以花费 1 希望点或标记 1 压力点，命令它进行一些简单行动。每场游戏开始时，在本模组器上放置一枚d10召唤骰并将面值设置为1。该生物的伤害阈值始终与你相同。每当其标记生命点时，改为使其召唤骰面值增加等数目。当召唤骰数值不低于你的当前等级时，其将暂时撤退，直至本场游戏结束时才会返回。"
         }
       },
       "imageUrl": "/rhodes-island/domain-icons/precision.png"
@@ -1167,7 +1823,7 @@
         "x": {
           "id": "ri-module-240b044b1ade",
           "name": "X模组",
-          "description": "希望特性提升\n\n再度施法-中坚术师：当一名友方自愿角色或一个敌人在当前场景内进行一次施法掷骰后，你可以花费 3 希望点，迫使其重掷。若其仍成功，你获得 1 希望点。"
+          "description": "希望特性提升\n\n再度施法-中坚术师：当一名友方自愿角色或一个敌人在当前场景内进行一次施法掷骰后，你可以花费 3 希望点，迫使其重掷。若其的重掷取得成功结果，你获得 1 希望点。"
         },
         "y": {
           "id": "ri-module-5f876b36bd5c",
@@ -1193,7 +1849,7 @@
           "level": 1,
           "rank": "预备干员",
           "weapon": {
-            "name": "施阵单元",
+            "name": "阵法型施术单元",
             "range": "中距离",
             "burden": "双手",
             "damageType": "法术",
@@ -1207,7 +1863,7 @@
           "level": 2,
           "rank": "正式干员",
           "weapon": {
-            "name": "施阵单元",
+            "name": "阵法型施术单元",
             "range": "中距离",
             "burden": "双手",
             "damageType": "法术",
@@ -1221,7 +1877,7 @@
           "level": 5,
           "rank": "资深干员",
           "weapon": {
-            "name": "施阵单元",
+            "name": "阵法型施术单元",
             "range": "中距离",
             "burden": "双手",
             "damageType": "法术",
@@ -1235,7 +1891,7 @@
           "level": 8,
           "rank": "精英干员",
           "weapon": {
-            "name": "施阵单元",
+            "name": "阵法型施术单元",
             "range": "中距离",
             "burden": "双手",
             "damageType": "法术",
@@ -1275,7 +1931,7 @@
           "level": 1,
           "rank": "预备干员",
           "weapon": {
-            "name": "蓄法单元",
+            "name": "蓄能型施术单元",
             "range": "中距离",
             "burden": "双手",
             "damageType": "法术",
@@ -1289,7 +1945,7 @@
           "level": 2,
           "rank": "正式干员",
           "weapon": {
-            "name": "蓄法单元",
+            "name": "蓄能型施术单元",
             "range": "中距离",
             "burden": "双手",
             "damageType": "法术",
@@ -1303,7 +1959,7 @@
           "level": 5,
           "rank": "资深干员",
           "weapon": {
-            "name": "蓄法单元",
+            "name": "蓄能型施术单元",
             "range": "中距离",
             "burden": "双手",
             "damageType": "法术",
@@ -1317,7 +1973,7 @@
           "level": 8,
           "rank": "精英干员",
           "weapon": {
-            "name": "蓄法单元",
+            "name": "蓄能型施术单元",
             "range": "中距离",
             "burden": "双手",
             "damageType": "法术",
@@ -1363,7 +2019,7 @@
             "damageType": "法术",
             "damage": "d8"
           },
-          "branchFeature": "施术协同：描述你的武器原型是怎样的（生物或造物），它会与你一同进行攻击和移动。每场游戏开始时，将一枚d10召唤骰放置在你配置中的一张领域卡上，将其作为你的施术召唤物使用，召唤骰初始数值为1。施术召唤物具有对应领域卡特性（使用频率与你共同计算），其的伤害阈值与你保持一致。其标记生命点时，改为使召唤骰数值增加等数目。当召唤骰数值大于对应领域卡等级时，施术召唤物失去战斗能力，直至召唤骰数值为1。当你完成一次短休/长休后，使召唤骰数值减少5/减少10（召唤骰数值至少为1）。",
+          "branchFeature": "施术协同：描述你的武器原型是怎样的（生物或造物），它会与你一同进行攻击和移动。每场游戏开始时，将一枚d10召唤骰放置在你配置中的一张领域卡上，将其作为你的施术召唤物使用，召唤骰初始数值为1。施术召唤物具有对应领域卡特性（使用频率与你共同计算），其的伤害阈值与你保持一致。其标记生命点时，改为使召唤骰数值增加等数目。当召唤骰数值大于对应领域卡等级时，施术召唤物失去战斗能力，直至召唤骰数值为1。当你完成一次短休/长休后，使召唤骰数值减少5/减少10（召唤骰数值至少为1）。\n\n对于等级10以上的领域卡，当召唤骰数值将从10继续增加时，对应的召唤物将失去战斗能力。",
           "professionFeature": ""
         },
         {
@@ -1419,6 +2075,252 @@
           "id": "ri-module-970529e891f4",
           "name": "Y模组",
           "description": "追加第二职业特性\n\n奇迹聚焦：每当你将移除一张领域卡上已有的指示物时，若施术召唤物的召唤骰与10的差值足够，你可以花费 1 希望点，改为使施术召唤物的召唤骰增加对应数值（均不超过对应领域卡上已有指示物数量）。"
+        }
+      },
+      "imageUrl": "/rhodes-island/domain-icons/arcane.png"
+    },
+    {
+      "id": "ri-branch-a0b7b0ad65f4",
+      "ruleset": "rhodes-island",
+      "professionId": "ri-profession-1fed1ec9a637",
+      "profession": "术师",
+      "name": "扩散术师",
+      "recommendedDomains": [
+        "远见",
+        "心界"
+      ],
+      "stages": [
+        {
+          "tier": 1,
+          "level": 1,
+          "rank": "预备干员",
+          "weapon": {
+            "name": "扩散型施术单元",
+            "range": "中距离",
+            "burden": "双手",
+            "damageType": "法术",
+            "damage": "d10"
+          },
+          "branchFeature": "法术扩散：你对攻击范围内的单一敌人进行施法掷骰时，可以花费 2 希望点或标记 2 压力点，额外指定其近距离内的其他敌人。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 2,
+          "level": 2,
+          "rank": "正式干员",
+          "weapon": {
+            "name": "扩散型施术单元",
+            "range": "中距离",
+            "burden": "双手",
+            "damageType": "法术",
+            "damage": "d10+3"
+          },
+          "branchFeature": "法术扩散+：你对攻击范围内的单一敌人进行施法掷骰时，可以花费 1 希望点或标记 1 压力点，额外指定其近距离内的其他敌人。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 3,
+          "level": 5,
+          "rank": "资深干员",
+          "weapon": {
+            "name": "扩散型施术单元",
+            "range": "中距离",
+            "burden": "双手",
+            "damageType": "法术",
+            "damage": "d10+6"
+          },
+          "branchFeature": "法术扩散++：你对攻击范围内的敌人进行施法掷骰时，可以对每个施法掷骰目标分别花费 1 希望点或标记 1 压力点，额外指定你以此法选择的所有目标近距离内的其他敌人（同一目标的影响合并计算）。",
+          "professionFeature": "法术聚焦-扩散术师：每次休息一次，你可以使自身一次施法掷骰的难度降低 2 点。"
+        },
+        {
+          "tier": 4,
+          "level": 8,
+          "rank": "精英干员",
+          "weapon": {
+            "name": "扩散型施术单元",
+            "range": "中距离",
+            "burden": "双手",
+            "damageType": "法术",
+            "damage": "d10+9"
+          },
+          "branchFeature": "",
+          "professionFeature": ""
+        }
+      ],
+      "modules": {
+        "x": {
+          "id": "ri-module-a932b76ec73c",
+          "name": "X模组",
+          "description": "希望特性提升\n\n再度施法-扩散术师：当一名友方自愿角色或一个敌人在你的攻击范围内进行一次施法掷骰后，你可以花费 3 希望点，迫使其重掷。若目标为友方角色，其此次重掷具有优势。若目标为敌人，其此次重掷具有劣势。"
+        },
+        "y": {
+          "id": "ri-module-78f5376366af",
+          "name": "Y模组",
+          "description": "追加第二职业特性\n\n范围增幅：你的武器原型攻击范围提升至远距离，你的通过领域卡使用的法术施法范围和法术影响范围各提升一级（至多提升至远距离）。"
+        }
+      },
+      "imageUrl": "/rhodes-island/domain-icons/arcane.png"
+    },
+    {
+      "id": "ri-branch-8232b398b30b",
+      "ruleset": "rhodes-island",
+      "professionId": "ri-profession-1fed1ec9a637",
+      "profession": "术师",
+      "name": "链术师",
+      "recommendedDomains": [
+        "奇迹",
+        "工业"
+      ],
+      "stages": [
+        {
+          "tier": 1,
+          "level": 1,
+          "rank": "预备干员",
+          "weapon": {
+            "name": "链跃型施术单元",
+            "range": "中距离",
+            "burden": "双手",
+            "damageType": "法术",
+            "damage": "d10"
+          },
+          "branchFeature": "法术链跃：你的施术单元可以释放在敌人间跳跃的法术。每当你使用本单元进行对单一敌人的攻击时，你可以选择近距离内、中距离内各一个不同的敌人，并在此次攻击中额外获得等同于你攻击敌人数量-1的加值。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 2,
+          "level": 2,
+          "rank": "正式干员",
+          "weapon": {
+            "name": "链跃型施术单元",
+            "range": "远距离",
+            "burden": "双手",
+            "damageType": "法术",
+            "damage": "d10+3"
+          },
+          "branchFeature": "法术链跃+：你的施术单元可以释放在敌人间跳跃的法术。每当你使用本单元进行对单一敌人的攻击时，你可以选择近距离内、远距离内各一个不同的敌人，并在此次攻击中额外获得等同于你攻击敌人数量-1的加值。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 3,
+          "level": 5,
+          "rank": "资深干员",
+          "weapon": {
+            "name": "链跃型施术单元",
+            "range": "远距离",
+            "burden": "双手",
+            "damageType": "法术",
+            "damage": "d10+6"
+          },
+          "branchFeature": "法术链跃++：你的施术单元可以释放在敌人间跳跃的法术。每当你使用本单元进行对单一敌人的攻击时，你可以选择近距离内、中距离内、远距离内各一个不同的敌人，并在此次攻击中额外获得等同于你攻击敌人数量的加值。",
+          "professionFeature": "法术聚焦-链术师：每次休息一次，花费 1 希望点，使自身一次施法掷骰的难度降低 2 点并使得受到此次施法掷骰伤害的敌人暂时处于束缚状态。"
+        },
+        {
+          "tier": 4,
+          "level": 8,
+          "rank": "精英干员",
+          "weapon": {
+            "name": "链跃型施术单元",
+            "range": "远距离",
+            "burden": "双手",
+            "damageType": "法术",
+            "damage": "d10+9"
+          },
+          "branchFeature": "",
+          "professionFeature": ""
+        }
+      ],
+      "modules": {
+        "x": {
+          "id": "ri-module-f10b27627940",
+          "name": "X模组",
+          "description": "希望特性提升\n\n再度施法-链术师：当一名友方自愿角色或一个敌人在你的攻击范围内进行一次施法掷骰后，你可以花费 3 希望点，迫使其重掷。若重掷后，其将通过此次施法掷骰造成伤害，你可以使此次伤害增加你当前等级点（其为敌人时，改为减少你当前等级点）。"
+        },
+        "y": {
+          "id": "ri-module-096042e3f6e5",
+          "name": "Y模组",
+          "description": "追加第二职业特性\n\n链式爆发：你独立进行施法掷骰时，可以将此次施法掷骰获得的全部加值转换为你此次施法的熟练值加值，以此法对目标造成伤害时，最终伤害数值每比目标严重伤害阈值高一倍，你便额外迫使其标记1生命点。\n\n独立进行掷骰：进行的掷骰不包含在团队行动掷骰和接力掷骰中。"
+        }
+      },
+      "imageUrl": "/rhodes-island/domain-icons/arcane.png"
+    },
+    {
+      "id": "ri-branch-feb7b8c28f6f",
+      "ruleset": "rhodes-island",
+      "professionId": "ri-profession-1fed1ec9a637",
+      "profession": "术师",
+      "name": "轰击术师",
+      "recommendedDomains": [
+        "精准",
+        "奇迹"
+      ],
+      "stages": [
+        {
+          "tier": 1,
+          "level": 1,
+          "rank": "预备干员",
+          "weapon": {
+            "name": "集束型施术单元",
+            "range": "中距离",
+            "burden": "双手",
+            "damageType": "法术",
+            "damage": "d12"
+          },
+          "branchFeature": "线性轰击：你使用本单元进行攻击时，可以且必须改为指定攻击范围内一条以你为起点的射线近距离内存在的所有敌人。若其中存在对你而言不可见的敌人（如视线阻挡、光学迷彩等），他们依然会被暗中指定且如常受到此次攻击。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 2,
+          "level": 2,
+          "rank": "正式干员",
+          "weapon": {
+            "name": "集束型施术单元",
+            "range": "远距离",
+            "burden": "双手",
+            "damageType": "法术",
+            "damage": "d12+3"
+          },
+          "branchFeature": "线性轰击+：你使用本单元进行攻击时，可以且必须改为指定攻击范围内一条以你为起点的射线近距离内存在的所有敌人。若其中存在对你而言不可见的敌人（如视线阻挡、光学迷彩等），他们依然会被暗中指定且如常受到此次攻击。你的此次攻击还会摧毁此范围内的所有可摧毁障碍物。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 3,
+          "level": 5,
+          "rank": "资深干员",
+          "weapon": {
+            "name": "集束型施术单元",
+            "range": "远距离",
+            "burden": "双手",
+            "damageType": "法术",
+            "damage": "d12+6"
+          },
+          "branchFeature": "线性轰击++：你使用本单元进行攻击时，可以改为指定攻击范围内一条以你为起点的射线近距离内存在的所有敌人。若其中存在对你而言不可见的敌人（如视线阻挡、光学迷彩等），他们依然会被暗中指定、如常受到此次攻击且暂时对所有友方角色可见。你的此次攻击还会摧毁此范围内的所有可摧毁障碍物和敌方中小型造物。",
+          "professionFeature": "法术聚焦-轰击术师：每次休息一次，花费 1 希望点，使自身一次施法掷骰的难度降低 2 点。若你在此次掷骰中获得希望成功或关键成功，你可以标记 1 压力点，重置本职业特性的使用次数。"
+        },
+        {
+          "tier": 4,
+          "level": 8,
+          "rank": "精英干员",
+          "weapon": {
+            "name": "集束型施术单元",
+            "range": "远距离",
+            "burden": "双手",
+            "damageType": "法术",
+            "damage": "d12+9"
+          },
+          "branchFeature": "",
+          "professionFeature": ""
+        }
+      ],
+      "modules": {
+        "x": {
+          "id": "ri-module-32473527ee45",
+          "name": "X模组",
+          "description": "希望特性提升\n\n再度施法-轰击术师：当一名友方自愿角色或一个敌人在你的攻击范围内进行一次施法掷骰后，你可以花费 2 希望点，迫使其重掷。"
+        },
+        "y": {
+          "id": "ri-module-dfb7dda71ab5",
+          "name": "Y模组",
+          "description": "追加第二职业特性\n\n相位整流：你掌握了某种奇特的借助造物调整集束的方法。你的攻击现在可以指定友方自愿角色的一个造物，若如此做，该造物不会受到攻击造成的伤害以及相关后果，并使你的此次攻击获得以下一项增幅——\n· 散逸回流~你或该造物的控制者获得1希望点\n· 增幅束流~此次攻击掷骰造成的伤害增加6点\n· 折射偏流~以该造物为转折点，将你的射线型攻击偏转至另一方向"
         }
       },
       "imageUrl": "/rhodes-island/domain-icons/arcane.png"
@@ -1752,6 +2654,252 @@
       "imageUrl": "/rhodes-island/domain-icons/shadow.png"
     },
     {
+      "id": "ri-branch-10a3a13b323e",
+      "ruleset": "rhodes-island",
+      "professionId": "ri-profession-1529538bc255",
+      "profession": "特种",
+      "name": "推击手",
+      "recommendedDomains": [
+        "攻坚",
+        "坚阵"
+      ],
+      "stages": [
+        {
+          "tier": 1,
+          "level": 1,
+          "rank": "预备干员",
+          "weapon": {
+            "name": "推击装置",
+            "range": "近距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d10"
+          },
+          "branchFeature": "有力推击：你可以攻击友方自愿目标且不对其造成伤害和与伤害有关的影响。当你使用推击装置攻击并命中一个目标时，你可以将该目标推至你中远距离交界处。你可以在一次攻击中，标记 2 压力点，额外攻击一个目标。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 2,
+          "level": 2,
+          "rank": "正式干员",
+          "weapon": {
+            "name": "推击装置",
+            "range": "近距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d10+3"
+          },
+          "branchFeature": "有力推击+：你可以攻击友方自愿目标且不对其造成伤害和与伤害有关的影响。当你使用推击装置攻击并命中一个目标时，你可以将该目标推至你中距离内的一处位置。你可以在一次攻击中，标记 1 压力点，额外攻击一个目标。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 3,
+          "level": 5,
+          "rank": "资深干员",
+          "weapon": {
+            "name": "推击装置",
+            "range": "近距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d10+6"
+          },
+          "branchFeature": "有力推击++：你可以攻击友方自愿目标且不对其造成伤害和与伤害有关的影响。当你使用推击装置攻击并命中一个目标时，你可以将该目标推至你远距离内的一处位置，若其为敌人，则其将失衡，暂时处于脆弱状态。你可以在一次攻击中，额外攻击一个目标。",
+          "professionFeature": "暗行突袭-推击手：每次休息一次，若你因一次动作掷骰解除了自身的隐藏类状态时，你可以标记 1 压力点，使你的此次掷骰获得+2加值且此次攻击造成的伤害增加3点。"
+        },
+        {
+          "tier": 4,
+          "level": 8,
+          "rank": "精英干员",
+          "weapon": {
+            "name": "推击装置",
+            "range": "近距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d10+9"
+          },
+          "branchFeature": "",
+          "professionFeature": ""
+        }
+      ],
+      "modules": {
+        "x": {
+          "id": "ri-module-038d96b6080c",
+          "name": "X模组",
+          "description": "希望特性提升\n\n目标探查-推击手：花费 3 希望点，向你的主持人询问当前场景内一至两名目标的各一个特征（比如弱点，创伤等相似的内容），且让其中一个目标暂时处于推击目标状态。处于推击目标状态的目标受到推动效果的影响时，可被推动的范围提升一级（至多提升至远距离）。"
+        },
+        "y": {
+          "id": "ri-module-84ed3c8a3b32",
+          "name": "Y模组",
+          "description": "追加第二职业特性\n\n紧急机动：每场景限一次，你可以花费 1 希望点，反向启动推击装置，使你立即被推动至你远距离内的一处位置上。你可以在反应中使用本特性，此时推动范围缩减至中距离。"
+        }
+      },
+      "imageUrl": "/rhodes-island/domain-icons/shadow.png"
+    },
+    {
+      "id": "ri-branch-fc8f09d84fea",
+      "ruleset": "rhodes-island",
+      "professionId": "ri-profession-1529538bc255",
+      "profession": "特种",
+      "name": "钩索师",
+      "recommendedDomains": [
+        "坚阵",
+        "攻坚"
+      ],
+      "stages": [
+        {
+          "tier": 1,
+          "level": 1,
+          "rank": "预备干员",
+          "weapon": {
+            "name": "钩索装置",
+            "range": "中距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d8"
+          },
+          "branchFeature": "远程拖拽：你可以攻击友方自愿目标且不对其造成伤害和与伤害有关的影响。当你使用钩索装置攻击并命中一个目标时，你可以将该目标拉近至你近距离内的一处位置。你可以使用钩索装置无需掷骰地攀爬有一定高度的地形。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 2,
+          "level": 2,
+          "rank": "正式干员",
+          "weapon": {
+            "name": "钩索装置",
+            "range": "远距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d8+3"
+          },
+          "branchFeature": "远程拖拽+：你可以攻击友方自愿目标且不对其造成伤害和与伤害有关的影响。当你使用钩索装置攻击并命中一个目标时，你可以将该目标拉近至你中距离内的一处位置。你可以使用钩索装置无需掷骰地攀爬有一定高度的地形。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 3,
+          "level": 5,
+          "rank": "资深干员",
+          "weapon": {
+            "name": "钩索装置",
+            "range": "远距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d8+6"
+          },
+          "branchFeature": "远程拖拽++：你可以攻击友方自愿目标且不对其造成伤害和与伤害有关的影响。当你使用钩索装置攻击并命中一个目标时，你可以将该目标拉近至你中距离内的一处位置，若其为敌人，其将暂时处于缚地状态。除了束缚状态带来的限制，缚地状态还会使得目标失去飞行能力，被束缚在地面上。你可以使用钩索装置无需掷骰地攀爬有一定高度的地形。",
+          "professionFeature": "暗行突袭-钩索师：每次休息一次，若你因一次动作掷骰解除了自身的隐藏类状态时，你可以标记 1 压力点，使你的此次掷骰获得+2加值且可以额外攻击一个目标。"
+        },
+        {
+          "tier": 4,
+          "level": 8,
+          "rank": "精英干员",
+          "weapon": {
+            "name": "钩索装置",
+            "range": "远距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d8+9"
+          },
+          "branchFeature": "",
+          "professionFeature": ""
+        }
+      ],
+      "modules": {
+        "x": {
+          "id": "ri-module-3c1aac5a8d92",
+          "name": "X模组",
+          "description": "希望特性提升\n\n目标探查-钩索师：花费 3 希望点，向你的主持人询问当前场景内一至两名目标的各一个特征（比如弱点，创伤等相似的内容），且你可以立即使用钩索装置，直接将其中一个目标拉近至你近距离内的一处位置。"
+        },
+        "y": {
+          "id": "ri-module-9544d52d39cb",
+          "name": "Y模组",
+          "description": "追加第二职业特性\n\n紧急机动：每场景限一次，你可以花费 1 希望点，反向启动推击装置，使你立即被推动至你远距离内的一处位置上。你可以在反应中使用本特性，此时推动范围缩减至中距离。"
+        }
+      },
+      "imageUrl": "/rhodes-island/domain-icons/shadow.png"
+    },
+    {
+      "id": "ri-branch-70257f79ff76",
+      "ruleset": "rhodes-island",
+      "professionId": "ri-profession-1529538bc255",
+      "profession": "特种",
+      "name": "怪杰",
+      "recommendedDomains": [
+        "精准",
+        "奇迹"
+      ],
+      "stages": [
+        {
+          "tier": 1,
+          "level": 1,
+          "rank": "预备干员",
+          "weapon": {
+            "name": "混合弹药型铳械",
+            "range": "中距离",
+            "burden": "单手",
+            "damageType": "物理",
+            "damage": "d10"
+          },
+          "branchFeature": "惊奇射击：每场游戏开始时以及切换场景时，在本武器原型上补充两个怪杰指示物。你至多持有两个怪杰指示物。每当你在使用本武器原型的攻击掷骰中获得成功结果时，你可以移除你的一个怪杰指示物并投掷一枚d4，根据结果执行对应效果——\n·1【失控弹药】弹药射出时立即爆炸，中断此次攻击并迫使你标记 2 压力点。\n·2【强击弹药】此次攻击额外对目标造成1d10点物理伤害。恐惧结果时，本弹药视为失控弹药。\n·3【散裂弹药】此次攻击对目标近距离内的其他敌人造成一半的伤害。\n·4【缓压装置】弹药射出时触发缓压装置，装置向你喷射一种舒缓压力的气态药物，你清除 1 压力点。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 2,
+          "level": 2,
+          "rank": "正式干员",
+          "weapon": {
+            "name": "混合弹药型铳械",
+            "range": "远距离",
+            "burden": "单手",
+            "damageType": "物理",
+            "damage": "d10+3"
+          },
+          "branchFeature": "惊奇射击+：每场游戏开始时以及切换场景时，在本武器原型上补充三个怪杰指示物。你至多持有三个怪杰指示物。每当你在使用本武器原型的攻击掷骰中获得成功结果时，你可以移除你的一个怪杰指示物并投掷一枚d6，根据结果执行对应效果——\n……\n·5【高穿弹药】此次攻击无视目标一半的伤害阈值。\n·6【愈合装置】弹药射出时触发愈合装置，装置向你与武器的接触位置注射治疗药物，你恢复 1 生命点。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 3,
+          "level": 5,
+          "rank": "资深干员",
+          "weapon": {
+            "name": "混合弹药型铳械",
+            "range": "远距离",
+            "burden": "单手",
+            "damageType": "物理",
+            "damage": "d10+6"
+          },
+          "branchFeature": "惊奇射击+：每场游戏开始时以及切换场景时，在本武器原型上补充四个怪杰指示物。你至多持有四个怪杰指示物。每当你在使用本武器原型的攻击掷骰中获得成功结果时，你可以移除你的一个怪杰指示物并投掷一枚d8，根据结果执行对应效果——\n……\n·7【自选扳机】触发并执行以上任意一项的效果。\n·8【双重响应】触发并执行以上任意不同两项（不包含【自选扳机】）的效果。",
+          "professionFeature": "暗行突袭-怪杰：每次休息一次，若你因一次动作掷骰解除了自身的隐藏类状态时，你可以标记 1 压力点，使你的此次掷骰获得+2加值且此次攻击中可以重掷一次【惊奇射击】的掷骰。"
+        },
+        {
+          "tier": 4,
+          "level": 8,
+          "rank": "精英干员",
+          "weapon": {
+            "name": "钩索装置",
+            "range": "远距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d10+9"
+          },
+          "branchFeature": "",
+          "professionFeature": ""
+        }
+      ],
+      "modules": {
+        "x": {
+          "id": "ri-module-8df0ae9ebcc8",
+          "name": "X模组",
+          "description": "希望特性提升\n\n目标探查-怪杰：花费 3 希望点，向你的主持人询问当前场景内一至两名目标的各一个特征（比如弱点，创伤等相似的内容），并可以立即对其中一个目标进行一次攻击掷骰。此次攻击掷骰可以额外触发一次【惊奇射击】。"
+        },
+        "y": {
+          "id": "ri-module-b2e2474fd558",
+          "name": "Y模组",
+          "description": "追加第二职业特性\n\n诡异增幅：你可以花费 1 希望点并攻击友方自愿角色，若如此做，此次攻击视为攻击反应掷骰且自动获得成功的结果，且其须选择【惊奇射击】中的任意一项的效果，而后立即进行一次视为获得你支援的攻击掷骰并执行其选择的对应项效果。"
+        }
+      },
+      "imageUrl": "/rhodes-island/domain-icons/shadow.png"
+    },
+    {
       "id": "ri-branch-97014a65f041",
       "ruleset": "rhodes-island",
       "professionId": "ri-profession-76d8dd1c763a",
@@ -2080,6 +3228,252 @@
       "imageUrl": "/rhodes-island/domain-icons/bulwark.png"
     },
     {
+      "id": "ri-branch-91ee6565a275",
+      "ruleset": "rhodes-island",
+      "professionId": "ri-profession-76d8dd1c763a",
+      "profession": "重装",
+      "name": "守护者",
+      "recommendedDomains": [
+        "支柱",
+        "远见"
+      ],
+      "stages": [
+        {
+          "tier": 1,
+          "level": 1,
+          "rank": "预备干员",
+          "weapon": {
+            "name": "医疗盾牌",
+            "range": "近距离",
+            "burden": "单手",
+            "damageType": "物理",
+            "damage": "d8"
+          },
+          "branchFeature": "守护之心：当你援护友方自愿角色时，你可以启用医疗盾牌中的治疗装置，花费 2 希望点，使其中一名角色额外恢复 1 生命点。\n\n援护：代替目标承受伤害或其他负面影响；为目标恢复生命点或移除负面状态；其他类似的可视为援护某类目标的行为。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 2,
+          "level": 2,
+          "rank": "正式干员",
+          "weapon": {
+            "name": "医疗盾牌",
+            "range": "近距离",
+            "burden": "单手",
+            "damageType": "物理",
+            "damage": "d8+3"
+          },
+          "branchFeature": "守护之心+：当你援护友方自愿角色时，你可以启用医疗盾牌中的治疗装置，花费 2 希望点，使其中一名角色额外恢复 1 生命点或额外移除一个负面状态。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 3,
+          "level": 5,
+          "rank": "资深干员",
+          "weapon": {
+            "name": "医疗盾牌",
+            "range": "近距离",
+            "burden": "单手",
+            "damageType": "物理",
+            "damage": "d8+6"
+          },
+          "branchFeature": "守护之心+：当你援护友方自愿角色时，你可以启用医疗盾牌中的治疗装置，花费 1 希望点，使其中一至两名角色额外恢复 1 生命点或额外移除一个负面状态。",
+          "professionFeature": "挺身而出-守护者：每次休息一次，标记 1 压力点，你可以替位于身后的盟友承受其将受到的攻击。你可以在团队获得聚焦时，花费 1 希望点，重置本特性的使用频率。"
+        },
+        {
+          "tier": 4,
+          "level": 8,
+          "rank": "精英干员",
+          "weapon": {
+            "name": "医疗盾牌",
+            "range": "近距离",
+            "burden": "单手",
+            "damageType": "物理",
+            "damage": "d8+9"
+          },
+          "branchFeature": "",
+          "professionFeature": ""
+        }
+      ],
+      "modules": {
+        "x": {
+          "id": "ri-module-79033d5c7bc1",
+          "name": "X模组",
+          "description": "希望特性提升\n\n完美防御-守护者：当一个敌人将对你或你身后的友方自愿角色造成伤害时，你可以花费 3 希望点，在此次伤害计算中使其中一名友方角色获得物理伤害抗性和法术伤害抗性。"
+        },
+        "y": {
+          "id": "ri-module-10cf6d56e892",
+          "name": "Y模组",
+          "description": "追加第二职业特性\n\n多重援护：当你为友方自愿角色提供援护时，你可以启动医疗盾牌中特别加装的增幅装置，花费 3 希望点，将此次援护中你对友方目标生效的特性效果扩散至目标及其中距离内的其他友方自愿角色（例如，使一名友方自愿角色恢复1生命点，会因此改为，使该友方角色和其中距离内的其他友方自愿角色各恢复1生命点）。"
+        }
+      },
+      "imageUrl": "/rhodes-island/domain-icons/bulwark.png"
+    },
+    {
+      "id": "ri-branch-7e5046933e96",
+      "ruleset": "rhodes-island",
+      "professionId": "ri-profession-76d8dd1c763a",
+      "profession": "重装",
+      "name": "驭法铁卫",
+      "recommendedDomains": [
+        "奥术",
+        "奇迹"
+      ],
+      "stages": [
+        {
+          "tier": 1,
+          "level": 1,
+          "rank": "预备干员",
+          "weapon": {
+            "name": "能量盾牌",
+            "range": "近距离",
+            "burden": "单手",
+            "damageType": "法术",
+            "damage": "d10"
+          },
+          "branchFeature": "固能反击：每当你受到一次严重伤害时，你可以收集攻击中承受的过量冲击或法术溢能并将之固定在能量盾牌中，在本武器原型上放置一个指示物。本武器原型上至多放置等同于你施法属性数目的指示物。在你进行施法掷骰时，你可以移除本武器原型上的一至两个指示物，每移除一个指示物，此次掷骰便获得+1加值。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 2,
+          "level": 2,
+          "rank": "正式干员",
+          "weapon": {
+            "name": "能量盾牌",
+            "range": "近距离",
+            "burden": "单手",
+            "damageType": "法术",
+            "damage": "d10+3"
+          },
+          "branchFeature": "固能反击+：每当你受到一次重度以上伤害时，你可以收集攻击中承受的过量冲击或法术溢能并将之固定在能量盾牌中，在本武器原型上放置一个指示物。本武器原型上至多放置等同于你施法属性数目的指示物。在你进行施法掷骰或反应掷骰时，你可以移除本武器原型上的一至两指示物，每移除一个指示物，此次掷骰便获得+1加值。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 3,
+          "level": 5,
+          "rank": "资深干员",
+          "weapon": {
+            "name": "能量盾牌",
+            "range": "近距离",
+            "burden": "单手",
+            "damageType": "法术",
+            "damage": "d10+6"
+          },
+          "branchFeature": "固能反击++：每当你受到一次伤害时，你可以收集攻击中承受的过量冲击或法术溢能并将之固定在能量盾牌中，在本武器原型上放置一个指示物。本武器原型上至多放置等同于你施法属性数目+1的指示物。在你进行施法掷骰或反应掷骰时，你可以移除本武器原型上的任意个指示物，每移除一个指示物，此次掷骰便获得+1加值。",
+          "professionFeature": "挺身而出-驭法铁卫：每次休息一次，标记 1 压力点，你可以替位于身后的盟友承受其将受到的攻击。你可以在团队获得聚焦时，花费 1 希望点，重置本特性的使用频率。"
+        },
+        {
+          "tier": 4,
+          "level": 8,
+          "rank": "精英干员",
+          "weapon": {
+            "name": "能量盾牌",
+            "range": "近距离",
+            "burden": "单手",
+            "damageType": "法术",
+            "damage": "d10+9"
+          },
+          "branchFeature": "",
+          "professionFeature": ""
+        }
+      ],
+      "modules": {
+        "x": {
+          "id": "ri-module-e8bdfc0b6046",
+          "name": "X模组",
+          "description": "希望特性提升\n\n完美防御-驭法铁卫：当一个敌人将对你造成伤害时，你可以花费 3 希望点，在此次伤害计算中获得物理伤害抗性和法术伤害抗性，并对该敌人造成使用你施法属性一半的武器伤害。"
+        },
+        "y": {
+          "id": "ri-module-f842b0647733",
+          "name": "Y模组",
+          "description": "追加第二职业特性\n\n奇迹共鸣：每当你在你的武器原型上放置指示物时，你可以标记 1 压力点，在你的一张已存在指示物的领域卡上放置一个指示物。"
+        }
+      },
+      "imageUrl": "/rhodes-island/domain-icons/bulwark.png"
+    },
+    {
+      "id": "ri-branch-6b8be1cb1eb5",
+      "ruleset": "rhodes-island",
+      "professionId": "ri-profession-76d8dd1c763a",
+      "profession": "重装",
+      "name": "哨戒铁卫",
+      "recommendedDomains": [
+        "精准",
+        "工业"
+      ],
+      "stages": [
+        {
+          "tier": 1,
+          "level": 1,
+          "rank": "预备干员",
+          "weapon": {
+            "name": "铳械复合盾",
+            "range": "中距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d10"
+          },
+          "branchFeature": "机动盾牌：你可以将铳械复合盾拆解为单手铳械和单手盾牌。花费 2 希望点，将拆解后的盾牌投射至你的中距离内。其将视为友方造物，可以为其近距离内的友方其他角色提供掩护且敌人无法经过盾牌所在的位置。每当其受到一次伤害时，投掷d6，结果为3或更大时，其立即损毁，且在当前场景内不能被再次投射（切换场景时，你的盾牌将以某种方式修好或更换成新的）。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 2,
+          "level": 2,
+          "rank": "正式干员",
+          "weapon": {
+            "name": "铳械复合盾",
+            "range": "中距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d10+3"
+          },
+          "branchFeature": "机动盾牌+：拆解后的盾牌会持续性地警戒其中距离内的环境，使其中所有敌人的隐藏类状态失效并为其近距离内的友方其他角色的反应掷骰提供+1加值。你现在还可以标记 1 压力点，远程召回被投射的盾牌。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 3,
+          "level": 5,
+          "rank": "资深干员",
+          "weapon": {
+            "name": "铳械复合盾",
+            "range": "中距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d10+6"
+          },
+          "branchFeature": "机动盾牌++：……花费 2 希望点，将拆解后的盾牌投射至一名友方自愿角色的中距离内。……每当其受到一次伤害时，投掷d6，结果为5或6时，其立即损毁，且在当前场景内不能被再次投射……",
+          "professionFeature": "挺身而出-哨戒铁卫：每次休息一次，标记 1 压力点，你可以替位于身后的盟友承受其将受到的攻击，或令拆解后的盾牌为其近距离内的一名友方自愿角色承受一次伤害。"
+        },
+        {
+          "tier": 4,
+          "level": 8,
+          "rank": "精英干员",
+          "weapon": {
+            "name": "铳械复合盾",
+            "range": "中距离",
+            "burden": "双手",
+            "damageType": "物理",
+            "damage": "d10+9"
+          },
+          "branchFeature": "",
+          "professionFeature": ""
+        }
+      ],
+      "modules": {
+        "x": {
+          "id": "ri-module-08b4402bf384",
+          "name": "X模组",
+          "description": "希望特性提升\n\n完美防御-哨戒铁卫：当一个敌人将对你造成伤害时，你可以花费 3 希望点，在此次伤害计算中获得物理伤害抗性和法术伤害抗性。若此时你的盾牌已损毁，则改为花费 1 希望点。"
+        },
+        "y": {
+          "id": "ri-module-e7124b542614",
+          "name": "Y模组",
+          "description": "追加第二职业特性\n\n坚盾已至：每当你将拆解后的盾牌投射至友方其他角色的中距离内时，重置你职业特性的使用频率。"
+        }
+      },
+      "imageUrl": "/rhodes-island/domain-icons/bulwark.png"
+    },
+    {
       "id": "ri-branch-f992c670ea4f",
       "ruleset": "rhodes-island",
       "professionId": "ri-profession-0319582eb790",
@@ -2347,7 +3741,7 @@
             "damageType": "物理",
             "damage": "d8"
           },
-          "branchFeature": "工程造物：每场游戏限两次，标记 3 压力点，为你或一名盟友的一张领域卡放置1枚d10召唤骰，召唤骰初始数值为1。描述你以其为灵感，使用你的工程单元制造了一件怎样的造物，其会与对应领域卡持有者一同攻击和移动。工程召唤物具有对应领域卡特性（使用频率与持有者共同计算），其的伤害阈值与对应领域卡持有者保持一致。其标记生命点时，改为使召唤骰数值增加等数目。当召唤骰数值大于对应领域卡等级时，工程召唤物失去战斗能力，直至召唤骰数值为1。当对应领域卡持有者完成一次短休/长休后，使召唤骰数值减少5/减少10（召唤骰数值至少为1）。",
+          "branchFeature": "工程造物：每场游戏限两次，标记 3 压力点，为你或一名盟友的一张领域卡放置1枚d10召唤骰，召唤骰初始数值为1。描述你以其为灵感，使用你的工程单元制造了一件怎样的造物，其会与对应领域卡持有者一同攻击和移动。工程召唤物具有对应领域卡特性（使用频率与持有者共同计算），其的伤害阈值与对应领域卡持有者保持一致。其标记生命点时，改为使召唤骰数值增加等数目。当召唤骰数值大于对应领域卡等级时，工程召唤物失去战斗能力，直至召唤骰数值为1。当对应领域卡持有者完成一次短休/长休后，使召唤骰数值减少5/减少10（召唤骰数值至少为1）。\n\n对于等级10以上的领域卡，当召唤骰数值将从10继续增加时，对应的召唤物将失去战斗能力。",
           "professionFeature": ""
         },
         {
@@ -2403,6 +3797,252 @@
           "id": "ri-module-67adcd58d4e1",
           "name": "Y模组",
           "description": "追加第二职业特性\n\n稳固加工：每当团队移交聚焦时，若你在此次聚焦中未进行过动作掷骰，你可以为近距离内的一个具有召唤骰的友方造物提供维护，标记 2 压力点，使其召唤骰数值减少1d4。"
+        }
+      },
+      "imageUrl": "/rhodes-island/domain-icons/pillar.png"
+    },
+    {
+      "id": "ri-branch-20029d404635",
+      "ruleset": "rhodes-island",
+      "professionId": "ri-profession-0319582eb790",
+      "profession": "辅助",
+      "name": "凝滞师",
+      "recommendedDomains": [
+        "奥术",
+        "奇迹"
+      ],
+      "stages": [
+        {
+          "tier": 1,
+          "level": 1,
+          "rank": "预备干员",
+          "weapon": {
+            "name": "凝滞型施术单元",
+            "range": "中距离",
+            "burden": "双手",
+            "damageType": "法术",
+            "damage": "d8"
+          },
+          "branchFeature": "行动阻滞：花费 3 希望点，展开凝滞型施术单元，对攻击范围内的所有敌人进行一次施法掷骰。你成功对抗的目标暂时处于阻滞状态。处于阻滞状态的生物进行移动必须掷骰且相关的掷骰获得劣势。目标进行一次行动后，解除阻滞状态。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 2,
+          "level": 2,
+          "rank": "正式干员",
+          "weapon": {
+            "name": "凝滞型施术单元",
+            "range": "中距离",
+            "burden": "双手",
+            "damageType": "法术",
+            "damage": "d8+3"
+          },
+          "branchFeature": "行动阻滞+：花费 2 希望点，展开凝滞型施术单元，对攻击范围内的所有敌人进行一次施法掷骰。你成功对抗的目标暂时处于阻滞状态。处于阻滞的生物进行移动必须掷骰且相关的掷骰获得劣势。目标进行一次行动后，解除阻滞状态。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 3,
+          "level": 5,
+          "rank": "资深干员",
+          "weapon": {
+            "name": "凝滞型施术单元",
+            "range": "中距离",
+            "burden": "双手",
+            "damageType": "法术",
+            "damage": "d8+6"
+          },
+          "branchFeature": "行动阻滞++：花费 2 希望点，展开凝滞型施术单元，对攻击范围内的所有敌人进行一次施法掷骰。你成功对抗的目标暂时处于阻滞状态。处于阻滞的生物进行移动必须掷骰且其的所有掷骰均获得劣势。目标进行一次行动后，解除阻滞状态。",
+          "professionFeature": "状态分析-凝滞师：每次休息一次，辨识远距离内一个目标正处于的所有状态。你可以标记 1 压力点以向主持人询问其中一项状态可能的缓解或解除方法。你还可以花费 1 希望点，将该目标具有的一个你可以通过特性施加的负面状态施加给攻击范围内的另一个敌人。"
+        },
+        {
+          "tier": 4,
+          "level": 8,
+          "rank": "精英干员",
+          "weapon": {
+            "name": "凝滞型施术单元",
+            "range": "中距离",
+            "burden": "双手",
+            "damageType": "法术",
+            "damage": "d8+9"
+          },
+          "branchFeature": "",
+          "professionFeature": ""
+        }
+      ],
+      "modules": {
+        "x": {
+          "id": "ri-module-68b48aaaaa2f",
+          "name": "X模组",
+          "description": "希望特性提升\n\n共勉前路-凝滞师：花费 3 希望点，为攻击范围内的一名盟友清除 2 压力点，或为你和一名盟友各清除 1 压力点。且当前聚焦结束时，迫使距离以此法指定的所有目标最近的一个敌人暂时处于阻滞状态（【行动阻滞】中的同名状态）。"
+        },
+        "y": {
+          "id": "ri-module-420f371a5602",
+          "name": "Y模组",
+          "description": "追加第二职业特性\n\n控制之缚：你的施法掷骰获得希望成功或关键成功时，可以标记 1 压力点，迫使其中的所有敌人暂时处于束缚状态。"
+        }
+      },
+      "imageUrl": "/rhodes-island/domain-icons/pillar.png"
+    },
+    {
+      "id": "ri-branch-355c7e6fddc2",
+      "ruleset": "rhodes-island",
+      "professionId": "ri-profession-0319582eb790",
+      "profession": "辅助",
+      "name": "召唤师",
+      "recommendedDomains": [
+        "工业",
+        "奇迹"
+      ],
+      "stages": [
+        {
+          "tier": 1,
+          "level": 1,
+          "rank": "预备干员",
+          "weapon": {
+            "name": "召唤型施术单元",
+            "range": "中距离",
+            "burden": "双手",
+            "damageType": "法术",
+            "damage": "d4"
+          },
+          "branchFeature": "集成召唤：花费 1 希望点并标记 1 压力点，为你的一张领域卡放置1枚d10召唤骰，召唤骰初始数值为1。描述该领域卡代表了一个怎样的生物或造物伙伴，其会与你一同攻击和移动。伙伴召唤物具有对应领域卡特性（使用频率与你共同计算），其的伤害阈值与你保持一致。其标记生命点时，改为使召唤骰数值增加等数目。当召唤骰数值大于对应领域卡等级时，伙伴召唤物失去战斗能力并移除对应的召唤骰。你至多有3张领域卡放置伙伴召唤骰。\n\n对于等级10以上的领域卡，当召唤骰数值将从10继续增加时，对应的召唤物将失去战斗能力。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 2,
+          "level": 2,
+          "rank": "正式干员",
+          "weapon": {
+            "name": "召唤型施术单元",
+            "range": "中距离",
+            "burden": "双手",
+            "damageType": "法术",
+            "damage": "d4+3"
+          },
+          "branchFeature": "集成召唤+：……你至多有4张领域卡放置伙伴召唤骰。伙伴召唤物现在与你一同攻击时会额外造成你武器调整值的伤害（可叠加）。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 3,
+          "level": 5,
+          "rank": "资深干员",
+          "weapon": {
+            "name": "召唤型施术单元",
+            "range": "中距离",
+            "burden": "双手",
+            "damageType": "法术",
+            "damage": "d4+6"
+          },
+          "branchFeature": "集成召唤++：……你至多有5张领域卡放置伙伴召唤骰。伙伴召唤物现在与你一同攻击时会额外造成你武器调整值的伤害并额外使你此次攻击的熟练值获得+1加值（可叠加）。",
+          "professionFeature": "状态分析-召唤师：每次休息一次，辨识一个可触及目标正处于的所有状态。你可以标记 1 压力点以向主持人询问其中一项状态可能的缓解或解除方法。若该目标为伙伴召唤物，你还可以标记 2 压力点，移除其上的d10召唤骰，而后在你的另一张领域卡上放置1枚d10召唤骰。"
+        },
+        {
+          "tier": 4,
+          "level": 8,
+          "rank": "精英干员",
+          "weapon": {
+            "name": "召唤型施术单元",
+            "range": "中距离",
+            "burden": "双手",
+            "damageType": "法术",
+            "damage": "d4+9"
+          },
+          "branchFeature": "",
+          "professionFeature": ""
+        }
+      ],
+      "modules": {
+        "x": {
+          "id": "ri-module-a654b48816aa",
+          "name": "X模组",
+          "description": "希望特性提升\n\n共勉前路-召唤师：花费 3 希望点，为攻击范围内的一名盟友清除 2 压力点，或为你和一名盟友各清除 1 压力点，或使一个可触及的伙伴召唤物的召唤骰数值减少至1。"
+        },
+        "y": {
+          "id": "ri-module-a905ab7aaaf7",
+          "name": "Y模组",
+          "description": "追加第二职业特性\n\n伙伴成众：在你处于配置中的领域卡上放置的伙伴召唤骰不再占用伙伴召唤骰的设置上限。"
+        }
+      },
+      "imageUrl": "/rhodes-island/domain-icons/pillar.png"
+    },
+    {
+      "id": "ri-branch-f43aee7cb474",
+      "ruleset": "rhodes-island",
+      "professionId": "ri-profession-0319582eb790",
+      "profession": "辅助",
+      "name": "咒愈师",
+      "recommendedDomains": [
+        "奥术",
+        "心界"
+      ],
+      "stages": [
+        {
+          "tier": 1,
+          "level": 1,
+          "rank": "预备干员",
+          "weapon": {
+            "name": "治疗型施术单元",
+            "range": "中距离",
+            "burden": "双手",
+            "damageType": "法术",
+            "damage": "d6"
+          },
+          "branchFeature": "咒法愈合：你可以标记 2 压力点，使用本单元对友方自愿角色进行攻击反应掷骰。若如此做，此次攻击在叙事上必定成功，但出现失败结果时，此次攻击造成的伤害不会大于或等于目标轻度伤害阈值。你对友方角色造成的伤害视为治疗伤害。\n\n治疗伤害：不会迫使友方角色标记生命点，而是使友方角色恢复等量生命点。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 2,
+          "level": 2,
+          "rank": "正式干员",
+          "weapon": {
+            "name": "治疗型施术单元",
+            "range": "远距离",
+            "burden": "双手",
+            "damageType": "法术",
+            "damage": "d6+3"
+          },
+          "branchFeature": "咒法愈合+：你可以标记 2 压力点，使用本单元对友方自愿角色进行攻击反应掷骰。若如此做，此次攻击在叙事上必定成功且可以标记 2 压力点使武器骰提升至d8，但出现失败结果时，此次攻击造成的伤害减半。你对友方角色造成的伤害视为治疗伤害。",
+          "professionFeature": ""
+        },
+        {
+          "tier": 3,
+          "level": 5,
+          "rank": "资深干员",
+          "weapon": {
+            "name": "治疗型施术单元",
+            "range": "中距离",
+            "burden": "双手",
+            "damageType": "法术",
+            "damage": "d6+6"
+          },
+          "branchFeature": "咒法愈合++：你可以标记 2 压力点，使用本单元对友方自愿角色进行攻击反应掷骰。若如此做，此次攻击在叙事上必定成功且可以标记 1 压力点使武器骰提升至d8。你对友方角色造成的伤害视为治疗伤害。",
+          "professionFeature": "状态分析-咒愈师：每次休息一次，辨识一个可触及目标正处于的所有状态。你可以标记 1 压力点以向主持人询问其中一项状态可能的缓解或解除方法，并立即以此方法解除此状态。"
+        },
+        {
+          "tier": 4,
+          "level": 8,
+          "rank": "精英干员",
+          "weapon": {
+            "name": "治疗型施术单元",
+            "range": "中距离",
+            "burden": "双手",
+            "damageType": "法术",
+            "damage": "d6+9"
+          },
+          "branchFeature": "",
+          "professionFeature": ""
+        }
+      ],
+      "modules": {
+        "x": {
+          "id": "ri-module-72e0d4304e6d",
+          "name": "X模组",
+          "description": "希望特性提升\n\n共勉前路-咒愈师：花费 3 希望点，为攻击范围内的一名盟友清除 2 压力点，或为你和一名盟友各清除 1 压力点。以此法受到影响的盟友在当前聚焦内受到来自你的治疗伤害会增加你当前等级点。"
+        },
+        "y": {
+          "id": "ri-module-cd61d5ca66dc",
+          "name": "Y模组",
+          "description": "追加第二职业特性\n\n连携咒变：你对友方自愿角色造成治疗伤害时，其可以花费 1 希望点，将其此时承受的一个负面状态或其远距离内的另一名友方自愿角色承受的一个负面状态来源从其原本的施加者转变为你。"
         }
       },
       "imageUrl": "/rhodes-island/domain-icons/pillar.png"

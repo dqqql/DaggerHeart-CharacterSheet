@@ -159,6 +159,28 @@ export function cleanAndNormalizeData(data: any): SheetData {
     characterBackground: data.characterBackground ? String(data.characterBackground) : undefined,
     characterAppearance: data.characterAppearance ? String(data.characterAppearance) : undefined,
     characterMotivation: data.characterMotivation ? String(data.characterMotivation) : undefined,
+    rhodesIslandRelationshipAnswers:
+      data.rhodesIslandRelationshipAnswers &&
+      typeof data.rhodesIslandRelationshipAnswers === 'object'
+        ? Object.fromEntries(
+            Object.entries(data.rhodesIslandRelationshipAnswers)
+              .filter(([, value]) => value && typeof value === 'object')
+              .map(([professionId, value]) => {
+                const answerGroup = value as Record<string, unknown>
+                return [
+                  professionId,
+                  {
+                    backgroundQuestions: Array.isArray(answerGroup.backgroundQuestions)
+                      ? answerGroup.backgroundQuestions.slice(0, 3).map(String)
+                      : [],
+                    relationships: Array.isArray(answerGroup.relationships)
+                      ? answerGroup.relationships.slice(0, 3).map(String)
+                      : [],
+                  },
+                ]
+              }),
+          )
+        : undefined,
     characterImage: data.characterImage ? String(data.characterImage) : undefined,
 
     // 卡牌

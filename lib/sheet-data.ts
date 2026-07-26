@@ -333,6 +333,10 @@ export interface SheetData {
   characterBackground?: string
   characterAppearance?: string
   characterMotivation?: string
+  rhodesIslandRelationshipAnswers?: Record<string, {
+    backgroundQuestions: string[]
+    relationships: string[]
+  }>
   cards: StandardCard[]
   inventory_cards?: StandardCard[] // 新增：库存卡组
   checkedUpgrades?: CheckedUpgrades
@@ -403,6 +407,7 @@ export interface SheetData {
     rangerCompanion: boolean  // 游侠伙伴页
     armorTemplate: boolean    // 护甲模板页
     adventureNotes: boolean   // 冒险笔记页
+    relationshipQuestions: boolean // 罗德岛：关系与问题页
     // 未来可添加更多页面
   }
 
