@@ -2,6 +2,7 @@
 
 import { useSheetStore } from "@/lib/sheet-store";
 import { useAutoResizeFont } from "@/hooks/use-auto-resize-font"
+import { RHODES_ISLAND_STARTING_INVENTORY } from "@/data/rhodes-island/starting-inventory"
 
 export function InventorySection() {
   const { sheetData: formData, setSheetData } = useSheetStore();
@@ -20,28 +21,28 @@ export function InventorySection() {
   const hasContent = safeInventory.some(item => item.trim() !== "");
 
   const handleToggle = () => {
-    if (formData.ruleSetId === "rhodes-island") {
-      return
-    }
-
     if (hasContent) {
       // 有内容则清空
       const newInventory = ["", "", "", "", ""];
       setSheetData((prev) => ({ ...prev, inventory: newInventory }));
     } else {
       // 无内容则自动填充
-      const newInventory = ["", "", "", "", ""];
+      const newInventory = formData.ruleSetId === "rhodes-island"
+        ? [...RHODES_ISLAND_STARTING_INVENTORY]
+        : ["", "", "", "", ""];
 
-      // 第一行：基本装备
-      newInventory[0] = "一支火把、50 英尺长的绳索、基本补给品。";
+      if (formData.ruleSetId !== "rhodes-island") {
+        // 第一行：基本装备
+        newInventory[0] = "一支火把、50 英尺长的绳索、基本补给品。";
 
-      // 第二行：药水选择
-      newInventory[1] = "一瓶次级治疗药水或一瓶次级耐力药水（二选一）";
+        // 第二行：药水选择
+        newInventory[1] = "一瓶次级治疗药水或一瓶次级耐力药水（二选一）";
 
-      // 第三行：检查聚焦卡组第一张（职业卡）的起始物品
-      const firstCard = formData.cards?.[0];
-      if (firstCard && firstCard.type === "profession" && firstCard.professionSpecial?.["起始物品"]) {
-        newInventory[2] = firstCard.professionSpecial["起始物品"];
+        // 第三行：检查聚焦卡组第一张（职业卡）的起始物品
+        const firstCard = formData.cards?.[0];
+        if (firstCard && firstCard.type === "profession" && firstCard.professionSpecial?.["起始物品"]) {
+          newInventory[2] = firstCard.professionSpecial["起始物品"];
+        }
       }
 
       setSheetData((prev) => ({ ...prev, inventory: newInventory }));

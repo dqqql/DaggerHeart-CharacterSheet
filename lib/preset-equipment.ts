@@ -50,6 +50,43 @@ const ATTRIBUTE_KEYS: CharacterAttributeKey[] = [
 
 const EMPTY_SELECTION: EquipmentSelectionState = { mode: "none" }
 
+const LEGACY_ARMOR_NAME_ALIASES: Record<string, string> = {
+  填充布甲: "基础轻型制式装备",
+  皮甲: "基础制式装备",
+  链甲: "基础重型制式装备",
+  全板甲: "基础加重型制式装备",
+  改良填充布甲: "改良轻型制式装备",
+  改良皮甲: "改良制式装备",
+  改良链甲: "改良重型制式装备",
+  改良全板甲: "改良加重型制式装备",
+  埃伦德里安链甲: "法术防护套装",
+  掠骸护甲: "老兵坚韧套装",
+  铁木胸甲: "战意燃烧套装",
+  符文浮甲: "战线抵抗套装",
+  泰瑞斯软甲: "隐秘行动套装",
+  蔷薇野甲: "共赴明日套装",
+  高级填充布甲: "精修轻型制式装备",
+  高级皮甲: "精修制式装备",
+  高级链甲: "精修重型制式装备",
+  高级全板甲: "精修加重型制式装备",
+  贝拉莫伊精致护甲: "贵族风貌套装",
+  龙鳞护甲: "最终防线套装",
+  尖刺护甲: "尖刺阻拒套装",
+  剑刃护甲: "物理专防套装",
+  莫奈特的斗篷: "法术专防套装",
+  强化符文: "战争苦痛套装",
+  传奇填充布甲: "历战轻型制式装备",
+  传奇皮甲: "历战制式装备",
+  传奇链甲: "历战重型制式装备",
+  传奇全板甲: "历战加重型制式装备",
+  威能丝甲: "受击缓冲套装",
+  引导护甲: "指引前路套装",
+  织烬护甲: "炽焰不息套装",
+  全面强化护甲: "卫戍之心套装",
+  诚实蛋白石护甲: "纯白真诚套装",
+  救世主链甲: "身负重任套装",
+}
+
 const armorById = new Map(armorItems.map((item) => [item.名称, item]))
 const primaryWeaponById = new Map(primaryWeapons.map((item) => [item.名称, item]))
 const secondaryWeaponById = new Map(secondaryWeapons.map((item) => [item.名称, item]))
@@ -82,7 +119,7 @@ export function resolvePresetArmor(id?: string): ArmorItem | undefined {
     return undefined
   }
 
-  return armorById.get(id)
+  return armorById.get(LEGACY_ARMOR_NAME_ALIASES[id] ?? id)
 }
 
 export function resolvePresetWeapon(id: string | undefined, slot: WeaponSlot): Weapon | undefined {

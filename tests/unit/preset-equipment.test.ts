@@ -44,7 +44,7 @@ describe("preset equipment groundwork", () => {
     expect(result.evasion).toBe(-4)
     expect(result.armorValue).toBe(2)
     expect(result.attributes.agility).toBe(-1)
-    expect(result.sources.map((source) => source.label)).toEqual(["全板甲", "巨剑", "塔盾"])
+    expect(result.sources.map((source) => source.label)).toEqual(["基础加重型制式装备", "巨剑", "塔盾"])
   })
 
   it("handles global attribute penalties from preset armor", () => {
@@ -73,7 +73,7 @@ describe("preset equipment groundwork", () => {
       armorSelection: undefined,
     })
 
-    expect(selection).toEqual({ mode: "preset", id: "全板甲" })
+    expect(selection).toEqual({ mode: "preset", id: "基础加重型制式装备" })
   })
 
   it("infers preset weapon selection from legacy display fields", () => {
@@ -141,7 +141,7 @@ describe("preset equipment groundwork", () => {
       agility: { checked: false, value: "-1", spellcasting: false },
     })
 
-    expect(migrated.armorSelection).toEqual({ mode: "preset", id: "全板甲" })
+    expect(migrated.armorSelection).toEqual({ mode: "preset", id: "基础加重型制式装备" })
     expect(migrated.primaryWeaponSelection).toEqual({ mode: "preset", id: "巨剑" })
     expect(migrated.secondaryWeaponSelection).toEqual({ mode: "preset", id: "塔盾" })
     expect(migrated.evasionManualModifier).toBe("0")

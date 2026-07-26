@@ -1,8 +1,12 @@
 import catalogJson from "@/data/rhodes-island/catalog.json"
+import {
+  RHODES_ISLAND_LEGACY_STARTING_INVENTORY,
+  RHODES_ISLAND_STARTING_INVENTORY,
+} from "@/data/rhodes-island/starting-inventory"
 import type { StandardCard } from "@/card/card-types"
 import type { SheetData } from "@/lib/sheet-data"
 
-export const RHODES_ISLAND_AUTOMATION_VERSION = 2
+export const RHODES_ISLAND_AUTOMATION_VERSION = 4
 
 interface RhodesWeapon {
   name: string
@@ -116,14 +120,25 @@ export function applyRhodesIslandAutomation(data: SheetData): SheetData {
   if (data.ruleSetId !== "rhodes-island") return data
 
   const branch = getRhodesBranch(data.subclassRef?.id)
+  const previousAutomationVersion = data.rulesetAutomationVersions?.["rhodes-island"] ?? 0
   const versions = {
     ...data.rulesetAutomationVersions,
     "rhodes-island": RHODES_ISLAND_AUTOMATION_VERSION,
   }
+  const hasInventoryContent = Array.isArray(data.inventory)
+    && data.inventory.some(item => typeof item === "string" && item.trim() !== "")
+  const hasLegacyStartingInventory = RHODES_ISLAND_LEGACY_STARTING_INVENTORY.every(
+    (item, index) => data.inventory?.[index] === item,
+  )
+  const inventory = previousAutomationVersion < RHODES_ISLAND_AUTOMATION_VERSION
+    && (!hasInventoryContent || hasLegacyStartingInventory)
+    ? [...RHODES_ISLAND_STARTING_INVENTORY]
+    : data.inventory
 
   if (!branch) {
     return {
       ...data,
+      inventory,
       mixedAncestryEnabled: false,
       ancestry2: "",
       ancestry2Ref: { id: "", name: "" },
@@ -156,7 +171,6 @@ export function applyRhodesIslandAutomation(data: SheetData): SheetData {
       ? `${selectedModule.name}：${selectedModuleContent}`
       : "",
   ].filter(Boolean).join("\n\n")
-  const previousAutomationVersion = data.rulesetAutomationVersions?.["rhodes-island"] ?? 0
   const primaryWeaponFeature = previousAutomationVersion < RHODES_ISLAND_AUTOMATION_VERSION
     && isLegacyXModuleWeaponFeature(data.primaryWeaponFeature ?? "")
     ? ""
@@ -169,6 +183,7 @@ export function applyRhodesIslandAutomation(data: SheetData): SheetData {
 
   return {
     ...data,
+    inventory,
     cards,
     mixedAncestryEnabled: false,
     ancestry2: "",

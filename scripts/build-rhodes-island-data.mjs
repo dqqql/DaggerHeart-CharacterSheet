@@ -177,6 +177,36 @@ async function parseProfessions() {
   return { professions, branches }
 }
 
+function validateProfessionContent(professions, branches) {
+  for (const profession of professions) {
+    if (!profession.hopeFeature || !profession.classFeature) {
+      throw new Error(`profession ${profession.name}: hope and class features must not be empty`)
+    }
+  }
+
+  for (const branch of branches) {
+    for (const stage of branch.stages.slice(0, 3)) {
+      if (!stage.weapon?.name || !stage.weapon.damage || !stage.branchFeature) {
+        throw new Error(`${branch.profession}/${branch.name} ${stage.rank}: weapon and branch feature must not be empty`)
+      }
+      if (/(?:…|\.{3})/.test(stage.branchFeature)) {
+        throw new Error(`${branch.profession}/${branch.name} ${stage.rank}: branch feature still contains an ellipsis`)
+      }
+    }
+
+    for (const moduleId of ["x", "y"]) {
+      const module = branch.modules[moduleId]
+      const expectedHeading = moduleId === "x" ? "希望特性提升" : "追加第二职业特性"
+      if (!module.description || !module.description.startsWith(expectedHeading)) {
+        throw new Error(`${branch.profession}/${branch.name} ${module.name}: module content is missing or malformed`)
+      }
+      if (/(?:…|\.{3})/.test(module.description)) {
+        throw new Error(`${branch.profession}/${branch.name} ${module.name}: module content still contains an ellipsis`)
+      }
+    }
+  }
+}
+
 function ancestrySections(markdown) {
   return [...markdown.matchAll(/^# (?!明日方舟种族\s*$)(.+?)\s*$\n([\s\S]*?)(?=^# |(?![\s\S]))/gm)]
 }
@@ -327,6 +357,7 @@ async function main() {
   if (process.env.RHODES_ONLY_PROFESSIONS === "1") {
     const existingCatalog = JSON.parse(await readFile(join(outputRoot, "catalog.json"), "utf8"))
     const parsed = await parseProfessions()
+    validateProfessionContent(parsed.professions, parsed.branches)
     // Keep the locally imported art for existing entries. New branches use the
     // same profession icon, matching the visual treatment of existing branches.
     const professionImages = new Map(existingCatalog.professions.map((item) => [item.id, item.imageUrl]))
@@ -365,6 +396,7 @@ async function main() {
   const [{ professions, branches }, ancestries, communities, { domains, cards: domainCards, unpublishedSourceEntries }] = await Promise.all([
     parseProfessions(), parseAncestries(), parseCommunities(), parseDomains(),
   ])
+  validateProfessionContent(professions, branches)
   const catalog = { schemaVersion: 1, ruleset: "rhodes-island", source: "共赴明日：罗德岛旅记", placeholderImage, professions, branches, ancestries, communities, domains, domainCards, unpublishedSourceEntries }
   validateCommunityContent(communities)
   const counts = { professions: professions.length, branches: branches.length, ancestries: ancestries.length, communities: communities.length, domains: domains.length, domainCards: domainCards.length }

@@ -7,8 +7,10 @@ import {
 } from "@/lib/rhodes-island-automation"
 import { rhodesIslandCards, rhodesIslandCatalog } from "@/data/rhodes-island"
 
-function createBranchSheet(level: number) {
-  const branch = rhodesIslandCatalog.branches[0]
+function createBranchSheet(
+  level: number,
+  branch = rhodesIslandCatalog.branches[0],
+) {
   const professionCard = rhodesIslandCards.find(card => card.id === branch.professionId) as StandardCard
   const branchCard = rhodesIslandCards.find(card => card.id === branch.id) as StandardCard
   const cards = Array.from({ length: 20 }, () => createEmptyCard())
@@ -25,6 +27,55 @@ function createBranchSheet(level: number) {
 }
 
 describe("罗德岛规则幂等自动化", () => {
+  it("首次加载时补齐初始物资，且不覆盖已有库存", () => {
+    const initial = applyRhodesIslandAutomation(createBranchSheet(1))
+    expect(initial.inventory).toEqual([
+      "一根照明棒，一捆工业弹力绳，作战食品包，等价于一把金币的货币",
+      "[二选一] 小型治疗药剂（回复1d4生命点）或小型理智药剂（清除1d4点压力点）",
+      "罗德岛干员通行证",
+      "",
+      "",
+    ])
+
+    const existing = applyRhodesIslandAutomation({
+      ...createBranchSheet(1),
+      inventory: ["玩家物品", "", "", "", ""],
+    })
+    expect(existing.inventory).toEqual(["玩家物品", "", "", "", ""])
+  })
+
+  it("把旧版初始物资迁移为干员物资", () => {
+    const migrated = applyRhodesIslandAutomation({
+      ...createBranchSheet(1),
+      inventory: [
+        "一支火把、50 英尺长的绳索、基本补给品。",
+        "一瓶次级治疗药水或一瓶次级耐力药水（二选一）",
+        "",
+        "",
+        "",
+      ],
+      rulesetAutomationVersions: { "rhodes-island": 3 },
+    })
+    expect(migrated.inventory).toEqual([
+      "一根照明棒，一捆工业弹力绳，作战食品包，等价于一把金币的货币",
+      "[二选一] 小型治疗药剂（回复1d4生命点）或小型理智药剂（清除1d4点压力点）",
+      "罗德岛干员通行证",
+      "",
+      "",
+    ])
+  })
+
+  it("完成初始物资迁移后允许玩家清空库存", () => {
+    const cleared = applyRhodesIslandAutomation({
+      ...createBranchSheet(1),
+      inventory: ["", "", "", "", ""],
+      rulesetAutomationVersions: {
+        "rhodes-island": RHODES_ISLAND_AUTOMATION_VERSION,
+      },
+    })
+    expect(cleared.inventory).toEqual(["", "", "", "", ""])
+  })
+
   it.each([1, 2, 5, 8])("%i 级使用对应阶段的绑定主武器", level => {
     const branch = rhodesIslandCatalog.branches[0]
     const expected = branch.stages.find(stage => stage.level === level)!
@@ -97,6 +148,32 @@ describe("罗德岛规则幂等自动化", () => {
     expect(y.cards[0].description).not.toContain(branch.modules.x.description)
   })
 
+  it.each(rhodesIslandCatalog.branches.map(branch => [branch.profession, branch.name, branch] as const))(
+    "%s/%s 的 X/Y 模组均同步职业卡和子职卡",
+    (_professionName, _branchName, branch) => {
+      const profession = rhodesIslandCatalog.professions.find(item => item.id === branch.professionId)!
+      const base = createBranchSheet(8, branch)
+      const rankStage = branch.stages[0]
+      const xContent = branch.modules.x.description.split(/\r?\n/).slice(1).join("\n").trim()
+      const yContent = branch.modules.y.description.split(/\r?\n/).slice(1).join("\n").trim()
+
+      const x = applyRhodesIslandAutomation({ ...base, selectedModule: "x" })
+      expect(x.cards[0].professionSpecial?.希望特性).toBe(
+        xContent.replace(`-${branch.name}：`, "："),
+      )
+      expect(x.cards[0].description).toContain(profession.classFeature)
+      expect(x.cards[0].description).toContain(rankStage.branchFeature)
+      expect(x.cards[1].description).toBe(rankStage.branchFeature)
+
+      const y = applyRhodesIslandAutomation({ ...base, selectedModule: "y" })
+      expect(y.cards[0].professionSpecial?.希望特性).toBe(profession.hopeFeature)
+      expect(y.cards[0].description).toContain(profession.classFeature)
+      expect(y.cards[0].description).toContain(rankStage.branchFeature)
+      expect(y.cards[0].description).toContain(`${branch.modules.y.name}：${yContent}`)
+      expect(y.cards[1].description).toBe(rankStage.branchFeature)
+    },
+  )
+
   it("未选择模组时恢复基础希望特性并清空 Y 职业特性", () => {
     const branch = rhodesIslandCatalog.branches[0]
     const expectedXFeature = branch.modules.x.description
@@ -128,6 +205,6 @@ describe("罗德岛规则幂等自动化", () => {
     })
 
     expect(migrated.primaryWeaponFeature).toBe("")
-    expect(migrated.rulesetAutomationVersions?.["rhodes-island"]).toBe(2)
+    expect(migrated.rulesetAutomationVersions?.["rhodes-island"]).toBe(RHODES_ISLAND_AUTOMATION_VERSION)
   })
 })
