@@ -81,4 +81,19 @@ describe("罗德岛护甲表", () => {
     expect(burdened.evasion).toBe(-1)
     expect(Object.values(burdened.attributes)).toEqual([-1, -1, -1, -1, -1, -1])
   })
+
+  it("专防与受击缓冲套装文本与规则表一致", () => {
+    expect(armorItems.find(item => item.名称 === "物理专防套装")).toMatchObject({
+      特性名称: "物理防御",
+      描述: "你不能使用此护甲抵消法术伤害",
+    })
+    expect(armorItems.find(item => item.名称 === "法术专防套装")).toMatchObject({
+      特性名称: "法术防御",
+      描述: "你不能使用此护甲抵消物理伤害",
+    })
+    expect(armorItems.find(item => item.名称 === "受击缓冲套装")).toMatchObject({
+      特性名称: "缓冲",
+      描述: "标记一个护甲槽，投掷一枚d4骰子，并将结果作为闪避加值应用于对抗此次来袭攻击",
+    })
+  })
 })
