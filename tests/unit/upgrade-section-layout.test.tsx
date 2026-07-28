@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 
 import { UpgradeSection } from "@/components/character-sheet-page-two-sections/upgrade-section"
+import { rhodesIslandUpgradeOptionsData } from "@/data/list/upgrade"
 import { defaultSheetData } from "@/lib/default-sheet-data"
 
 const setSheetData = vi.fn()
@@ -14,15 +15,15 @@ vi.mock("@/lib/sheet-store", () => ({
     }),
 }))
 
-describe("UpgradeSection module layout", () => {
-  it("places the Rhodes Island module option below the tier footer and a divider", () => {
-    const moduleLabel = "获取模组：从当前分支的 X / Y 模组中单选一项。"
+describe("UpgradeSection Rhodes Island layout", () => {
+  it("uses the Rhodes Island no-box instruction and places the module option after the upgrade list", () => {
+    const moduleLabel = "所选模组："
 
     render(
       <UpgradeSection
         tier={3}
-        title="位阶4 等级 8-10"
-        description="到达 8 级：选择模组。"
+        title="T4："
+        description="当你到达 8 级时，解锁一项专属模组"
         formData={{ ...defaultSheetData, ruleSetId: "rhodes-island" }}
         isUpgradeChecked={() => false}
         handleUpgradeCheck={vi.fn()}
@@ -35,11 +36,56 @@ describe("UpgradeSection module layout", () => {
       />,
     )
 
-    const footer = screen.getByText(/将伤害阈值\+1，选择一张不高于你当前等级\(上限10级\)/)
+    const instruction = screen.getByText("每升1级便从下面列表中选择两个选项格子并标记它们")
     const moduleSection = screen.getByText(moduleLabel).closest("[data-module-upgrade-section]")
 
     expect(moduleSection).not.toBeNull()
     expect(moduleSection).toHaveClass("border-t-2", "border-cyan-700")
-    expect(footer.compareDocumentPosition(moduleSection!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
+    expect(instruction.compareDocumentPosition(moduleSection!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
+    expect(screen.queryByText(/将伤害阈值\+1/)).not.toBeInTheDocument()
+  })
+
+  it("defines the screenshot text and checkbox counts for all three Rhodes Island tiers", () => {
+    expect(rhodesIslandUpgradeOptionsData.tier1).toMatchObject([
+      { label: "强化训练：两项未标记的角色属性+1，然后标记它们", boxCount: 3 },
+      { label: "体能训练：获得一个生命槽", boxCount: 2 },
+      { label: "意志训练：获得一个压力槽", boxCount: 2 },
+      { label: "发展规划：选择你的两项经历+1", boxCount: 1 },
+      { label: expect.stringContaining("最高为4级"), boxCount: 1 },
+      { label: expect.stringContaining("最高为2级"), boxCount: 1 },
+      { label: "提升武器原型：将你的武器原型等级提升一级", boxCount: 1 },
+      { label: "机动训练：闪避值+1", boxCount: 1 },
+    ])
+    expect(rhodesIslandUpgradeOptionsData.tier2.at(-1)).toMatchObject({
+      label: "实战模拟：熟练值+1",
+      doubleBox: true,
+      boxCount: 2,
+    })
+    expect(rhodesIslandUpgradeOptionsData.tier3).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ label: expect.stringContaining("最高为10级") }),
+        expect.objectContaining({ label: expect.stringContaining("最高为5级") }),
+      ]),
+    )
+  })
+
+  it("keeps legacy persisted indices attached to their original automation", () => {
+    render(
+      <UpgradeSection
+        tier={3}
+        title="T4："
+        description="当你到达 8 级时，解锁一项专属模组"
+        formData={{ ...defaultSheetData, ruleSetId: "rhodes-island" }}
+        isUpgradeChecked={(key, index) => key === "tier3-6-0" && index === 6}
+        handleUpgradeCheck={vi.fn()}
+        toggleUpgradeCheckbox={vi.fn()}
+        getUpgradeOptions={() => [...rhodesIslandUpgradeOptionsData.tier3]}
+      />,
+    )
+
+    expect(screen.getByRole("button", { name: "机动训练：闪避值+1" })).toHaveAttribute("aria-pressed", "false")
+    expect(
+      screen.getByRole("button", { name: "所选模组：" }),
+    ).toHaveAttribute("aria-pressed", "true")
   })
 })

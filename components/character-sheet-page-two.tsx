@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
-import { upgradeOptionsData } from "@/data/list/upgrade"
+import { rhodesIslandUpgradeOptionsData, upgradeOptionsData } from "@/data/list/upgrade"
 import { useSheetStore, useSafeSheetData } from "@/lib/sheet-store"
 import { createEmptyCard, isEmptyCard, type StandardCard } from "@/card/card-types"
 import { showFadeNotification } from "@/components/ui/fade-notification"
@@ -169,18 +169,14 @@ export default function CharacterSheetPageTwo() {
 
     const tierNum = parseInt(tier.replace("tier", ""))
     const options = getUpgradeOptions(tierNum)
-    const option = options[index]
+    const option = options.find(
+      (item, optionIndex) => ((item as { stateIndex?: number }).stateIndex ?? optionIndex) === index,
+    )
 
     if (option) {
       const label = option.label
 
-      if (safeFormData.ruleSetId === "rhodes-island" && label.includes("升级分支")) {
-        const multiclassIndex = options.findIndex(item => item.label.includes("兼职"))
-        const multiclassKey = `${tier}-${multiclassIndex}`
-        if (newCheckedState && multiclassIndex >= 0 && isUpgradeChecked(multiclassKey, multiclassIndex)) {
-          showFadeNotification({ message: "本位阶的“升级分支”与“兼职”互斥", type: "error", position: "middle" })
-          return
-        }
+      if (safeFormData.ruleSetId === "rhodes-island" && label.includes("提升武器原型")) {
         setFormData(prev => ({
           ...prev,
           branchUpgradeCount: Math.max(0, Math.min(2, (prev.branchUpgradeCount ?? 0) + (newCheckedState ? 1 : -1))),
@@ -218,7 +214,7 @@ export default function CharacterSheetPageTwo() {
         return
       }
 
-      if (safeFormData.ruleSetId === "rhodes-island" && label.includes("获取模组")) {
+      if (safeFormData.ruleSetId === "rhodes-island" && label.includes("所选模组")) {
         if (currentlyChecked) {
           setFormData({ selectedModule: undefined })
         }
@@ -254,7 +250,7 @@ export default function CharacterSheetPageTwo() {
         return
       }
 
-      if (label.includes("经历获得额外") && currentlyChecked) {
+      if ((label.includes("经历获得额外") || label.includes("发展规划")) && currentlyChecked) {
         const restoreExperienceValuesSnapshot = useSheetStore.getState().restoreExperienceValuesSnapshot
         const result = restoreExperienceValuesSnapshot()
 
@@ -400,14 +396,8 @@ export default function CharacterSheetPageTwo() {
     }))
 
     if (safeFormData.ruleSetId === "rhodes-island") {
-      const branchUpgrade = { label: "升级分支：从预备干员进阶为正式干员，再进阶为资深干员。", doubleBox: false, boxCount: 1 }
-      const proficiency = { label: "(同时标记两格) 获得熟练值+1。", doubleBox: true, boxCount: 2 }
-      const multiclass = { label: "(同时标记两格) 兼职：选择额外职业、其初始分支和一个领域，加入配置卡组。", doubleBox: true, boxCount: 2 }
-      const module = { label: "获取模组：从当前分支的 X / Y 模组中单选一项。", doubleBox: false, boxCount: 1 }
-
-      if (tier === 1) return [...processedBaseUpgrades, branchUpgrade, multiclass]
-      if (tier === 2) return [...processedBaseUpgrades, branchUpgrade, proficiency, multiclass]
-      return [...processedBaseUpgrades, module, proficiency]
+      const tierSpecificKey = `tier${tier}` as keyof typeof rhodesIslandUpgradeOptionsData
+      return [...(rhodesIslandUpgradeOptionsData[tierSpecificKey] || [])]
     }
 
     const tierSpecificKey = `tier${tier}` as keyof typeof upgradeOptionsData.tierSpecificUpgrades
@@ -608,8 +598,8 @@ export default function CharacterSheetPageTwo() {
           <div className="mt-3 grid grid-cols-3 gap-3 text-m">
             <UpgradeSection
               tier={1}
-              title="位阶2 等级 2-4"
-              description={isRhodesIsland ? "到达 2 级：获得 +2 经历与熟练值 +1；升级分支与本位阶兼职互斥。" : "当你到达 2 级时：获得一项额外 +2 经历，熟练值 +1。"}
+              title={isRhodesIsland ? "T2：等级2-4" : "位阶2 等级 2-4"}
+              description={isRhodesIsland ? "当你到达 2 级时，获得一项额外+2经历，并将你的熟练值+1" : "当你到达 2 级时：获得一项额外 +2 经历，熟练值 +1。"}
               formData={safeFormData}
               isUpgradeChecked={isUpgradeChecked}
               handleUpgradeCheck={handleUpgradeCheck}
@@ -622,8 +612,8 @@ export default function CharacterSheetPageTwo() {
 
             <UpgradeSection
               tier={2}
-              title="位阶3 等级 5-7"
-              description={isRhodesIsland ? "到达 5 级：应用分支化职业特性提升；兼职整体只能取得一次。" : "当你到达 5 级时：获得一项额外 +2 经历，清除所有属性升级标记，熟练值 +1。"}
+              title={isRhodesIsland ? "T3：" : "位阶3 等级 5-7"}
+              description={isRhodesIsland ? "当你到达 5 级时，获得一项额外+2经历，清除你所有角色属性上的标记，并将你的熟练值+1" : "当你到达 5 级时：获得一项额外 +2 经历，清除所有属性升级标记，熟练值 +1。"}
               formData={safeFormData}
               isUpgradeChecked={isUpgradeChecked}
               handleUpgradeCheck={handleUpgradeCheck}
@@ -636,8 +626,8 @@ export default function CharacterSheetPageTwo() {
 
             <UpgradeSection
               tier={3}
-              title="位阶4 等级 8-10"
-              description={isRhodesIsland ? "到达 8 级：选择当前分支的 X 或 Y 模组，并自动更新绑定武器。" : "当你到达 8 级时：获得一项额外 +2 经历，清除所有属性升级标记，熟练值 +1。"}
+              title={isRhodesIsland ? "T4：" : "位阶4 等级 8-10"}
+              description={isRhodesIsland ? "当你到达 8 级时，获得一项额外+2经历，清除你所有角色属性上的标记，将你的熟练值+1，将你的武器调整值+3，解锁一项专属模组" : "当你到达 8 级时：获得一项额外 +2 经历，清除所有属性升级标记，熟练值 +1。"}
               formData={safeFormData}
               isUpgradeChecked={isUpgradeChecked}
               handleUpgradeCheck={handleUpgradeCheck}

@@ -55,8 +55,9 @@ export function UpgradeSection({
   const isAttributeUpgradeOption = (label: string) => label.includes("角色属性+1")
   const isHPUpgradeOption = (label: string) => label.includes("生命槽")
   const isStressUpgradeOption = (label: string) => label.includes("压力槽")
-  const isExperienceUpgradeOption = (label: string) => label.includes("经历获得额外")
-  const isDomainCardOption = (label: string) => label.includes("领域卡加入卡组")
+  const isExperienceUpgradeOption = (label: string) => label.includes("经历获得额外") || label.includes("发展规划")
+  const isDomainCardOption = (label: string) =>
+    label.includes("领域卡加入卡组") || label.includes("技艺专精") || label.includes("技艺交流")
   const isDodgeUpgradeOption = (label: string) => label.includes("闪避值")
   const isProficiencyUpgradeOption = (label: string) => label.includes("熟练值+1")
   const isSubclassUpgradeOption = (label: string) => label.includes("升级你的子职业")
@@ -239,7 +240,7 @@ export function UpgradeSection({
   const hasNewExperienceText = description.includes("获得一项额外+2经历")
   const upgradeOptions = getUpgradeOptions(tier)
   const moduleOptionIndex = formData.ruleSetId === "rhodes-island" && tier === 3
-    ? upgradeOptions.findIndex(option => option.label.includes("获取模组"))
+    ? upgradeOptions.findIndex(option => option.label.includes("所选模组"))
     : -1
   const moduleOption = moduleOptionIndex >= 0 ? upgradeOptions[moduleOptionIndex] : undefined
 
@@ -274,25 +275,28 @@ export function UpgradeSection({
       </div>
       <div className="p-1">
         <p className="!text-xs mb-2">
-          {tier === 1
-            ? <>更新你的等级，从下方的升级列表中选择并标记<strong>两个</strong>选项。</>
-            : <>更新你的等级，从下方的升级列表或更低级的列表中选择并标记<strong>两个</strong>选项。</>}
+          {formData.ruleSetId === "rhodes-island"
+            ? <>每升1级便从下面列表中选择两个选项格子并标记它们</>
+            : tier === 1
+              ? <>更新你的等级，从下方的升级列表中选择并标记<strong>两个</strong>选项。</>
+              : <>更新你的等级，从下方的升级列表或更低级的列表中选择并标记<strong>两个</strong>选项。</>}
         </p>
 
         <div className="space-y-1">
           {upgradeOptions.map((option, index) => {
             if (index === moduleOptionIndex) return null
 
+            const optionStateIndex = option.stateIndex ?? index
             const isAttrUpgrade = isAttributeUpgradeOption(option.label)
             const isExpUpgrade = isExperienceUpgradeOption(option.label)
             const isEvasionUpgrade = isDodgeUpgradeOption(option.label)
             const needsPopover = isAttrUpgrade || isExpUpgrade || isEvasionUpgrade
             return (
-              <div key={`${tierKey}-${index}`} className="flex items-start !text-[10px] leading-[1.6]">
+              <div key={`${tierKey}-${optionStateIndex}`} className="flex items-start !text-[10px] leading-[1.6]">
               {/* 属性升级 / 经历升级 / 闪避值升级：包裹 Popover 以便定位 */}
               {needsPopover ? (
                 <Popover
-                  open={openPopoverIndex !== null && openPopoverIndex.startsWith(`${tierKey}-${index}-`)}
+                  open={openPopoverIndex !== null && openPopoverIndex.startsWith(`${tierKey}-${optionStateIndex}-`)}
                   onOpenChange={(open) => {
                     if (!open) {
                       setOpenPopoverIndex(null)
@@ -302,28 +306,28 @@ export function UpgradeSection({
                   <PopoverAnchor asChild>
                     <span className={`flex flex-shrink-0 items-center justify-end mt-px ${option.doubleBox && option.boxCount === 2 ? '' : 'gap-px'}`} style={{ minWidth: '3.2em' }}>
                       {Array(option.boxCount).fill(null).map((_, i) => {
-                  const checkKey = option.doubleBox ? `${tierKey}-${index}` : `${tierKey}-${index}-${i}`
+                  const checkKey = option.doubleBox ? `${tierKey}-${optionStateIndex}` : `${tierKey}-${optionStateIndex}-${i}`
                   return (
                     <button
                       type="button"
                       key={i}
                       data-testid={`checkbox-${checkKey}`}
                       aria-label={option.label}
-                      aria-pressed={isUpgradeChecked(checkKey, index)}
+                      aria-pressed={isUpgradeChecked(checkKey, optionStateIndex)}
                       className={`w-3 h-3 cursor-pointer ${option.doubleBox && option.boxCount === 2
                         ? `${i === 0
                           ? 'border-l-2 border-t-2 border-b-2 border-r border-gray-800'
                           : 'border-r-2 border-t-2 border-b-2 border-l border-gray-800'
-                        } ${isUpgradeChecked(checkKey, index)
+                        } ${isUpgradeChecked(checkKey, optionStateIndex)
                             ? "bg-gray-800"
                             : "bg-white"
                         }`
                         : option.doubleBox
-                          ? `border-2 border-gray-800 ${isUpgradeChecked(checkKey, index)
+                          ? `border-2 border-gray-800 ${isUpgradeChecked(checkKey, optionStateIndex)
                             ? "bg-gray-800"
                             : "bg-white"
                           }`
-                          : `border border-gray-800 ${isUpgradeChecked(checkKey, index)
+                          : `border border-gray-800 ${isUpgradeChecked(checkKey, optionStateIndex)
                             ? "bg-gray-800"
                             : "bg-white"
                           }`
@@ -331,17 +335,17 @@ export function UpgradeSection({
                       onClick={() => {
                         // 属性升级 / 经历升级 / 闪避值升级选项：特殊处理
                         if (isAttributeUpgradeOption(option.label) || isExperienceUpgradeOption(option.label) || isDodgeUpgradeOption(option.label)) {
-                          const isChecked = isUpgradeChecked(checkKey, index)
+                          const isChecked = isUpgradeChecked(checkKey, optionStateIndex)
                           if (!isChecked) {
                             // 空白复选框 → 打开气泡编辑器
                             setOpenPopoverIndex(checkKey)
                           } else {
                             // 已高亮复选框 → 触发回滚
-                            handleUpgradeCheck(checkKey, index)
+                            handleUpgradeCheck(checkKey, optionStateIndex)
                           }
                         } else {
                           // 其他选项：保持原有逻辑
-                          handleUpgradeCheck(checkKey, index)
+                          handleUpgradeCheck(checkKey, optionStateIndex)
                         }
                       }}
                     />
@@ -355,41 +359,41 @@ export function UpgradeSection({
                     align="start"
                     sideOffset={5}
                   >
-                    {openPopoverIndex && renderEditor(option, index, openPopoverIndex)}
+                    {openPopoverIndex && renderEditor(option, optionStateIndex, openPopoverIndex)}
                   </PopoverContent>
                 </Popover>
               ) : (
                 <span className={`flex flex-shrink-0 items-center justify-end mt-px ${option.doubleBox && option.boxCount === 2 ? '' : 'gap-px'}`} style={{ minWidth: '3.2em' }}>
                   {Array(option.boxCount).fill(null).map((_, i) => {
-                    const checkKey = option.doubleBox ? `${tierKey}-${index}` : `${tierKey}-${index}-${i}`
+                    const checkKey = option.doubleBox ? `${tierKey}-${optionStateIndex}` : `${tierKey}-${optionStateIndex}-${i}`
                     return (
                       <button
                         type="button"
                         key={i}
                         data-testid={`checkbox-${checkKey}`}
                         aria-label={option.label}
-                        aria-pressed={isUpgradeChecked(checkKey, index)}
+                        aria-pressed={isUpgradeChecked(checkKey, optionStateIndex)}
                         className={`w-3 h-3 cursor-pointer ${option.doubleBox && option.boxCount === 2
                           ? `${i === 0
                             ? 'border-l-2 border-t-2 border-b-2 border-r border-gray-800'
                             : 'border-r-2 border-t-2 border-b-2 border-l border-gray-800'
-                          } ${isUpgradeChecked(checkKey, index)
+                            } ${isUpgradeChecked(checkKey, optionStateIndex)
                               ? "bg-gray-800"
                               : "bg-white"
                           }`
                           : option.doubleBox
-                            ? `border-2 border-gray-800 ${isUpgradeChecked(checkKey, index)
+                            ? `border-2 border-gray-800 ${isUpgradeChecked(checkKey, optionStateIndex)
                               ? "bg-gray-800"
                               : "bg-white"
                             }`
-                            : `border border-gray-800 ${isUpgradeChecked(checkKey, index)
+                            : `border border-gray-800 ${isUpgradeChecked(checkKey, optionStateIndex)
                               ? "bg-gray-800"
                               : "bg-white"
                             }`
                         }`}
                         onClick={() => {
                           // 其他选项：保持原有逻辑
-                          handleUpgradeCheck(checkKey, index)
+                          handleUpgradeCheck(checkKey, optionStateIndex)
                         }}
                       />
                     )
@@ -412,10 +416,10 @@ export function UpgradeSection({
                   ) : (
                     // Popover button for other options
                     <Popover
-                      open={openPopoverIndex === `${tierKey}-${index}`}
+                      open={openPopoverIndex === `${tierKey}-${optionStateIndex}`}
                       onOpenChange={(open) => {
                         if (open) {
-                          setOpenPopoverIndex(`${tierKey}-${index}`)
+                          setOpenPopoverIndex(`${tierKey}-${optionStateIndex}`)
                         } else {
                           setOpenPopoverIndex(null)
                         }
@@ -435,7 +439,7 @@ export function UpgradeSection({
                         align="start"
                         sideOffset={5}
                       >
-                        {renderEditor(option, index, 0)}
+                        {renderEditor(option, optionStateIndex, 0)}
                       </PopoverContent>
                     </Popover>
                   )
@@ -446,7 +450,7 @@ export function UpgradeSection({
           })}
         </div>
 
-        <div className="mt-3 !text-xs">
+        {formData.ruleSetId !== "rhodes-island" && <div className="mt-3 !text-xs">
           {tier === 1 && (
             <>
               <span className="text-gray-800 dark:text-gray-200 mr-1">
@@ -489,12 +493,13 @@ export function UpgradeSection({
               </button>
             </>
           )}
-        </div>
+        </div>}
 
         {moduleOption && (() => {
           const branch = getRhodesBranch(formData.subclassRef?.id)
-          const moduleCheckKey = `${tierKey}-${moduleOptionIndex}-0`
-          const moduleChecked = isUpgradeChecked(moduleCheckKey, moduleOptionIndex)
+          const moduleStateIndex = moduleOption.stateIndex ?? moduleOptionIndex
+          const moduleCheckKey = `${tierKey}-${moduleStateIndex}-0`
+          const moduleChecked = isUpgradeChecked(moduleCheckKey, moduleStateIndex)
 
           return (
             <div
@@ -509,7 +514,7 @@ export function UpgradeSection({
                     aria-label={moduleOption.label}
                     aria-pressed={moduleChecked}
                     className={`h-3 w-3 cursor-pointer border border-gray-800 ${moduleChecked ? "bg-gray-800" : "bg-white"}`}
-                    onClick={() => handleUpgradeCheck(moduleCheckKey, moduleOptionIndex)}
+                    onClick={() => handleUpgradeCheck(moduleCheckKey, moduleStateIndex)}
                   />
                 </span>
                 <span className="ml-2 flex-1 text-gray-800 dark:text-gray-200">
@@ -519,7 +524,6 @@ export function UpgradeSection({
 
               {branch && moduleChecked && (
                 <div className="mt-2 border-l-4 border-cyan-700 bg-slate-50 p-2 print:border-slate-500">
-                  <div className="mb-1 text-[10px] font-bold text-slate-700">模组编辑器（单选）</div>
                   <div className="grid grid-cols-2 gap-1">
                     {(["x", "y"] as const).map(moduleId => {
                       const module = branch.modules[moduleId]
