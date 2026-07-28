@@ -83,15 +83,16 @@ export function EvasionEditor({
   const canIncrement = localValue.trim() !== ''
 
   return (
-    <div className="w-32">
+    <div className="w-32 text-popover-foreground">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-semibold text-gray-700">闪避值 +1</span>
+        <span className="text-xs font-semibold text-popover-foreground">闪避值 +1</span>
         <button
           onClick={onClose}
-          className="p-0.5 hover:bg-gray-100 rounded transition-colors"
+          className="p-0.5 text-popover-foreground/70 hover:bg-accent hover:text-accent-foreground rounded transition-colors"
           title="关闭"
+          aria-label="关闭闪避值编辑器"
         >
-          <X className="w-3 h-3 text-gray-500" />
+          <X className="w-3 h-3" />
         </button>
       </div>
 
@@ -99,8 +100,9 @@ export function EvasionEditor({
         <button
           onClick={handleDecrement}
           disabled={!canIncrement}
-          className="w-6 h-6 flex items-center justify-center bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+          className="w-6 h-6 flex items-center justify-center bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300 disabled:text-gray-600 disabled:cursor-not-allowed transition-colors"
           title="计算当前值 -1"
+          aria-label="闪避值减一"
         >
           <ChevronDown className="w-3 h-3" />
         </button>
@@ -108,8 +110,9 @@ export function EvasionEditor({
         <button
           onClick={handleIncrement}
           disabled={!canIncrement}
-          className="w-6 h-6 flex items-center justify-center bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+          className="w-6 h-6 flex items-center justify-center bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300 disabled:text-gray-600 disabled:cursor-not-allowed transition-colors"
           title="计算当前值 +1"
+          aria-label="闪避值加一"
         >
           <ChevronUp className="w-3 h-3" />
         </button>
@@ -117,6 +120,7 @@ export function EvasionEditor({
         <input
           type="text"
           inputMode="numeric"
+          aria-label="闪避值"
           value={localValue}
           onChange={(e) => handleLocalChange(e.target.value)}
           onKeyDown={(e) => {
@@ -124,7 +128,7 @@ export function EvasionEditor({
               handleConfirm()
             }
           }}
-          className="w-16 px-2 py-1 text-center text-sm font-bold border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+          className="w-16 bg-white px-2 py-1 text-center text-sm font-bold text-gray-900 placeholder:text-gray-500 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
           placeholder="0"
         />
       </div>
