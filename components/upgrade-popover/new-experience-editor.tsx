@@ -62,15 +62,16 @@ export function NewExperienceEditor({ onClose }: NewExperienceEditorProps) {
   const canConfirm = hasEmptySlot && newContent.trim() !== ""
 
   return (
-    <div className="w-48">
+    <div className="w-48 text-popover-foreground">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-semibold text-gray-700">添加新经历</span>
+        <span className="text-xs font-semibold text-popover-foreground">添加新经历</span>
         <button
           onClick={onClose}
-          className="p-0.5 hover:bg-gray-100 rounded transition-colors"
+          className="p-0.5 text-popover-foreground/70 hover:bg-accent hover:text-accent-foreground rounded transition-colors"
           title="关闭"
+          aria-label="关闭添加经历"
         >
-          <X className="w-3 h-3 text-gray-500" />
+          <X className="w-3 h-3" />
         </button>
       </div>
 
@@ -82,18 +83,19 @@ export function NewExperienceEditor({ onClose }: NewExperienceEditorProps) {
       </div>
 
       {!hasEmptySlot ? (
-        <div className="text-xs text-gray-500 py-4 text-center bg-gray-50 rounded border border-gray-200">
+        <div className="text-xs text-popover-foreground/80 py-4 text-center bg-accent rounded border border-border">
           所有经历位已满，请先清空一个位置
         </div>
       ) : (
         <>
           <div className="mb-3">
-            <label className="block text-xs text-gray-600 mb-1">经历内容</label>
+            <label htmlFor="new-experience-content" className="block text-xs text-popover-foreground/80 mb-1">经历内容</label>
             <input
+              id="new-experience-content"
               type="text"
               value={newContent}
               onChange={(e) => setNewContent(e.target.value)}
-              className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full bg-white px-2 py-1.5 text-xs text-gray-900 placeholder:text-gray-500 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
               placeholder="输入新的经历..."
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && canConfirm) {
@@ -104,12 +106,13 @@ export function NewExperienceEditor({ onClose }: NewExperienceEditorProps) {
           </div>
 
           <div className="mb-3">
-            <label className="block text-xs text-gray-600 mb-1">经历加值</label>
+            <label htmlFor="new-experience-value" className="block text-xs text-popover-foreground/80 mb-1">经历加值</label>
             <input
+              id="new-experience-value"
               type="text"
               value={newValue}
               onChange={(e) => setNewValue(e.target.value)}
-              className="w-full px-2 py-1.5 text-xs text-center border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full bg-white px-2 py-1.5 text-xs text-center text-gray-900 placeholder:text-gray-500 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
               placeholder="+2"
             />
           </div>
@@ -117,7 +120,7 @@ export function NewExperienceEditor({ onClose }: NewExperienceEditorProps) {
           <button
             onClick={handleConfirm}
             disabled={!canConfirm}
-            className="w-full py-2 text-xs font-semibold rounded bg-green-600 text-white hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-1"
+            className="w-full py-2 text-xs font-semibold rounded bg-green-600 text-white hover:bg-green-700 disabled:bg-gray-300 disabled:text-gray-600 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-1"
           >
             <Check className="w-3 h-3" />
             添加经历
