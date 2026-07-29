@@ -37,4 +37,16 @@ describe("Rhodes Island bundled card images", () => {
       expect(existsSync(join(process.cwd(), "public", imageUrl))).toBe(true)
     }
   })
+
+  it("bundles a dedicated image for every community", () => {
+    const communities = rhodesIslandCatalog.communities
+
+    expect(communities).toHaveLength(15)
+    expect(communities.some(community => community.imageUrl === RHODES_ISLAND_PLACEHOLDER_IMAGE)).toBe(false)
+
+    for (const community of communities) {
+      expect(community.imageUrl).toMatch(/^\/rhodes-island\/communities\/[a-f0-9]{12}\.webp$/)
+      expect(existsSync(join(process.cwd(), "public", community.imageUrl))).toBe(true)
+    }
+  })
 })

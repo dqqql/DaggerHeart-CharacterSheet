@@ -4696,7 +4696,7 @@
         "与罗德岛合作从而获益的企业家",
         "有着诸多上层人脉的掮客"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/90c718a0bb6a.webp"
     },
     {
       "id": "ri-community-1a3b8c15a2ca",
@@ -4713,7 +4713,7 @@
         "有自己的研究内容的科研工作者，与罗德岛合作以寻求技术突破或技术共享",
         "极具天赋的绝世天才"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/1a3b8c15a2ca.webp"
     },
     {
       "id": "ri-community-7709d3e3e0ad",
@@ -4730,7 +4730,7 @@
         "对某类神或神民存在信仰的聚落成员",
         "遵循某个原则生存的团体成员"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/7709d3e3e0ad.webp"
     },
     {
       "id": "ri-community-00b6cf4173de",
@@ -4747,7 +4747,7 @@
         "在山脉等险地中常年蛰伏的猎人、军人",
         "以山脉等险地引路为生的向导"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/00b6cf4173de.webp"
     },
     {
       "id": "ri-community-bd1221f45a4f",
@@ -4764,7 +4764,7 @@
         "临靠海洋而成的村落居民",
         "长久居住在岛屿、海下建筑、船只上的团体成员"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/bd1221f45a4f.webp"
     },
     {
       "id": "ri-community-059633f8d3ed",
@@ -4781,7 +4781,7 @@
         "不受管辖的无法之地的生存者",
         "在法律、规则的灰色地带隐秘行事的组织成员"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/059633f8d3ed.webp"
     },
     {
       "id": "ri-community-4b345f4af1c5",
@@ -4798,7 +4798,7 @@
         "被长期关押于独立地下结构中的个体",
         "在地下结构中工作、生活的工人"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/4b345f4af1c5.webp"
     },
     {
       "id": "ri-community-480d2b08ab5a",
@@ -4815,7 +4815,7 @@
         "感觉走到哪里都能眼熟的商人",
         "借助移动地块进行大拓荒的团体成员"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/480d2b08ab5a.webp"
     },
     {
       "id": "ri-community-d756b0f3f513",
@@ -4832,7 +4832,7 @@
         "黑流树海中的居民……？",
         "流落在森林中独自生存的“野人”"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/d756b0f3f513.webp"
     },
     {
       "id": "ri-community-41b4c9cec135",
@@ -4849,7 +4849,7 @@
         "向着焚风热土一往无前的战士",
         "沙漠中独自巡视的守望者"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/41b4c9cec135.webp"
     },
     {
       "id": "ri-community-e799855f8ab8",
@@ -4866,7 +4866,7 @@
         "曾被梦魇可汗击溃家园的民众",
         "曾被巨兽统治过的民众"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/e799855f8ab8.webp"
     },
     {
       "id": "ri-community-9b2890401a73",
@@ -4883,7 +4883,7 @@
         "来自乌萨斯极北地区的矿工",
         "常年驻扎在寒冬地区的罗德岛干员"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/9b2890401a73.webp"
     },
     {
       "id": "ri-community-e583a95d9ca4",
@@ -4900,7 +4900,7 @@
         "发展程度较低的偏远区域居民",
         "在隐匿之地生存的小聚落居民，鲜少与外界进行沟通"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/e583a95d9ca4.webp"
     },
     {
       "id": "ri-community-e2a6dea7dba9",
@@ -4917,7 +4917,7 @@
         "已经灭亡的高卢的遗民",
         "炎国如今幸存的巨兽代理人"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/e2a6dea7dba9.webp"
     },
     {
       "id": "ri-community-c485e02cbbc0",
@@ -4926,7 +4926,7 @@
       "introduction": "你曾是另一个社群的一员，但你再也记不起它了。",
       "feature": {
         "name": "亲如家人",
-        "description": "每场游戏一次，你可以花费 1 希望点来使用一名盟友的社群能力。当你如此做时，你的盟友获得 1 希望点。\n\n在任何时候，当你发现自己曾经所属的社群，或者加入了一个新的社群时，你可以永久使用那张社群卡替换这张社群卡。"
+        "description": "每场游戏一次，你可以花费 1 希望点来使用一名盟友的社群能力。当你如此做时，你的盟友获得 1 希望点。\n\n在任何时候，当你发现自己曾经所属的社群，或者加入了一个新的社群时，你可以永久地用那张社群卡替换这张社群卡。"
       },
       "referenceOrigins": [
         "失去记忆或记忆紊乱的罗德岛干员",
@@ -4934,7 +4934,7 @@
         "被新的社群接纳的失亲之子",
         "变形者集群"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/c485e02cbbc0.webp"
     }
   ],
   "domains": [

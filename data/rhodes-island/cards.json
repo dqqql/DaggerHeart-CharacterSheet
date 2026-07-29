@@ -6293,7 +6293,7 @@
     "class": "高城之民",
     "description": "你在与贵族交际、议价或利用你的声誉来达到目的的掷骰中具有优势。",
     "hint": "作为高城之民的一员，意味着你在充满优雅、奢华和极具声望的上流社会中生活。",
-    "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp",
+    "imageUrl": "/rhodes-island/communities/90c718a0bb6a.webp",
     "headerDisplay": "高城之民",
     "cardSelectDisplay": {
       "item1": "高人一等"
@@ -6313,7 +6313,7 @@
         "与罗德岛合作从而获益的企业家",
         "有着诸多上层人脉的掮客"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/90c718a0bb6a.webp"
     }
   },
   {
@@ -6326,7 +6326,7 @@
     "class": "博识之民",
     "description": "你在关于重要人物或地点的历史、文化和政治的掷骰中具有优势。",
     "hint": "作为博识之民的一员，意味着你来自一个重视学术或政治才能的社会。",
-    "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp",
+    "imageUrl": "/rhodes-island/communities/1a3b8c15a2ca.webp",
     "headerDisplay": "博识之民",
     "cardSelectDisplay": {
       "item1": "博览群书"
@@ -6346,7 +6346,7 @@
         "有自己的研究内容的科研工作者，与罗德岛合作以寻求技术突破或技术共享",
         "极具天赋的绝世天才"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/1a3b8c15a2ca.webp"
     }
   },
   {
@@ -6359,7 +6359,7 @@
     "class": "结社之民",
     "description": "记录三个你的成长经历灌输给你的格言或价值观。每次休息一次，当你描述你如何通过当前行动来体现这些原则之一时，你可以将一个 d20 作为你的希望骰，而不是 d12。",
     "hint": "作为结社之民的一员，意味着你来自一个注重纪律或信仰的集体，并且秉持着一套原则，这些原则通常在你的经历中所体现。",
-    "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp",
+    "imageUrl": "/rhodes-island/communities/7709d3e3e0ad.webp",
     "headerDisplay": "结社之民",
     "cardSelectDisplay": {
       "item1": "恪守不渝"
@@ -6379,7 +6379,7 @@
         "对某类神或神民存在信仰的聚落成员",
         "遵循某个原则生存的团体成员"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/7709d3e3e0ad.webp"
     }
   },
   {
@@ -6392,7 +6392,7 @@
     "class": "山岭之民",
     "description": "你在穿越危险的悬崖峭壁、在恶劣环境中导航以及使用你的生存知识的掷骰上具有优势。",
     "hint": "作为山岭之民的一员，意味着你把岩石峰峦和险峻悬崖当作家园。",
-    "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp",
+    "imageUrl": "/rhodes-island/communities/00b6cf4173de.webp",
     "headerDisplay": "山岭之民",
     "cardSelectDisplay": {
       "item1": "脚踏实地"
@@ -6412,7 +6412,7 @@
         "在山脉等险地中常年蛰伏的猎人、军人",
         "以山脉等险地引路为生的向导"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/00b6cf4173de.webp"
     }
   },
   {
@@ -6425,7 +6425,7 @@
     "class": "滨海之民",
     "description": "你深谙生命和生活的变化无常。当你骰出恐惧结果时，在这张卡牌上放置一个指示物。你可以持有最大等于你等级数量的指示物。在你进行动作掷骰之前，你可以花费任意数量指示物，每个指示物使你的掷骰获得 +1 加值。在每场游戏结束时，清除所有未使用的指示物。",
     "hint": "作为滨海之民的一员，意味着你生活在大型水域上或水域附近。",
-    "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp",
+    "imageUrl": "/rhodes-island/communities/bd1221f45a4f.webp",
     "headerDisplay": "滨海之民",
     "cardSelectDisplay": {
       "item1": "潮起潮落"
@@ -6445,7 +6445,7 @@
         "临靠海洋而成的村落居民",
         "长久居住在岛屿、海下建筑、船只上的团体成员"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/bd1221f45a4f.webp"
     }
   },
   {
@@ -6458,7 +6458,7 @@
     "class": "法外之民",
     "description": "你在与罪犯谈判、侦测谎言或寻找安全藏身之处的掷骰中具有优势。",
     "hint": "作为法外之民的一员，意味着你来自由一群法外狂徒组成的社区，包括各种罪犯、骗子和江湖术士。",
-    "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp",
+    "imageUrl": "/rhodes-island/communities/059633f8d3ed.webp",
     "headerDisplay": "法外之民",
     "cardSelectDisplay": {
       "item1": "恶贯满盈"
@@ -6478,7 +6478,7 @@
         "不受管辖的无法之地的生存者",
         "在法律、规则的灰色地带隐秘行事的组织成员"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/059633f8d3ed.webp"
     }
   },
   {
@@ -6491,7 +6491,7 @@
     "class": "地下之民",
     "description": "当你处于微光或严重遮蔽的区域时，在隐匿、调查或感知该区域内细节的掷骰中具有优势。",
     "hint": "作为地下之民的一员，意味着你来自一个地下世界。",
-    "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp",
+    "imageUrl": "/rhodes-island/communities/4b345f4af1c5.webp",
     "headerDisplay": "地下之民",
     "cardSelectDisplay": {
       "item1": "微光生存"
@@ -6511,7 +6511,7 @@
         "被长期关押于独立地下结构中的个体",
         "在地下结构中工作、生活的工人"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/4b345f4af1c5.webp"
     }
   },
   {
@@ -6524,7 +6524,7 @@
     "class": "漂泊之民",
     "description": "将一个游牧行囊添加到你的携带物品中。每场游戏一次，你可以花费 1 希望点从背包中拿出一件对当前情况有用的普通物品。与游戏主持人一起确定这件物品是什么。",
     "hint": "作为漂泊之民的一员，意味着你曾过着游牧的生活，没有固定的家，在不同的地方体验了各种各样的文化。",
-    "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp",
+    "imageUrl": "/rhodes-island/communities/480d2b08ab5a.webp",
     "headerDisplay": "漂泊之民",
     "cardSelectDisplay": {
       "item1": "游牧行囊"
@@ -6544,7 +6544,7 @@
         "感觉走到哪里都能眼熟的商人",
         "借助移动地块进行大拓荒的团体成员"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/480d2b08ab5a.webp"
     }
   },
   {
@@ -6557,7 +6557,7 @@
     "class": "荒野之民",
     "description": "你的移动天然无声。在试图不被察觉的移动掷骰中具有优势。",
     "hint": "作为荒野之民的一员，意味着你生活在森林深处。",
-    "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp",
+    "imageUrl": "/rhodes-island/communities/d756b0f3f513.webp",
     "headerDisplay": "荒野之民",
     "cardSelectDisplay": {
       "item1": "轻盈步伐"
@@ -6577,7 +6577,7 @@
         "黑流树海中的居民……？",
         "流落在森林中独自生存的“野人”"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/d756b0f3f513.webp"
     }
   },
   {
@@ -6590,7 +6590,7 @@
     "class": "沙丘之民",
     "description": "在短休期间，你或一名盟友可以重掷一次用于休整行动的骰子。",
     "hint": "作为沙丘之民的一员，意味着你已在沙漠中那片不断变幻的沙子与干旱气候中安家落户。",
-    "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp",
+    "imageUrl": "/rhodes-island/communities/41b4c9cec135.webp",
     "headerDisplay": "沙丘之民",
     "cardSelectDisplay": {
       "item1": "身若绿洲"
@@ -6610,7 +6610,7 @@
         "向着焚风热土一往无前的战士",
         "沙漠中独自巡视的守望者"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/41b4c9cec135.webp"
     }
   },
   {
@@ -6623,7 +6623,7 @@
     "class": "自由之民",
     "description": "每场游戏一次，当你进行一次掷出恐惧结果的行动时，你可以将其改为掷出希望结果。",
     "hint": "作为自由之民的一员，意味着你来自一个曾生活在专制统治下，如今已获得解放的集体。",
-    "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp",
+    "imageUrl": "/rhodes-island/communities/e799855f8ab8.webp",
     "headerDisplay": "自由之民",
     "cardSelectDisplay": {
       "item1": "无拘无束"
@@ -6643,7 +6643,7 @@
         "曾被梦魇可汗击溃家园的民众",
         "曾被巨兽统治过的民众"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/e799855f8ab8.webp"
     }
   },
   {
@@ -6656,7 +6656,7 @@
     "class": "霜雪之民",
     "description": "每次休息一次，你可以帮助一名盟友穿越困难地形而不花费希望点。",
     "hint": "作为霜雪之民的一员，意味着你来自一个满是冰雪之地。",
-    "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp",
+    "imageUrl": "/rhodes-island/communities/9b2890401a73.webp",
     "headerDisplay": "霜雪之民",
     "cardSelectDisplay": {
       "item1": "吃苦耐劳"
@@ -6676,7 +6676,7 @@
         "来自乌萨斯极北地区的矿工",
         "常年驻扎在寒冬地区的罗德岛干员"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/9b2890401a73.webp"
     }
   },
   {
@@ -6689,7 +6689,7 @@
     "class": "炉火之民",
     "description": "每次长休一次，你可以花费任意数量希望点来给予一名盟友相同数量的希望点。",
     "hint": "作为炉火之民的一员，意味着你出身寒微，曾在小村庄或农村生活过。",
-    "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp",
+    "imageUrl": "/rhodes-island/communities/e583a95d9ca4.webp",
     "headerDisplay": "炉火之民",
     "cardSelectDisplay": {
       "item1": "团结紧密"
@@ -6709,7 +6709,7 @@
         "发展程度较低的偏远区域居民",
         "在隐匿之地生存的小聚落居民，鲜少与外界进行沟通"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/e583a95d9ca4.webp"
     }
   },
   {
@@ -6722,7 +6722,7 @@
     "class": "战乱之民",
     "description": "每场游戏一次，当一次攻击会使你标记 1 压力点，你可以改为花费 1 希望点。",
     "hint": "作为战乱之民的一员，意味着你来自一个曾经或正在遭受战争蹂躏的地方。",
-    "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp",
+    "imageUrl": "/rhodes-island/communities/e2a6dea7dba9.webp",
     "headerDisplay": "战乱之民",
     "cardSelectDisplay": {
       "item1": "勇敢面对"
@@ -6742,7 +6742,7 @@
         "已经灭亡的高卢的遗民",
         "炎国如今幸存的巨兽代理人"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/e2a6dea7dba9.webp"
     }
   },
   {
@@ -6753,9 +6753,9 @@
     "name": "失乡之民",
     "type": "community",
     "class": "失乡之民",
-    "description": "每场游戏一次，你可以花费 1 希望点来使用一名盟友的社群能力。当你如此做时，你的盟友获得 1 希望点。\n\n在任何时候，当你发现自己曾经所属的社群，或者加入了一个新的社群时，你可以永久使用那张社群卡替换这张社群卡。",
+    "description": "每场游戏一次，你可以花费 1 希望点来使用一名盟友的社群能力。当你如此做时，你的盟友获得 1 希望点。\n\n在任何时候，当你发现自己曾经所属的社群，或者加入了一个新的社群时，你可以永久地用那张社群卡替换这张社群卡。",
     "hint": "你曾是另一个社群的一员，但你再也记不起它了。",
-    "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp",
+    "imageUrl": "/rhodes-island/communities/c485e02cbbc0.webp",
     "headerDisplay": "失乡之民",
     "cardSelectDisplay": {
       "item1": "亲如家人"
@@ -6767,7 +6767,7 @@
       "introduction": "你曾是另一个社群的一员，但你再也记不起它了。",
       "feature": {
         "name": "亲如家人",
-        "description": "每场游戏一次，你可以花费 1 希望点来使用一名盟友的社群能力。当你如此做时，你的盟友获得 1 希望点。\n\n在任何时候，当你发现自己曾经所属的社群，或者加入了一个新的社群时，你可以永久使用那张社群卡替换这张社群卡。"
+        "description": "每场游戏一次，你可以花费 1 希望点来使用一名盟友的社群能力。当你如此做时，你的盟友获得 1 希望点。\n\n在任何时候，当你发现自己曾经所属的社群，或者加入了一个新的社群时，你可以永久地用那张社群卡替换这张社群卡。"
       },
       "referenceOrigins": [
         "失去记忆或记忆紊乱的罗德岛干员",
@@ -6775,7 +6775,7 @@
         "被新的社群接纳的失亲之子",
         "变形者集群"
       ],
-      "imageUrl": "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+      "imageUrl": "/rhodes-island/communities/c485e02cbbc0.webp"
     }
   },
   {

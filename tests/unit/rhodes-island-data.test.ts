@@ -117,7 +117,7 @@ describe("Rhodes Island static rules data", () => {
 
     const reborne = rhodesIslandCatalog.communities.find((community) => community.name === "失乡之民")
     const reborneFeature = reborne?.feature as { description: string } | undefined
-    expect(reborneFeature?.description).toContain("你可以永久使用那张社群卡替换这张社群卡")
+    expect(reborneFeature?.description).toContain("你可以永久地用那张社群卡替换这张社群卡")
   })
 
   it("labels branch recommendations and ancestry recommendations explicitly", () => {

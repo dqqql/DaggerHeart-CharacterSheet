@@ -7,15 +7,18 @@ const projectRoot = resolve(import.meta.dirname, "..")
 const sourceRoot = process.env.RHODES_SOURCE_ROOT || "D:\\Dql\\Desktop\\tttri"
 const outputRoot = join(projectRoot, "data", "rhodes-island")
 const imageOutputRoot = join(projectRoot, "public", "rhodes-island", "ancestries")
+const communityImageOutputRoot = join(projectRoot, "public", "rhodes-island", "communities")
 const bundledAncestryImageRoot = join(projectRoot, "assets", "rhodes-island", "ancestries")
 const placeholderImage = "/assets/rhodes-island/rhodes-terminal-card-placeholder.webp"
+const communitySourceFile = process.env.RHODES_COMMUNITIES_FILE || join(sourceRoot, "明日方舟社群（众生行记）.md")
 const sourceFiles = {
   // Profession manuscripts are occasionally delivered separately from the
   // complete source archive, so allow their directory to be overridden.
   professions: process.env.RHODES_PROFESSIONS_ROOT || join(sourceRoot, "已写子职一览"),
   ancestries: join(sourceRoot, "明日方舟种族", "明日方舟种族.md"),
   ancestryImages: join(sourceRoot, "明日方舟种族", "图片和附件"),
-  communities: join(sourceRoot, "明日方舟社群（众生行记）.md"),
+  communities: communitySourceFile,
+  communityImages: process.env.RHODES_COMMUNITY_IMAGES_ROOT || join(dirname(communitySourceFile), "图片和附件"),
   domains: [join(sourceRoot, "主领域"), join(sourceRoot, "次领域")],
 }
 
@@ -32,7 +35,7 @@ const professionImageUrls = {
   辅助: "/rhodes-island/domain-icons/pillar.png",
 }
 const communityFeatureAppendices = new Map([
-  ["失乡之民", "在任何时候，当你发现自己曾经所属的社群，或者加入了一个新的社群时，你可以永久使用那张社群卡替换这张社群卡。"],
+  ["失乡之民", "在任何时候，当你发现自己曾经所属的社群，或者加入了一个新的社群时，你可以永久地用那张社群卡替换这张社群卡。"],
 ])
 const mergedAncestrySplits = new Map([
   ["菲林&阿斯兰", [
@@ -274,21 +277,32 @@ async function parseAncestries() {
 
 async function parseCommunities() {
   const markdown = await readFile(sourceFiles.communities, "utf8")
-  return [...markdown.matchAll(/^# (?!明日方舟社群)(.+?)\s*$\n([\s\S]*?)(?=^# |(?![\s\S]))/gm)].map((match) => {
+  await mkdir(communityImageOutputRoot, { recursive: true })
+  return Promise.all([...markdown.matchAll(/^# (?!明日方舟社群)(.+?)\s*$\n([\s\S]*?)(?=^# |(?![\s\S]))/gm)].map(async (match) => {
     const name = cleanMarkdown(match[1])
-    const body = cleanMarkdown(match[2])
+    const rawBody = match[2]
+    const body = cleanMarkdown(rawBody)
     const featureMatch = body.match(/^([^\n]+?)[：:]\s*([\s\S]*?)(?=\n参考出身|$)/m)
     const intro = body.split("\n")[0] || ""
     const origins = body.split("参考出身")[1]?.split("\n").map((line) => line.replace(/^·/, "").trim()).filter(Boolean) || []
     const feature = featureMatch ? { name: featureMatch[1].trim(), description: featureMatch[2].trim() } : { name: "", description: body }
     const appendix = communityFeatureAppendices.get(name)
     if (appendix && !feature.description.includes(appendix)) feature.description = `${feature.description}\n\n${appendix}`
+    const sourceImageReference = rawBody.match(/图片和附件\/([^\s)]+)\)/)?.[1]
+    const sourceImageName = sourceImageReference ? decodeURIComponent(sourceImageReference) : ""
+    const imageFileName = `${stableId("community", name).slice(-12)}.webp`
+    const imageUrl = sourceImageName ? `/rhodes-island/communities/${imageFileName}` : placeholderImage
+    if (sourceImageName) {
+      await sharp(join(sourceFiles.communityImages, sourceImageName))
+        .resize({ width: 1280, withoutEnlargement: true })
+        .webp({ quality: 82, effort: 5 })
+        .toFile(join(communityImageOutputRoot, imageFileName))
+    }
     return {
       id: stableId("community", name), ruleset: "rhodes-island", name, introduction: intro,
-      feature,
-      referenceOrigins: origins, imageUrl: placeholderImage,
+      feature, referenceOrigins: origins, imageUrl,
     }
-  })
+  }))
 }
 
 function validateCommunityContent(communities) {
@@ -354,6 +368,27 @@ function makeStandardCards(catalog) {
 
 async function main() {
   await mkdir(outputRoot, { recursive: true })
+  if (process.env.RHODES_ONLY_COMMUNITIES === "1") {
+    const existingCatalog = JSON.parse(await readFile(join(outputRoot, "catalog.json"), "utf8"))
+    await rm(communityImageOutputRoot, { recursive: true, force: true })
+    const communities = await parseCommunities()
+    validateCommunityContent(communities)
+    const catalog = { ...existingCatalog, communities }
+    const counts = {
+      professions: catalog.professions.length,
+      branches: catalog.branches.length,
+      ancestries: catalog.ancestries.length,
+      communities: communities.length,
+      domains: catalog.domains.length,
+      domainCards: catalog.domainCards.length,
+    }
+    if (counts.communities !== 15) throw new Error(`communities: expected 15, got ${counts.communities}`)
+    await writeFile(join(outputRoot, "catalog.json"), `${JSON.stringify(catalog, null, 2)}\n`, "utf8")
+    await writeFile(join(outputRoot, "cards.json"), `${JSON.stringify(makeStandardCards(catalog), null, 2)}\n`, "utf8")
+    await writeFile(join(outputRoot, "manifest.json"), `${JSON.stringify({ ...JSON.parse(await readFile(join(outputRoot, "manifest.json"), "utf8")), counts }, null, 2)}\n`, "utf8")
+    console.log(`Rhodes Island community data updated: ${JSON.stringify(counts)}`)
+    return
+  }
   if (process.env.RHODES_ONLY_PROFESSIONS === "1") {
     const existingCatalog = JSON.parse(await readFile(join(outputRoot, "catalog.json"), "utf8"))
     const parsed = await parseProfessions()
