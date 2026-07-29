@@ -66,7 +66,7 @@ function cleanMarkdown(value = "") {
     .replace(/\[([^\]]+)\]\(https?:\/\/[^)]+\)/g, "$1")
     .replace(/https?:\/\/[^\s)>]+/g, "")
     .replace(/<[^>]+>/g, "\n")
-    .replace(/\\([+&])/g, "$1")
+    .replace(/\\([+&~\[\]])/g, "$1")
     .replace(/\*+/g, "")
     .replace(/\r/g, "")
     .replace(/[ \t]+\n/g, "\n")
@@ -92,7 +92,7 @@ function addThreeToDamage(damage) {
 
 function parseWeapon(stageText, previousWeapon) {
   const prototype = stageText.match(/武器原型：\s*([^\n<]+?)\s+(近距离|中距离|远距离|极远距离|极远)\s*\/\s*(单手|双手)\s*\/\s*(物理|法术)/)
-  const damage = stageText.match(/武器伤害(?:骰|骰调整值|调整值)：?\s*([dD]\d+(?:\+\d+)?|\+\d+)/)
+  const damage = stageText.match(/武器伤害(?:骰|骰调整值|调整值)：?\s*([dD]\d+(?:[+-]\d+)?|\+\d+)/)
   if (!prototype && !previousWeapon) return null
   const weapon = prototype
     ? { name: prototype[1].trim(), range: prototype[2], burden: prototype[3], damageType: prototype[4], damage: damage?.[1] || "" }
@@ -341,15 +341,7 @@ async function parseDomains() {
         level: Number(marker[1]), recallCost: Number(marker[2]), category: marker[3].trim(),
         description: cleanMarkdown(markdown.slice(descriptionStart, descriptionEnd)), imageUrl: placeholderImage,
       }
-      // The source contains three Industrial entries labelled “回想等级” rather than
-      // “回想费用”. The supplied release inventory is explicitly 262 cards, so the
-      // first is normalized and the remaining two are retained as unpublished source
-      // entries instead of silently disappearing or entering the runtime card pool.
-      if (domainName === "工业" && /^等级1\s+回想等级1/m.test(marker[0]) && cards.some((item) => item.domain === "工业" && item.level === 1)) {
-        unpublishedSourceEntries.push({ ...card, sourceStatus: "unpublished-malformed-header" })
-      } else {
-        cards.push(card)
-      }
+      cards.push(card)
     })
   }
   return { domains, cards, unpublishedSourceEntries }
@@ -362,7 +354,23 @@ function makeStandardCards(catalog) {
     ...catalog.branches.map((item) => ({ ...shared, id: item.id, name: item.name, type: "subclass", class: item.profession, level: 1, description: item.stages[0].branchFeature, imageUrl: item.imageUrl, headerDisplay: item.name, cardSelectDisplay: { item1: item.profession, item2: "预备干员", item3: `第二领域推荐：${item.recommendedDomains.join("/")}` }, rhodesIsland: item })),
     ...catalog.ancestries.map((item) => ({ ...shared, id: item.id, name: item.name, type: "ancestry", class: item.name, level: 1, description: item.description, hint: `推荐种族特性：${item.recommendedExperiences.map((experience) => `${experience.name}+${experience.value}`).join("，")}`, imageUrl: item.imageUrl, headerDisplay: item.name, cardSelectDisplay: { item1: item.name }, rhodesIsland: item })),
     ...catalog.communities.map((item) => ({ ...shared, id: item.id, name: item.name, type: "community", class: item.name, description: item.feature.description, hint: item.introduction, imageUrl: item.imageUrl, headerDisplay: item.name, cardSelectDisplay: { item1: item.feature.name }, rhodesIsland: item })),
-    ...catalog.domainCards.map((item) => ({ ...shared, id: item.id, name: item.name, type: "domain", class: item.domain, level: item.level, description: item.description, imageUrl: item.imageUrl, cardSelectDisplay: { item1: item.domain, item2: item.category, item3: `RC.${item.recallCost}`, item4: `LV.${item.level}` }, rhodesIsland: item })),
+    ...catalog.domainCards.map((item) => ({
+      ...shared,
+      id: item.id,
+      name: item.name,
+      type: "domain",
+      class: item.domain,
+      level: item.level,
+      description: item.description,
+      imageUrl: item.imageUrl,
+      ...(item.isSupplemental ? {
+        isSupplemental: true,
+        parentCardId: item.parentCardId,
+        parentCardName: item.parentCardName,
+      } : {}),
+      cardSelectDisplay: { item1: item.domain, item2: item.category, item3: `RC.${item.recallCost}`, item4: `LV.${item.level}` },
+      rhodesIsland: item,
+    })),
   ]
 }
 
@@ -428,18 +436,26 @@ async function main() {
   }
   await rm(imageOutputRoot, { recursive: true, force: true })
   await mkdir(imageOutputRoot, { recursive: true })
+  // Domain text in the final release exists only on card images. Preserve the
+  // visually proofread installed domain catalog during non-domain rebuilds.
+  const installedCatalog = JSON.parse(await readFile(join(outputRoot, "catalog.json"), "utf8"))
+  const installedDomains = {
+    domains: installedCatalog.domains,
+    cards: installedCatalog.domainCards,
+    unpublishedSourceEntries: installedCatalog.unpublishedSourceEntries || [],
+  }
   const [{ professions, branches }, ancestries, communities, { domains, cards: domainCards, unpublishedSourceEntries }] = await Promise.all([
-    parseProfessions(), parseAncestries(), parseCommunities(), parseDomains(),
+    parseProfessions(), parseAncestries(), parseCommunities(), Promise.resolve(installedDomains),
   ])
   validateProfessionContent(professions, branches)
   const catalog = { schemaVersion: 1, ruleset: "rhodes-island", source: "共赴明日：罗德岛旅记", placeholderImage, professions, branches, ancestries, communities, domains, domainCards, unpublishedSourceEntries }
   validateCommunityContent(communities)
   const counts = { professions: professions.length, branches: branches.length, ancestries: ancestries.length, communities: communities.length, domains: domains.length, domainCards: domainCards.length }
-  const expected = { professions: 7, branches: 48, ancestries: 35, communities: 15, domains: 11, domainCards: 262 }
+  const expected = { professions: 7, branches: 48, ancestries: 35, communities: 15, domains: 11, domainCards: 236 }
   for (const [key, value] of Object.entries(expected)) if (counts[key] !== value) throw new Error(`${key}: expected ${value}, got ${counts[key]}`)
   await writeFile(join(outputRoot, "catalog.json"), `${JSON.stringify(catalog, null, 2)}\n`, "utf8")
   await writeFile(join(outputRoot, "cards.json"), `${JSON.stringify(makeStandardCards(catalog), null, 2)}\n`, "utf8")
-  await writeFile(join(outputRoot, "manifest.json"), `${JSON.stringify({ schemaVersion: 1, ruleset: "rhodes-island", generatedFrom: "tttri", counts, normalizationNotes: ["工业领域源文件有三张卡将‘回想费用1’误写为‘回想等级1’；按发布清单262张保留首张，另两张保存在 catalog.unpublishedSourceEntries 中。", "失乡之民的社群能力补全了旧导入结果遗漏的永久替换社群卡规则。", "将来源中合并描述的菲林/阿斯兰、埃拉菲亚/麒麟、萨卡兹/鬼/阿纳萨拆分为独立种族，并分别配置推荐经历。"], files: { catalog: "./catalog.json", cards: "./cards.json" }, placeholderImage }, null, 2)}\n`, "utf8")
+  await writeFile(join(outputRoot, "manifest.json"), `${JSON.stringify({ schemaVersion: 1, ruleset: "rhodes-island", generatedFrom: "《共赴明日：罗德岛旅记》TTTRI全资源", counts, normalizationNotes: ["最终资源共收录231张普通领域卡与5张说明卡牌；说明卡牌通过parentCardId关联父卡。", "工业领域的“涤净流程”和“前方施工”已由最终卡图确认发布。", "失乡之民的社群能力补全了旧导入结果遗漏的永久替换社群卡规则。", "将来源中合并描述的菲林/阿斯兰、埃拉菲亚/麒麟、萨卡兹/鬼/阿纳萨拆分为独立种族，并分别配置推荐经历。"], files: { catalog: "./catalog.json", cards: "./cards.json", domainSourceMap: "./domain-source-map.json" }, placeholderImage }, null, 2)}\n`, "utf8")
   console.log(`Rhodes Island data generated: ${JSON.stringify(counts)}`)
 }
 

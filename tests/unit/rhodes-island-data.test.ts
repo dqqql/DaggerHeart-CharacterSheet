@@ -18,14 +18,14 @@ describe("Rhodes Island static rules data", () => {
       ancestries: 35,
       communities: 15,
       domains: 11,
-      domainCards: 228,
+      domainCards: 236,
     })
     expect(rhodesIslandCatalog.professions).toHaveLength(7)
     expect(rhodesIslandCatalog.branches).toHaveLength(48)
     expect(rhodesIslandCatalog.ancestries).toHaveLength(35)
     expect(rhodesIslandCatalog.communities).toHaveLength(15)
     expect(rhodesIslandCatalog.domains).toHaveLength(11)
-    expect(rhodesIslandCatalog.domainCards).toHaveLength(228)
+    expect(rhodesIslandCatalog.domainCards).toHaveLength(236)
   })
 
   it("uses stable unique IDs and valid profession/branch/domain relations", () => {
@@ -90,7 +90,7 @@ describe("Rhodes Island static rules data", () => {
   })
 
   it("marks every runtime card for this ruleset and contains no remote dependency", () => {
-    expect(rhodesIslandCards).toHaveLength(333)
+    expect(rhodesIslandCards).toHaveLength(341)
     expect(rhodesIslandCards.every((card) => card.ruleset === "rhodes-island")).toBe(true)
     const serialized = readFileSync(join(process.cwd(), "data", "rhodes-island", "cards.json"), "utf8")
     expect(serialized).not.toMatch(/https?:\/\//)
@@ -149,5 +149,66 @@ describe("Rhodes Island static rules data", () => {
     }
 
     expect(rhodesIslandCatalog.ancestries.some((item) => item.name.includes("&"))).toBe(false)
+  })
+
+  it("models final-release supplemental cards with valid same-domain parents", () => {
+    const supplementalCards = rhodesIslandCatalog.domainCards.filter(card => card.isSupplemental)
+    const regularCards = rhodesIslandCatalog.domainCards.filter(card => !card.isSupplemental)
+
+    expect(regularCards).toHaveLength(231)
+    expect(supplementalCards).toHaveLength(5)
+    expect(supplementalCards.map(card => card.name).sort()).toEqual([
+      "召唤：巨兵",
+      "召唤：炮台",
+      "大地的慈悲·昭示",
+      "归乡邀约·洗礼",
+      "摇篮曲·终",
+    ].sort())
+
+    for (const supplemental of supplementalCards) {
+      const parent = rhodesIslandCatalog.domainCards.find(card => card.id === supplemental.parentCardId)
+      const runtime = rhodesIslandCards.find(card => card.id === supplemental.id)
+      expect(parent, supplemental.name).toBeDefined()
+      expect(parent?.domain).toBe(supplemental.domain)
+      expect(parent?.level).toBe(supplemental.level)
+      expect(supplemental.recallCost).toBe(0)
+      expect(supplemental.category).toBe("说明卡牌")
+      expect(runtime?.isSupplemental).toBe(true)
+      expect(runtime?.parentCardId).toBe(parent?.id)
+    }
+  })
+
+  it("exposes every final-release addition through the standard domain-card interface", () => {
+    const addedNames = [
+      "涤净流程",
+      "前方施工",
+      "\"已完成的告别\"",
+      "归乡邀约·洗礼",
+      "摇篮曲·终",
+      "大地的慈悲·昭示",
+      "召唤：炮台",
+      "召唤：巨兵",
+    ]
+
+    for (const name of addedNames) {
+      const card = rhodesIslandCards.find(item => item.name === name)
+      expect(card, name).toBeDefined()
+      expect(card?.type).toBe("domain")
+      expect(card?.description).not.toBe("")
+      expect(card?.imageUrl).toMatch(/^\/rhodes-island\/domains\/.+\.webp$/)
+      expect(card?.cardSelectDisplay.item1).not.toBe("")
+      expect(card?.cardSelectDisplay.item2).not.toBe("")
+      expect(card?.cardSelectDisplay.item3).toMatch(/^RC\.\d+$/)
+      expect(card?.cardSelectDisplay.item4).toMatch(/^LV\.\d+$/)
+    }
+  })
+
+  it("keeps final proofread branch fields intact", () => {
+    const heavyBlade = rhodesIslandCatalog.branches.find(branch => branch.name === "重剑手")
+    const curseHealer = rhodesIslandCatalog.branches.find(branch => branch.name === "咒愈师")
+
+    expect(heavyBlade?.stages[0].weapon.damage).toBe("d20-3")
+    expect(curseHealer?.stages[1].branchFeature).toContain("治疗伤害：不会迫使友方角色标记生命点")
+    expect(curseHealer?.stages[2].branchFeature).toContain("治疗伤害：不会迫使友方角色标记生命点")
   })
 })

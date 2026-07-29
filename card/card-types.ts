@@ -26,6 +26,10 @@ export interface StandardCard {
   description?: string
   hint?: string
   imageUrl?: string
+  /** Rhodes Island explanation card linked to, but distinct from, a normal domain card. */
+  isSupplemental?: boolean
+  parentCardId?: string
+  parentCardName?: string
   hasLocalImage?: boolean // 是否有本地IndexedDB存储的图片
   headerDisplay?: string
   cardSelectDisplay: {

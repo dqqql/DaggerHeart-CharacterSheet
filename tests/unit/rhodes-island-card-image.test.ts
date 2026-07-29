@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs"
+import { existsSync, readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
 import { describe, expect, it } from "vitest"
 
@@ -30,11 +30,36 @@ describe("Rhodes Island bundled card images", () => {
       .map(card => `${card.domain}/${card.name}`)
 
     expect(missingCards).toEqual([])
-    expect(domainCards.filter(card => card.imageUrl !== RHODES_ISLAND_PLACEHOLDER_IMAGE)).toHaveLength(228)
+    expect(domainCards.filter(card => card.imageUrl !== RHODES_ISLAND_PLACEHOLDER_IMAGE)).toHaveLength(236)
 
     for (const imageUrl of new Set(domainCards.map(card => card.imageUrl))) {
       if (imageUrl === RHODES_ISLAND_PLACEHOLDER_IMAGE) continue
       expect(existsSync(join(process.cwd(), "public", imageUrl))).toBe(true)
+    }
+  })
+
+  it("keeps the final source map, catalog, and output directory one-to-one", () => {
+    const sourceMap = JSON.parse(
+      readFileSync(join(process.cwd(), "data", "rhodes-island", "domain-source-map.json"), "utf8"),
+    ) as {
+      mappings: Array<{ id: string; sourceFile: string; imageUrl: string }>
+      unmatchedSources: unknown[]
+    }
+    const outputFiles = readdirSync(
+      join(process.cwd(), "public", "rhodes-island", "domains"),
+      { recursive: true, withFileTypes: true },
+    ).filter(entry => entry.isFile() && entry.name.endsWith(".webp"))
+
+    expect(sourceMap.mappings).toHaveLength(236)
+    expect(sourceMap.unmatchedSources).toEqual([])
+    expect(new Set(sourceMap.mappings.map(mapping => mapping.id)).size).toBe(236)
+    expect(new Set(sourceMap.mappings.map(mapping => mapping.sourceFile)).size).toBe(236)
+    expect(new Set(sourceMap.mappings.map(mapping => mapping.imageUrl)).size).toBe(236)
+    expect(outputFiles).toHaveLength(236)
+
+    for (const mapping of sourceMap.mappings) {
+      const card = rhodesIslandCatalog.domainCards.find(item => item.id === mapping.id)
+      expect(card?.imageUrl).toBe(mapping.imageUrl)
     }
   })
 

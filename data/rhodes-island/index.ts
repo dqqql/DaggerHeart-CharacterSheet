@@ -45,7 +45,20 @@ export type RhodesIslandCatalog = {
   ancestries: Array<Record<string, unknown> & { id: string; name: string; imageUrl: string; recommendedExperiences: Array<{ name: string; value: 2 }> }>
   communities: Array<Record<string, unknown> & { id: string; name: string }>
   domains: Array<Record<string, unknown> & { id: string; name: string }>
-  domainCards: Array<Record<string, unknown> & { id: string; name: string; domainId: string; domain: string; level: number; imageUrl: string }>
+  domainCards: Array<Record<string, unknown> & {
+    id: string
+    name: string
+    domainId: string
+    domain: string
+    level: number
+    recallCost: number
+    category: string
+    description: string
+    imageUrl: string
+    isSupplemental?: boolean
+    parentCardId?: string
+    parentCardName?: string
+  }>
   unpublishedSourceEntries: Array<Record<string, unknown>>
 }
 
@@ -67,4 +80,3 @@ export function getRhodesIslandBranchStage(branchId: string, level: number): Rho
   const tier = level >= 8 ? 4 : level >= 5 ? 3 : level >= 2 ? 2 : 1
   return branch.stages.find((stage) => stage.tier === tier)
 }
-
