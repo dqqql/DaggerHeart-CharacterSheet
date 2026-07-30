@@ -13220,6 +13220,66 @@
     "standarized": true,
     "source": "builtin",
     "ruleset": "rhodes-island",
+    "id": "ri-domain-card-33b9ca7ad927",
+    "name": "涤净流程",
+    "type": "domain",
+    "class": "工业",
+    "level": 1,
+    "description": "每次休息一次，你可以标记 2 压力点，将近距离内一名友方自愿角色的武器打理至最佳状态，使对应武器伤害骰数量增加 1 枚且武器伤害调整值增加你等级的数值，持续至当前场景结束或其在一次掷骰中获得恐惧失败。\n\n你也可以标记 1 压力点，花费一定的时间来去除一件物品的污渍或锈蚀（取决于物品的大小和污锈程度）。",
+    "imageUrl": "/rhodes-island/domains/industry/33b9ca7ad927.webp",
+    "cardSelectDisplay": {
+      "item1": "工业",
+      "item2": "能力",
+      "item3": "RC.1",
+      "item4": "LV.1"
+    },
+    "rhodesIsland": {
+      "id": "ri-domain-card-33b9ca7ad927",
+      "ruleset": "rhodes-island",
+      "name": "涤净流程",
+      "domainId": "ri-domain-f43176d7ca53",
+      "domain": "工业",
+      "level": 1,
+      "recallCost": 1,
+      "category": "能力",
+      "description": "每次休息一次，你可以标记 2 压力点，将近距离内一名友方自愿角色的武器打理至最佳状态，使对应武器伤害骰数量增加 1 枚且武器伤害调整值增加你等级的数值，持续至当前场景结束或其在一次掷骰中获得恐惧失败。\n\n你也可以标记 1 压力点，花费一定的时间来去除一件物品的污渍或锈蚀（取决于物品的大小和污锈程度）。",
+      "imageUrl": "/rhodes-island/domains/industry/33b9ca7ad927.webp"
+    }
+  },
+  {
+    "standarized": true,
+    "source": "builtin",
+    "ruleset": "rhodes-island",
+    "id": "ri-domain-card-d99400311ca1",
+    "name": "前方施工",
+    "type": "domain",
+    "class": "工业",
+    "level": 1,
+    "description": "每次休息一次，你可以标记 2 压力点，在近距离内的一处位点布设阻碍（例如施工栅栏、减速带等），使该位点近距离范围变为困难地形，通过或从其中离开的敌人必须进行一次敏捷反应掷骰（12），否则将短暂受困。游戏主持人可以花费 1 恐惧点让受困的敌人破坏此阻碍。\n\n你也可以标记 1 压力点，迅速探知近距离内的一个建筑物或类似造物是否存在明显的构造缺陷或材质缺陷（例如大楼承重柱内的空腔、器械某处的材料抗剪切性能不足等）。",
+    "imageUrl": "/rhodes-island/domains/industry/d99400311ca1.webp",
+    "cardSelectDisplay": {
+      "item1": "工业",
+      "item2": "能力",
+      "item3": "RC.1",
+      "item4": "LV.1"
+    },
+    "rhodesIsland": {
+      "id": "ri-domain-card-d99400311ca1",
+      "ruleset": "rhodes-island",
+      "name": "前方施工",
+      "domainId": "ri-domain-f43176d7ca53",
+      "domain": "工业",
+      "level": 1,
+      "recallCost": 1,
+      "category": "能力",
+      "description": "每次休息一次，你可以标记 2 压力点，在近距离内的一处位点布设阻碍（例如施工栅栏、减速带等），使该位点近距离范围变为困难地形，通过或从其中离开的敌人必须进行一次敏捷反应掷骰（12），否则将短暂受困。游戏主持人可以花费 1 恐惧点让受困的敌人破坏此阻碍。\n\n你也可以标记 1 压力点，迅速探知近距离内的一个建筑物或类似造物是否存在明显的构造缺陷或材质缺陷（例如大楼承重柱内的空腔、器械某处的材料抗剪切性能不足等）。",
+      "imageUrl": "/rhodes-island/domains/industry/d99400311ca1.webp"
+    }
+  },
+  {
+    "standarized": true,
+    "source": "builtin",
+    "ruleset": "rhodes-island",
     "id": "ri-domain-card-fd0be65bf2e6",
     "name": "钢铁拟心",
     "type": "domain",
@@ -13244,6 +13304,66 @@
       "category": "能力",
       "description": "让造物强大的方式多种多样，而你恰好掌握了其中一种。你的造物可被你操控且获得不超过你的思考能力。切换场景时以及每次进入休息时，这些造物会自主或相互帮忙地修复身上的创伤（例如，具有d10召唤骰的造物会因此使召唤骰数值-1）。\n\n当你失去对造物的操控能力时（例如你失去意识），若这些造物本身仍能行动，每场游戏限一次，这些造物会立即以自己的思考进行一次行动并在行动后损毁。",
       "imageUrl": "/rhodes-island/domains/industry/fd0be65bf2e6.webp"
+    }
+  },
+  {
+    "standarized": true,
+    "source": "builtin",
+    "ruleset": "rhodes-island",
+    "id": "ri-domain-card-5bb1464228f6",
+    "name": "奇思妙想",
+    "type": "domain",
+    "class": "工业",
+    "level": 2,
+    "description": "在你通过回想将本领域卡加入配置时，你可以进行一次知识掷骰（12）来找寻你脑海中的灵感。成功时，你可以从当前场景中的某个生物或事物中得到灵感，紧急制造一件基于此灵感而来的普通物品（与游戏主持人一起确定这件物品是什么，它通常是极不耐用的）。失败时，你感受到头脑一片空白，直至当前场景结束，你不能再次回想本领域卡。\n\n填装（该领域卡在被使用后将加入你的宝库中。）",
+    "imageUrl": "/rhodes-island/domains/industry/5bb1464228f6.webp",
+    "cardSelectDisplay": {
+      "item1": "工业",
+      "item2": "能力",
+      "item3": "RC.2",
+      "item4": "LV.2"
+    },
+    "rhodesIsland": {
+      "id": "ri-domain-card-5bb1464228f6",
+      "ruleset": "rhodes-island",
+      "name": "奇思妙想",
+      "domainId": "ri-domain-f43176d7ca53",
+      "domain": "工业",
+      "level": 2,
+      "recallCost": 2,
+      "category": "能力",
+      "description": "在你通过回想将本领域卡加入配置时，你可以进行一次知识掷骰（12）来找寻你脑海中的灵感。成功时，你可以从当前场景中的某个生物或事物中得到灵感，紧急制造一件基于此灵感而来的普通物品（与游戏主持人一起确定这件物品是什么，它通常是极不耐用的）。失败时，你感受到头脑一片空白，直至当前场景结束，你不能再次回想本领域卡。\n\n填装（该领域卡在被使用后将加入你的宝库中。）",
+      "imageUrl": "/rhodes-island/domains/industry/5bb1464228f6.webp"
+    }
+  },
+  {
+    "standarized": true,
+    "source": "builtin",
+    "ruleset": "rhodes-island",
+    "id": "ri-domain-card-f661c968477b",
+    "name": "运载助手",
+    "type": "domain",
+    "class": "工业",
+    "level": 3,
+    "description": "每次休息一次，你可以标记2压力点，在近距离内的一处位点布设一台小型运载设备（例如小推车、小拖车等）。其可以被盟友使用且在运输、移动等行动中提供优势。其一次性可以携带一至两名盟友。其在受到一次攻击后立即损坏。\n\n你也可以标记1压力点，在你的一次聚焦中远程遥控远距离内由你布设的小型运载设备。",
+    "imageUrl": "/rhodes-island/domains/industry/f661c968477b.webp",
+    "cardSelectDisplay": {
+      "item1": "工业",
+      "item2": "能力",
+      "item3": "RC.2",
+      "item4": "LV.3"
+    },
+    "rhodesIsland": {
+      "id": "ri-domain-card-f661c968477b",
+      "ruleset": "rhodes-island",
+      "name": "运载助手",
+      "domainId": "ri-domain-f43176d7ca53",
+      "domain": "工业",
+      "level": 3,
+      "recallCost": 2,
+      "category": "能力",
+      "description": "每次休息一次，你可以标记2压力点，在近距离内的一处位点布设一台小型运载设备（例如小推车、小拖车等）。其可以被盟友使用且在运输、移动等行动中提供优势。其一次性可以携带一至两名盟友。其在受到一次攻击后立即损坏。\n\n你也可以标记1压力点，在你的一次聚焦中远程遥控远距离内由你布设的小型运载设备。",
+      "imageUrl": "/rhodes-island/domains/industry/f661c968477b.webp"
     }
   },
   {
@@ -13280,6 +13400,66 @@
     "standarized": true,
     "source": "builtin",
     "ruleset": "rhodes-island",
+    "id": "ri-domain-card-1eb48643b0af",
+    "name": "神工意匠",
+    "type": "domain",
+    "class": "工业",
+    "level": 4,
+    "description": "你对造物的理解颇为审慎，你总会为你心仪的小东西准备多个备份。每次休息限一次，当你的一个造物损毁时，你可以立即拿出一个与其相同的备用造物并将其投入使用。\n\n这些流程对你而言已是熟手。你因工业领域卡而标记2或更多压力点时，少标记1点。",
+    "imageUrl": "/rhodes-island/domains/industry/1eb48643b0af.webp",
+    "cardSelectDisplay": {
+      "item1": "工业",
+      "item2": "能力",
+      "item3": "RC.2",
+      "item4": "LV.4"
+    },
+    "rhodesIsland": {
+      "id": "ri-domain-card-1eb48643b0af",
+      "ruleset": "rhodes-island",
+      "name": "神工意匠",
+      "domainId": "ri-domain-f43176d7ca53",
+      "domain": "工业",
+      "level": 4,
+      "recallCost": 2,
+      "category": "能力",
+      "description": "你对造物的理解颇为审慎，你总会为你心仪的小东西准备多个备份。每次休息限一次，当你的一个造物损毁时，你可以立即拿出一个与其相同的备用造物并将其投入使用。\n\n这些流程对你而言已是熟手。你因工业领域卡而标记2或更多压力点时，少标记1点。",
+      "imageUrl": "/rhodes-island/domains/industry/1eb48643b0af.webp"
+    }
+  },
+  {
+    "standarized": true,
+    "source": "builtin",
+    "ruleset": "rhodes-island",
+    "id": "ri-domain-card-921a1949003a",
+    "name": "全线警报",
+    "type": "domain",
+    "class": "工业",
+    "level": 4,
+    "description": "你知道面对危险时的必备手段——拉响警报！每场游戏限一次，当一名友方角色受到重度以上伤害或陷入其他危险情景时，你可以标记2压力点，在近距离内的一处位点布设一台持续进行警报的装置（例如蜂鸣器、警报广播基站等）。警报将在当前场景内引发某种警示，该装置会显著吸引或惊扰生物，并以某种你和游戏主持人共同商讨出的方案持续干扰敌人的交流。\n\n你也可以标记1压力点，在你的一次聚焦中远程开启或关闭远距离内由你布设的警报装置。",
+    "imageUrl": "/rhodes-island/domains/industry/921a1949003a.webp",
+    "cardSelectDisplay": {
+      "item1": "工业",
+      "item2": "能力",
+      "item3": "RC.1",
+      "item4": "LV.4"
+    },
+    "rhodesIsland": {
+      "id": "ri-domain-card-921a1949003a",
+      "ruleset": "rhodes-island",
+      "name": "全线警报",
+      "domainId": "ri-domain-f43176d7ca53",
+      "domain": "工业",
+      "level": 4,
+      "recallCost": 1,
+      "category": "能力",
+      "description": "你知道面对危险时的必备手段——拉响警报！每场游戏限一次，当一名友方角色受到重度以上伤害或陷入其他危险情景时，你可以标记2压力点，在近距离内的一处位点布设一台持续进行警报的装置（例如蜂鸣器、警报广播基站等）。警报将在当前场景内引发某种警示，该装置会显著吸引或惊扰生物，并以某种你和游戏主持人共同商讨出的方案持续干扰敌人的交流。\n\n你也可以标记1压力点，在你的一次聚焦中远程开启或关闭远距离内由你布设的警报装置。",
+      "imageUrl": "/rhodes-island/domains/industry/921a1949003a.webp"
+    }
+  },
+  {
+    "standarized": true,
+    "source": "builtin",
+    "ruleset": "rhodes-island",
     "id": "ri-domain-card-02176c804b64",
     "name": "加速航道",
     "type": "domain",
@@ -13304,6 +13484,66 @@
       "category": "法术",
       "description": "你掌握了某种加速装置的制作方式。每当一名友方自愿角色准备从你的近距离内向外移动时，你可以标记2压力点，将一个临时加速装置布设在其的身上，其此次移动进入近地冲刺状态。处于近地冲刺状态的生物进行远距离移动时无需掷骰，且可以击退移动终点近距离内的所有敌人至中远距离交界处。该角色完成一次移动后，临时加速装置自动损毁。",
       "imageUrl": "/rhodes-island/domains/industry/02176c804b64.webp"
+    }
+  },
+  {
+    "standarized": true,
+    "source": "builtin",
+    "ruleset": "rhodes-island",
+    "id": "ri-domain-card-edd74ae931fa",
+    "name": "定向崩毁",
+    "type": "domain",
+    "class": "工业",
+    "level": 5,
+    "description": "你掌握了某种基于源石法术的隐匿爆破方式。你可以选择当前场景中的一处位点并进行一次施法掷骰（难度取决于当前环境难度）。成功时，每长休限一次，你花费2希望点，在该点位近距离内引发一次不易察觉的应力崩毁，摧毁该范围内的所有可摧毁障碍物并将原本坚固的障碍物转变为可摧毁障碍物。",
+    "imageUrl": "/rhodes-island/domains/industry/edd74ae931fa.webp",
+    "cardSelectDisplay": {
+      "item1": "工业",
+      "item2": "法术",
+      "item3": "RC.2",
+      "item4": "LV.5"
+    },
+    "rhodesIsland": {
+      "id": "ri-domain-card-edd74ae931fa",
+      "ruleset": "rhodes-island",
+      "name": "定向崩毁",
+      "domainId": "ri-domain-f43176d7ca53",
+      "domain": "工业",
+      "level": 5,
+      "recallCost": 2,
+      "category": "法术",
+      "description": "你掌握了某种基于源石法术的隐匿爆破方式。你可以选择当前场景中的一处位点并进行一次施法掷骰（难度取决于当前环境难度）。成功时，每长休限一次，你花费2希望点，在该点位近距离内引发一次不易察觉的应力崩毁，摧毁该范围内的所有可摧毁障碍物并将原本坚固的障碍物转变为可摧毁障碍物。",
+      "imageUrl": "/rhodes-island/domains/industry/edd74ae931fa.webp"
+    }
+  },
+  {
+    "standarized": true,
+    "source": "builtin",
+    "ruleset": "rhodes-island",
+    "id": "ri-domain-card-f860ab311296",
+    "name": "筑固有方",
+    "type": "domain",
+    "class": "工业",
+    "level": 6,
+    "description": "在你近距离内的友方造物视为具有物理伤害抗性和法术伤害抗性。\n\n每场游戏限一次，你可以标记6压力点，将近距离内的自愿盟友也计入该特性的应用目标，直至当前场景结束。",
+    "imageUrl": "/rhodes-island/domains/industry/f860ab311296.webp",
+    "cardSelectDisplay": {
+      "item1": "工业",
+      "item2": "能力",
+      "item3": "RC.2",
+      "item4": "LV.6"
+    },
+    "rhodesIsland": {
+      "id": "ri-domain-card-f860ab311296",
+      "ruleset": "rhodes-island",
+      "name": "筑固有方",
+      "domainId": "ri-domain-f43176d7ca53",
+      "domain": "工业",
+      "level": 6,
+      "recallCost": 2,
+      "category": "能力",
+      "description": "在你近距离内的友方造物视为具有物理伤害抗性和法术伤害抗性。\n\n每场游戏限一次，你可以标记6压力点，将近距离内的自愿盟友也计入该特性的应用目标，直至当前场景结束。",
+      "imageUrl": "/rhodes-island/domains/industry/f860ab311296.webp"
     }
   },
   {
@@ -13340,6 +13580,66 @@
     "standarized": true,
     "source": "builtin",
     "ruleset": "rhodes-island",
+    "id": "ri-domain-card-1305f2100b21",
+    "name": "工业誓约",
+    "type": "domain",
+    "class": "工业",
+    "level": 7,
+    "description": "当你的配置中有4张或更多领域卡来自工业领域时，获得下列增益：\n\n·每当你的造物损毁时，你清除1压力点\n\n·每当你的造物将损毁时，若其处于你的近距离内，你可以标记1生命点以阻止其的损毁，并避免相关后果",
+    "imageUrl": "/rhodes-island/domains/industry/1305f2100b21.webp",
+    "cardSelectDisplay": {
+      "item1": "工业",
+      "item2": "能力",
+      "item3": "RC.2",
+      "item4": "LV.7"
+    },
+    "rhodesIsland": {
+      "id": "ri-domain-card-1305f2100b21",
+      "ruleset": "rhodes-island",
+      "name": "工业誓约",
+      "domainId": "ri-domain-f43176d7ca53",
+      "domain": "工业",
+      "level": 7,
+      "recallCost": 2,
+      "category": "能力",
+      "description": "当你的配置中有4张或更多领域卡来自工业领域时，获得下列增益：\n\n·每当你的造物损毁时，你清除1压力点\n\n·每当你的造物将损毁时，若其处于你的近距离内，你可以标记1生命点以阻止其的损毁，并避免相关后果",
+      "imageUrl": "/rhodes-island/domains/industry/1305f2100b21.webp"
+    }
+  },
+  {
+    "standarized": true,
+    "source": "builtin",
+    "ruleset": "rhodes-island",
+    "id": "ri-domain-card-2e78b57c9ab5",
+    "name": "天堂坠落",
+    "type": "domain",
+    "class": "工业",
+    "level": 7,
+    "description": "在你通过回想将本领域卡加入配置时，你可以自天空中落下至多3枚陨石，选择当前场景等数量个位点中距离内的所有敌人，进行一次施法掷骰。你成功对抗的目标将受到3d20+6点物理伤害。你失败对抗的目标将受到一半的伤害。这些目标中所有不位于地面的目标将因此被击坠（无论对抗结果如何），额外受到2d12点物理伤害且暂时处于束缚状态。\n\n缓速填装（该领域卡在被使用后将暂时移除，在当前场景结束时才会加入你的宝库中。）",
+    "imageUrl": "/rhodes-island/domains/industry/2e78b57c9ab5.webp",
+    "cardSelectDisplay": {
+      "item1": "工业",
+      "item2": "法术",
+      "item3": "RC.6",
+      "item4": "LV.7"
+    },
+    "rhodesIsland": {
+      "id": "ri-domain-card-2e78b57c9ab5",
+      "ruleset": "rhodes-island",
+      "name": "天堂坠落",
+      "domainId": "ri-domain-f43176d7ca53",
+      "domain": "工业",
+      "level": 7,
+      "recallCost": 6,
+      "category": "法术",
+      "description": "在你通过回想将本领域卡加入配置时，你可以自天空中落下至多3枚陨石，选择当前场景等数量个位点中距离内的所有敌人，进行一次施法掷骰。你成功对抗的目标将受到3d20+6点物理伤害。你失败对抗的目标将受到一半的伤害。这些目标中所有不位于地面的目标将因此被击坠（无论对抗结果如何），额外受到2d12点物理伤害且暂时处于束缚状态。\n\n缓速填装（该领域卡在被使用后将暂时移除，在当前场景结束时才会加入你的宝库中。）",
+      "imageUrl": "/rhodes-island/domains/industry/2e78b57c9ab5.webp"
+    }
+  },
+  {
+    "standarized": true,
+    "source": "builtin",
+    "ruleset": "rhodes-island",
     "id": "ri-domain-card-12a4a8c44c15",
     "name": "巧筑八方",
     "type": "domain",
@@ -13370,6 +13670,66 @@
     "standarized": true,
     "source": "builtin",
     "ruleset": "rhodes-island",
+    "id": "ri-domain-card-6a843d15ad76",
+    "name": "团结一心",
+    "type": "domain",
+    "class": "工业",
+    "level": 8,
+    "description": "你稳固着众人的牵绊。只要你仍未跨越死亡的帷幕，当前场景内所有友方角色受到的伤害减少若干点，减少的数值等同于当前场景内所有友方角色（特殊地，包含友方造物和生物）数量之和。\n\n你将意志化作不可逾越之墙。你可以将压力点如护甲槽般标记。",
+    "imageUrl": "/rhodes-island/domains/industry/6a843d15ad76.webp",
+    "cardSelectDisplay": {
+      "item1": "工业",
+      "item2": "能力",
+      "item3": "RC.2",
+      "item4": "LV.8"
+    },
+    "rhodesIsland": {
+      "id": "ri-domain-card-6a843d15ad76",
+      "ruleset": "rhodes-island",
+      "name": "团结一心",
+      "domainId": "ri-domain-f43176d7ca53",
+      "domain": "工业",
+      "level": 8,
+      "recallCost": 2,
+      "category": "能力",
+      "description": "你稳固着众人的牵绊。只要你仍未跨越死亡的帷幕，当前场景内所有友方角色受到的伤害减少若干点，减少的数值等同于当前场景内所有友方角色（特殊地，包含友方造物和生物）数量之和。\n\n你将意志化作不可逾越之墙。你可以将压力点如护甲槽般标记。",
+      "imageUrl": "/rhodes-island/domains/industry/6a843d15ad76.webp"
+    }
+  },
+  {
+    "standarized": true,
+    "source": "builtin",
+    "ruleset": "rhodes-island",
+    "id": "ri-domain-card-09d917099b82",
+    "name": "反击炮火",
+    "type": "domain",
+    "class": "工业",
+    "level": 9,
+    "description": "配置此领域卡时，拿取“召唤：炮台”以作说明。\n\n每长休限一次，你可以标记4压力点，在本领域卡上放置一枚d10召唤骰。召唤骰初始数值为1。对应造物的伤害阈值与你保持一致。其标记生命点时，改为使召唤骰数值增加等数目。当召唤骰数值大于对应领域卡等级时，召唤物损毁。\n\n当本领域卡上有d10召唤骰时，在近距离内的一处合理位置架设一台大型炮台，和游戏主持人共同商讨其的形制和运作机制。",
+    "imageUrl": "/rhodes-island/domains/industry/09d917099b82.webp",
+    "cardSelectDisplay": {
+      "item1": "工业",
+      "item2": "能力",
+      "item3": "RC.5",
+      "item4": "LV.9"
+    },
+    "rhodesIsland": {
+      "id": "ri-domain-card-09d917099b82",
+      "ruleset": "rhodes-island",
+      "name": "反击炮火",
+      "domainId": "ri-domain-f43176d7ca53",
+      "domain": "工业",
+      "level": 9,
+      "recallCost": 5,
+      "category": "能力",
+      "description": "配置此领域卡时，拿取“召唤：炮台”以作说明。\n\n每长休限一次，你可以标记4压力点，在本领域卡上放置一枚d10召唤骰。召唤骰初始数值为1。对应造物的伤害阈值与你保持一致。其标记生命点时，改为使召唤骰数值增加等数目。当召唤骰数值大于对应领域卡等级时，召唤物损毁。\n\n当本领域卡上有d10召唤骰时，在近距离内的一处合理位置架设一台大型炮台，和游戏主持人共同商讨其的形制和运作机制。",
+      "imageUrl": "/rhodes-island/domains/industry/09d917099b82.webp"
+    }
+  },
+  {
+    "standarized": true,
+    "source": "builtin",
+    "ruleset": "rhodes-island",
     "id": "ri-domain-card-a8e78e941483",
     "name": "一墟作烬",
     "type": "domain",
@@ -13394,6 +13754,66 @@
       "category": "能力",
       "description": "你总在思考，工业究竟是怎样的一把双刃剑。\n\n每当一名友方角色在你的远距离内执行死亡行动时，或一个友方造物在你的近距离内损毁时，你可以标记1生命点，重置你一张工业领域卡的使用频率。",
       "imageUrl": "/rhodes-island/domains/industry/a8e78e941483.webp"
+    }
+  },
+  {
+    "standarized": true,
+    "source": "builtin",
+    "ruleset": "rhodes-island",
+    "id": "ri-domain-card-8ceaaed205e5",
+    "name": "号令巨兵",
+    "type": "domain",
+    "class": "工业",
+    "level": 10,
+    "description": "配置此领域卡时，拿去“召唤：巨兵”以作说明。\n\n你可以花费3希望点，在本领域卡上放置一枚d10召唤骰，将你可触及的某个合适建筑物化作巨大机甲奇兵。和游戏主持人共同商讨其的形制和运作机制。召唤骰初始数值为1。对应造物的伤害阈值与你保持一致。其标记生命点时，改为使召唤骰数值增加等数目。当召唤骰数值大于对应领域卡等级时，召唤物损毁。\n\n当本领域卡上有d10召唤骰时，你以巨型造物模式行动。\n\n当巨型造物损毁时，将本领域卡暂时移除，直至本场游戏结束时才能重新放入你的宝库中。",
+    "imageUrl": "/rhodes-island/domains/industry/8ceaaed205e5.webp",
+    "cardSelectDisplay": {
+      "item1": "工业",
+      "item2": "能力",
+      "item3": "RC.5",
+      "item4": "LV.10"
+    },
+    "rhodesIsland": {
+      "id": "ri-domain-card-8ceaaed205e5",
+      "ruleset": "rhodes-island",
+      "name": "号令巨兵",
+      "domainId": "ri-domain-f43176d7ca53",
+      "domain": "工业",
+      "level": 10,
+      "recallCost": 5,
+      "category": "能力",
+      "description": "配置此领域卡时，拿去“召唤：巨兵”以作说明。\n\n你可以花费3希望点，在本领域卡上放置一枚d10召唤骰，将你可触及的某个合适建筑物化作巨大机甲奇兵。和游戏主持人共同商讨其的形制和运作机制。召唤骰初始数值为1。对应造物的伤害阈值与你保持一致。其标记生命点时，改为使召唤骰数值增加等数目。当召唤骰数值大于对应领域卡等级时，召唤物损毁。\n\n当本领域卡上有d10召唤骰时，你以巨型造物模式行动。\n\n当巨型造物损毁时，将本领域卡暂时移除，直至本场游戏结束时才能重新放入你的宝库中。",
+      "imageUrl": "/rhodes-island/domains/industry/8ceaaed205e5.webp"
+    }
+  },
+  {
+    "standarized": true,
+    "source": "builtin",
+    "ruleset": "rhodes-island",
+    "id": "ri-domain-card-1714a24be8eb",
+    "name": "辉煌裂片",
+    "type": "domain",
+    "class": "工业",
+    "level": 10,
+    "description": "每当你的造物损毁或当前场景内有障碍物被破坏时，你可以在本领域卡上放置一个裂片指示物，本领域卡上至多放置三个裂片指示物。描述你如何收集了这些残存的“碎片”。\n\n你可以在你需要的时候，花费1希望点并移除一个裂片指示物，而后选定一名友方角色（无论其是否和你位于同一场景）远距离内的一处位点，你对该位点远距离内的所有敌人进行一次施法掷骰。对于每个你以此法成功对抗的目标，你可以造成使用你熟练值的d20+16点法术伤害且迫使这些目标暂时处于脆弱状态和眩晕状态。在眩晕期间，其无法使用反应，且在解除此状态之前无法进行任何其他动作。\n\n每场游戏结束时，移除所有裂片指示物。",
+    "imageUrl": "/rhodes-island/domains/industry/1714a24be8eb.webp",
+    "cardSelectDisplay": {
+      "item1": "工业",
+      "item2": "能力",
+      "item3": "RC.3",
+      "item4": "LV.10"
+    },
+    "rhodesIsland": {
+      "id": "ri-domain-card-1714a24be8eb",
+      "ruleset": "rhodes-island",
+      "name": "辉煌裂片",
+      "domainId": "ri-domain-f43176d7ca53",
+      "domain": "工业",
+      "level": 10,
+      "recallCost": 3,
+      "category": "能力",
+      "description": "每当你的造物损毁或当前场景内有障碍物被破坏时，你可以在本领域卡上放置一个裂片指示物，本领域卡上至多放置三个裂片指示物。描述你如何收集了这些残存的“碎片”。\n\n你可以在你需要的时候，花费1希望点并移除一个裂片指示物，而后选定一名友方角色（无论其是否和你位于同一场景）远距离内的一处位点，你对该位点远距离内的所有敌人进行一次施法掷骰。对于每个你以此法成功对抗的目标，你可以造成使用你熟练值的d20+16点法术伤害且迫使这些目标暂时处于脆弱状态和眩晕状态。在眩晕期间，其无法使用反应，且在解除此状态之前无法进行任何其他动作。\n\n每场游戏结束时，移除所有裂片指示物。",
+      "imageUrl": "/rhodes-island/domains/industry/1714a24be8eb.webp"
     }
   },
   {
@@ -13436,216 +13856,6 @@
     "standarized": true,
     "source": "builtin",
     "ruleset": "rhodes-island",
-    "id": "ri-domain-card-33b9ca7ad927",
-    "name": "涤净流程",
-    "type": "domain",
-    "class": "工业",
-    "level": 1,
-    "description": "每次休息一次，你可以标记 2 压力点，将近距离内一名友方自愿角色的武器打理至最佳状态，使对应武器伤害骰数量增加 1 枚且武器伤害调整值增加你等级的数值，持续至当前场景结束或其在一次掷骰中获得恐惧失败。\n\n你也可以标记 1 压力点，花费一定的时间来去除一件物品的污渍或锈蚀（取决于物品的大小和污锈程度）。",
-    "imageUrl": "/rhodes-island/domains/industry/33b9ca7ad927.webp",
-    "cardSelectDisplay": {
-      "item1": "工业",
-      "item2": "能力",
-      "item3": "RC.1",
-      "item4": "LV.1"
-    },
-    "rhodesIsland": {
-      "id": "ri-domain-card-33b9ca7ad927",
-      "ruleset": "rhodes-island",
-      "name": "涤净流程",
-      "domainId": "ri-domain-f43176d7ca53",
-      "domain": "工业",
-      "level": 1,
-      "recallCost": 1,
-      "category": "能力",
-      "description": "每次休息一次，你可以标记 2 压力点，将近距离内一名友方自愿角色的武器打理至最佳状态，使对应武器伤害骰数量增加 1 枚且武器伤害调整值增加你等级的数值，持续至当前场景结束或其在一次掷骰中获得恐惧失败。\n\n你也可以标记 1 压力点，花费一定的时间来去除一件物品的污渍或锈蚀（取决于物品的大小和污锈程度）。",
-      "imageUrl": "/rhodes-island/domains/industry/33b9ca7ad927.webp"
-    }
-  },
-  {
-    "standarized": true,
-    "source": "builtin",
-    "ruleset": "rhodes-island",
-    "id": "ri-domain-card-5bb1464228f6",
-    "name": "奇思妙想",
-    "type": "domain",
-    "class": "工业",
-    "level": 2,
-    "description": "在你通过回想将本领域卡加入配置时，你可以进行一次知识掷骰（12）来找寻你脑海中的灵感。成功时，你可以从当前场景中的某个生物或事物中得到灵感，紧急制造一件基于此灵感而来的普通物品（与游戏主持人一起确定这件物品是什么，它通常是极不耐用的）。失败时，你感受到头脑一片空白，直至当前场景结束，你不能再次回想本领域卡。\n\n填装（该领域卡在被使用后将加入你的宝库中。）",
-    "imageUrl": "/rhodes-island/domains/industry/5bb1464228f6.webp",
-    "cardSelectDisplay": {
-      "item1": "工业",
-      "item2": "能力",
-      "item3": "RC.2",
-      "item4": "LV.2"
-    },
-    "rhodesIsland": {
-      "id": "ri-domain-card-5bb1464228f6",
-      "ruleset": "rhodes-island",
-      "name": "奇思妙想",
-      "domainId": "ri-domain-f43176d7ca53",
-      "domain": "工业",
-      "level": 2,
-      "recallCost": 2,
-      "category": "能力",
-      "description": "在你通过回想将本领域卡加入配置时，你可以进行一次知识掷骰（12）来找寻你脑海中的灵感。成功时，你可以从当前场景中的某个生物或事物中得到灵感，紧急制造一件基于此灵感而来的普通物品（与游戏主持人一起确定这件物品是什么，它通常是极不耐用的）。失败时，你感受到头脑一片空白，直至当前场景结束，你不能再次回想本领域卡。\n\n填装（该领域卡在被使用后将加入你的宝库中。）",
-      "imageUrl": "/rhodes-island/domains/industry/5bb1464228f6.webp"
-    }
-  },
-  {
-    "standarized": true,
-    "source": "builtin",
-    "ruleset": "rhodes-island",
-    "id": "ri-domain-card-1eb48643b0af",
-    "name": "神工意匠",
-    "type": "domain",
-    "class": "工业",
-    "level": 4,
-    "description": "你对造物的理解颇为审慎，你总会为你心仪的小东西准备多个备份。每次休息限一次，当你的一个造物损毁时，你可以立即拿出一个与其相同的备用造物并将其投入使用。\n\n这些流程对你而言已是熟手。你因工业领域卡而标记2或更多压力点时，少标记1点。",
-    "imageUrl": "/rhodes-island/domains/industry/1eb48643b0af.webp",
-    "cardSelectDisplay": {
-      "item1": "工业",
-      "item2": "能力",
-      "item3": "RC.2",
-      "item4": "LV.4"
-    },
-    "rhodesIsland": {
-      "id": "ri-domain-card-1eb48643b0af",
-      "ruleset": "rhodes-island",
-      "name": "神工意匠",
-      "domainId": "ri-domain-f43176d7ca53",
-      "domain": "工业",
-      "level": 4,
-      "recallCost": 2,
-      "category": "能力",
-      "description": "你对造物的理解颇为审慎，你总会为你心仪的小东西准备多个备份。每次休息限一次，当你的一个造物损毁时，你可以立即拿出一个与其相同的备用造物并将其投入使用。\n\n这些流程对你而言已是熟手。你因工业领域卡而标记2或更多压力点时，少标记1点。",
-      "imageUrl": "/rhodes-island/domains/industry/1eb48643b0af.webp"
-    }
-  },
-  {
-    "standarized": true,
-    "source": "builtin",
-    "ruleset": "rhodes-island",
-    "id": "ri-domain-card-edd74ae931fa",
-    "name": "定向崩毁",
-    "type": "domain",
-    "class": "工业",
-    "level": 5,
-    "description": "你掌握了某种基于源石法术的隐匿爆破方式。你可以选择当前场景中的一处位点并进行一次施法掷骰（难度取决于当前环境难度）。成功时，每长休限一次，你花费2希望点，在该点位近距离内引发一次不易察觉的应力崩毁，摧毁该范围内的所有可摧毁障碍物并将原本坚固的障碍物转变为可摧毁障碍物。",
-    "imageUrl": "/rhodes-island/domains/industry/edd74ae931fa.webp",
-    "cardSelectDisplay": {
-      "item1": "工业",
-      "item2": "法术",
-      "item3": "RC.2",
-      "item4": "LV.5"
-    },
-    "rhodesIsland": {
-      "id": "ri-domain-card-edd74ae931fa",
-      "ruleset": "rhodes-island",
-      "name": "定向崩毁",
-      "domainId": "ri-domain-f43176d7ca53",
-      "domain": "工业",
-      "level": 5,
-      "recallCost": 2,
-      "category": "法术",
-      "description": "你掌握了某种基于源石法术的隐匿爆破方式。你可以选择当前场景中的一处位点并进行一次施法掷骰（难度取决于当前环境难度）。成功时，每长休限一次，你花费2希望点，在该点位近距离内引发一次不易察觉的应力崩毁，摧毁该范围内的所有可摧毁障碍物并将原本坚固的障碍物转变为可摧毁障碍物。",
-      "imageUrl": "/rhodes-island/domains/industry/edd74ae931fa.webp"
-    }
-  },
-  {
-    "standarized": true,
-    "source": "builtin",
-    "ruleset": "rhodes-island",
-    "id": "ri-domain-card-1305f2100b21",
-    "name": "工业誓约",
-    "type": "domain",
-    "class": "工业",
-    "level": 7,
-    "description": "当你的配置中有4张或更多领域卡来自工业领域时，获得下列增益：\n\n·每当你的造物损毁时，你清除1压力点\n\n·每当你的造物将损毁时，若其处于你的近距离内，你可以标记1生命点以阻止其的损毁，并避免相关后果",
-    "imageUrl": "/rhodes-island/domains/industry/1305f2100b21.webp",
-    "cardSelectDisplay": {
-      "item1": "工业",
-      "item2": "能力",
-      "item3": "RC.2",
-      "item4": "LV.7"
-    },
-    "rhodesIsland": {
-      "id": "ri-domain-card-1305f2100b21",
-      "ruleset": "rhodes-island",
-      "name": "工业誓约",
-      "domainId": "ri-domain-f43176d7ca53",
-      "domain": "工业",
-      "level": 7,
-      "recallCost": 2,
-      "category": "能力",
-      "description": "当你的配置中有4张或更多领域卡来自工业领域时，获得下列增益：\n\n·每当你的造物损毁时，你清除1压力点\n\n·每当你的造物将损毁时，若其处于你的近距离内，你可以标记1生命点以阻止其的损毁，并避免相关后果",
-      "imageUrl": "/rhodes-island/domains/industry/1305f2100b21.webp"
-    }
-  },
-  {
-    "standarized": true,
-    "source": "builtin",
-    "ruleset": "rhodes-island",
-    "id": "ri-domain-card-6a843d15ad76",
-    "name": "团结一心",
-    "type": "domain",
-    "class": "工业",
-    "level": 8,
-    "description": "你稳固着众人的牵绊。只要你仍未跨越死亡的帷幕，当前场景内所有友方角色受到的伤害减少若干点，减少的数值等同于当前场景内所有友方角色（特殊地，包含友方造物和生物）数量之和。\n\n你将意志化作不可逾越之墙。你可以将压力点如护甲槽般标记。",
-    "imageUrl": "/rhodes-island/domains/industry/6a843d15ad76.webp",
-    "cardSelectDisplay": {
-      "item1": "工业",
-      "item2": "能力",
-      "item3": "RC.2",
-      "item4": "LV.8"
-    },
-    "rhodesIsland": {
-      "id": "ri-domain-card-6a843d15ad76",
-      "ruleset": "rhodes-island",
-      "name": "团结一心",
-      "domainId": "ri-domain-f43176d7ca53",
-      "domain": "工业",
-      "level": 8,
-      "recallCost": 2,
-      "category": "能力",
-      "description": "你稳固着众人的牵绊。只要你仍未跨越死亡的帷幕，当前场景内所有友方角色受到的伤害减少若干点，减少的数值等同于当前场景内所有友方角色（特殊地，包含友方造物和生物）数量之和。\n\n你将意志化作不可逾越之墙。你可以将压力点如护甲槽般标记。",
-      "imageUrl": "/rhodes-island/domains/industry/6a843d15ad76.webp"
-    }
-  },
-  {
-    "standarized": true,
-    "source": "builtin",
-    "ruleset": "rhodes-island",
-    "id": "ri-domain-card-8ceaaed205e5",
-    "name": "号令巨兵",
-    "type": "domain",
-    "class": "工业",
-    "level": 10,
-    "description": "配置此领域卡时，拿去“召唤：巨兵”以作说明。\n\n你可以花费3希望点，在本领域卡上放置一枚d10召唤骰，将你可触及的某个合适建筑物化作巨大机甲奇兵。和游戏主持人共同商讨其的形制和运作机制。召唤骰初始数值为1。对应造物的伤害阈值与你保持一致。其标记生命点时，改为使召唤骰数值增加等数目。当召唤骰数值大于对应领域卡等级时，召唤物损毁。\n\n当本领域卡上有d10召唤骰时，你以巨型造物模式行动。\n\n当巨型造物损毁时，将本领域卡暂时移除，直至本场游戏结束时才能重新放入你的宝库中。",
-    "imageUrl": "/rhodes-island/domains/industry/8ceaaed205e5.webp",
-    "cardSelectDisplay": {
-      "item1": "工业",
-      "item2": "能力",
-      "item3": "RC.5",
-      "item4": "LV.10"
-    },
-    "rhodesIsland": {
-      "id": "ri-domain-card-8ceaaed205e5",
-      "ruleset": "rhodes-island",
-      "name": "号令巨兵",
-      "domainId": "ri-domain-f43176d7ca53",
-      "domain": "工业",
-      "level": 10,
-      "recallCost": 5,
-      "category": "能力",
-      "description": "配置此领域卡时，拿去“召唤：巨兵”以作说明。\n\n你可以花费3希望点，在本领域卡上放置一枚d10召唤骰，将你可触及的某个合适建筑物化作巨大机甲奇兵。和游戏主持人共同商讨其的形制和运作机制。召唤骰初始数值为1。对应造物的伤害阈值与你保持一致。其标记生命点时，改为使召唤骰数值增加等数目。当召唤骰数值大于对应领域卡等级时，召唤物损毁。\n\n当本领域卡上有d10召唤骰时，你以巨型造物模式行动。\n\n当巨型造物损毁时，将本领域卡暂时移除，直至本场游戏结束时才能重新放入你的宝库中。",
-      "imageUrl": "/rhodes-island/domains/industry/8ceaaed205e5.webp"
-    }
-  },
-  {
-    "standarized": true,
-    "source": "builtin",
-    "ruleset": "rhodes-island",
     "id": "ri-domain-card-64ea52fb205f",
     "name": "召唤：巨兵",
     "type": "domain",
@@ -13677,215 +13887,5 @@
     "isSupplemental": true,
     "parentCardId": "ri-domain-card-8ceaaed205e5",
     "parentCardName": "号令巨兵"
-  },
-  {
-    "standarized": true,
-    "source": "builtin",
-    "ruleset": "rhodes-island",
-    "id": "ri-domain-card-d99400311ca1",
-    "name": "前方施工",
-    "type": "domain",
-    "class": "工业",
-    "level": 1,
-    "description": "每次休息一次，你可以标记 2 压力点，在近距离内的一处位点布设阻碍（例如施工栅栏、减速带等），使该位点近距离范围变为困难地形，通过或从其中离开的敌人必须进行一次敏捷反应掷骰（12），否则将短暂受困。游戏主持人可以花费 1 恐惧点让受困的敌人破坏此阻碍。\n\n你也可以标记 1 压力点，迅速探知近距离内的一个建筑物或类似造物是否存在明显的构造缺陷或材质缺陷（例如大楼承重柱内的空腔、器械某处的材料抗剪切性能不足等）。",
-    "imageUrl": "/rhodes-island/domains/industry/d99400311ca1.webp",
-    "cardSelectDisplay": {
-      "item1": "工业",
-      "item2": "能力",
-      "item3": "RC.1",
-      "item4": "LV.1"
-    },
-    "rhodesIsland": {
-      "id": "ri-domain-card-d99400311ca1",
-      "ruleset": "rhodes-island",
-      "name": "前方施工",
-      "domainId": "ri-domain-f43176d7ca53",
-      "domain": "工业",
-      "level": 1,
-      "recallCost": 1,
-      "category": "能力",
-      "description": "每次休息一次，你可以标记 2 压力点，在近距离内的一处位点布设阻碍（例如施工栅栏、减速带等），使该位点近距离范围变为困难地形，通过或从其中离开的敌人必须进行一次敏捷反应掷骰（12），否则将短暂受困。游戏主持人可以花费 1 恐惧点让受困的敌人破坏此阻碍。\n\n你也可以标记 1 压力点，迅速探知近距离内的一个建筑物或类似造物是否存在明显的构造缺陷或材质缺陷（例如大楼承重柱内的空腔、器械某处的材料抗剪切性能不足等）。",
-      "imageUrl": "/rhodes-island/domains/industry/d99400311ca1.webp"
-    }
-  },
-  {
-    "standarized": true,
-    "source": "builtin",
-    "ruleset": "rhodes-island",
-    "id": "ri-domain-card-f661c968477b",
-    "name": "运载助手",
-    "type": "domain",
-    "class": "工业",
-    "level": 3,
-    "description": "每次休息一次，你可以标记2压力点，在近距离内的一处位点布设一台小型运载设备（例如小推车、小拖车等）。其可以被盟友使用且在运输、移动等行动中提供优势。其一次性可以携带一至两名盟友。其在受到一次攻击后立即损坏。\n\n你也可以标记1压力点，在你的一次聚焦中远程遥控远距离内由你布设的小型运载设备。",
-    "imageUrl": "/rhodes-island/domains/industry/f661c968477b.webp",
-    "cardSelectDisplay": {
-      "item1": "工业",
-      "item2": "能力",
-      "item3": "RC.2",
-      "item4": "LV.3"
-    },
-    "rhodesIsland": {
-      "id": "ri-domain-card-f661c968477b",
-      "ruleset": "rhodes-island",
-      "name": "运载助手",
-      "domainId": "ri-domain-f43176d7ca53",
-      "domain": "工业",
-      "level": 3,
-      "recallCost": 2,
-      "category": "能力",
-      "description": "每次休息一次，你可以标记2压力点，在近距离内的一处位点布设一台小型运载设备（例如小推车、小拖车等）。其可以被盟友使用且在运输、移动等行动中提供优势。其一次性可以携带一至两名盟友。其在受到一次攻击后立即损坏。\n\n你也可以标记1压力点，在你的一次聚焦中远程遥控远距离内由你布设的小型运载设备。",
-      "imageUrl": "/rhodes-island/domains/industry/f661c968477b.webp"
-    }
-  },
-  {
-    "standarized": true,
-    "source": "builtin",
-    "ruleset": "rhodes-island",
-    "id": "ri-domain-card-921a1949003a",
-    "name": "全线警报",
-    "type": "domain",
-    "class": "工业",
-    "level": 4,
-    "description": "你知道面对危险时的必备手段——拉响警报！每场游戏限一次，当一名友方角色受到重度以上伤害或陷入其他危险情景时，你可以标记2压力点，在近距离内的一处位点布设一台持续进行警报的装置（例如蜂鸣器、警报广播基站等）。警报将在当前场景内引发某种警示，该装置会显著吸引或惊扰生物，并以某种你和游戏主持人共同商讨出的方案持续干扰敌人的交流。\n\n你也可以标记1压力点，在你的一次聚焦中远程开启或关闭远距离内由你布设的警报装置。",
-    "imageUrl": "/rhodes-island/domains/industry/921a1949003a.webp",
-    "cardSelectDisplay": {
-      "item1": "工业",
-      "item2": "能力",
-      "item3": "RC.1",
-      "item4": "LV.4"
-    },
-    "rhodesIsland": {
-      "id": "ri-domain-card-921a1949003a",
-      "ruleset": "rhodes-island",
-      "name": "全线警报",
-      "domainId": "ri-domain-f43176d7ca53",
-      "domain": "工业",
-      "level": 4,
-      "recallCost": 1,
-      "category": "能力",
-      "description": "你知道面对危险时的必备手段——拉响警报！每场游戏限一次，当一名友方角色受到重度以上伤害或陷入其他危险情景时，你可以标记2压力点，在近距离内的一处位点布设一台持续进行警报的装置（例如蜂鸣器、警报广播基站等）。警报将在当前场景内引发某种警示，该装置会显著吸引或惊扰生物，并以某种你和游戏主持人共同商讨出的方案持续干扰敌人的交流。\n\n你也可以标记1压力点，在你的一次聚焦中远程开启或关闭远距离内由你布设的警报装置。",
-      "imageUrl": "/rhodes-island/domains/industry/921a1949003a.webp"
-    }
-  },
-  {
-    "standarized": true,
-    "source": "builtin",
-    "ruleset": "rhodes-island",
-    "id": "ri-domain-card-f860ab311296",
-    "name": "筑固有方",
-    "type": "domain",
-    "class": "工业",
-    "level": 6,
-    "description": "在你近距离内的友方造物视为具有物理伤害抗性和法术伤害抗性。\n\n每场游戏限一次，你可以标记6压力点，将近距离内的自愿盟友也计入该特性的应用目标，直至当前场景结束。",
-    "imageUrl": "/rhodes-island/domains/industry/f860ab311296.webp",
-    "cardSelectDisplay": {
-      "item1": "工业",
-      "item2": "能力",
-      "item3": "RC.2",
-      "item4": "LV.6"
-    },
-    "rhodesIsland": {
-      "id": "ri-domain-card-f860ab311296",
-      "ruleset": "rhodes-island",
-      "name": "筑固有方",
-      "domainId": "ri-domain-f43176d7ca53",
-      "domain": "工业",
-      "level": 6,
-      "recallCost": 2,
-      "category": "能力",
-      "description": "在你近距离内的友方造物视为具有物理伤害抗性和法术伤害抗性。\n\n每场游戏限一次，你可以标记6压力点，将近距离内的自愿盟友也计入该特性的应用目标，直至当前场景结束。",
-      "imageUrl": "/rhodes-island/domains/industry/f860ab311296.webp"
-    }
-  },
-  {
-    "standarized": true,
-    "source": "builtin",
-    "ruleset": "rhodes-island",
-    "id": "ri-domain-card-2e78b57c9ab5",
-    "name": "天堂坠落",
-    "type": "domain",
-    "class": "工业",
-    "level": 7,
-    "description": "在你通过回想将本领域卡加入配置时，你可以自天空中落下至多3枚陨石，选择当前场景等数量个位点中距离内的所有敌人，进行一次施法掷骰。你成功对抗的目标将受到3d20+6点物理伤害。你失败对抗的目标将受到一半的伤害。这些目标中所有不位于地面的目标将因此被击坠（无论对抗结果如何），额外受到2d12点物理伤害且暂时处于束缚状态。\n\n缓速填装（该领域卡在被使用后将暂时移除，在当前场景结束时才会加入你的宝库中。）",
-    "imageUrl": "/rhodes-island/domains/industry/2e78b57c9ab5.webp",
-    "cardSelectDisplay": {
-      "item1": "工业",
-      "item2": "法术",
-      "item3": "RC.6",
-      "item4": "LV.7"
-    },
-    "rhodesIsland": {
-      "id": "ri-domain-card-2e78b57c9ab5",
-      "ruleset": "rhodes-island",
-      "name": "天堂坠落",
-      "domainId": "ri-domain-f43176d7ca53",
-      "domain": "工业",
-      "level": 7,
-      "recallCost": 6,
-      "category": "法术",
-      "description": "在你通过回想将本领域卡加入配置时，你可以自天空中落下至多3枚陨石，选择当前场景等数量个位点中距离内的所有敌人，进行一次施法掷骰。你成功对抗的目标将受到3d20+6点物理伤害。你失败对抗的目标将受到一半的伤害。这些目标中所有不位于地面的目标将因此被击坠（无论对抗结果如何），额外受到2d12点物理伤害且暂时处于束缚状态。\n\n缓速填装（该领域卡在被使用后将暂时移除，在当前场景结束时才会加入你的宝库中。）",
-      "imageUrl": "/rhodes-island/domains/industry/2e78b57c9ab5.webp"
-    }
-  },
-  {
-    "standarized": true,
-    "source": "builtin",
-    "ruleset": "rhodes-island",
-    "id": "ri-domain-card-09d917099b82",
-    "name": "反击炮火",
-    "type": "domain",
-    "class": "工业",
-    "level": 9,
-    "description": "配置此领域卡时，拿取“召唤：炮台”以作说明。\n\n每长休限一次，你可以标记4压力点，在本领域卡上放置一枚d10召唤骰。召唤骰初始数值为1。对应造物的伤害阈值与你保持一致。其标记生命点时，改为使召唤骰数值增加等数目。当召唤骰数值大于对应领域卡等级时，召唤物损毁。\n\n当本领域卡上有d10召唤骰时，在近距离内的一处合理位置架设一台大型炮台，和游戏主持人共同商讨其的形制和运作机制。",
-    "imageUrl": "/rhodes-island/domains/industry/09d917099b82.webp",
-    "cardSelectDisplay": {
-      "item1": "工业",
-      "item2": "能力",
-      "item3": "RC.5",
-      "item4": "LV.9"
-    },
-    "rhodesIsland": {
-      "id": "ri-domain-card-09d917099b82",
-      "ruleset": "rhodes-island",
-      "name": "反击炮火",
-      "domainId": "ri-domain-f43176d7ca53",
-      "domain": "工业",
-      "level": 9,
-      "recallCost": 5,
-      "category": "能力",
-      "description": "配置此领域卡时，拿取“召唤：炮台”以作说明。\n\n每长休限一次，你可以标记4压力点，在本领域卡上放置一枚d10召唤骰。召唤骰初始数值为1。对应造物的伤害阈值与你保持一致。其标记生命点时，改为使召唤骰数值增加等数目。当召唤骰数值大于对应领域卡等级时，召唤物损毁。\n\n当本领域卡上有d10召唤骰时，在近距离内的一处合理位置架设一台大型炮台，和游戏主持人共同商讨其的形制和运作机制。",
-      "imageUrl": "/rhodes-island/domains/industry/09d917099b82.webp"
-    }
-  },
-  {
-    "standarized": true,
-    "source": "builtin",
-    "ruleset": "rhodes-island",
-    "id": "ri-domain-card-1714a24be8eb",
-    "name": "辉煌裂片",
-    "type": "domain",
-    "class": "工业",
-    "level": 10,
-    "description": "每当你的造物损毁或当前场景内有障碍物被破坏时，你可以在本领域卡上放置一个裂片指示物，本领域卡上至多放置三个裂片指示物。描述你如何收集了这些残存的“碎片”。\n\n你可以在你需要的时候，花费1希望点并移除一个裂片指示物，而后选定一名友方角色（无论其是否和你位于同一场景）远距离内的一处位点，你对该位点远距离内的所有敌人进行一次施法掷骰。对于每个你以此法成功对抗的目标，你可以造成使用你熟练值的d20+16点法术伤害且迫使这些目标暂时处于脆弱状态和眩晕状态。在眩晕期间，其无法使用反应，且在解除此状态之前无法进行任何其他动作。\n\n每场游戏结束时，移除所有裂片指示物。",
-    "imageUrl": "/rhodes-island/domains/industry/1714a24be8eb.webp",
-    "cardSelectDisplay": {
-      "item1": "工业",
-      "item2": "能力",
-      "item3": "RC.3",
-      "item4": "LV.10"
-    },
-    "rhodesIsland": {
-      "id": "ri-domain-card-1714a24be8eb",
-      "ruleset": "rhodes-island",
-      "name": "辉煌裂片",
-      "domainId": "ri-domain-f43176d7ca53",
-      "domain": "工业",
-      "level": 10,
-      "recallCost": 3,
-      "category": "能力",
-      "description": "每当你的造物损毁或当前场景内有障碍物被破坏时，你可以在本领域卡上放置一个裂片指示物，本领域卡上至多放置三个裂片指示物。描述你如何收集了这些残存的“碎片”。\n\n你可以在你需要的时候，花费1希望点并移除一个裂片指示物，而后选定一名友方角色（无论其是否和你位于同一场景）远距离内的一处位点，你对该位点远距离内的所有敌人进行一次施法掷骰。对于每个你以此法成功对抗的目标，你可以造成使用你熟练值的d20+16点法术伤害且迫使这些目标暂时处于脆弱状态和眩晕状态。在眩晕期间，其无法使用反应，且在解除此状态之前无法进行任何其他动作。\n\n每场游戏结束时，移除所有裂片指示物。",
-      "imageUrl": "/rhodes-island/domains/industry/1714a24be8eb.webp"
-    }
   }
 ]

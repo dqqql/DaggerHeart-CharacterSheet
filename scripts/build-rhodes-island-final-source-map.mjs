@@ -17,6 +17,33 @@ const catalogPath = join(projectRoot, "data", "rhodes-island", "catalog.json")
 const outputPath = join(projectRoot, "data", "rhodes-island", "domain-source-map.json")
 const domainImageRoot = join(projectRoot, "public", "rhodes-island", "domains")
 const domainNames = new Set(["攻坚", "坚阵", "秘行", "迅攻", "精准", "奥术", "支柱", "远见", "奇迹", "心界", "工业"])
+const displayOrderOverrides = new Map([
+  ["工业", [
+    "精准投放",
+    "涤净流程",
+    "前方施工",
+    "钢铁拟心",
+    "奇思妙想",
+    "运载助手",
+    "牵引绳索",
+    "神工意匠",
+    "全线警报",
+    "加速航道",
+    "定向崩毁",
+    "筑固有方",
+    "不息熔炉",
+    "工业誓约",
+    "天堂坠落",
+    "巧筑八方",
+    "团结一心",
+    "反击炮火",
+    "一墟作烬",
+    "号令巨兵",
+    "辉煌裂片",
+    "召唤：炮台",
+    "召唤：巨兵",
+  ]],
+])
 
 function parseDomainImages(markdown) {
   const result = new Map()
@@ -110,9 +137,17 @@ async function main() {
       }
       usedSources.add(candidate.source.sourceFile)
       usedCards.add(candidate.target.card.id)
+      const sourceOrder = sourceFiles.indexOf(candidate.source.sourceFile)
+      const displayOrder = displayOrderOverrides.has(domain)
+        ? displayOrderOverrides.get(domain).indexOf(candidate.target.card.name)
+        : sourceOrder
+      if (displayOrder < 0) {
+        throw new Error(`${domain}/${candidate.target.card.name}: missing from display order override`)
+      }
       mappings.push({
         domain,
-        sourceOrder: sourceFiles.indexOf(candidate.source.sourceFile),
+        sourceOrder,
+        displayOrder,
         sourceFile: candidate.source.sourceFile,
         sourceSha256: candidate.source.sha256,
         id: candidate.target.card.id,
@@ -139,7 +174,7 @@ async function main() {
 
   mappings.sort((left, right) =>
     [...domainNames].indexOf(left.domain) - [...domainNames].indexOf(right.domain)
-    || left.sourceOrder - right.sourceOrder,
+    || left.displayOrder - right.displayOrder,
   )
   const result = {
     schemaVersion: 1,

@@ -130,6 +130,13 @@ async function main() {
       .sort((left, right) => left.sourceOrder - right.sourceOrder)
       .map((mapping) => mapping.sourceFile)
     invariant(JSON.stringify(mappedFiles) === JSON.stringify(sourceFiles), `${domain}: source map order differs from Markdown`)
+    const displayOrders = sourceMap.mappings
+      .filter((mapping) => mapping.domain === domain)
+      .map((mapping) => mapping.displayOrder)
+    invariant(
+      JSON.stringify(displayOrders) === JSON.stringify(displayOrders.map((_, index) => index)),
+      `${domain}: display order is not contiguous`,
+    )
   }
   invariant(
     JSON.stringify(catalog.domainCards.map((card) => card.id))

@@ -71,6 +71,38 @@ describe("Rhodes Island bundled card images", () => {
     }
   })
 
+  it("keeps Industrial cards in the card-overview reading order", () => {
+    expect(
+      rhodesIslandCatalog.domainCards
+        .filter(card => card.domain === "工业")
+        .map(card => card.name),
+    ).toEqual([
+      "精准投放",
+      "涤净流程",
+      "前方施工",
+      "钢铁拟心",
+      "奇思妙想",
+      "运载助手",
+      "牵引绳索",
+      "神工意匠",
+      "全线警报",
+      "加速航道",
+      "定向崩毁",
+      "筑固有方",
+      "不息熔炉",
+      "工业誓约",
+      "天堂坠落",
+      "巧筑八方",
+      "团结一心",
+      "反击炮火",
+      "一墟作烬",
+      "号令巨兵",
+      "辉煌裂片",
+      "召唤：炮台",
+      "召唤：巨兵",
+    ])
+  })
+
   it("bundles a dedicated image for every community", () => {
     const communities = rhodesIslandCatalog.communities
 
