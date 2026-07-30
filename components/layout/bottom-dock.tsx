@@ -53,6 +53,7 @@ interface MainModeProps extends BottomDockBaseProps {
   onQuickExportHTML: () => void
   onOpenCharacterManagement: () => void
   onQuickCreateArchive: () => void
+  onQuickImportFromJSON: () => void
   onQuickImportFromHTML: () => void
 }
 
@@ -227,6 +228,7 @@ function MainModeContent(props: MainModeProps) {
             <TooltipTrigger asChild>
               <DropdownMenuTrigger asChild>
                 <Button
+                  data-testid="archive-menu-trigger"
                   className={cn(
                     "gap-1.5 bg-primary text-sm text-primary-foreground hover:bg-primary/90",
                     isMobile ? "px-4 py-2.5" : "px-3 py-1.5",
@@ -255,6 +257,15 @@ function MainModeContent(props: MainModeProps) {
             >
               <Plus className={cn("mr-2", isMobile ? "h-5 w-5" : "h-4 w-4")} />
               新建存档
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              data-testid="import-json-archive-item"
+              onClick={props.onQuickImportFromJSON}
+              disabled={props.characterCount >= MAX_CHARACTERS}
+              className={cn(isMobile && "px-4 py-3")}
+            >
+              <FileJson className={cn("mr-2", isMobile ? "h-5 w-5" : "h-4 w-4")} />
+              从 JSON 导入
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={props.onQuickImportFromHTML}

@@ -40,6 +40,7 @@ import {
 import { useOfficialImagePackStore } from "@/lib/official-image-pack-store"
 import { CardSystemInitializer } from "@/components/card-system-initializer"
 import { RULE_SET_LABELS } from "@/lib/ruleset"
+import { validateJSONCharacterData } from "@/lib/character-data-validator"
 
 // EyeIcon和EyeOffIcon已移除 - 现在使用PageVisibilityDropdown
 
@@ -638,6 +639,78 @@ export default function Home() {
 
 
 
+  // 从 JSON 导入新建存档
+  const handleQuickImportFromJSON = () => {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.json,application/json'
+    input.onchange = async (event) => {
+      const file = (event.target as HTMLInputElement).files?.[0]
+      if (!file) return
+
+      try {
+        const validation = validateJSONCharacterData(await file.text())
+
+        if (!validation.valid || !validation.data) {
+          showFadeNotification({
+            message: `JSON 导入失败：${validation.error || '文件格式不正确'}`,
+            type: 'error',
+          })
+          return
+        }
+
+        if (validation.data.ruleSetId !== activeRuleSetId) {
+          showFadeNotification({
+            message: `该存档属于“${RULE_SET_LABELS[validation.data.ruleSetId]}”，请先切换到对应规则后再导入`,
+            type: 'error',
+          })
+          return
+        }
+
+        const characterName = validation.data.name || '未命名角色'
+        const saveName = await promptDialog({
+          title: '从 JSON 新建存档',
+          label: '存档名称',
+          defaultValue: `${characterName} (JSON导入)`,
+          confirmText: '创建',
+        })
+
+        if (!saveName?.trim()) return
+
+        const success = createNewCharacterHandler(saveName.trim())
+        if (!success) {
+          showFadeNotification({
+            message: '创建新存档失败，可能已达到存档数量上限',
+            type: 'error',
+          })
+          return
+        }
+
+        setFormData(validation.data)
+        setCurrentTabValue('page1')
+
+        if (validation.warnings.length > 0) {
+          showFadeNotification({
+            message: `JSON 导入成功并创建新存档“${saveName.trim()}”，但有警告：${validation.warnings.join('；')}`,
+            type: 'info',
+          })
+        } else {
+          showFadeNotification({
+            message: `JSON 导入成功并创建新存档“${saveName.trim()}”`,
+            type: 'success',
+          })
+        }
+      } catch (error) {
+        console.error('JSON 导入失败:', error)
+        showFadeNotification({
+          message: `JSON 导入失败：${error instanceof Error ? error.message : '未知错误'}`,
+          type: 'error',
+        })
+      }
+    }
+    input.click()
+  }
+
   // 从HTML导入新建存档
   const handleQuickImportFromHTML = () => {
     // 创建文件输入元素
@@ -1090,6 +1163,7 @@ export default function Home() {
         onQuickExportHTML={handleQuickExportHTML}
         onOpenCharacterManagement={() => setCharacterManagementModalOpen(true)}
         onQuickCreateArchive={handleQuickCreateArchive}
+        onQuickImportFromJSON={handleQuickImportFromJSON}
         onQuickImportFromHTML={handleQuickImportFromHTML}
       />
 

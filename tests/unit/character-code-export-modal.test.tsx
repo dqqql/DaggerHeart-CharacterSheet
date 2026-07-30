@@ -27,6 +27,7 @@ function TestHarness() {
         onQuickExportHTML={() => {}}
         onOpenCharacterManagement={() => {}}
         onQuickCreateArchive={() => {}}
+        onQuickImportFromJSON={() => {}}
         onQuickImportFromHTML={() => {}}
       />
       <CharacterCodeExportModal
