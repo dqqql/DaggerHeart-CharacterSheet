@@ -46,7 +46,7 @@ export function CharacterDescriptionSection({ formData, handleInputChange }: Cha
     }
   }
   return (
-    <div className="grid grid-cols-3 gap-1 mt-2 p-1">
+    <div data-ri-character-description className="grid grid-cols-3 gap-1 mt-2 p-1">
       <div className="col-span-1 flex flex-col">
         <h3 className="text-[12px] font-bold text-center mb-1">角色简介</h3>
         <div className="flex-grow relative">

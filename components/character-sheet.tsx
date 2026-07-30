@@ -949,7 +949,7 @@ export default function CharacterSheet() {
                     <ProfessionDescriptionSection
                       description={safeFormData.cards[0]?.description}
                       subclassDescription={safeFormData.cards[1]?.description}
-                      heightClassName="h-[205px]"
+                      heightClassName="h-[230px]"
                     />
                   </div>
                 )}

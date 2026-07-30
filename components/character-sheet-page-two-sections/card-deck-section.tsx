@@ -112,6 +112,7 @@ function Card({
 
   return (
     <div
+      data-ri-card-slot={isRhodesIsland ? "" : undefined}
       className={`relative cursor-pointer transition-colors rounded-md p-1 h-16 group ${isSelected ? "border-3" : "border"
         } ${getBorderColor(isSpecial)} ${isSuppressed ? "border-dashed opacity-60" : ""}`}
       onClick={() => onCardClick(index)}

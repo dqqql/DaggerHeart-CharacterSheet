@@ -126,7 +126,10 @@ const ProfessionDescriptionSection: React.FC<ProfessionDescriptionSectionProps> 
     };
 
     return (
-        <div className={`border-2 border-gray-300 rounded-lg p-1.5 text-xs markdown-content ${heightClassName} overflow-auto`}>
+        <div
+            data-profession-description
+            className={`border-2 border-gray-300 rounded-lg p-1.5 text-xs markdown-content ${heightClassName} overflow-auto`}
+        >
             {renderDescription(professionDescription, 'profession')}
             {subclassFeatureDescription && (
                 <>

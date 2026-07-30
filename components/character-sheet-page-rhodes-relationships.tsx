@@ -131,7 +131,7 @@ export default function CharacterSheetPageRhodesRelationships() {
         </header>
 
         {prompts ? (
-          <div className="grid min-h-[263mm] grid-cols-2 gap-2">
+          <div data-ri-relationships-grid className="grid min-h-[263mm] grid-cols-2 gap-2">
             {renderSection("backgroundQuestions", prompts.backgroundQuestions)}
             {renderSection("relationships", prompts.relationships)}
           </div>

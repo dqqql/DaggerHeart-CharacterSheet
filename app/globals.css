@@ -1065,13 +1065,51 @@ body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] .border-t
   }
 
   .rhodes-island-shell .a4-page {
-    overflow: visible;
+    box-sizing: border-box;
+    overflow: hidden;
     border-color: #999 !important;
     background: #fff !important;
     box-shadow: none !important;
     clip-path: none;
+    break-inside: avoid;
+    page-break-inside: avoid;
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
+  }
+
+  /* The editor keeps this field scrollable; exported paper must not print
+     Chromium's scrollbar chrome. The taller first-page field supplies the
+     extra reading space while preserving the A4 boundary. */
+  .export-preview-shell--rhodes-island [data-profession-description] {
+    overflow: hidden !important;
+    scrollbar-width: none;
+  }
+
+  .export-preview-shell--rhodes-island [data-profession-description]::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Keep the card/upgrade page within one physical sheet. Its five card rows
+     and the free-form description fields are the flexible vertical blocks, so
+     compacting them avoids shrinking the more information-dense upgrade text. */
+  .export-preview-shell--rhodes-island [data-ri-sheet-page="cards"] [data-ri-character-description] textarea {
+    height: 180px !important;
+  }
+
+  .export-preview-shell--rhodes-island [data-ri-sheet-page="cards"] [data-ri-card-slot] {
+    height: 44px !important;
+  }
+
+  /* The global print page keeps a 5 mm top margin, leaving 292 mm of usable
+     A4 height. Stay just below that boundary so the relationship page cannot
+     fragment because of fractional-mm rounding. */
+  .export-preview-shell--rhodes-island [data-ri-sheet-page="relationships"] {
+    min-height: 291mm !important;
+    height: 291mm;
+  }
+
+  .export-preview-shell--rhodes-island [data-ri-relationships-grid] {
+    min-height: 257mm !important;
   }
 
   .rhodes-island-shell .a4-page::after {
@@ -1164,11 +1202,15 @@ body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] .border-t
 .print-all-pages .page-four,
 .print-all-pages .page-five,
 .print-all-pages .page-iknis {
+  break-after: page;
   page-break-after: always;
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 /* 最后渲染的页面不需要分页符，通过 JS 动态添加类来控制 */
 .print-all-pages .last-printed-page {
+  break-after: auto !important;
   page-break-after: avoid !important;
 }
 
