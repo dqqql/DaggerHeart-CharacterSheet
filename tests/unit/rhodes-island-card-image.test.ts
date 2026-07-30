@@ -56,6 +56,14 @@ describe("Rhodes Island bundled card images", () => {
     expect(new Set(sourceMap.mappings.map(mapping => mapping.sourceFile)).size).toBe(236)
     expect(new Set(sourceMap.mappings.map(mapping => mapping.imageUrl)).size).toBe(236)
     expect(outputFiles).toHaveLength(236)
+    expect(rhodesIslandCatalog.domainCards.map(card => card.id)).toEqual(
+      sourceMap.mappings.map(mapping => mapping.id),
+    )
+    expect(
+      rhodesIslandCards
+        .filter(card => card.type === "domain")
+        .map(card => card.id),
+    ).toEqual(sourceMap.mappings.map(mapping => mapping.id))
 
     for (const mapping of sourceMap.mappings) {
       const card = rhodesIslandCatalog.domainCards.find(item => item.id === mapping.id)

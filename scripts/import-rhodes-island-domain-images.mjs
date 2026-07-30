@@ -71,6 +71,26 @@ async function main() {
     throw new Error(`catalog/source map mismatch: ${catalog.domainCards.length} cards, ${mappingIds.size} mappings`)
   }
 
+  // The final Markdown defines the user-facing card order through its domain
+  // sections and image references. Keep both runtime collections in that exact
+  // order so newly added and supplemental cards appear beside their source peers.
+  const orderedDomainCards = sourceMap.mappings.map((mapping) => catalogById.get(mapping.id))
+  catalog.domainCards = orderedDomainCards
+  const runtimeDomainById = new Map(
+    cards
+      .filter((card) => card.type === "domain" && card.ruleset === "rhodes-island")
+      .map((card) => [card.id, card]),
+  )
+  const nonDomainCards = cards.filter(
+    (card) => card.type !== "domain" || card.ruleset !== "rhodes-island",
+  )
+  const orderedRuntimeDomainCards = sourceMap.mappings.map((mapping) => {
+    const card = runtimeDomainById.get(mapping.id)
+    if (!card) throw new Error(`${mapping.domain}/${mapping.name}: missing runtime card`)
+    return card
+  })
+  cards.splice(0, cards.length, ...nonDomainCards, ...orderedRuntimeDomainCards)
+
   await rm(stagingRoot, { recursive: true, force: true })
   await mkdir(stagingRoot, { recursive: true })
   try {

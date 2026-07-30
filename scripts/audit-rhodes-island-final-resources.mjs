@@ -131,6 +131,11 @@ async function main() {
       .map((mapping) => mapping.sourceFile)
     invariant(JSON.stringify(mappedFiles) === JSON.stringify(sourceFiles), `${domain}: source map order differs from Markdown`)
   }
+  invariant(
+    JSON.stringify(catalog.domainCards.map((card) => card.id))
+      === JSON.stringify(sourceMap.mappings.map((mapping) => mapping.id)),
+    "catalog: domain card order differs from final Markdown",
+  )
 
   for (const card of catalog.domainCards) {
     invariant(domainById.get(card.domainId)?.name === card.domain, `${card.name}: invalid domain relation`)
@@ -164,6 +169,11 @@ async function main() {
   const runtimeDomainCards = cards.filter((card) => card.ruleset === "rhodes-island" && card.type === "domain")
   invariant(cards.length === 341, `runtime: expected 341 cards, got ${cards.length}`)
   invariant(runtimeDomainCards.length === 236, `runtime: expected 236 domain entries, got ${runtimeDomainCards.length}`)
+  invariant(
+    JSON.stringify(runtimeDomainCards.map((card) => card.id))
+      === JSON.stringify(sourceMap.mappings.map((mapping) => mapping.id)),
+    "runtime: domain card order differs from final Markdown",
+  )
   for (const runtimeCard of runtimeDomainCards) {
     const catalogCard = domainCardById.get(runtimeCard.id)
     invariant(catalogCard, `${runtimeCard.name}: runtime card is absent from catalog`)
