@@ -1,15 +1,14 @@
 import { useCallback } from "react"
 import { exportCharacterCode } from "@/lib/character-code"
 import { exportCharacterData } from "@/lib/storage"
-import type { SheetData } from "@/lib/sheet-data"
 import { withRhodesIslandDefaultAncestryExperience } from "@/lib/rhodes-island-experience"
+import { useSheetStore } from "@/lib/sheet-store"
 
 const WAIT_TIMEOUT = 10000
 const CHECK_INTERVAL = 100
 const RENDER_DELAY = 300
 
 interface UseExportHandlersProps {
-  formData: SheetData
   setIsPrintingAll: (value: boolean) => void
 }
 
@@ -51,10 +50,10 @@ function waitForAllImagesLoaded(): Promise<void> {
 }
 
 export function useExportHandlers({
-  formData,
   setIsPrintingAll,
 }: UseExportHandlersProps) {
   const handlePrintAll = useCallback(async () => {
+    const formData = useSheetStore.getState().sheetData
     const { getStandardCardById } = await import("@/card")
 
     const getCardClass = (cardId: string | undefined): string => {
@@ -80,10 +79,11 @@ export function useExportHandlers({
     setIsPrintingAll(true)
 
     await new Promise((resolve) => setTimeout(resolve, 100))
-  }, [formData, setIsPrintingAll])
+  }, [setIsPrintingAll])
 
   const handleExportHTML = useCallback(async () => {
     try {
+      const formData = useSheetStore.getState().sheetData
       console.log("[ExportHandlers] Starting HTML export")
       const { exportToHTML } = await import("@/lib/html-exporter")
       await exportToHTML(withRhodesIslandDefaultAncestryExperience(formData))
@@ -92,21 +92,22 @@ export function useExportHandlers({
       console.error("[ExportHandlers] HTML export failed:", error)
       alert(`HTML导出失败: ${error instanceof Error ? error.message : "未知错误"}`)
     }
-  }, [formData])
+  }, [])
 
   const handleExportJSON = useCallback(() => {
     try {
+      const formData = useSheetStore.getState().sheetData
       exportCharacterData(withRhodesIslandDefaultAncestryExperience(formData))
       console.log("[ExportHandlers] JSON export completed")
     } catch (error) {
       console.error("[ExportHandlers] JSON export failed:", error)
       alert(`JSON导出失败: ${error instanceof Error ? error.message : "未知错误"}`)
     }
-  }, [formData])
+  }, [])
 
   const handleExportCharacterCode = useCallback(() => {
-    return exportCharacterCode(formData)
-  }, [formData])
+    return exportCharacterCode(useSheetStore.getState().sheetData)
+  }, [])
 
   const handleQuickExportPDF = useCallback(async () => {
     try {

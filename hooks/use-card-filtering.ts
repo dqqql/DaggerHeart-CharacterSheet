@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo } from "react"
+import { useDeferredValue, useEffect, useMemo } from "react"
 import { useUnifiedCardStore, CardType } from "@/card/stores/unified-card-store"
 import { useCardFilterStore } from "@/lib/card-filter-store"
 import type { ExtendedStandardCard } from "@/card/card-types"
@@ -66,8 +66,18 @@ interface UseCardFilteringReturn {
  * 5. 支持多入口 - 通过 syncWithInitialTab 处理不同入口的 initialTab
  */
 export function useCardFiltering(initialTab?: string, enabled = true): UseCardFilteringReturn {
-  const cardStore = useUnifiedCardStore()
-  const filterStore = useCardFilterStore()
+  const initialized = useUnifiedCardStore((store) => store.initialized)
+  const loading = useUnifiedCardStore((store) => store.loading)
+  const error = useUnifiedCardStore((store) => store.error)
+  const cards = useUnifiedCardStore((store) => store.cards)
+  const batches = useUnifiedCardStore((store) => store.batches)
+  const cardsByType = useUnifiedCardStore((store) => store.cardsByType)
+  const activeTab = useCardFilterStore((store) => store.activeTab)
+  const selectedBatches = useCardFilterStore((store) => store.selectedBatches)
+  const selectedClasses = useCardFilterStore((store) => store.selectedClasses)
+  const selectedLevels = useCardFilterStore((store) => store.selectedLevels)
+  const searchTerm = useCardFilterStore((store) => store.searchTerm)
+  const deferredSearchTerm = useDeferredValue(searchTerm)
   const ruleSetId = useSheetStore(state => state.sheetData.ruleSetId)
 
   // === 同步 initialTab ===
@@ -82,42 +92,47 @@ export function useCardFiltering(initialTab?: string, enabled = true): UseCardFi
 
   // === 从 store 获取状态 ===
   const state: FilterState = {
-    activeTab: filterStore.activeTab,
-    selectedBatches: filterStore.selectedBatches,
-    selectedClasses: filterStore.selectedClasses,
-    selectedLevels: filterStore.selectedLevels,
-    searchTerm: filterStore.searchTerm,
+    activeTab,
+    selectedBatches,
+    selectedClasses,
+    selectedLevels,
+    searchTerm,
   }
 
   // === 从 store 获取操作 ===
-  // Zustand actions 是稳定的，不需要在依赖数组中包含
+  const setActiveTab = useCardFilterStore((store) => store.setActiveTab)
+  const setBatches = useCardFilterStore((store) => store.setBatches)
+  const setClasses = useCardFilterStore((store) => store.setClasses)
+  const setLevels = useCardFilterStore((store) => store.setLevels)
+  const setSearchTerm = useCardFilterStore((store) => store.setSearchTerm)
+  const resetAll = useCardFilterStore((store) => store.resetAll)
   const actions: FilterActions = useMemo(() => ({
-    setActiveTab: useCardFilterStore.getState().setActiveTab,
-    setBatches: useCardFilterStore.getState().setBatches,
-    setClasses: useCardFilterStore.getState().setClasses,
-    setLevels: useCardFilterStore.getState().setLevels,
-    setSearchTerm: useCardFilterStore.getState().setSearchTerm,
-    resetAll: useCardFilterStore.getState().resetAll,
-  }), [])
+    setActiveTab,
+    setBatches,
+    setClasses,
+    setLevels,
+    setSearchTerm,
+    resetAll,
+  }), [resetAll, setActiveTab, setBatches, setClasses, setLevels, setSearchTerm])
 
   // === 基础卡牌（按类型） ===
   const baseCards = useMemo(() => {
-    if (!cardStore.initialized) return []
+    if (!initialized) return []
 
     const isVariant = isVariantType(state.activeTab)
     const targetType = isVariant ? CardType.Variant : (state.activeTab as CardType)
-    const cards = cardStore.loadCardsByType(targetType)
+    const typeCards = useUnifiedCardStore.getState().loadCardsByType(targetType)
       .filter(card => cardBelongsToRuleSet(card, ruleSetId))
 
     // 如果是变体类型，需要进一步筛选 realType
     if (isVariant) {
-      return cards.filter(card =>
+      return typeCards.filter(card =>
         card.variantSpecial?.realType === state.activeTab
       )
     }
 
-    return cards
-  }, [state.activeTab, cardStore.initialized, ruleSetId])
+    return typeCards
+  }, [cards, cardsByType, initialized, state.activeTab, ruleSetId])
 
   // === 卡包过滤后的卡牌（用于计算选项） ===
   const batchFilteredCards = useMemo(() => {
@@ -179,8 +194,8 @@ export function useCardFiltering(initialTab?: string, enabled = true): UseCardFi
     }
 
     // Step 3: 搜索筛选
-    if (state.searchTerm) {
-      const term = state.searchTerm.toLowerCase()
+    if (deferredSearchTerm) {
+      const term = deferredSearchTerm.toLowerCase()
       result = result.filter(c =>
         c.name?.toLowerCase().includes(term) ||
         c.description?.toLowerCase().includes(term) ||
@@ -191,23 +206,27 @@ export function useCardFiltering(initialTab?: string, enabled = true): UseCardFi
     }
 
     return result
-  }, [batchFilteredCards, state.selectedClasses, state.selectedLevels, state.searchTerm])
+  }, [batchFilteredCards, deferredSearchTerm, state.selectedClasses, state.selectedLevels])
 
   // === 卡包选项（静态，不依赖筛选） ===
   const batchOptions = useMemo(() => {
     // getAllBatches 返回的是扩展类型，包含 id 和 name
-    const batches = cardStore.getAllBatches() as unknown as Array<{
+    const allBatches = useUnifiedCardStore.getState().getAllBatches() as unknown as Array<{
       id: string
       name: string
       cardCount: number
     }>
-    const options = batches.map(b => ({
+    const options = allBatches.map(b => ({
       id: b.id,
       name: b.name,
       cardCount: b.cardCount,
     }))
-    return getRuleSetBatchOptions(options, cardStore.loadAllCards(), ruleSetId)
-  }, [cardStore.initialized, ruleSetId])
+    return getRuleSetBatchOptions(
+      options,
+      useUnifiedCardStore.getState().loadAllCards(),
+      ruleSetId,
+    )
+  }, [batches, cards, initialized, ruleSetId])
 
   // 切换规则集时清除在当前规则下不可见的历史卡包筛选。
   useEffect(() => {
@@ -226,7 +245,7 @@ export function useCardFiltering(initialTab?: string, enabled = true): UseCardFi
     batchOptions,
     state,
     actions,
-    loading: cardStore.loading,
-    error: cardStore.error,
+    loading,
+    error,
   }
 }

@@ -1678,7 +1678,7 @@ export default function GmPanelPage() {
         }
       `}</style>
       {isDraggingFiles && (
-        <div className="pointer-events-none fixed inset-4 z-50 flex items-center justify-center rounded-xl border-2 border-dashed border-gray-900 bg-white/80 text-gray-900 shadow-lg backdrop-blur-sm">
+        <div className="pointer-events-none fixed inset-4 z-50 flex items-center justify-center rounded-xl border-2 border-dashed border-gray-900 bg-white/95 text-gray-900 shadow-lg">
           <div className="flex flex-col items-center gap-3">
             <UploadCloud className="h-10 w-10" />
             <div className="text-base font-bold">松开鼠标导入 JSON 文件</div>

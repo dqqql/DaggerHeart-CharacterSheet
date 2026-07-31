@@ -255,7 +255,7 @@ export function ImageCard({ card, onClick, isSelected, showSource = true, priori
         <div
             ref={cardRef}
             key={cardId}
-            className={`group relative flex w-full max-w-sm flex-col overflow-hidden rounded-xl bg-white shadow-md transition-all duration-300 ease-in-out hover:shadow-xl ${hasRhodesIslandDomainCardFace ? "" : "min-h-[520px]"} ${isSelected ? 'ring-2 ring-blue-500' : 'border'}`}
+            className={`group relative flex w-full max-w-sm flex-col overflow-hidden rounded-xl bg-white shadow-md transition-[transform,box-shadow,opacity,border-color] duration-300 ease-in-out hover:shadow-xl ${hasRhodesIslandDomainCardFace ? "" : "min-h-[520px]"} ${isSelected ? 'ring-2 ring-blue-500' : 'border'}`}
             style={{
                 transform: cardScale,
                 transition: 'transform 100ms ease-out'
@@ -298,7 +298,7 @@ export function ImageCard({ card, onClick, isSelected, showSource = true, priori
 
                 {/* Level badge for Domain cards with frosted glass effect */}
                 {!hasRhodesIslandDomainCardFace && card.type === CardType.Domain && card.level && card.level > 0 && (
-                    <div className="absolute top-2 right-2 bg-black/40 backdrop-blur-md text-white text-xs font-bold px-2.5 py-1 rounded-lg shadow-lg border border-white/20 pointer-events-none">
+                    <div className="absolute top-2 right-2 bg-black/75 text-white text-xs font-bold px-2.5 py-1 rounded-lg shadow-md border border-white/20 pointer-events-none">
                         <span style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
                             Lv.{card.level}
                         </span>

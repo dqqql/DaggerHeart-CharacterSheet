@@ -223,18 +223,32 @@ function DomainAnimationScreen({
   replayKey,
   emptyLabel,
 }: DomainAnimationScreenProps) {
-  const [animationStarted, setAnimationStarted] = useState(false)
+  const [animationPhase, setAnimationPhase] = useState<"waiting" | "animating" | "static">("waiting")
 
   useEffect(() => {
-    setAnimationStarted(false)
+    setAnimationPhase("waiting")
 
     if (!domain) return
 
-    const startTimer = window.setTimeout(() => {
-      setAnimationStarted(true)
-    }, 500)
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+      setAnimationPhase("static")
+      return
+    }
 
-    return () => window.clearTimeout(startTimer)
+    const startTimer = window.setTimeout(() => {
+      setAnimationPhase("animating")
+    }, 500)
+    // The longest icon sequence is just over eight seconds. Removing the
+    // animation class afterwards releases compositor hints and enables the
+    // inexpensive static glow without changing the visible final frame.
+    const finishTimer = window.setTimeout(() => {
+      setAnimationPhase("static")
+    }, 8750)
+
+    return () => {
+      window.clearTimeout(startTimer)
+      window.clearTimeout(finishTimer)
+    }
   }, [domain, replayKey])
 
   return (
@@ -242,8 +256,12 @@ function DomainAnimationScreen({
       {domain ? (
         <div className="relative flex h-full w-full items-center justify-center gap-1.5 px-1 py-1 text-cyan-50">
           <div className="h-8 w-9 shrink-0">
-            {animationStarted && (
-              <RhodesDomainIcon domain={domain} animated className="h-8 w-9 drop-shadow-[0_0_7px_rgba(165,243,252,.75)]" />
+            {animationPhase !== "waiting" && (
+              <RhodesDomainIcon
+                domain={domain}
+                animated={animationPhase === "animating"}
+                className="rhodes-domain-icon--glow h-8 w-9"
+              />
             )}
           </div>
           <div className="min-w-0 leading-none">

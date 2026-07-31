@@ -260,7 +260,7 @@ export function CardDrawer({
                 <button
                   onClick={() => setMainDeck("focused")}
                   className={`
-                    flex-shrink-0 rounded-lg font-bold transition-all duration-200 active:scale-95
+                    flex-shrink-0 rounded-lg font-bold transition-[color,background-color,border-color,box-shadow,transform,opacity] duration-200 active:scale-95
                     ${isMobile ? "px-6 py-3 text-lg" : "px-5 py-2.5 text-base"}
                     ${mainDeck === "focused" ? "bg-blue-500 text-white shadow-md" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}
                   `}
@@ -274,7 +274,7 @@ export function CardDrawer({
                 <button
                   onClick={() => setMainDeck("inventory")}
                   className={`
-                    flex-shrink-0 rounded-lg font-bold transition-all duration-200 active:scale-95
+                    flex-shrink-0 rounded-lg font-bold transition-[color,background-color,border-color,box-shadow,transform,opacity] duration-200 active:scale-95
                     ${isMobile ? "px-6 py-3 text-lg" : "px-5 py-2.5 text-base"}
                     ${mainDeck === "inventory" ? "bg-blue-500 text-white shadow-md" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}
                   `}
@@ -293,7 +293,7 @@ export function CardDrawer({
                       key={filter.key}
                       onClick={() => setTypeFilter(filter.key)}
                       className={`
-                        flex-shrink-0 rounded-full font-medium transition-all duration-200 hover:scale-105 active:scale-95
+                        flex-shrink-0 rounded-full font-medium transition-[color,background-color,border-color,box-shadow,transform,opacity] duration-200 hover:scale-105 active:scale-95
                         ${isMobile ? "px-5 py-2.5 text-base" : "px-4 py-2 text-sm"}
                         ${typeFilter === filter.key ? "border-2 border-blue-400 bg-blue-100 text-blue-700" : "border border-gray-300 bg-gray-50 text-gray-600 hover:bg-gray-100"}
                       `}
@@ -330,7 +330,7 @@ export function CardDrawer({
                       >
                         {onMoveCard && realIndex !== -1 && !isSpecialSlot && (
                           <button
-                            className={`absolute left-2 top-2 z-[70] flex items-center justify-center rounded-full bg-blue-500 font-bold text-white opacity-0 shadow-lg transition-all duration-200 group-hover:opacity-100 hover:bg-blue-600 ${isMobile ? "h-12 w-12 text-sm" : "h-6 w-6 text-xs"}`}
+                            className={`absolute left-2 top-2 z-[70] flex items-center justify-center rounded-full bg-blue-500 font-bold text-white opacity-0 shadow-lg transition-[color,background-color,box-shadow,transform,opacity] duration-200 group-hover:opacity-100 hover:bg-blue-600 ${isMobile ? "h-12 w-12 text-sm" : "h-6 w-6 text-xs"}`}
                             onClick={(e) => {
                               e.stopPropagation()
                               onMoveCard(realIndex, isInventory, !isInventory)
@@ -343,7 +343,7 @@ export function CardDrawer({
 
                         {onDeleteCard && realIndex !== -1 && !isSpecialSlot && (
                           <button
-                            className={`absolute right-2 top-2 z-[70] flex items-center justify-center rounded-full bg-red-500 font-bold text-white opacity-0 shadow-lg transition-all duration-200 group-hover:opacity-100 hover:bg-red-600 ${isMobile ? "h-12 w-12 text-sm" : "h-6 w-6 text-xs"}`}
+                            className={`absolute right-2 top-2 z-[70] flex items-center justify-center rounded-full bg-red-500 font-bold text-white opacity-0 shadow-lg transition-[color,background-color,box-shadow,transform,opacity] duration-200 group-hover:opacity-100 hover:bg-red-600 ${isMobile ? "h-12 w-12 text-sm" : "h-6 w-6 text-xs"}`}
                             onClick={(e) => {
                               e.stopPropagation()
                               onDeleteCard(realIndex, isInventory)
@@ -362,7 +362,7 @@ export function CardDrawer({
                           </div>
                         )}
 
-                        <div className="transform transition-all duration-200 hover:scale-105 hover:shadow-lg">
+                        <div className="transform transition-[transform,box-shadow,opacity] duration-200 hover:scale-105 hover:shadow-lg">
                           <SimpleImageCard
                             card={card}
                             onClick={() => {}}

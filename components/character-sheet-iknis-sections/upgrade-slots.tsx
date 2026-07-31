@@ -21,7 +21,7 @@ export const UpgradeSlots = () => {
             type="text"
             value={slot.text}
             onChange={(e) => updateUpgradeSlotText(i, e.target.value)}
-            className="flex-grow border-b border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 transition-all duration-150 h-4 text-sm mt-1 print-empty-hide"
+            className="flex-grow border-b border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 transition-colors duration-150 h-4 text-sm mt-1 print-empty-hide"
             placeholder="强化件名称"
           />
         </div>

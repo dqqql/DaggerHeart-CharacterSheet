@@ -26,7 +26,7 @@ interface UseCharacterManagementProps {
 }
 
 export function useCharacterManagement({ isClient, setCurrentTabValue }: UseCharacterManagementProps) {
-  const { replaceSheetData } = useSheetStore()
+  const replaceSheetData = useSheetStore((state) => state.replaceSheetData)
   const [currentCharacterId, setCurrentCharacterId] = useState<string | null>(null)
   const [activeRuleSetId, setActiveRuleSetId] = useState<RuleSetId>('daggerheart')
   const [characterList, setCharacterList] = useState<CharacterMetadata[]>([])

@@ -17,10 +17,10 @@ import {
   normalizeSingleAncestrySelection,
 } from "@/lib/ancestry-utils"
 
-// Import modals
-import { WeaponSelectionModal } from "@/components/modals/weapon-selection-modal"
-import { ArmorSelectionModal } from "@/components/modals/armor-selection-modal"
-import { GenericCardSelectionModal } from "@/components/modals/generic-card-selection-modal"
+import {
+  CharacterSheetSelectionModals,
+  type CharacterSheetSelectionModalsHandle,
+} from "@/components/character-sheet-selection-modals"
 import {
   Dialog,
   DialogContent,
@@ -107,19 +107,13 @@ export default function CharacterSheet() {
     }
   }, [store.initialized, store.initializeSystem]);
 
-  // 模态框状态
-  const [weaponModalOpen, setWeaponModalOpen] = useState(false)
-  const [currentWeaponField, setCurrentWeaponField] = useState("")
-  const [currentWeaponSlotType, setCurrentWeaponSlotType] = useState<"primary" | "secondary" | "inventory">("primary") // Default to primary to avoid null
-  const [armorModalOpen, setArmorModalOpen] = useState(false)
-  const [modalOpen, setModalOpen] = useState(false)
-  const [currentModal, setCurrentModal] = useState<{ type: "profession" | "ancestry" | "community" | "subclass"; field?: string; levelFilter?: number }>({ type: "profession" })
   const [mixedAncestryNoticeOpen, setMixedAncestryNoticeOpen] = useState(false)
   const [hasShownMixedAncestryNotice, setHasShownMixedAncestryNotice] = useState(false)
   const [professionAnimationReplayKey, setProfessionAnimationReplayKey] = useState(0)
 
   const needsSyncRef = useRef(true)
   const initialRenderRef = useRef(true)
+  const selectionModalsRef = useRef<CharacterSheetSelectionModalsHandle>(null)
 
 
   // 同步特殊卡牌与角色选择 - 不直接修改状态，而是返回新的卡牌数组
@@ -289,21 +283,6 @@ export default function CharacterSheet() {
 
 
 
-
-  // Helper function to map modal string type to CardType enum
-  const getModalCardType = (modalType: "profession" | "ancestry" | "community" | "subclass"): Exclude<CardType, CardType.Domain> => {
-    switch (modalType) {
-      case "profession":
-        return CardType.Profession;
-      case "ancestry":
-        return CardType.Ancestry;
-      case "community":
-        return CardType.Community;
-      case "subclass":
-        return CardType.Subclass;
-      // No default needed as modalType is a constrained union type
-    }
-  };
 
   const handleProfessionChange = (value: string) => {
     console.log(`handleProfessionChange called with ID: ${value}`);
@@ -625,18 +604,12 @@ export default function CharacterSheet() {
 
   // 模态框控制函数
   const openWeaponModal = (fieldName: string, slotType: "primary" | "secondary" | "inventory") => {
-    setCurrentWeaponField(fieldName)
-    setCurrentWeaponSlotType(slotType)
-    setWeaponModalOpen(true)
+    selectionModalsRef.current?.openWeapon(fieldName, slotType)
   }
 
 
   const openArmorModal = () => {
-    setArmorModalOpen(true)
-  }
-
-  const closeArmorModal = () => {
-    setArmorModalOpen(false)
+    selectionModalsRef.current?.openArmor()
   }
 
   const openGenericModal = (
@@ -644,12 +617,7 @@ export default function CharacterSheet() {
     field?: string,
     levelFilter?: number,
   ) => {
-    setCurrentModal({ type, field, levelFilter })
-    setModalOpen(true)
-  }
-
-  const closeGenericModal = () => {
-    setModalOpen(false)
+    selectionModalsRef.current?.openGeneric({ type, field, levelFilter })
   }
 
   const openProfessionModal = () => openGenericModal("profession")
@@ -912,59 +880,24 @@ export default function CharacterSheet() {
         </div>
       </div>
 
-      {/* Modals */}
-      <WeaponSelectionModal
-        isOpen={weaponModalOpen}
-        onClose={() => setWeaponModalOpen(false)}
-        weaponSlotType={currentWeaponSlotType} // Ensured not null
-        onSelect={(weaponId, weaponType) => {
-          handleWeaponChange(currentWeaponField, weaponId, weaponType)
-          setWeaponModalOpen(false)
-        }}
-        title="选择武器"
-      />
-
-      <ArmorSelectionModal
-        isOpen={armorModalOpen}
-        onClose={closeArmorModal}
-        onSelect={(armorId) => {
-          handleArmorChange(armorId)
-          closeArmorModal()
-        }}
-        title="选择护甲"
-      />
-
-      {modalOpen && (
-        <GenericCardSelectionModal
-          isOpen={modalOpen}
-          onClose={closeGenericModal}
-          onSelect={(cardId, field) => {
-            console.log(`GenericModal onSelect: Type: ${currentModal.type}, ID: ${cardId}, Field: ${field}`);
-            if (currentModal.type === "profession") {
+      <CharacterSheetSelectionModals
+        ref={selectionModalsRef}
+        isRhodesIsland={isRhodesIsland}
+        onWeaponSelect={handleWeaponChange}
+        onArmorSelect={handleArmorChange}
+        onGenericSelect={(request, cardId, field) => {
+            console.log(`GenericModal onSelect: Type: ${request.type}, ID: ${cardId}, Field: ${field}`);
+            if (request.type === "profession") {
               handleProfessionChange(cardId)
-            } else if (currentModal.type === "ancestry" && field) {
+            } else if (request.type === "ancestry" && field) {
               handleAncestryChange(field, cardId)
-            } else if (currentModal.type === "community") {
+            } else if (request.type === "community") {
               handleCommunityChange(cardId)
-            } else if (currentModal.type === "subclass") {
+            } else if (request.type === "subclass") {
               handleSubclassChange(cardId)
             }
-            closeGenericModal()
-          }}
-          title={
-            currentModal.type === "profession"
-              ? "选择职业"
-              : currentModal.type === "ancestry"
-                ? "选择种族"
-                : currentModal.type === "community"
-                  ? "选择社群"
-                  : isRhodesIsland ? "选择分支" : "选择子职业"
-          }
-          cardType={getModalCardType(currentModal.type)} // Use the helper function here
-          field={currentModal.field}
-          levelFilter={currentModal.levelFilter}
-        />
-      )}
+        }}
+      />
 
       <Dialog open={mixedAncestryNoticeOpen} onOpenChange={setMixedAncestryNoticeOpen}>
         <DialogContent className="max-w-md">

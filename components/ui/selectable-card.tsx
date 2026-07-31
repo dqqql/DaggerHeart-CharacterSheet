@@ -5,7 +5,7 @@ import { getCardTypeName } from "@/card/card-ui-config"
 import { isVariantCard, getVariantRealType } from "@/card/card-types"
 import { getBatchName } from "@/card"
 import { getStandardCardById } from "@/card"
-import React, { useState, useEffect, useRef } from "react"
+import React, { memo, useMemo } from "react"
 import { CardMarkdown } from "@/components/ui/card-markdown"
 import { getCardRuleSetId } from "@/lib/ruleset"
 import { formatRhodesSubclassDomainRecommendation } from "@/lib/rhodes-island-card-display"
@@ -80,52 +80,26 @@ const getCardSourceDisplayName = (card: StandardCard | ExtendedStandardCard): st
 
 interface SelectableCardProps {
     card: ExtendedStandardCard | StandardCard
-    onClick: (cardId: string) => void;
+    onClick?: (cardId: string) => void;
+    onSelectCard?: (card: ExtendedStandardCard | StandardCard) => void;
     isSelected: boolean;
     showSource?: boolean; // 是否显示来源，默认为 true
+    tabIndex?: number;
 }
 
-export function SelectableCard({ card, onClick, isSelected, showSource = true }: SelectableCardProps) {
-    const [_isHovered, setIsHovered] = useState(false)
-    const [_isAltPressed, setIsAltPressed] = useState(false)
-    const [cardSource, setCardSource] = useState<string>("加载中...")
-    const cardRef = useRef<HTMLDivElement | null>(null)
-
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === "Alt") {
-                setIsAltPressed(true)
-            }
-        }
-
-        const handleKeyUp = (e: KeyboardEvent) => {
-            if (e.key === "Alt") {
-                setIsAltPressed(false)
-            }
-        }
-
-        window.addEventListener("keydown", handleKeyDown)
-        window.addEventListener("keyup", handleKeyUp)
-
-        return () => {
-            window.removeEventListener("keydown", handleKeyDown)
-            window.removeEventListener("keyup", handleKeyUp)
-        }
-    }, [])
-
-    // 获取卡牌来源信息
-    useEffect(() => {
-        if (!showSource) return;
-
-        const source = getCardSourceDisplayName(card);
-        setCardSource(source);
-    }, [card.id, showSource, card])
-
-    if (!card) {
-        console.warn("[SelectableCard] Card prop is null or undefined.")
-        return null
-    }
-    const cardId = card.id || `temp-id-${Math.random().toString(36).substring(2, 9)}`
+function SelectableCardComponent({
+    card,
+    onClick,
+    onSelectCard,
+    isSelected,
+    showSource = true,
+    tabIndex = 0,
+}: SelectableCardProps) {
+    const cardId = card.id || "temporary-card"
+    const cardSource = useMemo(
+        () => showSource ? getCardSourceDisplayName(card) : "",
+        [card, showSource],
+    )
 
     // Prepare derived values for display, handling potential undefined fields and fallbacks
     const displayName = card.name || "未命名卡牌";
@@ -176,17 +150,28 @@ export function SelectableCard({ card, onClick, isSelected, showSource = true }:
 
     // 过滤掉已提取的锚点信息，避免重复显示
     const otherBadges = rightAnchor ? badges.filter(b => b !== rightAnchor) : badges;
+    const activateCard = () => {
+        if (onSelectCard) {
+            onSelectCard(card)
+            return
+        }
+        onClick?.(cardId)
+    }
 
     return (
         <div
-            ref={cardRef}
-            key={cardId}
-            className={`border-2 rounded-lg p-4 bg-white flex flex-col gap-0 break-inside-avoid shadow-md hover:shadow-lg transition-shadow relative cursor-pointer w-full max-w-72 h-full min-h-[350px] ${isSelected ? 'ring-2 ring-blue-500' : ''}`}
-            onClick={() => onClick(cardId)}
-            onMouseEnter={() => setIsHovered(false)}
-            onMouseLeave={() => {
-                setIsHovered(false)
-                setIsAltPressed(false)
+            data-card-interactive
+            role="button"
+            tabIndex={tabIndex}
+            aria-label={`选择卡牌：${displayName}`}
+            aria-pressed={isSelected}
+            className={`border-2 rounded-lg p-4 bg-white flex flex-col gap-0 break-inside-avoid shadow-md hover:shadow-lg transition-shadow relative cursor-pointer w-full max-w-72 h-full min-h-[350px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 motion-reduce:transition-none ${isSelected ? 'ring-2 ring-blue-500' : ''}`}
+            onClick={activateCard}
+            onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault()
+                    activateCard()
+                }
             }}
         >
             {/* 标题区 */}
@@ -239,3 +224,5 @@ export function SelectableCard({ card, onClick, isSelected, showSource = true }:
         </div>
     )
 }
+
+export const SelectableCard = memo(SelectableCardComponent)

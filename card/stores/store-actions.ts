@@ -199,59 +199,71 @@ function createBatchPlaceholder(
   return placeholder;
 }
 
-export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedCardActions => ({
+export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedCardActions => {
+  let initializationPromise: Promise<{ initialized: boolean; migrationResult?: any }> | null = null;
+
+  return ({
   // Image service actions
   ...createImageServiceActions(set as any, get as any),
   // System lifecycle
-  initializeSystem: async () => {
+  initializeSystem: () => {
     const state = get();
     if (state.initialized) {
-      return { initialized: true };
+      return Promise.resolve({ initialized: true });
+    }
+    if (initializationPromise) {
+      return initializationPromise;
     }
 
     set({ loading: true, error: null });
 
-    try {
-      // Check for legacy data migration
-      const migrationResult = await get()._migrateLegacyData();
+    initializationPromise = (async () => {
+      try {
+        // Check for legacy data migration
+        const migrationResult = await get()._migrateLegacyData();
 
-      // Load all cards using unified loading function (builtin first, then custom)
-      await get()._loadAllCards();
+        // Load all cards using unified loading function (builtin first, then custom)
+        await get()._loadAllCards();
 
-      // Validate and compute initial aggregations
-      get()._recomputeAggregations();
+        // Validate and compute initial aggregations
+        get()._recomputeAggregations();
 
-      // 重建类型 Map（确保所有卡牌都被正确分类）
-      get()._rebuildCardsByType();
+        // 重建类型 Map（确保所有卡牌都被正确分类）
+        get()._rebuildCardsByType();
 
-      // Rebuild subclass count index
-      get()._rebuildSubclassIndex();
+        // Rebuild subclass count index
+        get()._rebuildSubclassIndex();
 
-      // 现在所有卡牌都已加载完毕，统一进行图片预处理
-      get()._preprocessCardImages();
+        // 现在所有卡牌都已加载完毕，统一进行图片预处理
+        get()._preprocessCardImages();
 
-      // Initialize image service
-      await get().initializeImageService();
+        // Initialize image service
+        await get().initializeImageService();
 
-      // 统一同步到 localStorage（避免数据不一致）
-      get()._syncToLocalStorage();
+        // 统一同步到 localStorage（避免数据不一致）
+        get()._syncToLocalStorage();
 
-      const computedStats = get()._computeStats();
-      set({
-        initialized: true,
-        loading: false,
-        stats: computedStats
-      });
+        const computedStats = get()._computeStats();
+        set({
+          initialized: true,
+          loading: false,
+          stats: computedStats
+        });
 
-      return { initialized: true, migrationResult };
-    } catch (error) {
-      console.error('[UnifiedCardStore] Initialization failed:', error);
-      set({
-        error: error instanceof Error ? error.message : 'Initialization failed',
-        loading: false
-      });
-      return { initialized: false };
-    }
+        return { initialized: true, migrationResult };
+      } catch (error) {
+        console.error('[UnifiedCardStore] Initialization failed:', error);
+        set({
+          error: error instanceof Error ? error.message : 'Initialization failed',
+          loading: false
+        });
+        return { initialized: false };
+      } finally {
+        initializationPromise = null;
+      }
+    })();
+
+    return initializationPromise;
   },
 
   resetSystem: async () => {
@@ -1729,10 +1741,8 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
         get().removeBatch(BUILTIN_BATCH_ID);
       }
       
-      // Import builtin card pack JSON
-      const builtinCardPackJson = await import('../../data/cards/builtin-base.json');
       console.log('[UnifiedCardStore] Importing builtin cards...');
-      await get()._importBuiltinCards(builtinCardPackJson.default, savedDisabledStatus, previousBuiltinEntry);
+      await get()._importBuiltinCards(builtinCardPackJson, savedDisabledStatus, previousBuiltinEntry);
       
       console.log('[UnifiedCardStore] Builtin cards seeding completed');
       
@@ -2061,4 +2071,5 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
       warnings
     };
   }
-});
+  });
+};

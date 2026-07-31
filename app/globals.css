@@ -80,13 +80,13 @@ html {
   font-family: "Microsoft YaHei UI", "Microsoft YaHei", Arial, sans-serif;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) {
+body[data-ruleset="rhodes-island"] {
   color: #e8eef0;
   background-color: #0d1418;
 }
 
-body:has(main[data-ruleset="rhodes-island"])::before,
-body:has(main[data-ruleset="rhodes-island"])::after {
+body[data-ruleset="rhodes-island"]::before,
+body[data-ruleset="rhodes-island"]::after {
   content: "";
   position: fixed;
   inset: 0;
@@ -94,7 +94,7 @@ body:has(main[data-ruleset="rhodes-island"])::after {
   pointer-events: none;
 }
 
-body:has(main[data-ruleset="rhodes-island"])::before {
+body[data-ruleset="rhodes-island"]::before {
   background:
     linear-gradient(90deg, rgb(35 185 232 / 6%) 1px, transparent 1px),
     linear-gradient(rgb(35 185 232 / 6%) 1px, transparent 1px),
@@ -103,7 +103,7 @@ body:has(main[data-ruleset="rhodes-island"])::before {
   background-size: 42px 42px, 42px 42px, auto, auto;
 }
 
-body:has(main[data-ruleset="rhodes-island"])::after {
+body[data-ruleset="rhodes-island"]::after {
   z-index: -1;
   opacity: 0.9;
   background:
@@ -112,7 +112,6 @@ body:has(main[data-ruleset="rhodes-island"])::after {
     linear-gradient(rgb(35 185 232 / 9%) 1px, transparent 1px) 0 0 / 46px 46px,
     radial-gradient(ellipse at 90% 48%, rgb(35 185 232 / 12%), transparent 54%),
     linear-gradient(90deg, transparent 0 72%, rgb(35 185 232 / 7%) 72% 72.15%, transparent 72.15%);
-  filter: drop-shadow(0 0 7px rgb(35 185 232 / 24%));
   -webkit-mask-image:
     radial-gradient(circle at 8% 85%, #000, transparent 42%),
     radial-gradient(ellipse at 90% 48%, #000 0 20%, transparent 58%);
@@ -491,9 +490,8 @@ body:has(main[data-ruleset="rhodes-island"])::after {
   position: relative;
   border: 1px solid rgb(255 255 255 / 18%) !important;
   border-radius: 0 !important;
-  background: rgb(10 15 18 / 90%) !important;
-  box-shadow: 0 14px 36px rgb(0 0 0 / 42%) !important;
-  backdrop-filter: blur(16px) saturate(130%) !important;
+  background: rgb(10 15 18 / 97%) !important;
+  box-shadow: 0 10px 28px rgb(0 0 0 / 38%) !important;
   clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px));
 }
 
@@ -523,8 +521,7 @@ body:has(main[data-ruleset="rhodes-island"])::after {
 
 /* Drawer remains inside the app shell. */
 .rhodes-island-shell [data-ri-card-drawer] > div:first-child {
-  background: rgb(3 7 9 / 76%);
-  backdrop-filter: blur(2px);
+  background: rgb(3 7 9 / 84%);
 }
 
 .rhodes-island-shell [data-ri-card-drawer] .card-drawer-content {
@@ -544,7 +541,7 @@ body:has(main[data-ruleset="rhodes-island"])::after {
 
 /* Keyboard focus is warning yellow and intentionally wins over cyan input focus. */
 .rhodes-island-shell :where(button, input, textarea, select, [role="button"], [role="tab"], [role="combobox"]):focus-visible,
-body:has(main[data-ruleset="rhodes-island"]) :where([role="dialog"], [role="menu"], [role="menuitem"], [role="listbox"], [role="option"], [role="tooltip"], button, input, textarea, select):focus-visible {
+body[data-ruleset="rhodes-island"] :where([role="dialog"], [role="menu"], [role="menuitem"], [role="listbox"], [role="option"], [role="tooltip"], button, input, textarea, select):focus-visible {
   outline: 3px solid var(--ri-warning, #f2c94c) !important;
   outline-offset: 2px !important;
   box-shadow: none !important;
@@ -562,11 +559,11 @@ body:has(main[data-ruleset="rhodes-island"]) :where([role="dialog"], [role="menu
 }
 
 /* Portaled Radix surfaces */
-body:has(main[data-ruleset="rhodes-island"]) [data-radix-popper-content-wrapper] > div,
-body:has(main[data-ruleset="rhodes-island"]) [role="dialog"],
-body:has(main[data-ruleset="rhodes-island"]) [role="menu"],
-body:has(main[data-ruleset="rhodes-island"]) [role="listbox"],
-body:has(main[data-ruleset="rhodes-island"]) [role="tooltip"] {
+body[data-ruleset="rhodes-island"] [data-radix-popper-content-wrapper] > div,
+body[data-ruleset="rhodes-island"] [role="dialog"],
+body[data-ruleset="rhodes-island"] [role="menu"],
+body[data-ruleset="rhodes-island"] [role="listbox"],
+body[data-ruleset="rhodes-island"] [role="tooltip"] {
   --background: 198 21% 9%;
   --foreground: 195 20% 94%;
   --popover: 198 21% 9%;
@@ -584,20 +581,20 @@ body:has(main[data-ruleset="rhodes-island"]) [role="tooltip"] {
   clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px));
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-stat-source-popover] .stat-source-popover__positive {
+body[data-ruleset="rhodes-island"] [data-stat-source-popover] .stat-source-popover__positive {
   color: #4ade80;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-stat-source-popover] .stat-source-popover__negative {
+body[data-ruleset="rhodes-island"] [data-stat-source-popover] .stat-source-popover__negative {
   color: #f87171;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [role="dialog"] {
+body[data-ruleset="rhodes-island"] [role="dialog"] {
   border-top: 3px solid var(--ri-cyan, #23b9e8) !important;
 }
 
 /* Card selectors use a light personnel-terminal panel within the dark shell. */
-body:has(main[data-ruleset="rhodes-island"]) [role="dialog"]:is(
+body[data-ruleset="rhodes-island"] [role="dialog"]:is(
   [data-card-selection-modal],
   [data-armor-selection-modal],
   [data-rhodes-multiclass-modal]
@@ -610,6 +607,7 @@ body:has(main[data-ruleset="rhodes-island"]) [role="dialog"]:is(
   --accent-foreground: 197 87% 27%;
   --border: 198 45% 78%;
   isolation: isolate;
+  contain: layout paint style;
   border: 1px solid #8ccfe7 !important;
   border-top: 0 !important;
   color: #172a35;
@@ -621,12 +619,12 @@ body:has(main[data-ruleset="rhodes-island"]) [role="dialog"]:is(
     0 0 28px rgb(35 185 232 / 15%);
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [role="dialog"]:is(
+body[data-ruleset="rhodes-island"] [role="dialog"]:is(
   [data-card-selection-modal],
   [data-armor-selection-modal],
   [data-rhodes-multiclass-modal]
 )::before,
-body:has(main[data-ruleset="rhodes-island"]) [role="dialog"]:is(
+body[data-ruleset="rhodes-island"] [role="dialog"]:is(
   [data-card-selection-modal],
   [data-armor-selection-modal],
   [data-rhodes-multiclass-modal]
@@ -642,7 +640,7 @@ body:has(main[data-ruleset="rhodes-island"]) [role="dialog"]:is(
   box-shadow: 0 0 12px rgb(35 185 232 / 55%);
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [role="dialog"]:is(
+body[data-ruleset="rhodes-island"] [role="dialog"]:is(
   [data-card-selection-modal],
   [data-armor-selection-modal],
   [data-rhodes-multiclass-modal]
@@ -650,7 +648,7 @@ body:has(main[data-ruleset="rhodes-island"]) [role="dialog"]:is(
   left: 18px;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [role="dialog"]:is(
+body[data-ruleset="rhodes-island"] [role="dialog"]:is(
   [data-card-selection-modal],
   [data-armor-selection-modal],
   [data-rhodes-multiclass-modal]
@@ -658,7 +656,7 @@ body:has(main[data-ruleset="rhodes-island"]) [role="dialog"]:is(
   right: 18px;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-card-modal-header] {
+body[data-ruleset="rhodes-island"] [data-card-modal-header] {
   position: relative;
   border-color: #b7ddea !important;
   color: #16303d;
@@ -667,7 +665,7 @@ body:has(main[data-ruleset="rhodes-island"]) [data-card-modal-header] {
     #fff;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-card-modal-header]::after {
+body[data-ruleset="rhodes-island"] [data-card-modal-header]::after {
   position: absolute;
   right: 64px;
   bottom: 0;
@@ -678,7 +676,7 @@ body:has(main[data-ruleset="rhodes-island"]) [data-card-modal-header]::after {
   background: linear-gradient(90deg, transparent, var(--ri-cyan, #23b9e8));
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-card-modal-sidebar] {
+body[data-ruleset="rhodes-island"] [data-card-modal-sidebar] {
   border-color: #b7ddea !important;
   color: #314957;
   background:
@@ -686,27 +684,28 @@ body:has(main[data-ruleset="rhodes-island"]) [data-card-modal-sidebar] {
     #f7fbfd;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-card-modal-sidebar] button {
+body[data-ruleset="rhodes-island"] [data-card-modal-sidebar] button {
   color: #526873;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-card-modal-sidebar] button:hover {
+body[data-ruleset="rhodes-island"] [data-card-modal-sidebar] button:hover {
   color: #0b6687;
   background: #e9f7fc;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-card-modal-sidebar] button.bg-blue-100 {
+body[data-ruleset="rhodes-island"] [data-card-modal-sidebar] button.bg-blue-100 {
   color: #075f82 !important;
   background: #d9f1fb !important;
   box-shadow: inset 4px 0 0 var(--ri-cyan, #23b9e8);
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-card-modal-content] {
+body[data-ruleset="rhodes-island"] [data-card-modal-content] {
+  contain: layout paint;
   color: #263b46;
   background: #fff;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-card-modal-filter-bar] {
+body[data-ruleset="rhodes-island"] [data-card-modal-filter-bar] {
   border-color: #b7ddea !important;
   background:
     linear-gradient(90deg, rgb(35 185 232 / 7%) 1px, transparent 1px),
@@ -714,17 +713,17 @@ body:has(main[data-ruleset="rhodes-island"]) [data-card-modal-filter-bar] {
   background-size: 48px 100%;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-card-modal-filter-bar] :where(button, input) {
+body[data-ruleset="rhodes-island"] [data-card-modal-filter-bar] :where(button, input) {
   border-color: #9fcbdc;
   color: #253c48;
   background-color: #fff;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-card-modal-filter-bar] :where(button, input):hover {
+body[data-ruleset="rhodes-island"] [data-card-modal-filter-bar] :where(button, input):hover {
   border-color: var(--ri-cyan, #23b9e8);
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [role="menu"][data-card-filter-menu] {
+body[data-ruleset="rhodes-island"] [role="menu"][data-card-filter-menu] {
   --background: 0 0% 100%;
   --foreground: 207 33% 16%;
   --popover: 0 0% 100%;
@@ -740,16 +739,16 @@ body:has(main[data-ruleset="rhodes-island"]) [role="menu"][data-card-filter-menu
     0 0 0 1px rgb(35 185 232 / 12%);
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [role="menu"][data-card-filter-menu] button {
+body[data-ruleset="rhodes-island"] [role="menu"][data-card-filter-menu] button {
   color: #29434f;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [role="menu"][data-card-filter-menu] button:hover {
+body[data-ruleset="rhodes-island"] [role="menu"][data-card-filter-menu] button:hover {
   color: #075f82;
   background: #eaf8fd;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-multiclass-modal-header] {
+body[data-ruleset="rhodes-island"] [data-multiclass-modal-header] {
   position: relative;
   color: #172a35;
   background:
@@ -757,7 +756,7 @@ body:has(main[data-ruleset="rhodes-island"]) [data-multiclass-modal-header] {
     #fff;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-multiclass-modal-header]::after {
+body[data-ruleset="rhodes-island"] [data-multiclass-modal-header]::after {
   position: absolute;
   right: 24px;
   bottom: 0;
@@ -768,7 +767,7 @@ body:has(main[data-ruleset="rhodes-island"]) [data-multiclass-modal-header]::aft
   background: linear-gradient(90deg, transparent, var(--ri-cyan, #23b9e8));
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-multiclass-modal-body] {
+body[data-ruleset="rhodes-island"] [data-multiclass-modal-body] {
   border-color: #c8e9f4 !important;
   background:
     linear-gradient(90deg, rgb(35 185 232 / 6%) 1px, transparent 1px),
@@ -776,41 +775,41 @@ body:has(main[data-ruleset="rhodes-island"]) [data-multiclass-modal-body] {
   background-size: 48px 100%;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-multiclass-field] {
+body[data-ruleset="rhodes-island"] [data-multiclass-field] {
   border-color: #c8e9f4 !important;
   color: #29434f;
   box-shadow: 0 4px 14px rgb(18 71 91 / 6%);
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-multiclass-field] select {
+body[data-ruleset="rhodes-island"] [data-multiclass-field] select {
   color-scheme: light;
   border-color: #9fcbdc;
   color: #1f3743 !important;
   background: #fff !important;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-multiclass-field] select:hover:not(:disabled) {
+body[data-ruleset="rhodes-island"] [data-multiclass-field] select:hover:not(:disabled) {
   border-color: var(--ri-cyan, #23b9e8);
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-multiclass-field] select:disabled {
+body[data-ruleset="rhodes-island"] [data-multiclass-field] select:disabled {
   border-color: #d5e3e8;
   color: #84959d !important;
   background: #f1f5f7 !important;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-multiclass-field] option {
+body[data-ruleset="rhodes-island"] [data-multiclass-field] option {
   color: #1f3743 !important;
   background: #fff !important;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-multiclass-modal-footer] {
+body[data-ruleset="rhodes-island"] [data-multiclass-modal-footer] {
   background:
     linear-gradient(90deg, rgb(35 185 232 / 5%), transparent 50%),
     #fff;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-armor-modal-header] {
+body[data-ruleset="rhodes-island"] [data-armor-modal-header] {
   position: relative;
   border-color: #b7ddea !important;
   color: #16303d;
@@ -819,7 +818,7 @@ body:has(main[data-ruleset="rhodes-island"]) [data-armor-modal-header] {
     #fff;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-armor-modal-header]::after {
+body[data-ruleset="rhodes-island"] [data-armor-modal-header]::after {
   position: absolute;
   right: 24px;
   bottom: 0;
@@ -830,7 +829,7 @@ body:has(main[data-ruleset="rhodes-island"]) [data-armor-modal-header]::after {
   background: linear-gradient(90deg, transparent, var(--ri-cyan, #23b9e8));
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-armor-modal-filter-bar] {
+body[data-ruleset="rhodes-island"] [data-armor-modal-filter-bar] {
   border-color: #b7ddea !important;
   background:
     linear-gradient(90deg, rgb(35 185 232 / 7%) 1px, transparent 1px),
@@ -838,66 +837,66 @@ body:has(main[data-ruleset="rhodes-island"]) [data-armor-modal-filter-bar] {
   background-size: 48px 100% !important;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-armor-modal-filter-bar] :where(select, input, button) {
+body[data-ruleset="rhodes-island"] [data-armor-modal-filter-bar] :where(select, input, button) {
   border-color: #9fcbdc;
   color: #253c48;
   background-color: #fff;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-armor-modal-filter-bar] :where(select, input, button):hover {
+body[data-ruleset="rhodes-island"] [data-armor-modal-filter-bar] :where(select, input, button):hover {
   border-color: var(--ri-cyan, #23b9e8);
   color: #075f82;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-armor-modal-table] {
+body[data-ruleset="rhodes-island"] [data-armor-modal-table] {
   color: #263b46;
   background: #fff;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-armor-modal-table] thead {
+body[data-ruleset="rhodes-island"] [data-armor-modal-table] thead {
   color: #fff;
   background: #0b7598;
   box-shadow: 0 2px 0 rgb(35 185 232 / 35%);
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-armor-modal-table] tbody tr {
+body[data-ruleset="rhodes-island"] [data-armor-modal-table] tbody tr {
   border-color: #cfe3eb;
   color: #263b46;
   background: #fff;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-armor-modal-table] tbody tr:nth-child(even) {
+body[data-ruleset="rhodes-island"] [data-armor-modal-table] tbody tr:nth-child(even) {
   background: #f8fcfe;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-armor-modal-table] tbody tr:hover {
+body[data-ruleset="rhodes-island"] [data-armor-modal-table] tbody tr:hover {
   color: #075f82 !important;
   background: #e4f6fc !important;
   box-shadow: inset 4px 0 0 var(--ri-cyan, #23b9e8);
 }
 
-body:has(main[data-ruleset="rhodes-island"]) :where([role="menuitem"], [role="option"], [data-radix-collection-item]) {
+body[data-ruleset="rhodes-island"] :where([role="menuitem"], [role="option"], [data-radix-collection-item]) {
   border-radius: 0 !important;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) :where([role="menuitem"], [role="option"], [data-radix-collection-item]):is(:hover, :focus, [data-highlighted]) {
+body[data-ruleset="rhodes-island"] :where([role="menuitem"], [role="option"], [data-radix-collection-item]):is(:hover, :focus, [data-highlighted]) {
   color: #fff !important;
   background: #1c2b31 !important;
   box-shadow: inset 3px 0 0 var(--ri-cyan, #23b9e8);
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-state="checked"],
-body:has(main[data-ruleset="rhodes-island"]) [data-state="active"] {
+body[data-ruleset="rhodes-island"] [data-state="checked"],
+body[data-ruleset="rhodes-island"] [data-state="active"] {
   text-decoration-color: var(--ri-cyan, #23b9e8);
 }
 
 /* Portaled archive manager */
-body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-overlay] {
-  background: rgb(3 7 9 / 72%) !important;
-  backdrop-filter: blur(3px);
+body[data-ruleset="rhodes-island"] [data-ri-archive-overlay] {
+  background: rgb(3 7 9 / 82%) !important;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] {
+body[data-ruleset="rhodes-island"] [data-ri-archive-manager] {
+  contain: layout paint style;
   border: 1px solid #405158 !important;
   border-top: 3px solid var(--ri-cyan, #23b9e8) !important;
   border-radius: 0 !important;
@@ -910,60 +909,60 @@ body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] {
   clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] h2 {
+body[data-ruleset="rhodes-island"] [data-ri-archive-manager] h2 {
   color: #f2f7f8;
   font-family: "Bahnschrift Condensed", "Arial Narrow", sans-serif;
   font-weight: 800;
   letter-spacing: .06em;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] h3 {
+body[data-ruleset="rhodes-island"] [data-ri-archive-manager] h3 {
   color: #b9c7cb;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] .text-gray-500,
-body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] .text-gray-600,
-body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] .text-gray-700 {
+body[data-ruleset="rhodes-island"] [data-ri-archive-manager] .text-gray-500,
+body[data-ruleset="rhodes-island"] [data-ri-archive-manager] .text-gray-600,
+body[data-ruleset="rhodes-island"] [data-ri-archive-manager] .text-gray-700 {
   color: #9eaaae !important;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] .bg-gray-100,
-body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] .bg-gray-200 {
+body[data-ruleset="rhodes-island"] [data-ri-archive-manager] .bg-gray-100,
+body[data-ruleset="rhodes-island"] [data-ri-archive-manager] .bg-gray-200 {
   color: #c6d1d4 !important;
   background: #1b252a !important;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] [data-ri-archive-entry] {
+body[data-ruleset="rhodes-island"] [data-ri-archive-manager] [data-ri-archive-entry] {
   border-color: #35454c !important;
   border-radius: 0 !important;
   color: #dce5e8;
   background: rgb(24 33 38 / 88%) !important;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] [data-ri-archive-entry="active"] {
+body[data-ruleset="rhodes-island"] [data-ri-archive-manager] [data-ri-archive-entry="active"] {
   border-color: var(--ri-cyan, #23b9e8) !important;
   background: rgb(35 185 232 / 10%) !important;
   box-shadow: inset 4px 0 0 var(--ri-cyan, #23b9e8);
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] [data-ri-archive-entry] > div > div:first-child {
+body[data-ruleset="rhodes-island"] [data-ri-archive-manager] [data-ri-archive-entry] > div > div:first-child {
   border: 1px solid #405158;
   border-radius: 0 !important;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] [class*="border-dashed"] {
+body[data-ruleset="rhodes-island"] [data-ri-archive-manager] [class*="border-dashed"] {
   border-color: rgb(35 185 232 / 48%) !important;
   border-radius: 0 !important;
   color: #dce5e8;
   background: rgb(35 185 232 / 5%) !important;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] [class*="border-dashed"]:hover {
+body[data-ruleset="rhodes-island"] [data-ri-archive-manager] [class*="border-dashed"]:hover {
   border-color: var(--ri-cyan, #23b9e8) !important;
   background: rgb(35 185 232 / 10%) !important;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] button {
+body[data-ruleset="rhodes-island"] [data-ri-archive-manager] button {
   border-color: #405158 !important;
   border-radius: 0 !important;
   color: #dce5e8 !important;
@@ -971,17 +970,17 @@ body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] button {
   box-shadow: none !important;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] button:hover {
+body[data-ruleset="rhodes-island"] [data-ri-archive-manager] button:hover {
   border-color: var(--ri-cyan, #23b9e8) !important;
   color: #fff !important;
   background: #202d33 !important;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] button:disabled {
+body[data-ruleset="rhodes-island"] [data-ri-archive-manager] button:disabled {
   opacity: .38 !important;
 }
 
-body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] .border-t {
+body[data-ruleset="rhodes-island"] [data-ri-archive-manager] .border-t {
   border-color: #35454c !important;
 }
 
@@ -990,7 +989,7 @@ body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] .border-t
  * viewport; controls stay at their original touch sizes.
  */
 @media (max-width: 800px) {
-  body:has(main[data-ruleset="rhodes-island"]) {
+  body[data-ruleset="rhodes-island"] {
     overflow-x: auto;
   }
 
@@ -1031,20 +1030,20 @@ body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] .border-t
   .rhodes-island-shell *,
   .rhodes-island-shell *::before,
   .rhodes-island-shell *::after,
-  body:has(main[data-ruleset="rhodes-island"]) [data-state][class*="fixed"][class*="inset-0"],
-  body:has(main[data-ruleset="rhodes-island"]) [data-radix-portal],
-  body:has(main[data-ruleset="rhodes-island"]) [data-radix-portal] *,
-  body:has(main[data-ruleset="rhodes-island"]) [data-radix-popper-content-wrapper],
-  body:has(main[data-ruleset="rhodes-island"]) [data-radix-popper-content-wrapper] > *,
-  body:has(main[data-ruleset="rhodes-island"]) [data-radix-popper-content-wrapper] *,
-  body:has(main[data-ruleset="rhodes-island"]) [role="dialog"],
-  body:has(main[data-ruleset="rhodes-island"]) [role="dialog"] *,
-  body:has(main[data-ruleset="rhodes-island"]) [role="menu"],
-  body:has(main[data-ruleset="rhodes-island"]) [role="menu"] *,
-  body:has(main[data-ruleset="rhodes-island"]) [role="listbox"],
-  body:has(main[data-ruleset="rhodes-island"]) [role="listbox"] *,
-  body:has(main[data-ruleset="rhodes-island"]) [role="tooltip"],
-  body:has(main[data-ruleset="rhodes-island"]) [role="tooltip"] * {
+  body[data-ruleset="rhodes-island"] [data-state][class*="fixed"][class*="inset-0"],
+  body[data-ruleset="rhodes-island"] [data-radix-portal],
+  body[data-ruleset="rhodes-island"] [data-radix-portal] *,
+  body[data-ruleset="rhodes-island"] [data-radix-popper-content-wrapper],
+  body[data-ruleset="rhodes-island"] [data-radix-popper-content-wrapper] > *,
+  body[data-ruleset="rhodes-island"] [data-radix-popper-content-wrapper] *,
+  body[data-ruleset="rhodes-island"] [role="dialog"],
+  body[data-ruleset="rhodes-island"] [role="dialog"] *,
+  body[data-ruleset="rhodes-island"] [role="menu"],
+  body[data-ruleset="rhodes-island"] [role="menu"] *,
+  body[data-ruleset="rhodes-island"] [role="listbox"],
+  body[data-ruleset="rhodes-island"] [role="listbox"] *,
+  body[data-ruleset="rhodes-island"] [role="tooltip"],
+  body[data-ruleset="rhodes-island"] [role="tooltip"] * {
     scroll-behavior: auto !important;
     animation-duration: 0.01ms !important;
     animation-delay: 0ms !important;
@@ -1055,13 +1054,13 @@ body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] .border-t
 }
 
 @media print {
-  body:has(main[data-ruleset="rhodes-island"]) {
+  body[data-ruleset="rhodes-island"] {
     color: #111 !important;
     background: #fff !important;
   }
 
-  body:has(main[data-ruleset="rhodes-island"])::before,
-  body:has(main[data-ruleset="rhodes-island"])::after,
+  body[data-ruleset="rhodes-island"]::before,
+  body[data-ruleset="rhodes-island"]::after,
   .rhodes-island-shell::before,
   .rhodes-island-shell::after {
     display: none !important;
@@ -1153,10 +1152,9 @@ body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] .border-t
 
 .export-preview-banner {
   color: #fff;
-  background: rgb(17 24 39 / 86%);
+  background: rgb(17 24 39 / 96%);
   border-bottom: 1px solid rgb(255 255 255 / 14%);
   box-shadow: 0 8px 24px rgb(15 23 42 / 16%);
-  backdrop-filter: blur(14px) saturate(145%);
 }
 
 .export-preview-banner:hover {
@@ -1679,6 +1677,15 @@ body:has(main[data-ruleset="rhodes-island"]) [data-ri-archive-manager] .border-t
 .rhodes-domain-icon .ak-hex-group {
   transform-box: fill-box;
   transform-origin: center;
+}
+
+.rhodes-domain-icon--animated .ak-part,
+.rhodes-domain-icon--animated .ak-hex-group {
+  will-change: transform, opacity;
+}
+
+.rhodes-domain-icon--glow:not(.rhodes-domain-icon--animated) {
+  filter: drop-shadow(0 0 7px rgb(165 243 252 / 75%));
 }
 
 .rhodes-domain-icon--animated .ak-part {

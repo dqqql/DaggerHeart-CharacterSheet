@@ -1,9 +1,9 @@
 "use client"
 
 import React from "react"
-import InfiniteScroll from "react-infinite-scroll-component"
 import type { StandardCard, ExtendedStandardCard } from "@/card/card-types"
 import { CardGrid } from "./CardGrid"
+import { VirtualizedCardGrid } from "./VirtualizedCardGrid"
 import { Loader2 } from "lucide-react"
 
 interface InfiniteCardGridProps<T extends StandardCard | ExtendedStandardCard> {
@@ -41,16 +41,8 @@ export function InfiniteCardGrid<T extends StandardCard | ExtendedStandardCard>(
     </p>
   ) : null
 
-  return (
-    <InfiniteScroll
-      dataLength={cards.length}
-      next={onLoadMore}
-      hasMore={hasMore}
-      loader={loader ?? defaultLoader}
-      endMessage={endMessage ?? defaultEndMessage}
-      scrollableTarget={scrollableTarget}
-      scrollThreshold="800px"
-    >
+  if (!scrollableTarget) {
+    return (
       <CardGrid
         cards={cards}
         onCardClick={onCardClick}
@@ -59,6 +51,23 @@ export function InfiniteCardGrid<T extends StandardCard | ExtendedStandardCard>(
         refreshTrigger={refreshTrigger}
         className={className}
       />
-    </InfiniteScroll>
+    )
+  }
+
+  return (
+    <>
+      <VirtualizedCardGrid
+        cards={cards}
+        onCardClick={onCardClick}
+        isTextMode={isTextMode}
+        selectedCardId={selectedCardId}
+        refreshTrigger={refreshTrigger}
+        scrollableTarget={scrollableTarget}
+        hasMore={hasMore}
+        onLoadMore={onLoadMore}
+        className={className}
+      />
+      {hasMore ? (loader ?? defaultLoader) : (endMessage ?? defaultEndMessage)}
+    </>
   )
 }

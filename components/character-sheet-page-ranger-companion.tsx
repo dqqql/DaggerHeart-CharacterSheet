@@ -59,7 +59,7 @@ const CharacterSheetPageThree: React.FC = () => {
                                     newArr[i] = e.target.value
                                     onFormDataChange({ ...formData, companionExperience: newArr })
                                 }}
-                                className="w-full border-b-2 border-gray-400 rounded-none text-base print-empty-hide bg-transparent focus:outline-none focus:border-blue-500 transition-all duration-150"
+                                className="w-full border-b-2 border-gray-400 rounded-none text-base print-empty-hide bg-transparent focus:outline-none focus:border-blue-500 transition-colors duration-150"
                                 placeholder="经历描述"
                                 style={{ minHeight: '2.5rem' }}
                             />
@@ -72,7 +72,7 @@ const CharacterSheetPageThree: React.FC = () => {
                                     newArr[i] = e.target.value
                                     onFormDataChange({ ...formData, companionExperienceValue: newArr })
                                 }}
-                                className="w-12 border-b-2 border-gray-400 rounded-none ml-2 text-center text-base print-empty-hide bg-transparent focus:outline-none focus:border-blue-500 transition-all duration-150"
+                                className="w-12 border-b-2 border-gray-400 rounded-none ml-2 text-center text-base print-empty-hide bg-transparent focus:outline-none focus:border-blue-500 transition-colors duration-150"
                                 placeholder="#"
                                 style={{ minHeight: '2.5rem' }}
                             />

@@ -26,4 +26,18 @@ describe("CardMarkdown", () => {
     expect(container.querySelector("blockquote")).toHaveTextContent("这是一条规则补充。")
     expect(container).not.toHaveTextContent("\\这是一条规则补充。")
   })
+
+  it("keeps custom emphasis rendering stable", () => {
+    const { container, rerender } = render(
+      <CardMarkdown>{"**普通强调**、*规则词*、***重要规则***"}</CardMarkdown>,
+    )
+
+    expect(screen.getByText("普通强调")).toHaveClass("text-gray-800")
+    expect(container.querySelector(".text-amber-900")).toHaveTextContent("「规则词」")
+    expect(screen.getByText("重要规则")).toHaveClass("text-amber-800")
+
+    const firstMarkup = container.innerHTML
+    rerender(<CardMarkdown>{"**普通强调**、*规则词*、***重要规则***"}</CardMarkdown>)
+    expect(container.innerHTML).toBe(firstMarkup)
+  })
 })

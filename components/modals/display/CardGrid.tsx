@@ -20,7 +20,7 @@ export function CardGrid<T extends StandardCard | ExtendedStandardCard>({
   cards, onCardClick, isTextMode: isTextModeProp,
   selectedCardId, refreshTrigger, className,
 }: CardGridProps<T>) {
-  const { isTextMode: globalTextMode } = useTextModeStore()
+  const globalTextMode = useTextModeStore((state) => state.isTextMode)
   const isTextMode = isTextModeProp ?? globalTextMode
 
   return (
@@ -38,7 +38,7 @@ export function CardGrid<T extends StandardCard | ExtendedStandardCard>({
           <SelectableCard
             key={card.id}
             card={card}
-            onClick={() => onCardClick?.(card)}
+            onSelectCard={onCardClick as ((selectedCard: StandardCard | ExtendedStandardCard) => void) | undefined}
             isSelected={card.id === selectedCardId}
           />
         ) : (

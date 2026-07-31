@@ -48,7 +48,7 @@ describe("Rhodes Island domain icons", () => {
     expect(container.querySelectorAll(".ak-part")).toHaveLength(4)
   })
 
-  it("waits 500ms before mounting the selected profession animation", () => {
+  it("waits 500ms before mounting and releases animation hints after the sequence", () => {
     vi.useFakeTimers()
 
     render(
@@ -68,7 +68,14 @@ describe("Rhodes Island domain icons", () => {
     act(() => {
       vi.advanceTimersByTime(1)
     })
-    expect(screen.getByRole("img", { name: "迅攻领域图标" })).toBeInTheDocument()
+    const icon = screen.getByRole("img", { name: "迅攻领域图标" })
+    expect(icon).toHaveClass("rhodes-domain-icon--animated")
+
+    act(() => {
+      vi.advanceTimersByTime(8250)
+    })
+    expect(icon).not.toHaveClass("rhodes-domain-icon--animated")
+    expect(icon).toHaveClass("rhodes-domain-icon--glow")
 
     vi.useRealTimers()
   })

@@ -1,6 +1,7 @@
 "use client";
 
 import { create } from "zustand";
+import { useShallow } from "zustand/react/shallow";
 import { defaultSheetData } from "./default-sheet-data";
 import type { SheetData, AttributeValue, ArmorTemplateData, SheetCardReference } from "./sheet-data";
 import { createEmptyCard, type StandardCard } from "@/card/card-types";
@@ -197,6 +198,11 @@ const finalizeSheetData = (
 
 interface SheetState {
     sheetData: SheetData;
+    /**
+     * 仅在整份角色数据被替换时递增。外部订阅（例如自动保存）
+     * 可据此区分“加载/切换角色”和用户编辑，避免把刚加载的数据写回旧存档。
+     */
+    sheetDataGeneration: number;
     setSheetData: (data: Partial<SheetData> | ((prevState: SheetData) => Partial<SheetData>)) => void;
     replaceSheetData: (data: SheetData) => void;
 
@@ -259,6 +265,7 @@ interface SheetState {
 
 export const useSheetStore = create<SheetState>((set) => ({
     sheetData: defaultSheetData,
+    sheetDataGeneration: 0,
     setSheetData: (updater) => {
         set((state) => {
             const oldData = state.sheetData;
@@ -282,6 +289,7 @@ export const useSheetStore = create<SheetState>((set) => ({
         // 当切换角色或导入数据时，旧角色的升级快照不应该影响新角色
         return {
             sheetData: finalData,
+            sheetDataGeneration: state.sheetDataGeneration + 1,
             attributeUpgradeHistory: {},
             experienceValuesSnapshot: undefined,
             evasionSnapshot: undefined,
@@ -1448,35 +1456,21 @@ export const useSafeSheetData = () => useSheetStore(state => {
     }
     return cachedSafeData!;
 });
-export const useSheetAttributes = () => useSheetStore(state => ({
+export const useSheetAttributes = () => useSheetStore(useShallow(state => ({
     agility: state.sheetData.agility,
     finesse: state.sheetData.finesse,
     knowledge: state.sheetData.knowledge,
     strength: state.sheetData.strength,
     instinct: state.sheetData.instinct,
     presence: state.sheetData.presence,
-}));
+})));
 
 // Card-specific selectors
 export const useSheetCards = () => useSheetStore(state => state.sheetData.cards);
 export const useSheetInventoryCards = () => useSheetStore(state => state.sheetData.inventory_cards);
 
-// Cache the card actions object to avoid infinite loops
-let cachedCardActions: {
-    deleteCard: (index: number, isInventory: boolean) => void;
-    moveCard: (fromIndex: number, fromInventory: boolean, toInventory: boolean) => boolean;
-    updateCard: (index: number, card: StandardCard, isInventory: boolean) => void;
-} | null = null;
-
-export const useCardActions = () => {
-    return useSheetStore(state => {
-        if (!cachedCardActions) {
-            cachedCardActions = {
-                deleteCard: state.deleteCard,
-                moveCard: state.moveCard,
-                updateCard: state.updateCard,
-            };
-        }
-        return cachedCardActions;
-    });
-};
+export const useCardActions = () => useSheetStore(useShallow((state) => ({
+    deleteCard: state.deleteCard,
+    moveCard: state.moveCard,
+    updateCard: state.updateCard,
+})));

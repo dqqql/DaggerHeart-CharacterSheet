@@ -110,8 +110,13 @@ describe("Rhodes Island bundled card images", () => {
     expect(communities.some(community => community.imageUrl === RHODES_ISLAND_PLACEHOLDER_IMAGE)).toBe(false)
 
     for (const community of communities) {
-      expect(community.imageUrl).toMatch(/^\/rhodes-island\/communities\/[a-f0-9]{12}\.webp$/)
-      expect(existsSync(join(process.cwd(), "public", community.imageUrl))).toBe(true)
+      const imageUrl = community.imageUrl
+      expect(typeof imageUrl).toBe("string")
+      if (typeof imageUrl !== "string") {
+        throw new TypeError("Community imageUrl must be a string")
+      }
+      expect(imageUrl).toMatch(/^\/rhodes-island\/communities\/[a-f0-9]{12}\.webp$/)
+      expect(existsSync(join(process.cwd(), "public", imageUrl))).toBe(true)
     }
   })
 })

@@ -15,6 +15,7 @@ import { CardSelectionModal } from "@/components/modals/card-selection-modal"
 import { CharacterSheetPageFour, CharacterSheetPageFive } from "@/components/character-sheet-page-card-print"
 import ArmorTemplatePage from "@/components/character-sheet-page-iknis"
 import { useSheetStore, useCardActions } from "@/lib/sheet-store"
+import { useShallow } from "zustand/react/shallow"
 import { PrintReadyChecker } from "@/components/print/print-ready-checker"
 import { PrintProvider } from "@/contexts/print-context"
 import { ExportPreviewShell } from "@/components/print/export-preview-shell"
@@ -41,6 +42,7 @@ import { useOfficialImagePackStore } from "@/lib/official-image-pack-store"
 import { CardSystemInitializer } from "@/components/card-system-initializer"
 import { RULE_SET_LABELS } from "@/lib/ruleset"
 import { validateJSONCharacterData } from "@/lib/character-data-validator"
+import { defaultSheetData } from "@/lib/default-sheet-data"
 
 // EyeIcon和EyeOffIcon已移除 - 现在使用PageVisibilityDropdown
 
@@ -133,6 +135,7 @@ function getOfficialImagePackProgressView(progress: OfficialImagePackImportProgr
 
 import { useCharacterManagement } from "@/hooks/use-character-management"
 import { useExportHandlers } from "@/hooks/use-export-handlers"
+import { useSheetAutoSave } from "@/hooks/use-sheet-auto-save"
 import PrintHelper from "./print-helper"
 
 const CharacterCreationGuide = dynamic(
@@ -142,31 +145,103 @@ const CharacterCreationGuide = dynamic(
     ),
   { ssr: false },
 )
+
+const loadCharacterManagementModal = () =>
+  import("@/components/modals/character-management-modal")
+const loadCharacterCodeExportModal = () =>
+  import("@/components/modals/character-code-export-modal")
+const loadSealDiceExportModal = () =>
+  import("@/components/modals/seal-dice-export-modal")
+
+function DeferredModalSkeleton() {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+      <div className="h-24 w-72 animate-pulse rounded-xl border border-slate-200 bg-white/95 shadow-xl" />
+    </div>
+  )
+}
+
 const CharacterManagementModal = dynamic(
   () =>
-    import("@/components/modals/character-management-modal").then(
+    loadCharacterManagementModal().then(
       (mod) => mod.CharacterManagementModal,
     ),
-  { ssr: false },
+  { ssr: false, loading: DeferredModalSkeleton },
 )
 const CharacterCodeExportModal = dynamic(
   () =>
-    import("@/components/modals/character-code-export-modal").then(
+    loadCharacterCodeExportModal().then(
       (mod) => mod.CharacterCodeExportModal,
     ),
-  { ssr: false },
+  { ssr: false, loading: DeferredModalSkeleton },
 )
 const SealDiceExportModal = dynamic(
   () =>
-    import("@/components/modals/seal-dice-export-modal").then(
+    loadSealDiceExportModal().then(
       (mod) => mod.SealDiceExportModal,
     ),
-  { ssr: false },
+  { ssr: false, loading: DeferredModalSkeleton },
 )
 const FloatingNotebook = dynamic(
   () => import("@/components/notebook").then((mod) => mod.FloatingNotebook),
   { ssr: false, loading: () => null },
 )
+
+function StoreConnectedPrintPageRenderer() {
+  const sheetData = useSheetStore((state) => state.sheetData)
+  return <PrintPageRenderer sheetData={sheetData} />
+}
+
+function StoreConnectedSealDiceExportModal({
+  isOpen,
+  onClose,
+}: {
+  isOpen: boolean
+  onClose: () => void
+}) {
+  const sheetData = useSheetStore((state) => state.sheetData)
+  return (
+    <SealDiceExportModal
+      isOpen={isOpen}
+      onClose={onClose}
+      sheetData={sheetData}
+    />
+  )
+}
+
+function StoreConnectedCardDrawer({
+  isOpen,
+  onClose,
+  onDeleteCard,
+  onMoveCard,
+  onAddCard,
+  isModalOpen,
+}: {
+  isOpen: boolean
+  onClose: () => void
+  onDeleteCard: (cardIndex: number, isInventory: boolean) => void
+  onMoveCard: (cardIndex: number, fromInventory: boolean, toInventory: boolean) => void
+  onAddCard: (index: number, isInventory: boolean) => void
+  isModalOpen: boolean
+}) {
+  const { cards, inventoryCards } = useSheetStore(useShallow((state) => ({
+    cards: state.sheetData.cards,
+    inventoryCards: state.sheetData.inventory_cards,
+  })))
+
+  return (
+    <CardDrawer
+      cards={cards || []}
+      inventoryCards={inventoryCards || []}
+      isOpen={isOpen}
+      onClose={onClose}
+      onDeleteCard={onDeleteCard}
+      onMoveCard={onMoveCard}
+      onAddCard={onAddCard}
+      isModalOpen={isModalOpen}
+    />
+  )
+}
 
 // 注册所有页面
 registerPages([
@@ -264,11 +339,12 @@ registerPages([
 ])
 
 export default function Home() {
-  // 多角色系统状态
-  const {
-    sheetData: formData,
-    setSheetData: setFormData
-  } = useSheetStore();
+  const setFormData = useSheetStore((state) => state.setSheetData)
+  // 顶层导航只关心页面可见性；角色字段编辑不再让 Home 整体重渲染。
+  const navigationData = useSheetStore(useShallow((state) => ({
+    ruleSetId: state.sheetData.ruleSetId,
+    pageVisibility: state.sheetData.pageVisibility,
+  })))
 
   // 钉住卡牌状态
   const { pinnedCards } = usePinnedCardsStore();
@@ -353,12 +429,8 @@ export default function Home() {
     ? getOfficialImagePackProgressView(officialImagePackImportProgress)
     : null
   const visibleTabs = useMemo(() => {
-    if (!formData) {
-      return []
-    }
-
-    return getTabPages(formData)
-  }, [formData])
+    return getTabPages({ ...defaultSheetData, ...navigationData })
+  }, [navigationData])
 
   // 使用导出功能Hook
   const {
@@ -369,7 +441,7 @@ export default function Home() {
     handleQuickExportPDF,
     handleQuickExportHTML,
     handleQuickExportJSON,
-  } = useExportHandlers({ formData, setIsPrintingAll })
+  } = useExportHandlers({ setIsPrintingAll })
 
   // 客户端挂载检测
   // Client-only initialization
@@ -385,6 +457,34 @@ export default function Home() {
     }, 1000)
 
     return () => clearTimeout(timer)
+  }, [])
+
+  useEffect(() => {
+    const ruleSetId = navigationData.ruleSetId
+    document.body.dataset.ruleset = ruleSetId
+    return () => {
+      if (document.body.dataset.ruleset === ruleSetId) {
+        delete document.body.dataset.ruleset
+      }
+    }
+  }, [navigationData.ruleSetId])
+
+  useEffect(() => {
+    const preloadDeferredTools = () => {
+      void loadCharacterManagementModal()
+      void loadCharacterCodeExportModal()
+      void loadSealDiceExportModal()
+    }
+    const idleWindow = window as Window & {
+      requestIdleCallback?: (callback: IdleRequestCallback) => number
+      cancelIdleCallback?: (handle: number) => void
+    }
+    if (idleWindow.requestIdleCallback) {
+      const idleId = idleWindow.requestIdleCallback(preloadDeferredTools)
+      return () => idleWindow.cancelIdleCallback?.(idleId)
+    }
+    const timeoutId = window.setTimeout(preloadDeferredTools, 1200)
+    return () => window.clearTimeout(timeoutId)
   }, [])
 
   // 移动设备检测
@@ -537,36 +637,11 @@ export default function Home() {
   // 移除旧的第三页导出控制函数 - 现在使用 PageVisibilityDropdown
 
   // 生成可见的tab配置
-  const getVisibleTabs = () => {
-    // 防护条件：如果formData不存在，返回空数组
-    if (!formData) {
-      return []
-    }
-
-    return getTabPages(formData)
-  }
-
-
-  // 自动保存当前角色数据：只跟随会实际落盘的角色内容变化，不跟随纯 UI 状态
-  useEffect(() => {
-    if (!isLoading && currentCharacterId && formData) {
-      const saveTimeout = setTimeout(() => {
-        try {
-          persistCharacterData(currentCharacterId, formData)
-          console.log(`[App] Auto-saved character: ${currentCharacterId}`)
-        } catch (error) {
-          console.error(`[App] Error auto-saving character ${currentCharacterId}:`, error)
-        }
-      }, 300)
-
-      return () => clearTimeout(saveTimeout)
-    }
-  }, [
+  useSheetAutoSave({
     currentCharacterId,
-    formData,
     isLoading,
     persistCharacterData,
-  ])
+  })
 
 
 
@@ -610,8 +685,7 @@ export default function Home() {
 
   // 页面切换逻辑 - 基于页面注册系统
   const getAvailablePages = () => {
-    const tabs = getVisibleTabs()
-    return tabs.map(tab => tab.tabValue || tab.id)
+    return visibleTabs.map(tab => tab.tabValue || tab.id)
   }
 
   const switchToNextPage = () => {
@@ -843,7 +917,7 @@ export default function Home() {
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [characterList, currentCharacterId, characterManagementModalOpen, isPrintingAll, isGuideOpen, currentTabValue, formData?.pageVisibility])
+  }, [characterList, currentCharacterId, characterManagementModalOpen, isPrintingAll, isGuideOpen, currentTabValue, visibleTabs])
 
   // 已移除聚焦卡牌变更处理函数 - 功能由双卡组系统取代
 
@@ -888,7 +962,7 @@ export default function Home() {
             <div className="fixed top-0 left-0 right-0 z-[70] print:hidden">
               <div
                 data-export-preview-banner={activeRuleSetId}
-                className="export-preview-banner px-6 py-3 text-center cursor-pointer transition-all duration-200"
+                className="export-preview-banner px-6 py-3 text-center cursor-pointer transition-[color,background-color,box-shadow,opacity] duration-200"
                 onClick={() => setIsPrintingAll(false)}
               >
                 <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
@@ -923,7 +997,7 @@ export default function Home() {
 
             {/* 打印内容容器 - 用于图片加载检测 */}
             <div ref={printContainerRef}>
-              <PrintPageRenderer sheetData={formData} />
+              <StoreConnectedPrintPageRenderer />
             </div>
           </ExportPreviewShell>
         </PrintReadyChecker>
@@ -970,9 +1044,7 @@ export default function Home() {
 
       {/* 底部抽屉式卡牌展示 - 打印时隐藏 */}
       <div className="print:hidden">
-        <CardDrawer
-          cards={formData.cards || []}
-          inventoryCards={formData.inventory_cards || []}
+        <StoreConnectedCardDrawer
           isOpen={isCardDrawerOpen}
           onClose={() => setIsCardDrawerOpen(false)}
           onDeleteCard={deleteCard}
@@ -983,11 +1055,11 @@ export default function Home() {
       </div>
 
       <div className="flex justify-center px-0">
-        <div className={`w-full transition-all duration-300 ${isDualPageMode && !isMobile ? 'overflow-x-auto' : 'md:max-w-[220mm]'}`}>
+        <div className={`w-full ${isDualPageMode && !isMobile ? 'overflow-x-auto' : 'md:max-w-[220mm]'}`}>
           {/* 角色卡区域 - 带相对定位 */}
           <div>
             {/* 页面标题 - 打印时隐藏 */}
-            <div data-ri-utility-bar className={`print:hidden mb-3 pt-2 transition-all duration-300 ${isDualPageMode && !isMobile ? 'w-[425mm] min-w-[425mm]' : 'w-[210mm]'}`}>
+            <div data-ri-utility-bar className={`print:hidden mb-3 pt-2 ${isDualPageMode && !isMobile ? 'w-[425mm] min-w-[425mm]' : 'w-[210mm]'}`}>
               <div className="flex items-center justify-center gap-3">
                 <Button
                   size="sm"
@@ -1024,7 +1096,8 @@ export default function Home() {
               leftTabValue={leftTabValue}
               rightTabValue={rightTabValue}
               currentTabValue={currentTabValue}
-              formData={formData}
+              visibleTabs={visibleTabs}
+              ruleSetId={navigationData.ruleSetId}
               onSetLeftTab={setLeftTab}
               onSetRightTab={setRightTab}
               onSetCurrentTab={setCurrentTabValue}
@@ -1035,8 +1108,8 @@ export default function Home() {
           </div>
 
           {/* 文字模式切换开关 - 胶囊型，在容器外右下角 */}
-          <div data-ri-mode-region className={`print:hidden mt-3 flex flex-col gap-3 transition-all duration-300 ${isDualPageMode && !isMobile ? 'w-[425mm] min-w-[425mm]' : 'w-[210mm]'}`}>
-            <div data-ri-mode-card className="flex items-start justify-between gap-3 rounded-xl border border-slate-200 bg-white/85 px-4 py-3 shadow-sm backdrop-blur">
+          <div data-ri-mode-region className={`print:hidden mt-3 flex flex-col gap-3 ${isDualPageMode && !isMobile ? 'w-[425mm] min-w-[425mm]' : 'w-[210mm]'}`}>
+            <div data-ri-mode-card className="flex items-start justify-between gap-3 rounded-xl border border-slate-200 bg-white/95 px-4 py-3 shadow-sm">
               <div className="min-w-0">
                 <div className="text-sm font-semibold text-slate-800">
                   {isRhodesIsland ? "罗德岛离线卡库" : hasOfficialImagePack ? "卡图包已导入" : "当前为 SRD 纯文字模式"}
@@ -1056,7 +1129,7 @@ export default function Home() {
               </div>
             <div
               data-ri-mode-toggle
-              className={`rounded-full p-0.5 shadow-md transition-all duration-200 hover:shadow-lg scale-90 ${
+              className={`rounded-full p-0.5 shadow-md transition-[transform,opacity,background-color,box-shadow] duration-200 hover:shadow-lg scale-90 ${
                 hasCardImages
                   ? 'cursor-pointer bg-gray-200 dark:bg-gray-700'
                   : 'cursor-not-allowed bg-slate-200 opacity-80'
@@ -1066,7 +1139,7 @@ export default function Home() {
               <div className="flex items-center">
                 <div
                   className={`
-                    px-2 py-1 rounded-full flex items-center gap-1 transition-all duration-300 text-xs
+                    px-2 py-1 rounded-full flex items-center gap-1 transition-[color,background-color,box-shadow,opacity,transform] duration-300 text-xs
                     ${!isTextMode
                       ? 'bg-white dark:bg-gray-900 shadow-sm'
                       : 'text-gray-500 dark:text-gray-400'
@@ -1078,7 +1151,7 @@ export default function Home() {
                 </div>
                 <div
                   className={`
-                    px-2 py-1 rounded-full flex items-center gap-1 transition-all duration-300 text-xs
+                    px-2 py-1 rounded-full flex items-center gap-1 transition-[color,background-color,box-shadow,opacity,transform] duration-300 text-xs
                     ${isTextMode
                       ? 'bg-white dark:bg-gray-900 shadow-sm'
                       : 'text-gray-500 dark:text-gray-400'
@@ -1124,7 +1197,7 @@ export default function Home() {
                 </div>
                 <div className="mt-2 h-2 overflow-hidden rounded-full bg-sky-100">
                   <div
-                    className="h-full rounded-full bg-sky-500 transition-all duration-300"
+                    className="h-full rounded-full bg-sky-500 transition-[width] duration-300"
                     style={{ width: `${officialImagePackProgressView.percent}%` }}
                   />
                 </div>
@@ -1170,7 +1243,7 @@ export default function Home() {
       {/* 快捷键提示 */}
       {showShortcutHint && (
         <div className="print:hidden fixed top-4 right-4 z-40 animate-in slide-in-from-top duration-300">
-          <div className="bg-black bg-opacity-80 text-white px-4 py-3 rounded-lg text-sm backdrop-blur-sm">
+          <div className="bg-black/90 text-white px-4 py-3 rounded-lg text-sm">
             <div className="font-medium mb-2">⌨️ 快捷键提示</div>
             <div className="space-y-1 text-xs">
               <div>← → 切换页面</div>
@@ -1238,10 +1311,9 @@ export default function Home() {
       )}
 
       {sealDiceExportModalOpen && (
-        <SealDiceExportModal
+        <StoreConnectedSealDiceExportModal
           isOpen={sealDiceExportModalOpen}
           onClose={() => setSealDiceExportModalOpen(false)}
-          sheetData={formData}
         />
       )}
 

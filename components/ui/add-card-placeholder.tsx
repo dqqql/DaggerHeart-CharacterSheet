@@ -17,7 +17,7 @@ export function AddCardPlaceholder({ onClick, disabled = false, isMobile = false
         onClick={disabled ? undefined : onClick}
         className={`
           group relative flex w-full max-w-sm flex-col overflow-hidden rounded-xl shadow-md
-          transition-all duration-300 ease-in-out hover:shadow-xl
+          transition-[color,background-color,border-color,box-shadow,transform,opacity] duration-300 ease-in-out hover:shadow-xl
           ${disabled
             ? 'bg-gray-100 border-2 border-dashed border-gray-300 cursor-not-allowed opacity-50'
             : 'bg-white border-2 border-dashed border-gray-400 cursor-pointer hover:border-blue-500 hover:scale-105'

@@ -57,7 +57,7 @@ export const ScrapItem = ({
         value={value === 0 ? '' : value.toString()}
         onChange={handleChange}
         onBlur={handleBlur}
-        className="w-12 text-center border-b border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 transition-all duration-150 h-4 text-sm print-empty-hide"
+        className="w-12 text-center border-b border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 transition-colors duration-150 h-4 text-sm print-empty-hide"
         placeholder="0"
       />
     </div>

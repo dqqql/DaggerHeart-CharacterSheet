@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useCallback, useState, useMemo } from "react"
+import { useDeferredValue, useEffect, useCallback, useState, useMemo } from "react"
 import { StandardCard, createEmptyCard } from "@/card/card-types"
 import { BaseCardModal, ModalHeader, ModalFilterBar } from "./base"
 import { ContentStates, InfiniteCardGrid } from "./display"
@@ -53,6 +53,7 @@ export function CardSelectionModal({
 
   // 本地搜索词（modal 关闭后自动清空）
   const [searchTerm, setSearchTerm] = useState('')
+  const deferredSearchTerm = useDeferredValue(searchTerm)
 
   // 刷新触发器（用于卡牌动画）
   const [refreshTrigger, setRefreshTrigger] = useState(0)
@@ -62,8 +63,8 @@ export function CardSelectionModal({
 
   // 本地搜索过滤（在 useCardFiltering 结果基础上再过滤）
   const searchedCards = useMemo(() => {
-    if (!searchTerm.trim()) return filteredCards
-    const term = searchTerm.toLowerCase()
+    if (!deferredSearchTerm.trim()) return filteredCards
+    const term = deferredSearchTerm.toLowerCase()
     return filteredCards.filter(card =>
       card.name?.toLowerCase().includes(term) ||
       card.description?.toLowerCase().includes(term) ||
@@ -71,7 +72,7 @@ export function CardSelectionModal({
       card.cardSelectDisplay?.item2?.toLowerCase().includes(term) ||
       card.cardSelectDisplay?.item3?.toLowerCase().includes(term)
     )
-  }, [filteredCards, searchTerm])
+  }, [deferredSearchTerm, filteredCards])
 
   // === 无限滚动 ===
   const { displayedItems, hasMore, loadMore, scrollRef } = useInfiniteScroll({
@@ -197,6 +198,7 @@ export function CardSelectionModal({
           {searchTerm && (
             <button
               onClick={() => setSearchTerm('')}
+              aria-label="清除卡牌搜索"
               className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
             >
               <X className="h-4 w-4" />

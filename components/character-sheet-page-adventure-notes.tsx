@@ -24,7 +24,7 @@ const LabeledInput = ({
     <label className="block text-xs font-medium text-gray-600 mb-0.5">{label}</label>
     <input
       type="text"
-      className="w-full border-b border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 transition-all duration-150 text-sm print-empty-hide"
+      className="w-full border-b border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 transition-colors duration-150 text-sm print-empty-hide"
       placeholder={placeholder}
       value={value || ''}
       onChange={(e) => onChange(e.target.value)}
@@ -454,7 +454,7 @@ export default function CharacterSheetPageAdventureNotes() {
                         <div key={index} className="grid grid-cols-4 gap-1.5">
                           <input
                             type="text"
-                            className="w-full border-b border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 transition-all duration-150 text-sm print-empty-hide"
+                            className="w-full border-b border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 transition-colors duration-150 text-sm print-empty-hide"
                             placeholder={placeholders[0]}
                             value={logEntry?.name || ''}
                             onChange={(e) => handleLogChange('name', e.target.value)}
@@ -462,7 +462,7 @@ export default function CharacterSheetPageAdventureNotes() {
                           />
                           <input
                             type="text"
-                            className="w-full border-b border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 transition-all duration-150 text-sm print-empty-hide"
+                            className="w-full border-b border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 transition-colors duration-150 text-sm print-empty-hide"
                             placeholder={placeholders[1]}
                             value={logEntry?.levelRange || ''}
                             onChange={(e) => handleLogChange('levelRange', e.target.value)}
@@ -470,7 +470,7 @@ export default function CharacterSheetPageAdventureNotes() {
                           />
                           <input
                             type="text"
-                            className="w-full border-b border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 transition-all duration-150 text-sm print-empty-hide"
+                            className="w-full border-b border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 transition-colors duration-150 text-sm print-empty-hide"
                             placeholder={placeholders[2]}
                             value={logEntry?.trauma || ''}
                             onChange={(e) => handleLogChange('trauma', e.target.value)}
@@ -478,7 +478,7 @@ export default function CharacterSheetPageAdventureNotes() {
                           />
                           <input
                             type="text"
-                            className="w-full border-b border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 transition-all duration-150 text-sm print-empty-hide"
+                            className="w-full border-b border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 transition-colors duration-150 text-sm print-empty-hide"
                             placeholder={placeholders[3]}
                             value={logEntry?.date || ''}
                             onChange={(e) => handleLogChange('date', e.target.value)}

@@ -88,7 +88,7 @@ export default function CharacterSheetModulePage() {
                       type="text"
                       value={armorTemplate.customRangeAndDamage || ''}
                       onChange={(e) => updateArmorTemplateField('customRangeAndDamage', e.target.value)}
-                      className="border-b border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 transition-all duration-150 px-1.5 py-0.5 text-xs text-center print-empty-hide"
+                      className="border-b border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 transition-colors duration-150 px-1.5 py-0.5 text-xs text-center print-empty-hide"
                       placeholder="强化后范围和伤害骰"
                     />
                   </div>
@@ -271,7 +271,7 @@ export default function CharacterSheetModulePage() {
                         type="text"
                         value={armorTemplate.scrapMaterials?.relics?.[index] || ''}
                         onChange={(e) => updateScrapMaterial('relics', index, e.target.value)}
-                        className="w-full border-b border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 transition-all duration-150 h-4 text-xs print-empty-hide"
+                        className="w-full border-b border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 transition-colors duration-150 h-4 text-xs print-empty-hide"
                         placeholder="遗物名称"
                       />
                     ))}

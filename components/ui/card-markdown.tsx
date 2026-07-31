@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { memo, useMemo } from "react"
 import ReactMarkdown from "react-markdown"
 import type { Components } from "react-markdown"
 import remarkGfm from "remark-gfm"
@@ -12,6 +12,8 @@ interface CardMarkdownProps {
     className?: string
     customComponents?: Partial<Components>
 }
+
+const REMARK_PLUGINS = [remarkGfm, remarkBreaks]
 
 function sanitizeMarkdownUrl(url: string): string {
     const trimmedUrl = url.trim()
@@ -27,6 +29,55 @@ function sanitizeMarkdownUrl(url: string): string {
     return trimmedUrl
 }
 
+function extractText(node: React.ReactNode): string {
+    if (typeof node === "string" || typeof node === "number") return String(node)
+    if (!React.isValidElement<{ children?: React.ReactNode }>(node)) return ""
+    return React.Children.toArray(node.props.children).map(extractText).join("")
+}
+
+function MarkdownStrong({ children }: { children?: React.ReactNode }) {
+    const hasEmElement = React.Children.toArray(children).some(
+        child => React.isValidElement(child) && child.type === MarkdownEm
+    )
+
+    return (
+        <strong className={hasEmElement ? "font-bold text-amber-800" : "font-bold text-gray-800"}>
+            {children}
+        </strong>
+    )
+}
+
+function MarkdownEm({ children }: { children?: React.ReactNode }) {
+    const childArray = React.Children.toArray(children)
+    const hasStrongElement = childArray.some(
+        child => React.isValidElement(child) && child.type === MarkdownStrong
+    )
+
+    if (hasStrongElement) {
+        return (
+            <span className="font-bold text-amber-800">
+                {childArray.map(extractText).join("")}
+            </span>
+        )
+    }
+
+    return <span className="text-amber-900">「{children}」</span>
+}
+
+const DEFAULT_COMPONENTS: Components = {
+    p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+    ul: ({ children }) => <ul className="mb-2 list-outside list-disc pl-5">{children}</ul>,
+    ol: ({ children }) => <ol className="mb-2 list-outside list-decimal pl-5">{children}</ol>,
+    li: ({ children }) => <li className="mb-1">{children}</li>,
+    blockquote: ({ children }) => (
+        <blockquote className="my-2 border-l-2 border-cyan-500/70 bg-cyan-50/70 py-1 pl-2 text-slate-700 italic">
+            {children}
+        </blockquote>
+    ),
+    strong: MarkdownStrong,
+    em: MarkdownEm,
+}
+
 /**
  * 统一的卡牌 Markdown 渲染组件
  *
@@ -35,70 +86,27 @@ function sanitizeMarkdownUrl(url: string): string {
  * - *直角引号* → 「text-amber-900」（琥珀色，使用直角引号包裹）
  * - ***重要*** → text-amber-800（琥珀色加粗 #92400E）
  */
-export function CardMarkdown({ children, className = "", customComponents }: CardMarkdownProps) {
-    // 默认组件配置
-    const defaultComponents: Components = {
-        p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
-        ul: ({ children }) => <ul className="mb-2 list-outside list-disc pl-5">{children}</ul>,
-        ol: ({ children }) => <ol className="mb-2 list-outside list-decimal pl-5">{children}</ol>,
-        li: ({ children }) => <li className="mb-1">{children}</li>,
-        blockquote: ({ children }) => (
-            <blockquote className="my-2 border-l-2 border-cyan-500/70 bg-cyan-50/70 py-1 pl-2 text-slate-700 italic">
-                {children}
-            </blockquote>
-        ),
-        strong: ({ children }) => {
-            // 检查子节点类型
-            const childArray = React.Children.toArray(children);
-            const hasEmElement = childArray.some(
-                child => React.isValidElement(child) && typeof child.type === 'function' && child.type.name === 'em'
-            );
-
-            if (hasEmElement) {
-                // *** 情况：琥珀色加粗
-                return <strong className="font-bold text-amber-800">{children}</strong>;
-            }
-            // ** 情况：深灰加粗
-            return <strong className="font-bold text-gray-800">{children}</strong>;
-        },
-        em: ({ children }) => {
-            const childArray = React.Children.toArray(children);
-            const hasStrongElement = childArray.some(
-                child => React.isValidElement(child) && typeof child.type === 'function' && child.type.name === 'strong'
-            );
-
-            if (hasStrongElement) {
-                // *** 的情况：em 包含 strong，琥珀色加粗
-                const extractText = (child: any): string => {
-                    if (typeof child === 'string') return child;
-                    if (React.isValidElement(child) && (child.props as any).children) {
-                        return React.Children.toArray((child.props as any).children).map(extractText).join('');
-                    }
-                    return '';
-                };
-                const textContent = childArray.map(extractText).join('');
-                return <span className="font-bold text-amber-800">{textContent}</span>;
-            }
-            // * 情况：琥珀色直角引号
-            return <span className="text-amber-900">「{children}」</span>;
-        },
-    };
-
-    // 合并自定义组件配置
-    const mergedComponents = customComponents
-        ? { ...defaultComponents, ...customComponents }
-        : defaultComponents;
+function CardMarkdownComponent({ children, className = "", customComponents }: CardMarkdownProps) {
+    const mergedComponents = useMemo(
+        () => customComponents
+            ? { ...DEFAULT_COMPONENTS, ...customComponents }
+            : DEFAULT_COMPONENTS,
+        [customComponents],
+    )
+    const transformedMarkdown = useMemo(() => transformCustomSyntax(children), [children])
 
     return (
         <div className={className}>
             <ReactMarkdown
                 components={mergedComponents}
-                remarkPlugins={[remarkGfm, remarkBreaks]}
+                remarkPlugins={REMARK_PLUGINS}
                 skipHtml
                 urlTransform={sanitizeMarkdownUrl}
             >
-                {transformCustomSyntax(children)}
+                {transformedMarkdown}
             </ReactMarkdown>
         </div>
-    );
+    )
 }
+
+export const CardMarkdown = memo(CardMarkdownComponent)

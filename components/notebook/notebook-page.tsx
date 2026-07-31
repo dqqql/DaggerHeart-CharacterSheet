@@ -97,7 +97,7 @@ export function NotebookPage({ page, onUpdateLine, onDeleteLine, onReorderLines 
           {page.lines.map((line, index) => (
             <div
               key={line.id}
-              className={`group relative transition-all duration-150 ${draggedIndex === index ? 'opacity-50 bg-amber-100/50' : ''
+              className={`group relative transition-[opacity,background-color] duration-150 ${draggedIndex === index ? 'opacity-50 bg-amber-100/50' : ''
                 } ${draggedIndex !== null && draggedIndex !== index ? 'bg-amber-50/30 border-t border-amber-200/60' : ''
                 }`}
               style={{

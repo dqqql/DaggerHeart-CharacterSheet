@@ -2,8 +2,8 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { PageVisibilityDropdown } from "@/components/ui/page-visibility-dropdown"
-import { getTabPages } from "@/lib/page-registry"
-import type { SheetData } from "@/lib/sheet-data"
+import type { PageDefinition } from "@/lib/page-registry"
+import type { RuleSetId } from "@/lib/sheet-data"
 
 interface PageDisplayProps {
   isDualPageMode: boolean
@@ -13,7 +13,8 @@ interface PageDisplayProps {
   leftTabValue: string
   rightTabValue: string
   currentTabValue: string
-  formData: SheetData
+  visibleTabs: PageDefinition[]
+  ruleSetId: RuleSetId
   onSetLeftTab: (tabValue: string) => void
   onSetRightTab: (tabValue: string) => void
   onSetCurrentTab: (id: string) => void
@@ -29,7 +30,8 @@ export function PageDisplay({
   leftTabValue,
   rightTabValue,
   currentTabValue,
-  formData,
+  visibleTabs,
+  ruleSetId,
   onSetLeftTab,
   onSetRightTab,
   onSetCurrentTab,
@@ -37,18 +39,10 @@ export function PageDisplay({
   onSwitchToNextPage,
 }: PageDisplayProps) {
   const showPageSettings = true
-  const isRhodesIsland = formData.ruleSetId === "rhodes-island"
-  
-  // 生成可见的tab配置
-  const getVisibleTabs = () => {
-    if (!formData) {
-      return []
-    }
-    return getTabPages(formData)
-  }
+  const isRhodesIsland = ruleSetId === "rhodes-island"
 
   return (
-    <div data-ri-page-display className={`relative w-full mx-auto transition-all duration-300 ${isDualPageMode && !isMobile ? 'md:max-w-[425mm]' : 'md:max-w-[210mm]'}`}>
+    <div data-ri-page-display className={`relative w-full mx-auto transition-[opacity,transform] duration-300 ${isDualPageMode && !isMobile ? 'md:max-w-[425mm]' : 'md:max-w-[210mm]'}`}>
       
       {/* 双页模式布局 */}
       {isDualPageMode && !isMobile ? (
@@ -59,16 +53,16 @@ export function PageDisplay({
             <Tabs value={leftTabValue} onValueChange={onSetLeftTab} className="w-[210mm]">
               {/* 左页Tab导航 */}
               <div data-ri-tabs className="w-full overflow-x-auto tabs-container">
-                <TabsList className="grid w-full transition-all duration-300 ease-in-out h-10"
+                <TabsList className="grid w-full h-10"
                   style={{
-                    gridTemplateColumns: `repeat(${getVisibleTabs().length}, 1fr)${showPageSettings ? " auto" : ""}`
+                    gridTemplateColumns: `repeat(${visibleTabs.length}, 1fr)${showPageSettings ? " auto" : ""}`
                   }}>
                   {/* 左页tabs */}
-                  {getVisibleTabs().map((tab, index) => (
+                  {visibleTabs.map((tab, index) => (
                     <TabsTrigger
                       key={tab.id}
                       value={tab.id}
-                      className="transition-all duration-200 ease-in-out animate-in slide-in-from-right-2 py-1.5 text-sm"
+                      className="transition-[transform,opacity,color,background-color,box-shadow] duration-200 ease-in-out animate-in slide-in-from-right-2 py-1.5 text-sm"
                       style={{
                         animationDelay: `${index * 50}ms`
                       }}
@@ -85,7 +79,7 @@ export function PageDisplay({
               </div>
 
               {/* 左页Tab内容 */}
-              {getVisibleTabs().map((tab) => {
+              {visibleTabs.map((tab) => {
                 const Component = tab.component
                 return (
                   <TabsContent key={tab.id} value={tab.tabValue || tab.id}>
@@ -101,16 +95,16 @@ export function PageDisplay({
             <Tabs value={rightTabValue} onValueChange={onSetRightTab} className="w-[210mm]">
               {/* 右页Tab导航 */}
               <div data-ri-tabs className="w-full overflow-x-auto tabs-container">
-                <TabsList className="grid w-full transition-all duration-300 ease-in-out h-10"
+                <TabsList className="grid w-full h-10"
                   style={{
-                    gridTemplateColumns: `repeat(${getVisibleTabs().length}, 1fr)${showPageSettings ? " auto" : ""}`
+                    gridTemplateColumns: `repeat(${visibleTabs.length}, 1fr)${showPageSettings ? " auto" : ""}`
                   }}>
                   {/* 右页tabs */}
-                  {getVisibleTabs().map((tab, index) => (
+                  {visibleTabs.map((tab, index) => (
                     <TabsTrigger
                       key={tab.id}
                       value={tab.id}
-                      className="transition-all duration-200 ease-in-out animate-in slide-in-from-right-2 py-1.5 text-sm"
+                      className="transition-[transform,opacity,color,background-color,box-shadow] duration-200 ease-in-out animate-in slide-in-from-right-2 py-1.5 text-sm"
                       style={{
                         animationDelay: `${index * 50}ms`
                       }}
@@ -127,7 +121,7 @@ export function PageDisplay({
               </div>
 
               {/* 右页Tab内容 */}
-              {getVisibleTabs().map((tab) => {
+              {visibleTabs.map((tab) => {
                 const Component = tab.component
                 return (
                   <TabsContent key={tab.id} value={tab.tabValue || tab.id}>
@@ -144,16 +138,16 @@ export function PageDisplay({
         <Tabs value={currentTabValue} onValueChange={onSetCurrentTab} className="w-[210mm]">
           {/* 支持移动端滚动的Tab容器 */}
           <div data-ri-tabs className="w-full overflow-x-auto tabs-container">
-            <TabsList className={`grid w-full transition-all duration-300 ease-in-out ${isMobile ? 'h-12' : 'h-10'}`}
+            <TabsList className={`grid w-full ${isMobile ? 'h-12' : 'h-10'}`}
               style={{
-                gridTemplateColumns: `repeat(${getVisibleTabs().length}, 1fr)${showPageSettings ? " auto" : ""}`
+                gridTemplateColumns: `repeat(${visibleTabs.length}, 1fr)${showPageSettings ? " auto" : ""}`
               }}>
               {/* 动态渲染可见的tabs - 填满可用空间 */}
-              {getVisibleTabs().map((tab, index) => (
+              {visibleTabs.map((tab, index) => (
                 <TabsTrigger
                   key={tab.id}
                   value={tab.id}
-                  className={`transition-all duration-200 ease-in-out animate-in slide-in-from-right-2 ${isMobile ? 'py-2.5 text-sm' : 'py-1.5 text-sm'}`}
+                  className={`transition-[transform,opacity,color,background-color,box-shadow] duration-200 ease-in-out animate-in slide-in-from-right-2 ${isMobile ? 'py-2.5 text-sm' : 'py-1.5 text-sm'}`}
                   style={{
                     animationDelay: `${index * 50}ms`
                   }}
@@ -170,7 +164,7 @@ export function PageDisplay({
           </div>
 
           {/* 动态渲染Tab内容 */}
-          {getVisibleTabs().map((tab) => {
+          {visibleTabs.map((tab) => {
             const Component = tab.component
             return (
               <TabsContent key={tab.id} value={tab.tabValue || tab.id}>
@@ -202,7 +196,7 @@ export function PageDisplay({
           {/* 悬停时显示的背景 */}
           <div className="absolute inset-0 bg-gray-100 opacity-0 group-hover:opacity-50 transition-opacity duration-200 rounded-l-lg"></div>
           {/* 箭头图标 */}
-          <div className="relative bg-white shadow-md group-hover:shadow-lg p-2 rounded-full opacity-60 group-hover:opacity-100 transition-all duration-200 group-hover:scale-110 group-active:scale-90">
+          <div className="relative bg-white shadow-md group-hover:shadow-lg p-2 rounded-full opacity-60 group-hover:opacity-100 transition-[transform,opacity,box-shadow] duration-200 group-hover:scale-110 group-active:scale-90">
             <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
@@ -231,7 +225,7 @@ export function PageDisplay({
           {/* 悬停时显示的背景 */}
           <div className="absolute inset-0 bg-gray-100 opacity-0 group-hover:opacity-50 transition-opacity duration-200 rounded-r-lg"></div>
           {/* 箭头图标 */}
-          <div className="relative bg-white shadow-md group-hover:shadow-lg p-2 rounded-full opacity-60 group-hover:opacity-100 transition-all duration-200 group-hover:scale-110 group-active:scale-90">
+          <div className="relative bg-white shadow-md group-hover:shadow-lg p-2 rounded-full opacity-60 group-hover:opacity-100 transition-[transform,opacity,box-shadow] duration-200 group-hover:scale-110 group-active:scale-90">
             <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>

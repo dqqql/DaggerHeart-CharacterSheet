@@ -88,7 +88,7 @@ function FadeNotificationItem({ notification }: { notification: NotificationStat
       className={`
         fixed ${positionClass} left-1/2 transform -translate-x-1/2 z-[200]
         px-4 py-2 rounded-lg border shadow-md text-sm font-medium
-        transition-all duration-500 ease-out
+        transition-[opacity,transform,background-color,box-shadow] duration-500 ease-out
         ${typeStyles[notification.type]}
         ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}
       `}

@@ -56,6 +56,15 @@ export { convertToStandardCard, convertToStandardCardAsync } from './card-conver
 
 // ===== Main Card Data Functions =====
 
+async function ensureCardSystemInitialized() {
+  const store = useUnifiedCardStore.getState();
+  if (store.initialized) {
+    return true;
+  }
+
+  return (await store.initializeSystem()).initialized;
+}
+
 /**
  * Get all cards (builtin + custom) with builtin cards if system is not initialized
  */
@@ -76,12 +85,9 @@ export async function getAllStandardCardsAsync(): Promise<ExtendedStandardCard[]
   const store = useUnifiedCardStore.getState();
   
   // Ensure system is initialized
-  if (!store.initialized) {
-    const result = await store.initializeSystem();
-    if (!result.initialized) {
-      console.error('[Unified Card System] Failed to initialize system');
-      return [];
-    }
+  if (!await ensureCardSystemInitialized()) {
+    console.error('[Unified Card System] Failed to initialize system');
+    return [];
   }
   
   const allCards = store.loadAllCards();
@@ -149,15 +155,10 @@ export function getStandardCardById(cardId: string): ExtendedStandardCard | null
  * Get cards by type - async version ensuring system initialization (legacy support)
  */
 export async function getStandardCardsByTypeAsync(typeId: CardType): Promise<ExtendedStandardCard[]> {
-  const store = useUnifiedCardStore.getState();
-  
   // Ensure system is initialized
-  if (!store.initialized) {
-    const result = await store.initializeSystem();
-    if (!result.initialized) {
-      console.error('[Unified Card System] Failed to initialize system');
-      return [];
-    }
+  if (!await ensureCardSystemInitialized()) {
+    console.error('[Unified Card System] Failed to initialize system');
+    return [];
   }
   
   return getStandardCardsByType(typeId);
@@ -167,15 +168,10 @@ export async function getStandardCardsByTypeAsync(typeId: CardType): Promise<Ext
  * Get a specific card by ID - async version ensuring system initialization (legacy support)
  */
 export async function getStandardCardByIdAsync(cardId: string): Promise<ExtendedStandardCard | null> {
-  const store = useUnifiedCardStore.getState();
-  
   // Ensure system is initialized
-  if (!store.initialized) {
-    const result = await store.initializeSystem();
-    if (!result.initialized) {
-      console.error('[Unified Card System] Failed to initialize system');
-      return null;
-    }
+  if (!await ensureCardSystemInitialized()) {
+    console.error('[Unified Card System] Failed to initialize system');
+    return null;
   }
   
   return getStandardCardById(cardId);
@@ -216,11 +212,8 @@ export async function importCustomCards(importData: ImportData, batchName?: stri
   const store = useUnifiedCardStore.getState();
   
   // Ensure system is initialized
-  if (!store.initialized) {
-    const result = await store.initializeSystem();
-    if (!result.initialized) {
-      throw new Error('Failed to initialize card system');
-    }
+  if (!await ensureCardSystemInitialized()) {
+    throw new Error('Failed to initialize card system');
   }
   
   return store.importCards(importData, batchName);

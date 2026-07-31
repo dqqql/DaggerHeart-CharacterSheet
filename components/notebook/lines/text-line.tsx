@@ -96,7 +96,7 @@ export function TextLine({ line, lineHeight, onUpdate, onDelete, dragHandleProps
         {/* 删除按钮 - 推到最右侧 */}
         <button
           onClick={onDelete}
-          className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-500 transition-all ml-auto"
+          className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-500 transition-[color,opacity] ml-auto"
           title="删除此行"
         >
           <Trash2 className="w-3.5 h-3.5" />

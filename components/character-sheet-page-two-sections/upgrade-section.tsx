@@ -561,13 +561,13 @@ export function UpgradeSection({
             onClick={() => setIsLevelExpanded(prev => !prev)}
           >
             {/* 收起标签 - 竖排文字，展开后隐藏 */}
-            <div className={`bg-gray-100 px-0.5 py-1 flex items-center justify-center transition-all duration-300 ease-out ${isLevelExpanded ? "max-w-0 px-0 overflow-hidden opacity-0" : ""} group-hover:max-w-0 group-hover:px-0 group-hover:overflow-hidden group-hover:opacity-0`} style={{ writingMode: "vertical-rl" }}>
+            <div className={`bg-gray-100 px-0.5 py-1 flex items-center justify-center transition-opacity duration-300 ease-out ${isLevelExpanded ? "max-w-0 px-0 overflow-hidden opacity-0" : ""} group-hover:max-w-0 group-hover:px-0 group-hover:overflow-hidden group-hover:opacity-0`} style={{ writingMode: "vertical-rl" }}>
               <span className="text-sm font-bold text-gray-400 tracking-tight whitespace-nowrap">
                 {`Lv. ${formData.level || "1"}`}
               </span>
             </div>
             {/* 展开面板 - 横向滑出 */}
-            <div className={`flex flex-col transition-all duration-300 ease-out overflow-hidden max-w-0 opacity-0 ${isLevelExpanded ? "max-w-24 opacity-100" : ""} group-hover:max-w-24 group-hover:opacity-100`}>
+            <div className={`flex flex-col transition-opacity duration-300 ease-out overflow-hidden max-w-0 opacity-0 ${isLevelExpanded ? "max-w-24 opacity-100" : ""} group-hover:max-w-24 group-hover:opacity-100`}>
               <div className="bg-gray-100 px-2 py-0.5 text-center whitespace-nowrap">
                 <span className="!text-xs text-gray-500">LEVEL</span>
                 <div className="text-sm font-bold text-gray-500">

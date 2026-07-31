@@ -88,7 +88,7 @@ export function SimpleImageCard({
   return (
     <div
       key={cardId}
-      className={`group relative flex w-full max-w-sm flex-col overflow-hidden rounded-xl bg-white shadow-md transition-all duration-300 ease-in-out hover:shadow-xl ${isSelected ? "ring-2 ring-blue-500" : "border"}`}
+      className={`group relative flex w-full max-w-sm flex-col overflow-hidden rounded-xl bg-white shadow-md transition-[transform,box-shadow,opacity,border-color] duration-300 ease-in-out hover:shadow-xl ${isSelected ? "ring-2 ring-blue-500" : "border"}`}
       onClick={() => onClick(cardId)}
     >
       <div className={`relative w-full overflow-hidden ${isRhodesIslandDomainIcon ? "flex items-center justify-center" : ""} ${hasRhodesIslandDomainCardFace ? "aspect-[5/7]" : "aspect-[1.4]"}`}>
