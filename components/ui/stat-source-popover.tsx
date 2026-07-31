@@ -22,18 +22,31 @@ export function StatSourcePopover({ title, value, sources }: StatSourcePopoverPr
           <CircleHelp className="h-3 w-3" />
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-56 p-3" align="center">
+      <PopoverContent
+        className="w-56 p-3 text-popover-foreground"
+        align="center"
+        data-stat-source-popover
+      >
         <div className="space-y-2">
-          <div className="border-b border-gray-200 pb-2">
-            <div className="text-xs font-semibold text-gray-800">{title}</div>
-            <div className="text-lg font-bold text-gray-900">{value || "-"}</div>
+          <div className="border-b border-border pb-2">
+            <div className="text-xs font-semibold text-popover-foreground">{title}</div>
+            <div className="text-lg font-bold text-popover-foreground">{value || "-"}</div>
           </div>
           {sources.length > 0 ? (
             <div className="space-y-1">
               {sources.map((source) => (
-                <div key={`${source.label}-${source.value}`} className="flex items-center justify-between text-xs text-gray-700">
+                <div
+                  key={`${source.label}-${source.value}`}
+                  className="flex items-center justify-between text-xs text-popover-foreground/80"
+                >
                   <span>{source.label}</span>
-                  <span className={source.value >= 0 ? "text-green-700" : "text-red-700"}>
+                  <span
+                    className={
+                      source.value >= 0
+                        ? "stat-source-popover__positive text-green-700"
+                        : "stat-source-popover__negative text-red-700"
+                    }
+                  >
                     {source.value >= 0 ? "+" : ""}
                     {source.value}
                   </span>
@@ -41,7 +54,7 @@ export function StatSourcePopover({ title, value, sources }: StatSourcePopoverPr
               ))}
             </div>
           ) : (
-            <div className="text-xs text-gray-500">当前没有可展示的计算来源。</div>
+            <div className="text-xs text-popover-foreground/70">当前没有可展示的计算来源。</div>
           )}
         </div>
       </PopoverContent>

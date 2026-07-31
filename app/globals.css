@@ -584,6 +584,14 @@ body:has(main[data-ruleset="rhodes-island"]) [role="tooltip"] {
   clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px));
 }
 
+body:has(main[data-ruleset="rhodes-island"]) [data-stat-source-popover] .stat-source-popover__positive {
+  color: #4ade80;
+}
+
+body:has(main[data-ruleset="rhodes-island"]) [data-stat-source-popover] .stat-source-popover__negative {
+  color: #f87171;
+}
+
 body:has(main[data-ruleset="rhodes-island"]) [role="dialog"] {
   border-top: 3px solid var(--ri-cyan, #23b9e8) !important;
 }
