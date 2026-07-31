@@ -3,6 +3,8 @@
 import type React from "react"
 import { useSheetStore, useSafeSheetData } from "@/lib/sheet-store"
 import {
+  calculateHpMaxBreakdown,
+  calculateStressMaxBreakdown,
   calculateDamageThresholdBreakdown,
   getDisplayedHpMax,
   getDisplayedStressMax,
@@ -16,9 +18,11 @@ export function HitPointsSection() {
   const setSheetData = useSheetStore((state) => state.setSheetData)
   const safeFormData = useSafeSheetData()
   const thresholdBreakdown = calculateDamageThresholdBreakdown(safeFormData)
-  const displayedHpMax = getDisplayedHpMax(safeFormData)
+  const hpMaxBreakdown = calculateHpMaxBreakdown(safeFormData)
+  const stressMaxBreakdown = calculateStressMaxBreakdown(safeFormData)
+  const displayedHpMax = hpMaxBreakdown.total
   const minDisplayedHpMax = getDisplayedHpMax({ ...safeFormData, hpMax: 0 })
-  const displayedStressMax = getDisplayedStressMax(safeFormData)
+  const displayedStressMax = stressMaxBreakdown.total
   const minDisplayedStressMax = getDisplayedStressMax({ ...safeFormData, stressMax: 0 })
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -193,7 +197,14 @@ export function HitPointsSection() {
       <div className="mt-1 space-y-1">
         <div className="flex items-center justify-between group">
           <span className="font-bold mr-2 text-xs">
-            生命点
+            <span className="inline-flex items-center gap-1">
+              生命点
+              <StatSourcePopover
+                title="生命上限"
+                value={hpMaxBreakdown.display}
+                sources={hpMaxBreakdown.sources}
+              />
+            </span>
             {safeFormData.cards?.[0]?.professionSpecial?.["起始生命"] && (
               <span className="text-[10px] text-gray-600 ml-1">
                 (职业初始: {safeFormData.cards?.[0]?.professionSpecial?.["起始生命"] ?? "未知"})
@@ -236,7 +247,14 @@ export function HitPointsSection() {
         {renderBoxes("hp", Number(safeFormData.hpMax || safeFormData.cards?.[0]?.professionSpecial?.["起始生命"] || 6), 18)}
 
         <div className="flex items-center justify-between group">
-          <span className="font-bold mr-2 text-xs">压力点</span>
+          <span className="inline-flex items-center gap-1 font-bold mr-2 text-xs">
+            压力点
+            <StatSourcePopover
+              title="压力上限"
+              value={stressMaxBreakdown.display}
+              sources={stressMaxBreakdown.sources}
+            />
+          </span>
           <div className="flex items-center">
             <div className="flex items-center gap-0.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200 print:hidden">
               <button

@@ -9,6 +9,10 @@ import {
   type DerivedStatSourceLine,
 } from "@/lib/preset-equipment"
 import type { CharacterAttributeKey } from "@/types/preset-equipment"
+import {
+  getRhodesDerivedStatSources,
+  type RhodesDerivedStatsInput,
+} from "@/lib/rhodes-island-derived-stats"
 
 export interface DamageThresholdBreakdown {
   minor: DerivedStatBreakdown
@@ -106,7 +110,7 @@ type EvasionInput = Pick<
   | "secondaryWeaponDamage"
   | "secondaryWeaponFeature"
   | "secondaryWeaponSelection"
->
+> & RhodesDerivedStatsInput
 
 type ArmorInput = Pick<
   SheetData,
@@ -128,7 +132,7 @@ type ArmorInput = Pick<
   | "secondaryWeaponDamage"
   | "secondaryWeaponFeature"
   | "secondaryWeaponSelection"
->
+> & RhodesDerivedStatsInput
 
 type ThresholdInput = Pick<
   SheetData,
@@ -155,13 +159,14 @@ type ThresholdInput = Pick<
   | "minorThresholdManualModifier"
   | "majorThresholdManualModifier"
   | "domainCardAutomation"
->
+> & RhodesDerivedStatsInput
 
-type HpMaxInput = Pick<SheetData, "cards" | "hpMax">
-type StressMaxInput = Pick<SheetData, "cards" | "stressMax">
+type HpMaxInput = Pick<SheetData, "cards" | "hpMax"> & RhodesDerivedStatsInput
+type StressMaxInput = Pick<SheetData, "cards" | "stressMax"> & RhodesDerivedStatsInput
 
 export function calculateEvasionBreakdown(data: EvasionInput): DerivedStatBreakdown {
   const equipment = aggregatePresetEquipmentEffects(data)
+  const rhodesSources = getRhodesDerivedStatSources(data).evasion
   const professionBase = getProfessionBaseEvasion(data)
   const manualModifier = parseModifier(data.evasionManualModifier)
   const automatedSources: DerivedStatSourceLine[] = []
@@ -193,6 +198,7 @@ export function calculateEvasionBreakdown(data: EvasionInput): DerivedStatBreakd
     automatedSources.push({ label: CHARACTER_CARD_LABELS.nightwalkerMastery, value: 1 })
   }
 
+  automatedSources.push(...rhodesSources)
   sources.push(...automatedSources)
 
   if (manualModifier !== 0) {
@@ -216,6 +222,7 @@ export function calculateEvasionBreakdown(data: EvasionInput): DerivedStatBreakd
 
 export function calculateArmorValueBreakdown(data: ArmorInput): DerivedStatBreakdown {
   const equipment = aggregatePresetEquipmentEffects(data)
+  const rhodesSources = getRhodesDerivedStatSources(data).armorValue
   const wearingPresetArmor = isPresetArmorEquipped(data)
   const bareBonesActive = hasFocusedDomainCard(data.cards, DOMAIN_CARD_IDS.bareBones) && !wearingPresetArmor
   const armorBase = bareBonesActive
@@ -245,6 +252,7 @@ export function calculateArmorValueBreakdown(data: ArmorInput): DerivedStatBreak
     automatedSources.push({ label: DOMAIN_CARD_LABELS.valorTouched, value: 1 })
   }
 
+  automatedSources.push(...rhodesSources)
   sources.push(...automatedSources)
 
   if (manualModifier !== 0) {
@@ -322,6 +330,7 @@ export function calculateHpMaxBreakdown(data: HpMaxInput): ResourceMaxBreakdown 
     automationSources.push({ label: CHARACTER_CARD_LABELS.schoolOfWarFoundation, value: 1 })
   }
 
+  automationSources.push(...getRhodesDerivedStatSources(data).hpMax)
   const total = storedBase + sumSources(automationSources)
 
   return {
@@ -356,6 +365,7 @@ export function calculateStressMaxBreakdown(data: StressMaxInput): ResourceMaxBr
     automationSources.push({ label: CHARACTER_CARD_LABELS.vengeanceFoundation, value: 1 })
   }
 
+  automationSources.push(...getRhodesDerivedStatSources(data).stressMax)
   const total = storedBase + sumSources(automationSources)
 
   return {
@@ -522,6 +532,10 @@ function getDamageThresholdContext(data: ThresholdInput) {
   if (hasFocusedCard(data.cards, CHARACTER_CARD_IDS.wingedSentinelMastery)) {
     majorBonusSources.push({ label: CHARACTER_CARD_LABELS.wingedSentinelMastery, value: 4 })
   }
+
+  const rhodesSources = getRhodesDerivedStatSources(data)
+  minorBonusSources.push(...rhodesSources.minorThreshold)
+  majorBonusSources.push(...rhodesSources.majorThreshold)
 
   return {
     minorBase,
