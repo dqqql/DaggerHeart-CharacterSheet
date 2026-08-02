@@ -236,19 +236,19 @@ export function HeaderSection({
             </div>
           )}
         </div>
-        <div className="mt-1 flex min-h-0 flex-1 print:hidden">
-          <DualDomainAnimation
-            professionId={isRhodesIsland ? formData.professionRef?.id : undefined}
-            professionName={isRhodesIsland ? formData.professionRef?.name : undefined}
-            replayKey={professionAnimationReplayKey}
-            secondaryDomain={
-              isRhodesIsland && formData.rhodesSecondaryDomain !== professionDomain
+        {isRhodesIsland && (
+          <div className="mt-1 flex min-h-0 flex-1 print:hidden">
+            <DualDomainAnimation
+              professionId={formData.professionRef?.id}
+              professionName={formData.professionRef?.name}
+              replayKey={professionAnimationReplayKey}
+              secondaryDomain={formData.rhodesSecondaryDomain !== professionDomain
                 ? formData.rhodesSecondaryDomain
-                : undefined
-            }
-            secondaryReplayKey={secondaryDomainReplayKey}
-          />
-        </div>
+                : undefined}
+              secondaryReplayKey={secondaryDomainReplayKey}
+            />
+          </div>
+        )}
       </div>
       <div className="flex flex-col items-center gap-1">
         <div className="flex gap-2">

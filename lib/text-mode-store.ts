@@ -2,6 +2,11 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { RuleSetId } from './sheet-data'
 
+const DEFAULT_TEXT_MODE_BY_RULE_SET: Record<RuleSetId, boolean> = {
+  daggerheart: false,
+  'rhodes-island': false,
+}
+
 interface TextModeStore {
   isTextMode: boolean
   activeRuleSetId: RuleSetId
@@ -17,7 +22,7 @@ export const useTextModeStore = create<TextModeStore>()(
       isTextMode: false,
       activeRuleSetId: 'daggerheart',
       // 新规则首次进入默认图片模式；两套规则之后分别记忆。
-      textModeByRuleSet: { daggerheart: false, 'rhodes-island': false },
+      textModeByRuleSet: { ...DEFAULT_TEXT_MODE_BY_RULE_SET },
       
       toggleTextMode: () => set((state) => {
         const enabled = !state.isTextMode
@@ -44,13 +49,15 @@ export const useTextModeStore = create<TextModeStore>()(
         const legacy = persisted && typeof persisted === 'object'
           ? persisted as Partial<TextModeStore>
           : {}
-        const daggerheartMode = typeof legacy.isTextMode === 'boolean' ? legacy.isTextMode : false
+        const daggerheartMode = typeof legacy.isTextMode === 'boolean'
+          ? legacy.isTextMode
+          : DEFAULT_TEXT_MODE_BY_RULE_SET.daggerheart
         const activeRuleSetId = legacy.activeRuleSetId === 'rhodes-island'
           ? 'rhodes-island'
           : 'daggerheart'
         const textModeByRuleSet = {
           daggerheart: legacy.textModeByRuleSet?.daggerheart ?? daggerheartMode,
-          'rhodes-island': legacy.textModeByRuleSet?.['rhodes-island'] ?? false,
+          'rhodes-island': legacy.textModeByRuleSet?.['rhodes-island'] ?? DEFAULT_TEXT_MODE_BY_RULE_SET['rhodes-island'],
         }
         return {
           ...legacy,
