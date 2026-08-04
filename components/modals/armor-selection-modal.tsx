@@ -347,28 +347,28 @@ export function ArmorSelectionModal({
 
         <ScrollArea data-armor-modal-table className="flex-1 overflow-auto">
           <div className="p-1 sm:p-2">
-            <table className="min-w-[max-content] w-full border-collapse">
+            <table className="w-full table-fixed border-collapse">
               <thead className="sticky top-0 z-10 bg-gray-800 text-white">
                 <tr>
-                  <th className="whitespace-nowrap p-1 text-left text-xs sm:p-2 sm:text-sm">名称</th>
-                  <th className="whitespace-nowrap p-1 text-left text-xs sm:p-2 sm:text-sm">等级</th>
-                  <th className="whitespace-nowrap p-1 text-left text-xs sm:p-2 sm:text-sm">基础阈值</th>
-                  <th className="whitespace-nowrap p-1 text-left text-xs sm:p-2 sm:text-sm">基础护甲值</th>
-                  <th className="whitespace-nowrap p-1 text-left text-xs sm:p-2 sm:text-sm">特性名称</th>
-                  <th className="whitespace-nowrap p-1 text-left text-xs sm:p-2 sm:text-sm">描述</th>
+                  <th className="w-[18%] break-words p-1 text-left text-xs sm:p-2 sm:text-sm">名称</th>
+                  <th className="w-[8%] break-words p-1 text-left text-xs sm:p-2 sm:text-sm">等级</th>
+                  <th className="w-[12%] break-words p-1 text-left text-xs sm:p-2 sm:text-sm">基础阈值</th>
+                  <th className="w-[12%] break-words p-1 text-left text-xs sm:p-2 sm:text-sm">基础护甲值</th>
+                  <th className="w-[14%] break-words p-1 text-left text-xs sm:p-2 sm:text-sm">特性名称</th>
+                  <th className="w-[36%] break-words p-1 text-left text-xs sm:p-2 sm:text-sm">描述</th>
                 </tr>
               </thead>
               <tbody>
                 {isCustom && customName && (
                   <tr className="bg-blue-50">
-                    <td className="whitespace-nowrap p-1 text-xs sm:p-2 sm:text-sm">{customName}</td>
-                    <td className="whitespace-nowrap p-1 text-xs sm:p-2 sm:text-sm">
+                    <td className="break-words p-1 text-xs sm:p-2 sm:text-sm">{customName}</td>
+                    <td className="break-words p-1 text-xs sm:p-2 sm:text-sm">
                       {customLevel ? LEVEL_LABELS[customLevel] : ""}
                     </td>
-                    <td className="whitespace-nowrap p-1 text-xs sm:p-2 sm:text-sm">{customDamageThreshold}</td>
-                    <td className="whitespace-nowrap p-1 text-xs sm:p-2 sm:text-sm">{customArmorValue}</td>
-                    <td className="whitespace-nowrap p-1 text-xs sm:p-2 sm:text-sm">{customFeatureName}</td>
-                    <td className="whitespace-nowrap p-1 text-xs sm:p-2 sm:text-sm">{customDescription}</td>
+                    <td className="break-words p-1 text-xs sm:p-2 sm:text-sm">{customDamageThreshold}</td>
+                    <td className="break-words p-1 text-xs sm:p-2 sm:text-sm">{customArmorValue}</td>
+                    <td className="break-words p-1 text-xs sm:p-2 sm:text-sm">{customFeatureName}</td>
+                    <td className="break-words p-1 text-xs sm:p-2 sm:text-sm">{customDescription}</td>
                   </tr>
                 )}
 
@@ -388,14 +388,14 @@ export function ArmorSelectionModal({
                       onSelect(armor.id)
                     }}
                   >
-                    <td className="whitespace-nowrap p-1 text-xs sm:p-2 sm:text-sm">{armor.名称}</td>
-                    <td className="whitespace-nowrap p-1 text-xs sm:p-2 sm:text-sm">
+                    <td className="break-words p-1 text-xs sm:p-2 sm:text-sm">{armor.名称}</td>
+                    <td className="break-words p-1 text-xs sm:p-2 sm:text-sm">
                       {LEVEL_LABELS[armor.等级]}
                     </td>
-                    <td className="whitespace-nowrap p-1 text-xs sm:p-2 sm:text-sm">{armor.伤害阈值}</td>
-                    <td className="whitespace-nowrap p-1 text-xs sm:p-2 sm:text-sm">{armor.护甲值}</td>
-                    <td className="whitespace-nowrap p-1 text-xs sm:p-2 sm:text-sm">{armor.特性名称}</td>
-                    <td className="whitespace-nowrap p-1 text-xs sm:p-2 sm:text-sm">{armor.描述}</td>
+                    <td className="break-words p-1 text-xs sm:p-2 sm:text-sm">{armor.伤害阈值}</td>
+                    <td className="break-words p-1 text-xs sm:p-2 sm:text-sm">{armor.护甲值}</td>
+                    <td className="break-words p-1 text-xs sm:p-2 sm:text-sm">{armor.特性名称}</td>
+                    <td className="break-words p-1 text-xs sm:p-2 sm:text-sm">{armor.描述}</td>
                   </tr>
                 ))}
               </tbody>
