@@ -3,6 +3,7 @@
 import type React from "react"
 import { useState } from "react"
 import TextareaAutosize from "react-textarea-autosize"
+import { splitTextAtBoundary } from "@/lib/text-layout"
 
 interface ContentEditableFieldProps {
   name: string
@@ -37,7 +38,7 @@ export function ContentEditableField({
       return Array.from({ length: maxLines }, (_, index) => value.split('\n')[index] || "")
     }
     
-    // 如果长度超过29字符，逐行智能分割
+    // 如果长度超过29字符，优先在标点或空格后分割，避免拆开短语
     const maxCharsPerLine = 29;
     const lines: string[] = []
     let remaining = value.trim()
@@ -49,17 +50,15 @@ export function ContentEditableField({
         break
       }
 
-      let splitIndex = maxCharsPerLine
-      for (let i = maxCharsPerLine; i >= Math.max(0, maxCharsPerLine - 5); i--) {
-        const char = remaining[i]
-        if (char === ' ' || ['，', '。', '：', ';', ',', ':'].includes(char)) {
-          splitIndex = i + 1
-          break
-        }
+      const [line, rest] = splitTextAtBoundary(remaining, maxCharsPerLine)
+      if (!rest) {
+        lines.push(remaining)
+        remaining = ""
+        break
       }
 
-      lines.push(remaining.substring(0, splitIndex).trim())
-      remaining = remaining.substring(splitIndex).trim()
+      lines.push(line)
+      remaining = rest
     }
 
     return [...lines, ...Array(Math.max(0, maxLines - lines.length)).fill("")]

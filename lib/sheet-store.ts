@@ -18,6 +18,7 @@ import {
     convertDisplayedEvasionToManualModifier,
 } from "@/lib/domain-card-derived-stats";
 import { applyRhodesIslandAutomation } from "@/lib/rhodes-island-automation";
+import { splitTextAtBoundary } from "@/lib/text-layout";
 
 // 施法属性映射关系
 const SPELLCASTING_ATTRIBUTE_MAP: Record<string, keyof SheetData> = {
@@ -29,45 +30,23 @@ const SPELLCASTING_ATTRIBUTE_MAP: Record<string, keyof SheetData> = {
     "知识": "knowledge"
 };
 
-// 按显示长度智能分割文本到两行的函数
+// 按显示长度智能分割文本到两行，优先在标点或空格后换行
 const splitFeatureText = (text: string): [string, string] => {
-    if (!text) return ["", ""];
-
-    // 估算每行可容纳的字符数（基于输入框宽度和字体大小）
-    const maxCharsPerLine = 29; // 匹配输入框的maxLength
-
-    // 如果文本长度小于等于一行容量，全部放在第一行
-    if (text.length <= maxCharsPerLine) {
-        return [text, ""];
-    }
-
-    // 寻找合适的分割点
-    let splitIndex = maxCharsPerLine;
-
-    // 只在空格处分割，或者下一行开头是标点符号时才在标点符号处分割
-    for (let i = maxCharsPerLine; i >= Math.max(0, maxCharsPerLine - 5); i--) {
-        const char = text[i];
-        const nextChar = text[i + 1];
-
-        // 在空格处分割
-        if (char === ' ') {
-            splitIndex = i + 1;
-            break;
-        }
-
-        // 只有当下一行开头是标点符号时，才在标点符号处分割
-        const punctuation = ['，', '。', '：', ';', ',', ':'];
-        if (punctuation.includes(char) && nextChar && punctuation.includes(nextChar)) {
-            splitIndex = i + 1;
-            break;
-        }
-    }
-
-    return [
-        text.substring(0, splitIndex).trim(),
-        text.substring(splitIndex).trim()
-    ];
+    return splitTextAtBoundary(text, 29)
 };
+
+const normalizePresetArmorFeature = (data: SheetData): SheetData => {
+    if (data.armorSelection?.mode !== "preset") return data
+
+    const armor = armorItems.find((item) => item.名称 === data.armorName)
+    if (!armor) return data
+
+    const featureText = `${armor.特性名称}${armor.特性名称 && armor.描述 ? ": " : ""}${armor.描述}`
+    const [feature1, feature2] = splitFeatureText(featureText)
+    const armorFeature = feature2 ? `${feature1}\n${feature2}` : feature1
+
+    return armorFeature === data.armorFeature ? data : { ...data, armorFeature }
+}
 
 // 属性升级记录接口（用于回滚功能）
 interface AttributeUpgradeRecord {
@@ -283,7 +262,10 @@ export const useSheetStore = create<SheetState>((set) => ({
         });
     },
     replaceSheetData: (newData) => set((state) => {
-        const finalData = finalizeSheetData(newData, state.sheetData);
+        const finalData = finalizeSheetData(
+            normalizePresetArmorFeature(newData),
+            state.sheetData,
+        );
 
         // 清空所有撤回快照，防止跨角色混淆
         // 当切换角色或导入数据时，旧角色的升级快照不应该影响新角色
