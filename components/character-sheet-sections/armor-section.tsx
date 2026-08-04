@@ -139,7 +139,8 @@ export function ArmorSection({ onOpenArmorModal }: ArmorSectionProps) {
           value={formData.armorFeature || ""}
           onChange={handleInputChange}
           placeholder=""
-          maxLines={2}
+          maxLines={3}
+          minLines={2}
         />
       </div>
     </div>

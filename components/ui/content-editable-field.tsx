@@ -12,6 +12,8 @@ interface ContentEditableFieldProps {
   maxLength?: number
   className?: string
   maxLines?: number
+  /** 屏幕上至少保留的行数；允许内容在不截断的前提下按需扩展到 maxLines。 */
+  minLines?: number
 }
 
 export function ContentEditableField({
@@ -21,7 +23,8 @@ export function ContentEditableField({
   onChange,
   maxLength,
   className = "",
-  maxLines = 2
+  maxLines = 2,
+  minLines = maxLines,
 }: ContentEditableFieldProps) {
   const [isFocused, setIsFocused] = useState(false)
   
@@ -207,7 +210,7 @@ export function ContentEditableField({
         onKeyDown={handleKeyDown}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        minRows={maxLines}
+        minRows={Math.min(Math.max(1, minLines), maxLines)}
         maxRows={maxLines}
         className={combinedClassName}
         style={notebookStyles}
