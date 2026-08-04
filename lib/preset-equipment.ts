@@ -219,7 +219,7 @@ export function getPresetEquipmentEffectSources(
     | "secondaryWeaponDamage"
     | "secondaryWeaponFeature"
     | "secondaryWeaponSelection"
-  >,
+  > & Partial<Pick<SheetData, "ruleSetId">>,
 ): EquipmentEffectSource[] {
   const sources: EquipmentEffectSource[] = []
 
@@ -282,7 +282,7 @@ export function aggregatePresetEquipmentEffects(
     | "secondaryWeaponDamage"
     | "secondaryWeaponFeature"
     | "secondaryWeaponSelection"
-  >,
+  > & Partial<Pick<SheetData, "ruleSetId">>,
 ): AggregatedEquipmentEffects {
   const aggregated: AggregatedEquipmentEffects = {
     evasion: 0,

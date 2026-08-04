@@ -389,11 +389,12 @@ export function BottomDock(props: BottomDockProps) {
           <div
             data-ri-dock-panel
             className={cn(
-              "flex items-center gap-2 rounded-full border px-2.5 py-1.5 shadow-md transition-[color,background-color,border-color,box-shadow,transform,opacity] duration-200",
+              "flex items-center gap-2 rounded-full border px-2.5 py-1.5 shadow-md transition-all duration-200",
               isPreviewMode && "gap-4",
             )}
             style={{
-              background: "rgba(20, 27, 31, 0.97)",
+              background: "rgba(255, 255, 255, 0.08)",
+              backdropFilter: "blur(16px) saturate(180%)",
               borderColor: "rgba(255, 255, 255, 0.15)",
               boxShadow: "0 4px 12px -2px rgba(0, 0, 0, 0.1)",
             }}

@@ -16,15 +16,21 @@ export function getRuleSetBatchOptions(
   cards: BatchCard[],
   ruleSetId: RuleSetId,
 ): CardBatchOption[] {
-  if (ruleSetId !== "rhodes-island") return batches
-
   const cardCount = cards.filter(card =>
     card.batchId === BUILTIN_BATCH_ID && cardBelongsToRuleSet(card, ruleSetId)
   ).length
 
-  return [{
-    id: BUILTIN_BATCH_ID,
-    name: "内置卡牌包",
-    cardCount,
-  }]
+  if (ruleSetId === "rhodes-island") {
+    return [{
+      id: BUILTIN_BATCH_ID,
+      name: "内置卡牌包",
+      cardCount,
+    }]
+  }
+
+  return batches.map(batch =>
+    batch.id === BUILTIN_BATCH_ID && cardCount > 0
+      ? { ...batch, cardCount }
+      : batch,
+  )
 }

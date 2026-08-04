@@ -26,4 +26,17 @@ describe("ruleset card batch options", () => {
   it("原版规则保留原有卡包选项", () => {
     expect(getRuleSetBatchOptions(batches, [], "daggerheart")).toEqual(batches)
   })
+
+  it("原版规则只统计原版内置卡牌", () => {
+    const cards = [
+      { batchId: BUILTIN_BATCH_ID, ruleset: "daggerheart" },
+      { batchId: BUILTIN_BATCH_ID, ruleset: "daggerheart" },
+      { batchId: BUILTIN_BATCH_ID, ruleset: "rhodes-island" },
+    ] as unknown as StandardCard[]
+
+    expect(getRuleSetBatchOptions(batches, cards, "daggerheart")).toEqual([
+      { ...batches[0], cardCount: 2 },
+      batches[1],
+    ])
+  })
 })
