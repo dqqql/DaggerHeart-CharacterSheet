@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { armorItems } from "@/data/list/armor"
+import { armorItems } from "@/data/list/rhodes-island-armor"
 import { aggregatePresetEquipmentEffects } from "@/lib/preset-equipment"
 import { defaultSheetData } from "@/lib/default-sheet-data"
 
@@ -54,6 +54,7 @@ describe("罗德岛护甲表", () => {
   it("自动汇总纯数值护甲效果", () => {
     const heavy = aggregatePresetEquipmentEffects({
       ...defaultSheetData,
+      ruleSetId: "rhodes-island",
       armorName: "基础加重型制式装备",
       armorSelection: { mode: "preset", id: "基础加重型制式装备" },
       armorBaseScore: "4",
@@ -64,6 +65,7 @@ describe("罗德岛护甲表", () => {
 
     const noble = aggregatePresetEquipmentEffects({
       ...defaultSheetData,
+      ruleSetId: "rhodes-island",
       armorName: "贵族风貌套装",
       armorSelection: { mode: "preset", id: "贵族风貌套装" },
       armorBaseScore: "5",
@@ -73,6 +75,7 @@ describe("罗德岛护甲表", () => {
 
     const burdened = aggregatePresetEquipmentEffects({
       ...defaultSheetData,
+      ruleSetId: "rhodes-island",
       armorName: "身负重任套装",
       armorSelection: { mode: "preset", id: "身负重任套装" },
       armorBaseScore: "8",

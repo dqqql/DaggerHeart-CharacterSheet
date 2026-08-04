@@ -6,6 +6,7 @@ import { createPortal } from "react-dom"
 import { Button } from "@/components/ui/button"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { type ArmorItem, armorItems } from "@/data/list/armor"
+import { armorItems as rhodesIslandArmorItems } from "@/data/list/rhodes-island-armor"
 import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock"
 
 interface ArmorModalProps {
@@ -13,6 +14,7 @@ interface ArmorModalProps {
   onClose: () => void
   onSelect: (armorId: string) => void
   title: string
+  isRhodesIsland?: boolean
 }
 
 const LEVELS = ["T1", "T2", "T3", "T4"] as const
@@ -32,6 +34,7 @@ export function ArmorSelectionModal({
   onClose,
   onSelect,
   title,
+  isRhodesIsland = false,
 }: ArmorModalProps) {
   useBodyScrollLock(isOpen)
   const [customName, setCustomName] = useState("")
@@ -47,11 +50,11 @@ export function ArmorSelectionModal({
 
   const processedArmorItems = useMemo<ProcessedArmorItem[]>(
     () =>
-      armorItems.map((armor) => ({
+      (isRhodesIsland ? rhodesIslandArmorItems : armorItems).map((armor) => ({
         ...armor,
         id: armor.名称,
       })),
-    [],
+    [isRhodesIsland],
   )
 
   const filteredArmorItems = useMemo(() => {

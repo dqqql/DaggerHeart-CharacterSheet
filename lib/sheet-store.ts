@@ -5,11 +5,11 @@ import { useShallow } from "zustand/react/shallow";
 import { defaultSheetData } from "./default-sheet-data";
 import type { SheetData, AttributeValue, ArmorTemplateData, SheetCardReference } from "./sheet-data";
 import { createEmptyCard, type StandardCard } from "@/card/card-types";
-import { armorItems, type ArmorItem } from "@/data/list/armor";
 import { showFadeNotification } from "@/components/ui/fade-notification";
 import { parseToNumber } from "./number-utils";
 import {
     convertDisplayedAttributeToStoredBase,
+    resolvePresetArmor,
 } from "@/lib/preset-equipment";
 import {
     calculateArmorValueBreakdown,
@@ -38,7 +38,7 @@ const splitFeatureText = (text: string): [string, string] => {
 const normalizePresetArmorFeature = (data: SheetData): SheetData => {
     if (data.armorSelection?.mode !== "preset") return data
 
-    const armor = armorItems.find((item) => item.名称 === data.armorName)
+    const armor = resolvePresetArmor(data.armorName, data.ruleSetId)
     if (!armor) return data
 
     const featureText = `${armor.特性名称}${armor.特性名称 && armor.描述 ? ": " : ""}${armor.描述}`
@@ -793,7 +793,7 @@ export const useSheetStore = create<SheetState>((set) => ({
                 }
             } else {
                 // 尝试从预设护甲列表中查找
-                const armor = armorItems.find((a: ArmorItem) => a.名称 === armorId);
+                const armor = resolvePresetArmor(armorId, state.sheetData.ruleSetId);
 
                 if (armor) {
                     // 使用预设护甲

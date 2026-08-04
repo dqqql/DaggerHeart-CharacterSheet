@@ -4,6 +4,20 @@ import { describe, expect, it, vi } from "vitest"
 import { ArmorSelectionModal } from "@/components/modals/armor-selection-modal"
 
 describe("ArmorSelectionModal", () => {
+  it("uses the original rule armor library by default", () => {
+    render(
+      <ArmorSelectionModal
+        isOpen
+        onClose={vi.fn()}
+        onSelect={vi.fn()}
+        title="选择护甲"
+      />,
+    )
+
+    expect(screen.getByText("填充布甲")).toBeInTheDocument()
+    expect(screen.queryByText("基础轻型制式装备")).not.toBeInTheDocument()
+  })
+
   it("wraps the long names and descriptions of the Rhodes armor sets", () => {
     render(
       <ArmorSelectionModal
@@ -11,6 +25,7 @@ describe("ArmorSelectionModal", () => {
         onClose={vi.fn()}
         onSelect={vi.fn()}
         title="选择护甲"
+        isRhodesIsland
       />,
     )
 

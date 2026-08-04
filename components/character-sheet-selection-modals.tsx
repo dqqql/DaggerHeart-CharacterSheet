@@ -142,6 +142,7 @@ export const CharacterSheetSelectionModals = forwardRef<
             setArmorOpen(false)
           }}
           title="选择护甲"
+          isRhodesIsland={isRhodesIsland}
         />
       )}
 
