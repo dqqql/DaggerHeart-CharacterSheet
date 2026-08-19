@@ -872,6 +872,7 @@ export default function CharacterSheet() {
                       description={safeFormData.cards[0]?.description}
                       subclassDescription={safeFormData.cards[1]?.description}
                       heightClassName="h-[230px]"
+                      printHeightClassName="print:h-[230px]"
                     />
                   </div>
                 )}

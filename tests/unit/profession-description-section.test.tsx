@@ -4,6 +4,17 @@ import { describe, expect, it } from "vitest"
 import ProfessionDescriptionSection from "@/components/character-sheet-sections/profession-description-section"
 
 describe("ProfessionDescriptionSection", () => {
+  it("keeps the standard profession frame inside the printable first page", () => {
+    const { container } = render(
+      <ProfessionDescriptionSection description="职业特性内容。" />,
+    )
+
+    const description = container.querySelector("[data-profession-description]")
+
+    expect(description).toHaveClass("print:h-[55mm]")
+    expect(description).toHaveClass("print:overflow-hidden")
+  })
+
   it("places a flowing subclass divider immediately before subclass features", () => {
     render(
       <ProfessionDescriptionSection

@@ -6,12 +6,14 @@ interface ProfessionDescriptionSectionProps {
     description: string | undefined;
     subclassDescription?: string;
     heightClassName?: string;
+    printHeightClassName?: string;
 }
 
 const ProfessionDescriptionSection: React.FC<ProfessionDescriptionSectionProps> = ({
     description,
     subclassDescription,
     heightClassName = 'h-[250px]',
+    printHeightClassName = 'print:h-[55mm]',
 }) => {
     const subclassStart = description && subclassDescription
         ? description.indexOf(subclassDescription)
@@ -128,7 +130,7 @@ const ProfessionDescriptionSection: React.FC<ProfessionDescriptionSectionProps> 
     return (
         <div
             data-profession-description
-            className={`border-2 border-gray-300 rounded-lg p-1.5 text-xs markdown-content ${heightClassName} overflow-auto`}
+            className={`border-2 border-gray-300 rounded-lg p-1.5 text-xs markdown-content ${heightClassName} ${printHeightClassName} overflow-auto print:overflow-hidden`}
         >
             {renderDescription(professionDescription, 'profession')}
             {subclassFeatureDescription && (
