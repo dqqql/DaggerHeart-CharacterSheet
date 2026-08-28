@@ -12,23 +12,14 @@ import {
     resolvePresetArmor,
 } from "@/lib/preset-equipment";
 import {
-    calculateArmorValueBreakdown,
-    calculateDamageThresholdBreakdown,
     calculateEvasionBreakdown,
     convertDisplayedEvasionToManualModifier,
 } from "@/lib/domain-card-derived-stats";
-import { applyRhodesIslandAutomation } from "@/lib/rulesets/rhodes-island/automation";
+import {
+    finalizeSheetData,
+    getExplicitlyClearedDerivedFields,
+} from "@/lib/sheet-finalization";
 import { splitTextAtBoundary } from "@/lib/text-layout";
-
-// 施法属性映射关系
-const SPELLCASTING_ATTRIBUTE_MAP: Record<string, keyof SheetData> = {
-    "敏捷": "agility",
-    "力量": "strength",
-    "灵巧": "finesse",
-    "本能": "instinct",
-    "风度": "presence",
-    "知识": "knowledge"
-};
 
 // 按显示长度智能分割文本到两行，优先在标点或空格后换行
 const splitFeatureText = (text: string): [string, string] => {
@@ -70,43 +61,6 @@ interface AttributeUpgradeRecord {
     }
 }
 
-// 同步子职业施法属性的函数
-const syncSubclassSpellcasting = (newData: SheetData, oldData: SheetData): SheetData => {
-    // 获取旧的和新的子职业施法属性
-    const oldSubclassCard = oldData.cards?.[1];
-    const newSubclassCard = newData.cards?.[1];
-
-    const oldSpellcastingAttr = oldSubclassCard?.cardSelectDisplay?.item3;
-    const newSpellcastingAttr = newSubclassCard?.cardSelectDisplay?.item3;
-
-    // 如果施法属性没有变化，直接返回
-    if (oldSpellcastingAttr === newSpellcastingAttr) {
-        return newData;
-    }
-
-    const result = { ...newData };
-
-    // 清除旧的施法属性标记
-    if (oldSpellcastingAttr && SPELLCASTING_ATTRIBUTE_MAP[oldSpellcastingAttr]) {
-        const oldAttrKey = SPELLCASTING_ATTRIBUTE_MAP[oldSpellcastingAttr];
-        const oldAttr = result[oldAttrKey] as AttributeValue;
-        if (oldAttr && typeof oldAttr === "object" && "spellcasting" in oldAttr) {
-            (result[oldAttrKey] as AttributeValue) = { ...oldAttr, spellcasting: false };
-        }
-    }
-
-    // 设置新的施法属性标记
-    if (newSpellcastingAttr && SPELLCASTING_ATTRIBUTE_MAP[newSpellcastingAttr]) {
-        const newAttrKey = SPELLCASTING_ATTRIBUTE_MAP[newSpellcastingAttr];
-        const newAttr = result[newAttrKey] as AttributeValue;
-        if (newAttr && typeof newAttr === "object" && "spellcasting" in newAttr) {
-            (result[newAttrKey] as AttributeValue) = { ...newAttr, spellcasting: true };
-        }
-    }
-
-    return result;
-};
-
 const AUTO_CALC_ATTRIBUTE_KEYS: Array<keyof Pick<SheetData, "agility" | "strength" | "finesse" | "instinct" | "presence" | "knowledge">> = [
     "agility",
     "strength",
@@ -115,65 +69,6 @@ const AUTO_CALC_ATTRIBUTE_KEYS: Array<keyof Pick<SheetData, "agility" | "strengt
     "presence",
     "knowledge",
 ];
-
-type DerivedCombatField = "evasion" | "armorValue" | "minorThreshold" | "majorThreshold";
-
-const getExplicitlyClearedDerivedFields = (updates: Partial<SheetData>): Set<DerivedCombatField> => {
-    const clearedFields = new Set<DerivedCombatField>();
-
-    if (updates.evasion === "" && !updates.evasionManualModifier?.trim()) {
-        clearedFields.add("evasion");
-    }
-
-    if (updates.armorValue === "" && !updates.armorValueManualModifier?.trim()) {
-        clearedFields.add("armorValue");
-    }
-
-    if (updates.minorThreshold === "" && !updates.minorThresholdManualModifier?.trim()) {
-        clearedFields.add("minorThreshold");
-    }
-
-    if (updates.majorThreshold === "" && !updates.majorThresholdManualModifier?.trim()) {
-        clearedFields.add("majorThreshold");
-    }
-
-    return clearedFields;
-};
-
-const syncDerivedCombatStats = (data: SheetData, explicitlyClearedFields: Set<DerivedCombatField> = new Set()): SheetData => {
-    const nextData = { ...data };
-
-    const evasionBreakdown = calculateEvasionBreakdown(nextData);
-    nextData.evasion = explicitlyClearedFields.has("evasion") ? "" : evasionBreakdown.display;
-
-    const armorValueBreakdown = calculateArmorValueBreakdown(nextData);
-    nextData.armorValue = explicitlyClearedFields.has("armorValue") ? "" : armorValueBreakdown.display;
-    nextData.armorMax = explicitlyClearedFields.has("armorValue")
-        ? parseToNumber(data.armorValue ?? "", 0)
-        : parseToNumber(armorValueBreakdown.display, 0);
-
-    if (nextData.armorThreshold) {
-        const thresholdBreakdown = calculateDamageThresholdBreakdown(nextData);
-        nextData.minorThreshold = explicitlyClearedFields.has("minorThreshold") ? "" : thresholdBreakdown.minor.display;
-        nextData.majorThreshold = explicitlyClearedFields.has("majorThreshold") ? "" : thresholdBreakdown.major.display;
-    } else {
-        nextData.minorThreshold = explicitlyClearedFields.has("minorThreshold") ? "" : data.minorThreshold;
-        nextData.majorThreshold = explicitlyClearedFields.has("majorThreshold") ? "" : data.majorThreshold;
-    }
-
-    return nextData;
-};
-
-const finalizeSheetData = (
-    newData: SheetData,
-    oldData: SheetData,
-    explicitlyClearedFields: Set<DerivedCombatField> = new Set(),
-): SheetData => {
-    const withSubclassSync = syncSubclassSpellcasting(newData, oldData);
-    return applyRhodesIslandAutomation(
-        syncDerivedCombatStats(withSubclassSync, explicitlyClearedFields)
-    );
-};
 
 interface SheetState {
     sheetData: SheetData;

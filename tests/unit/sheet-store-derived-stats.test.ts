@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest"
 
-import { createEmptyCard } from "@/card/card-types"
+import { createEmptyCard, type StandardCard } from "@/card/card-types"
+import { rhodesIslandCards, rhodesIslandCatalog } from "@/data/rhodes-island"
 import { defaultSheetData } from "@/lib/default-sheet-data"
 import { useSheetStore } from "@/lib/sheet-store"
 
@@ -44,5 +45,32 @@ describe("sheet store derived stat syncing", () => {
     state = useSheetStore.getState().sheetData
     expect(state.minorThreshold).toBe("9")
     expect(state.majorThreshold).toBe("15")
+  })
+
+  it("routes Rhodes Island updates through the shared finalization pipeline", () => {
+    const branch = rhodesIslandCatalog.branches.find(
+      item => item.id === "ri-branch-97014a65f041",
+    )!
+    const professionCard = rhodesIslandCards.find(
+      card => card.id === branch.professionId,
+    ) as StandardCard
+    const branchCard = rhodesIslandCards.find(card => card.id === branch.id) as StandardCard
+    const cards = [...useSheetStore.getState().sheetData.cards]
+    cards[0] = professionCard
+    cards[1] = branchCard
+
+    useSheetStore.getState().setSheetData({
+      ruleSetId: "rhodes-island",
+      armorThreshold: "6/12",
+      professionRef: { id: professionCard.id, name: professionCard.name },
+      subclassRef: { id: branchCard.id, name: branchCard.name },
+      cards,
+    })
+
+    const result = useSheetStore.getState().sheetData
+    expect(result.primaryWeaponName).toBe(branch.stages[0].weapon.name)
+    expect(result.armorValue).toBe("1")
+    expect(result.minorThreshold).toBe("8")
+    expect(result.majorThreshold).toBe("13")
   })
 })

@@ -1,4 +1,4 @@
-import type { SheetData } from "@/lib/sheet-data"
+import { normalizeRuleSetId, type SheetData } from "@/lib/sheet-data"
 import { safeEvaluateExpression } from "@/lib/number-utils"
 import {
   aggregatePresetEquipmentEffects,
@@ -9,10 +9,7 @@ import {
   type DerivedStatSourceLine,
 } from "@/lib/preset-equipment"
 import type { CharacterAttributeKey } from "@/types/preset-equipment"
-import {
-  getRhodesDerivedStatSources,
-  type RhodesDerivedStatsInput,
-} from "@/lib/rulesets/rhodes-island/derived-stats"
+import { getRuleSetModule } from "@/lib/rulesets/registry"
 
 export interface DamageThresholdBreakdown {
   minor: DerivedStatBreakdown
@@ -90,6 +87,21 @@ const BARE_BONES_THRESHOLDS: Record<number, { minor: number; major: number }> = 
   4: { minor: 15, major: 38 },
 }
 
+type RuleSetDerivedStatsInput = Partial<
+  Pick<
+    SheetData,
+    "ruleSetId" | "subclassRef" | "branchUpgradeCount" | "level" | "selectedModule" | "cards"
+  >
+>
+
+function getRuleSetDerivedStatSources(data: RuleSetDerivedStatsInput) {
+  const ruleSetId = normalizeRuleSetId(data.ruleSetId)
+  return getRuleSetModule(ruleSetId).getDerivedStatSources({
+    ...data,
+    ruleSetId,
+  } as SheetData)
+}
+
 type EvasionInput = Pick<
   SheetData,
   | "cards"
@@ -110,7 +122,7 @@ type EvasionInput = Pick<
   | "secondaryWeaponDamage"
   | "secondaryWeaponFeature"
   | "secondaryWeaponSelection"
-> & RhodesDerivedStatsInput
+> & RuleSetDerivedStatsInput
 
 type ArmorInput = Pick<
   SheetData,
@@ -132,7 +144,7 @@ type ArmorInput = Pick<
   | "secondaryWeaponDamage"
   | "secondaryWeaponFeature"
   | "secondaryWeaponSelection"
-> & RhodesDerivedStatsInput
+> & RuleSetDerivedStatsInput
 
 type ThresholdInput = Pick<
   SheetData,
@@ -159,14 +171,14 @@ type ThresholdInput = Pick<
   | "minorThresholdManualModifier"
   | "majorThresholdManualModifier"
   | "domainCardAutomation"
-> & RhodesDerivedStatsInput
+> & RuleSetDerivedStatsInput
 
-type HpMaxInput = Pick<SheetData, "cards" | "hpMax"> & RhodesDerivedStatsInput
-type StressMaxInput = Pick<SheetData, "cards" | "stressMax"> & RhodesDerivedStatsInput
+type HpMaxInput = Pick<SheetData, "cards" | "hpMax"> & RuleSetDerivedStatsInput
+type StressMaxInput = Pick<SheetData, "cards" | "stressMax"> & RuleSetDerivedStatsInput
 
 export function calculateEvasionBreakdown(data: EvasionInput): DerivedStatBreakdown {
   const equipment = aggregatePresetEquipmentEffects(data)
-  const rhodesSources = getRhodesDerivedStatSources(data).evasion
+  const ruleSources = getRuleSetDerivedStatSources(data)
   const professionBase = getProfessionBaseEvasion(data)
   const manualModifier = parseModifier(data.evasionManualModifier)
   const automatedSources: DerivedStatSourceLine[] = []
@@ -198,7 +210,7 @@ export function calculateEvasionBreakdown(data: EvasionInput): DerivedStatBreakd
     automatedSources.push({ label: CHARACTER_CARD_LABELS.nightwalkerMastery, value: 1 })
   }
 
-  automatedSources.push(...rhodesSources)
+  automatedSources.push(...ruleSources.evasion)
   sources.push(...automatedSources)
 
   if (manualModifier !== 0) {
@@ -222,7 +234,7 @@ export function calculateEvasionBreakdown(data: EvasionInput): DerivedStatBreakd
 
 export function calculateArmorValueBreakdown(data: ArmorInput): DerivedStatBreakdown {
   const equipment = aggregatePresetEquipmentEffects(data)
-  const rhodesSources = getRhodesDerivedStatSources(data).armorValue
+  const ruleSources = getRuleSetDerivedStatSources(data)
   const wearingPresetArmor = isPresetArmorEquipped(data)
   const bareBonesActive = hasFocusedDomainCard(data.cards, DOMAIN_CARD_IDS.bareBones) && !wearingPresetArmor
   const armorBase = bareBonesActive
@@ -252,7 +264,7 @@ export function calculateArmorValueBreakdown(data: ArmorInput): DerivedStatBreak
     automatedSources.push({ label: DOMAIN_CARD_LABELS.valorTouched, value: 1 })
   }
 
-  automatedSources.push(...rhodesSources)
+  automatedSources.push(...ruleSources.armorValue)
   sources.push(...automatedSources)
 
   if (manualModifier !== 0) {
@@ -330,7 +342,8 @@ export function calculateHpMaxBreakdown(data: HpMaxInput): ResourceMaxBreakdown 
     automationSources.push({ label: CHARACTER_CARD_LABELS.schoolOfWarFoundation, value: 1 })
   }
 
-  automationSources.push(...getRhodesDerivedStatSources(data).hpMax)
+  const ruleSources = getRuleSetDerivedStatSources(data)
+  automationSources.push(...ruleSources.hpMax)
   const total = storedBase + sumSources(automationSources)
 
   return {
@@ -365,7 +378,8 @@ export function calculateStressMaxBreakdown(data: StressMaxInput): ResourceMaxBr
     automationSources.push({ label: CHARACTER_CARD_LABELS.vengeanceFoundation, value: 1 })
   }
 
-  automationSources.push(...getRhodesDerivedStatSources(data).stressMax)
+  const ruleSources = getRuleSetDerivedStatSources(data)
+  automationSources.push(...ruleSources.stressMax)
   const total = storedBase + sumSources(automationSources)
 
   return {
@@ -533,9 +547,9 @@ function getDamageThresholdContext(data: ThresholdInput) {
     majorBonusSources.push({ label: CHARACTER_CARD_LABELS.wingedSentinelMastery, value: 4 })
   }
 
-  const rhodesSources = getRhodesDerivedStatSources(data)
-  minorBonusSources.push(...rhodesSources.minorThreshold)
-  majorBonusSources.push(...rhodesSources.majorThreshold)
+  const ruleSources = getRuleSetDerivedStatSources(data)
+  minorBonusSources.push(...ruleSources.minorThreshold)
+  majorBonusSources.push(...ruleSources.majorThreshold)
 
   return {
     minorBase,

@@ -496,7 +496,7 @@ git commit -m "refactor: group rhodes island rules module"
 - Create: `tests/unit/sheet-finalization.test.ts`
 - Modify: `tests/unit/sheet-store-derived-stats.test.ts`
 
-- [ ] **Step 1: 写双规则 finalization 合同测试**
+- [x] **Step 1: 写双规则 finalization 合同测试**
 
 至少覆盖：
 
@@ -505,13 +505,13 @@ git commit -m "refactor: group rhodes island rules module"
 - 传入 SRD 数据时不会调用罗德岛实现（可 spy `daggerheartRuleSet.normalizeSheetData`，不要 mock 私有函数）。
 - 显式清空 `evasion`/阈值的现有语义不变。
 
-- [ ] **Step 2: 运行测试并确认缺少新模块**
+- [x] **Step 2: 运行测试并确认缺少新模块**
 
 Run: `pnpm exec vitest run tests/unit/sheet-finalization.test.ts`
 
 Expected: FAIL，`sheet-finalization` 不存在。
 
-- [ ] **Step 3: 搬移纯函数并固定执行顺序**
+- [x] **Step 3: 搬移纯函数并固定执行顺序**
 
 从 `sheet-store.ts` 搬出 `SPELLCASTING_ATTRIBUTE_MAP`、`syncSubclassSpellcasting`、`getExplicitlyClearedDerivedFields`、`syncDerivedCombatStats`、`finalizeSheetData`。新 pipeline 必须明确按以下顺序执行：
 
@@ -530,7 +530,7 @@ export function finalizeSheetData(
 
 规则 automation 必须先于派生统计，因为它可能修改卡牌、武器或其他派生输入。所有函数保持纯函数，不得在 `sheet-finalization.ts` 中调用 Zustand、通知组件或 localStorage。
 
-- [ ] **Step 4: 让共享派生统计通过 registry 获取规则来源**
+- [x] **Step 4: 让共享派生统计通过 registry 获取规则来源**
 
 在 `lib/domain-card-derived-stats.ts` 删除具体罗德岛 import，改为：
 
@@ -540,11 +540,11 @@ const ruleSources = getRuleSetModule(data.ruleSetId).getDerivedStatSources(data 
 
 将当前每处 `rhodesSources` 替换为对应 `ruleSources` 字段。保留 SRD 领域卡计算主体，本轮不重写这 600 余行成熟逻辑。
 
-- [ ] **Step 5: `sheet-store` 只 import pipeline**
+- [x] **Step 5: `sheet-store` 只 import pipeline**
 
 删除 store 中被搬出的实现，保留所有 action 及其调用方式；从 `@/lib/sheet-finalization` 导入 `finalizeSheetData` 与 `getExplicitlyClearedDerivedFields`。这是减文件职责，不是改 action API。
 
-- [ ] **Step 6: 运行核心回归测试**
+- [x] **Step 6: 运行核心回归测试**
 
 ```powershell
 pnpm exec vitest run tests/unit/sheet-finalization.test.ts tests/unit/sheet-store-derived-stats.test.ts tests/unit/domain-card-derived-stats.test.ts tests/unit/rhodes-island-derived-stats.test.ts tests/unit/rhodes-island-automation.test.ts tests/unit/preset-equipment.test.ts
@@ -553,7 +553,7 @@ pnpm exec tsc --noEmit
 
 Expected: PASS；`lib/sheet-store.ts` 不再直接出现 `rhodes-island` import。
 
-- [ ] **Step 7: 提交**
+- [x] **Step 7: 提交**
 
 ```powershell
 git add lib/sheet-finalization.ts lib/sheet-store.ts lib/domain-card-derived-stats.ts tests/unit/sheet-finalization.test.ts tests/unit/sheet-store-derived-stats.test.ts
