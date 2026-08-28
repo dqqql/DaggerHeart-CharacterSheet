@@ -6,7 +6,7 @@ import {
   ActiveCharacterRecord,
   normalizeRuleSetId,
 } from "./sheet-data";
-import { defaultSheetData } from "./default-sheet-data";
+import { createDefaultSheetData } from "./default-sheet-data";
 import { migrateSheetData } from "./sheet-data-migration";
 
 // ===== 多角色系统存储键 =====
@@ -418,14 +418,11 @@ export function createNewCharacter(
   name: string,
   ruleSetId: RuleSetId = "daggerheart"
 ): SheetData {
-  const newCharacter: SheetData = {
-    ...defaultSheetData,
-    ruleSetId,
+  return {
+    ...createDefaultSheetData(ruleSetId),
     name: name || "新角色",
     // 注释：移除了 focused_card_ids 初始化，聚焦功能由双卡组系统取代
   };
-
-  return newCharacter;
 }
 
 export interface RuleSetSwitchResult {

@@ -11,7 +11,7 @@
  */
 
 import { normalizeRuleSetId, type SheetData, type AttributeValue } from './sheet-data'
-import { defaultSheetData } from './default-sheet-data'
+import { createDefaultSheetData } from './default-sheet-data'
 import { createEmptyCard, type StandardCard } from '@/card/card-types'
 import { inferMixedAncestryEnabled } from '@/lib/ancestry-utils'
 import {
@@ -459,13 +459,14 @@ export function migrateSheetData(
   const hasOwnField = (field: string) => Object.prototype.hasOwnProperty.call(sourceData, field)
 
   // 1. 确保基本结构，与默认数据合并
+  const ruleSetId = normalizeRuleSetId(sourceData.ruleSetId)
   let migrated: SheetData = {
-    ...defaultSheetData,
-    ...sourceData
+    ...createDefaultSheetData(ruleSetId),
+    ...sourceData,
+    ruleSetId,
   }
 
   // 规则集字段加入前的所有数据均属于原版匕首之心。
-  migrated.ruleSetId = normalizeRuleSetId(sourceData.ruleSetId)
   migrated.ancestryExperience = Array.isArray(sourceData.ancestryExperience)
     ? sourceData.ancestryExperience.map(String)
     : []

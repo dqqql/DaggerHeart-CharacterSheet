@@ -1,8 +1,11 @@
 import { createEmptyCard, type StandardCard } from "@/card/card-types";
-import type { SheetData } from "./sheet-data";
+import type { RuleSetId, SheetData } from "./sheet-data";
 
-export const defaultSheetData: SheetData = {
-    ruleSetId: "daggerheart",
+export function createDefaultSheetData(
+  ruleSetId: RuleSetId = "daggerheart",
+): SheetData {
+  return {
+    ruleSetId,
     name: "",
     characterImage: "",
     level: "1",
@@ -187,4 +190,8 @@ export const defaultSheetData: SheetData = {
         daggerheart: 0,
         "rhodes-island": 0,
     },
-};
+  }
+}
+
+// 兼容尚未迁移的只读调用方；新增角色和 migration 不得再浅拷贝此常量。
+export const defaultSheetData: SheetData = createDefaultSheetData()

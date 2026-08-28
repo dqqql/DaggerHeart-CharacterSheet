@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import { useShallow } from "zustand/react/shallow";
-import { defaultSheetData } from "./default-sheet-data";
+import { createDefaultSheetData, defaultSheetData } from "./default-sheet-data";
 import type { SheetData, AttributeValue, ArmorTemplateData, SheetCardReference } from "./sheet-data";
 import { createEmptyCard, type StandardCard } from "@/card/card-types";
 import { showFadeNotification } from "@/components/ui/fade-notification";
@@ -243,7 +243,7 @@ interface SheetState {
 }
 
 export const useSheetStore = create<SheetState>((set) => ({
-    sheetData: defaultSheetData,
+    sheetData: createDefaultSheetData(),
     sheetDataGeneration: 0,
     setSheetData: (updater) => {
         set((state) => {
