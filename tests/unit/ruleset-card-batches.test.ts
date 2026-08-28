@@ -4,6 +4,7 @@ import type { StandardCard } from "@/card/card-types"
 import { BUILTIN_BATCH_ID } from "@/card/stores/store-types"
 import { rhodesIslandCards } from "@/data/rhodes-island"
 import { getRuleSetBatchOptions } from "@/lib/ruleset-card-batches"
+import { getRuleSetModule } from "@/lib/rulesets/registry"
 
 describe("ruleset card batch options", () => {
   const batches = [
@@ -21,6 +22,13 @@ describe("ruleset card batch options", () => {
       name: "内置卡牌包",
       cardCount: rhodesIslandCards.length,
     }])
+    expect(getRuleSetModule("rhodes-island").getBatchOptions(batches, cards)).toEqual([
+      {
+        id: BUILTIN_BATCH_ID,
+        name: "内置卡牌包",
+        cardCount: rhodesIslandCards.length,
+      },
+    ])
   })
 
   it("原版规则保留原有卡包选项", () => {

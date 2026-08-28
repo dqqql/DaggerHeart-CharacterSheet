@@ -4,6 +4,7 @@ import {
   getRhodesDomainFilterOptions,
   getRhodesSecondaryDomainSelectionOptions,
 } from "@/lib/rulesets/rhodes-island/domain-filter"
+import { getRuleSetModule } from "@/lib/rulesets/registry"
 
 describe("getRhodesDomainFilterOptions", () => {
   it("orders primary and secondary domains and marks their boundary", () => {
@@ -18,6 +19,25 @@ describe("getRhodesDomainFilterOptions", () => {
     ])
     expect(options.filter(option => option.separatorBefore)).toEqual([
       { value: "远见", label: "远见", separatorBefore: "主次领域分界线" },
+    ])
+    expect(
+      getRuleSetModule("rhodes-island").formatDomainFilterOptions(
+        options.map(option => option.value),
+      ),
+    ).toEqual(options)
+  })
+
+  it("uses natural plain options for Daggerheart domains", () => {
+    expect(
+      getRuleSetModule("daggerheart").formatDomainFilterOptions([
+        "领域10",
+        "领域2",
+        "领域1",
+      ]),
+    ).toEqual([
+      { value: "领域1", label: "领域1" },
+      { value: "领域2", label: "领域2" },
+      { value: "领域10", label: "领域10" },
     ])
   })
 

@@ -1,10 +1,30 @@
+import { BUILTIN_BATCH_ID } from "@/card/stores/store-types"
+import { armorItems } from "@/data/list/rhodes-island-armor"
 import {
   applyRhodesIslandAutomation,
   getRhodesProfessionHopeFeature,
 } from "@/lib/rulesets/rhodes-island/automation"
 import { getRhodesDerivedStatSources } from "@/lib/rulesets/rhodes-island/derived-stats"
+import { getRhodesDomainFilterOptions } from "@/lib/rulesets/rhodes-island/domain-filter"
 import { withRhodesIslandDefaultAncestryExperience } from "@/lib/rulesets/rhodes-island/experience"
-import type { RuleSetModule } from "@/lib/rulesets/types"
+import type {
+  BatchCard,
+  CardBatchOption,
+  RuleSetModule,
+} from "@/lib/rulesets/types"
+
+function getRhodesIslandBatchOptions(
+  _batches: CardBatchOption[],
+  cards: BatchCard[],
+): CardBatchOption[] {
+  const cardCount = cards.filter(
+    card =>
+      card.batchId === BUILTIN_BATCH_ID &&
+      (card.ruleSetId === "rhodes-island" || card.ruleset === "rhodes-island"),
+  ).length
+
+  return [{ id: BUILTIN_BATCH_ID, name: "内置卡牌包", cardCount }]
+}
 
 export const rhodesIslandRuleSet: RuleSetModule = {
   id: "rhodes-island",
@@ -37,4 +57,7 @@ export const rhodesIslandRuleSet: RuleSetModule = {
   prepareForExport: withRhodesIslandDefaultAncestryExperience,
   getDerivedStatSources: getRhodesDerivedStatSources,
   getProfessionHopeFeature: getRhodesProfessionHopeFeature,
+  getArmorCatalog: () => armorItems,
+  getBatchOptions: getRhodesIslandBatchOptions,
+  formatDomainFilterOptions: getRhodesDomainFilterOptions,
 }

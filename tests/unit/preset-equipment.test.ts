@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest"
 
 import { createEmptyCard } from "@/card/card-types"
+import { armorItems as daggerheartArmorItems } from "@/data/list/armor"
+import { armorItems as rhodesIslandArmorItems } from "@/data/list/rhodes-island-armor"
 import { defaultSheetData } from "@/lib/default-sheet-data"
 import {
   aggregatePresetEquipmentEffects,
@@ -13,8 +15,10 @@ import {
   getDisplayedAttributeValue,
   inferArmorSelection,
   inferWeaponSelection,
+  resolvePresetArmor,
   resolvePresetWeapon,
 } from "@/lib/preset-equipment"
+import { getRuleSetModule } from "@/lib/rulesets/registry"
 import { migrateSheetData } from "@/lib/sheet-data-migration"
 
 function createProfessionCard(evasion: number) {
@@ -30,6 +34,24 @@ function createProfessionCard(evasion: number) {
 }
 
 describe("preset equipment groundwork", () => {
+  it("resolves armor from the active ruleset catalog", () => {
+    expect(getRuleSetModule("daggerheart").getArmorCatalog()).toBe(
+      daggerheartArmorItems,
+    )
+    expect(getRuleSetModule("rhodes-island").getArmorCatalog()).toBe(
+      rhodesIslandArmorItems,
+    )
+    expect(resolvePresetArmor("填充布甲", "daggerheart")).toBe(
+      daggerheartArmorItems.find(item => item.名称 === "填充布甲"),
+    )
+    expect(resolvePresetArmor("基础轻型制式装备", "rhodes-island")).toBe(
+      rhodesIslandArmorItems.find(item => item.名称 === "基础轻型制式装备"),
+    )
+    expect(resolvePresetArmor("基础轻型制式装备", "daggerheart")?.名称).toBe(
+      "填充布甲",
+    )
+  })
+
   it("aggregates passive modifiers from preset armor and weapons", () => {
     const result = aggregatePresetEquipmentEffects({
       ...defaultSheetData,

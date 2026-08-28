@@ -1,8 +1,13 @@
-import { armorItems, type ArmorItem } from "@/data/list/armor"
-import { armorItems as rhodesIslandArmorItems } from "@/data/list/rhodes-island-armor"
+import type { ArmorItem } from "@/data/list/armor"
 import { primaryWeapons, type Weapon } from "@/data/list/primary-weapon"
 import { secondaryWeapons } from "@/data/list/secondary-weapon"
-import type { SheetData } from "@/lib/sheet-data"
+import { getRuleSetModule } from "@/lib/rulesets/registry"
+import {
+  normalizeRuleSetId,
+  RULE_SET_IDS,
+  type RuleSetId,
+  type SheetData,
+} from "@/lib/sheet-data"
 import { safeEvaluateExpression } from "@/lib/number-utils"
 import type {
   CharacterAttributeKey,
@@ -88,8 +93,22 @@ const DAGGERHEART_ARMOR_NAME_ALIASES: Record<string, string> = {
   身负重任套装: "救世主链甲",
 }
 
-const armorById = new Map(armorItems.map((item) => [item.名称, item]))
-const rhodesIslandArmorById = new Map(rhodesIslandArmorItems.map((item) => [item.名称, item]))
+const armorByRuleSet = Object.fromEntries(
+  RULE_SET_IDS.map(ruleSetId => [
+    ruleSetId,
+    new Map(
+      getRuleSetModule(ruleSetId)
+        .getArmorCatalog()
+        .map(item => [item.名称, item]),
+    ),
+  ]),
+) as Record<RuleSetId, Map<string, ArmorItem>>
+
+const armorNameAliasesByRuleSet: Partial<
+  Record<RuleSetId, Record<string, string>>
+> = {
+  daggerheart: DAGGERHEART_ARMOR_NAME_ALIASES,
+}
 const primaryWeaponById = new Map(primaryWeapons.map((item) => [item.名称, item]))
 const secondaryWeaponById = new Map(secondaryWeapons.map((item) => [item.名称, item]))
 
@@ -124,11 +143,9 @@ export function resolvePresetArmor(
     return undefined
   }
 
-  if (ruleSetId === "rhodes-island") {
-    return rhodesIslandArmorById.get(id)
-  }
-
-  return armorById.get(DAGGERHEART_ARMOR_NAME_ALIASES[id] ?? id)
+  const normalizedRuleSetId = normalizeRuleSetId(ruleSetId)
+  const resolvedId = armorNameAliasesByRuleSet[normalizedRuleSetId]?.[id] ?? id
+  return armorByRuleSet[normalizedRuleSetId].get(resolvedId)
 }
 
 export function resolvePresetWeapon(id: string | undefined, slot: WeaponSlot): Weapon | undefined {

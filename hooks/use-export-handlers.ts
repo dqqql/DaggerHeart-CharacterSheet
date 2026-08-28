@@ -1,7 +1,7 @@
 import { useCallback } from "react"
 import { exportCharacterCode } from "@/lib/character-code"
 import { exportCharacterData } from "@/lib/storage"
-import { withRhodesIslandDefaultAncestryExperience } from "@/lib/rulesets/rhodes-island/experience"
+import { getRuleSetModule } from "@/lib/rulesets/registry"
 import { useSheetStore } from "@/lib/sheet-store"
 
 const WAIT_TIMEOUT = 10000
@@ -84,9 +84,11 @@ export function useExportHandlers({
   const handleExportHTML = useCallback(async () => {
     try {
       const formData = useSheetStore.getState().sheetData
+      const module = getRuleSetModule(formData.ruleSetId)
+      const exportData = module.prepareForExport(formData)
       console.log("[ExportHandlers] Starting HTML export")
       const { exportToHTML } = await import("@/lib/html-exporter")
-      await exportToHTML(withRhodesIslandDefaultAncestryExperience(formData))
+      await exportToHTML(exportData)
       console.log("[ExportHandlers] HTML export completed")
     } catch (error) {
       console.error("[ExportHandlers] HTML export failed:", error)
@@ -97,7 +99,9 @@ export function useExportHandlers({
   const handleExportJSON = useCallback(() => {
     try {
       const formData = useSheetStore.getState().sheetData
-      exportCharacterData(withRhodesIslandDefaultAncestryExperience(formData))
+      const module = getRuleSetModule(formData.ruleSetId)
+      const exportData = module.prepareForExport(formData)
+      exportCharacterData(exportData)
       console.log("[ExportHandlers] JSON export completed")
     } catch (error) {
       console.error("[ExportHandlers] JSON export failed:", error)

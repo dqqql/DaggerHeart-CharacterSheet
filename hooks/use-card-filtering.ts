@@ -8,7 +8,7 @@ import { isVariantType, CARD_LEVEL_OPTIONS } from "@/card/card-types"
 import { cardBelongsToRuleSet } from "@/lib/ruleset"
 import { useSheetStore } from "@/lib/sheet-store"
 import { getRuleSetBatchOptions } from "@/lib/ruleset-card-batches"
-import { getRhodesDomainFilterOptions } from "@/lib/rulesets/rhodes-island/domain-filter"
+import { getRuleSetModule } from "@/lib/rulesets/registry"
 
 /**
  * 筛选状态
@@ -79,6 +79,7 @@ export function useCardFiltering(initialTab?: string, enabled = true): UseCardFi
   const searchTerm = useCardFilterStore((store) => store.searchTerm)
   const deferredSearchTerm = useDeferredValue(searchTerm)
   const ruleSetId = useSheetStore(state => state.sheetData.ruleSetId)
+  const ruleSet = getRuleSetModule(ruleSetId)
 
   // === 同步 initialTab ===
   // 当 initialTab 与当前 activeTab 不同时，重置到 initialTab
@@ -155,11 +156,7 @@ export function useCardFiltering(initialTab?: string, enabled = true): UseCardFi
     const currentCardType = state.activeTab as CardType
     const levelLabels = (CARD_LEVEL_OPTIONS as Record<string, string[]>)[currentCardType] || []
 
-    const classOptions = ruleSetId === "rhodes-island" && state.activeTab === CardType.Domain
-      ? getRhodesDomainFilterOptions(classes)
-      : Array.from(classes)
-        .sort()
-        .map(c => ({ value: c, label: c }))
+    const classOptions = ruleSet.formatDomainFilterOptions(classes)
 
     return {
       classOptions,
@@ -175,7 +172,7 @@ export function useCardFiltering(initialTab?: string, enabled = true): UseCardFi
           }
         }),
     }
-  }, [batchFilteredCards, state.activeTab, ruleSetId])
+  }, [batchFilteredCards, ruleSet, state.activeTab])
 
   // === 完整筛选（管道式） ===
   const filteredCards = useMemo(() => {

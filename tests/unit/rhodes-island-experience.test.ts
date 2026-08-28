@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import { rhodesIslandCatalog } from "@/data/rhodes-island"
-import { withRhodesIslandDefaultAncestryExperience } from "@/lib/rulesets/rhodes-island/experience"
+import { getRuleSetModule } from "@/lib/rulesets/registry"
 import type { SheetData } from "@/lib/sheet-data"
 
 function makeSheet(overrides: Partial<SheetData> = {}): SheetData {
@@ -17,7 +17,7 @@ function makeSheet(overrides: Partial<SheetData> = {}): SheetData {
 describe("Rhodes Island ancestry experience export defaults", () => {
   it("exports the first recommendation when the field is blank", () => {
     const source = makeSheet()
-    const result = withRhodesIslandDefaultAncestryExperience(source)
+    const result = getRuleSetModule("rhodes-island").prepareForExport(source)
     const firstRecommendation = rhodesIslandCatalog.ancestries[0].recommendedExperiences[0]
 
     expect(result.ancestryExperience).toEqual([firstRecommendation.name])
@@ -27,9 +27,9 @@ describe("Rhodes Island ancestry experience export defaults", () => {
 
   it("preserves player input and does not affect other rulesets", () => {
     const filled = makeSheet({ ancestryExperience: ["自定义经历"], ancestryExperienceValues: ["3"] })
-    expect(withRhodesIslandDefaultAncestryExperience(filled)).toBe(filled)
+    expect(getRuleSetModule("rhodes-island").prepareForExport(filled)).toBe(filled)
 
     const standard = makeSheet({ ruleSetId: "daggerheart" })
-    expect(withRhodesIslandDefaultAncestryExperience(standard)).toBe(standard)
+    expect(getRuleSetModule("daggerheart").prepareForExport(standard)).toBe(standard)
   })
 })

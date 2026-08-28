@@ -575,7 +575,7 @@ git commit -m "refactor: isolate sheet finalization pipeline"
 - Modify: `tests/unit/ruleset-card-batches.test.ts`
 - Modify: `tests/unit/rhodes-island-experience.test.ts`
 
-- [ ] **Step 1: 扩充定义，但只加入当前确有两个实现差异的策略**
+- [x] **Step 1: 扩充定义，但只加入当前确有两个实现差异的策略**
 
 向 `RuleSetModule` 加入：
 
@@ -592,11 +592,11 @@ formatDomainFilterOptions: (
 
 `ArmorItem` 以 type-only import 从 `data/list/armor.ts` 引入；`CardBatchOption` 和 `BatchCard` 直接定义并导出在 `lib/rulesets/types.ts`。`lib/ruleset-card-batches.ts` 和两个 definition 都从这里 import，禁止让 `types.ts` 反向 import `ruleset-card-batches.ts`。
 
-- [ ] **Step 2: 写/更新失败测试**
+- [x] **Step 2: 写/更新失败测试**
 
 确认：SRD 使用 `data/list/armor.ts`；罗德岛使用 `data/list/rhodes-island-armor.ts`；罗德岛只显示内置卡包；导出前只有罗德岛补齐默认种族经历。
 
-- [ ] **Step 3: 移除共享文件中的规则字符串分支**
+- [x] **Step 3: 移除共享文件中的规则字符串分支**
 
 `use-export-handlers.ts`：
 
@@ -613,7 +613,7 @@ JSON 与 HTML 共用同一个 `exportData` 创建方式；角色码保持现状�
 
 `use-card-filtering.ts` 删除 `ruleSetId === "rhodes-island"` 与 `getRhodesDomainFilterOptions` 的直接 import，统一调用当前 module 的 `formatDomainFilterOptions(classes)`；SRD definition 返回字母/中文自然排序后的普通选项，罗德岛 definition 委托现有 domain formatter。
 
-- [ ] **Step 4: 测试与提交**
+- [x] **Step 4: 测试与提交**
 
 ```powershell
 pnpm exec vitest run tests/unit/preset-equipment.test.ts tests/unit/rhodes-island-armor.test.ts tests/unit/ruleset-card-batches.test.ts tests/unit/rhodes-island-experience.test.ts tests/unit/rhodes-domain-filter.test.ts
