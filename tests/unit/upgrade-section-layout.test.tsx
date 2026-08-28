@@ -29,9 +29,9 @@ describe("UpgradeSection Rhodes Island layout", () => {
         handleUpgradeCheck={vi.fn()}
         toggleUpgradeCheckbox={vi.fn()}
         getUpgradeOptions={() => [
-          { label: "获得闪避值+1。", doubleBox: false, boxCount: 1 },
-          { label: moduleLabel, doubleBox: false, boxCount: 1 },
-          { label: "(同时标记两格) 获得熟练值+1。", doubleBox: true, boxCount: 2 },
+          { id: "test-evasion", action: "evasion", label: "获得闪避值+1。", doubleBox: false, boxCount: 1, stateIndex: 5 },
+          { id: "test-module", action: "select-module", label: moduleLabel, doubleBox: false, boxCount: 1, stateIndex: 6 },
+          { id: "test-proficiency", action: "proficiency", label: "(同时标记两格) 获得熟练值+1。", doubleBox: true, boxCount: 2, stateIndex: 7 },
         ]}
       />,
     )

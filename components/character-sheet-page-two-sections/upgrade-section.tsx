@@ -15,7 +15,8 @@ import { SubclassCardSelector } from "@/components/upgrade-popover/subclass-card
 import { NewExperienceEditor } from "@/components/upgrade-popover/new-experience-editor"
 import { showFadeNotification } from "@/components/ui/fade-notification"
 import type { StandardCard } from "@/card/card-types"
-import { getRhodesBranch } from "@/lib/rulesets/rhodes-island/automation"
+import type { UpgradeOption } from "@/data/list/upgrade"
+import { RhodesIslandModuleUpgrade } from "@/components/rulesets/rhodes-island-module-upgrade"
 
 interface UpgradeSectionProps {
   tier: number
@@ -25,7 +26,7 @@ interface UpgradeSectionProps {
   isUpgradeChecked: (tier: string, index: number) => boolean
   handleUpgradeCheck: (tier: string, index: number) => void
   toggleUpgradeCheckbox: (checkKey: string, index: number, checked: boolean) => void  // 新增：纯粹的状态切换函数
-  getUpgradeOptions: (tier: number) => any[]
+  getUpgradeOptions: (tier: number) => UpgradeOption[]
   onCardChange?: (index: number, card: StandardCard) => void
   onOpenCardModal?: (index: number, levels?: string[]) => void
   onOpenSubclassModal?: (index: number, profession?: string) => void
@@ -51,41 +52,15 @@ export function UpgradeSection({
   const [isLevelExpanded, setIsLevelExpanded] = useState(false)
   const [openNewExperiencePopover, setOpenNewExperiencePopover] = useState(false)
 
-  // Helper functions to detect upgrade option types
-  const isAttributeUpgradeOption = (label: string) => label.includes("角色属性+1")
-  const isHPUpgradeOption = (label: string) => label.includes("生命槽")
-  const isStressUpgradeOption = (label: string) => label.includes("压力槽")
-  const isExperienceUpgradeOption = (label: string) => label.includes("经历获得额外") || label.includes("发展规划")
-  const isDomainCardOption = (label: string) =>
-    label.includes("领域卡加入卡组") || label.includes("技艺专精") || label.includes("技艺交流")
-  const isDodgeUpgradeOption = (label: string) => label.includes("闪避值")
-  const isProficiencyUpgradeOption = (label: string) => label.includes("熟练值+1")
-  const isSubclassUpgradeOption = (label: string) => label.includes("升级你的子职业")
+  const needsEditButton = (option: UpgradeOption) =>
+    option.action === "domain-card" || option.action === "subclass-upgrade"
 
-  // Helper function to determine if an option needs an edit button
-  const needsEditButton = (label: string) => {
-    return (
-      // isAttributeUpgradeOption(label) ||    // 属性升级现在通过点击复选框打开气泡
-      // isHPUpgradeOption(label) ||           // 直接勾选/取消勾选即可 +1/-1
-      // isStressUpgradeOption(label) ||       // 直接勾选/取消勾选即可 +1/-1
-      // isExperienceUpgradeOption(label) ||   // 经历升级现在通过点击复选框打开气泡
-      isDomainCardOption(label) ||             // 点击按钮直接打开 modal
-      // isDodgeUpgradeOption(label) ||        // 闪避值现在通过点击复选框打开气泡
-      // isProficiencyUpgradeOption(label) ||  // 直接勾选/取消勾选即可 +1/-1
-      isSubclassUpgradeOption(label)           // 点击按钮直接打开 modal
-    )
-  }
-
-  // Helper function to determine if button should directly open modal (no popover)
-  const shouldDirectlyOpenModal = (label: string) => {
-    return isDomainCardOption(label) || isSubclassUpgradeOption(label)
-  }
+  const shouldDirectlyOpenModal = (option: UpgradeOption) =>
+    option.action === "domain-card" || option.action === "subclass-upgrade"
 
   // Handle direct modal opening for domain/subclass cards
-  const handleDirectModalOpen = (option: any) => {
-    const label = option.label
-
-    if (isDomainCardOption(label)) {
+  const handleDirectModalOpen = (option: UpgradeOption) => {
+    if (option.action === "domain-card") {
       // Domain card logic - same as in DomainCardSelector
       const cards = formData.cards || []
       let emptySlotIndex = -1
@@ -103,9 +78,7 @@ export function UpgradeSection({
         return
       }
 
-      // Calculate smart level filtering
-      const tierLevelCaps: Record<number, number> = { 1: 4, 2: 7, 3: 10 }
-      const levelCap = tierLevelCaps[tier] || 10
+      const levelCap = option.domainLevelCap ?? 10
       const currentLevel = parseInt(formData.level) || 0
       const targetLevel = currentLevel > 0 ? Math.min(currentLevel, levelCap) : levelCap
       const levelFilter = Array.from({ length: targetLevel }, (_, i) => String(i + 1))
@@ -113,7 +86,7 @@ export function UpgradeSection({
       onOpenCardModal?.(emptySlotIndex, levelFilter)
     }
 
-    if (isSubclassUpgradeOption(label)) {
+    if (option.action === "subclass-upgrade") {
       // Subclass card logic - same as in SubclassCardSelector
       const cards = formData.cards || []
       let emptySlotIndex = -1
@@ -145,8 +118,8 @@ export function UpgradeSection({
   }
 
   // Render the appropriate editor based on option type
-  const renderEditor = (option: any, index: number, checkKeyOrBoxIndex: number | string) => {
-    if (isAttributeUpgradeOption(option.label)) {
+  const renderEditor = (option: UpgradeOption, index: number, checkKeyOrBoxIndex: number | string) => {
+    if (option.action === "attribute") {
       // 如果传入的是字符串，就是完整的 checkKey；否则是 boxIndex，需要构造
       const checkKey = typeof checkKeyOrBoxIndex === 'string'
         ? checkKeyOrBoxIndex
@@ -162,15 +135,15 @@ export function UpgradeSection({
       )
     }
 
-    if (isHPUpgradeOption(option.label)) {
+    if (option.action === "hp") {
       return <HPMaxEditor onClose={() => setOpenPopoverIndex(null)} />
     }
 
-    if (isStressUpgradeOption(option.label)) {
+    if (option.action === "stress") {
       return <StressMaxEditor onClose={() => setOpenPopoverIndex(null)} />
     }
 
-    if (isExperienceUpgradeOption(option.label)) {
+    if (option.action === "experience") {
       const checkKey = typeof checkKeyOrBoxIndex === 'string'
         ? checkKeyOrBoxIndex
         : `${tierKey}-${index}-${checkKeyOrBoxIndex}`
@@ -185,7 +158,7 @@ export function UpgradeSection({
       )
     }
 
-    if (isDomainCardOption(option.label)) {
+    if (option.action === "domain-card") {
       return (
         <DomainCardSelector
           formData={formData}
@@ -200,7 +173,7 @@ export function UpgradeSection({
       )
     }
 
-    if (isDodgeUpgradeOption(option.label)) {
+    if (option.action === "evasion") {
       const checkKey = typeof checkKeyOrBoxIndex === 'string'
         ? checkKeyOrBoxIndex
         : `${tierKey}-${index}-${checkKeyOrBoxIndex}`
@@ -215,11 +188,11 @@ export function UpgradeSection({
       )
     }
 
-    if (isProficiencyUpgradeOption(option.label)) {
+    if (option.action === "proficiency") {
       return <ProficiencyEditor onClose={() => setOpenPopoverIndex(null)} />
     }
 
-    if (isSubclassUpgradeOption(option.label)) {
+    if (option.action === "subclass-upgrade") {
       return (
         <SubclassCardSelector
           formData={formData}
@@ -239,10 +212,9 @@ export function UpgradeSection({
   // 检测 description 是否包含"获得一项额外+2经历"
   const hasNewExperienceText = description.includes("获得一项额外+2经历")
   const upgradeOptions = getUpgradeOptions(tier)
-  const moduleOptionIndex = formData.ruleSetId === "rhodes-island" && tier === 3
-    ? upgradeOptions.findIndex(option => option.label.includes("所选模组"))
-    : -1
+  const moduleOptionIndex = upgradeOptions.findIndex((option) => option.action === "select-module")
   const moduleOption = moduleOptionIndex >= 0 ? upgradeOptions[moduleOptionIndex] : undefined
+  const tierDomainOption = upgradeOptions.find((option) => option.action === "domain-card")
 
   return (
     <div className="border border-gray-300 rounded-md shadow-sm">
@@ -287,12 +259,9 @@ export function UpgradeSection({
             if (index === moduleOptionIndex) return null
 
             const optionStateIndex = option.stateIndex ?? index
-            const isAttrUpgrade = isAttributeUpgradeOption(option.label)
-            const isExpUpgrade = isExperienceUpgradeOption(option.label)
-            const isEvasionUpgrade = isDodgeUpgradeOption(option.label)
-            const needsPopover = isAttrUpgrade || isExpUpgrade || isEvasionUpgrade
+            const needsPopover = ["attribute", "experience", "evasion"].includes(option.action)
             return (
-              <div key={`${tierKey}-${optionStateIndex}`} className="flex items-start !text-[10px] leading-[1.6]">
+              <div key={option.id} className="flex items-start !text-[10px] leading-[1.6]">
               {/* 属性升级 / 经历升级 / 闪避值升级：包裹 Popover 以便定位 */}
               {needsPopover ? (
                 <Popover
@@ -334,7 +303,7 @@ export function UpgradeSection({
                       }`}
                       onClick={() => {
                         // 属性升级 / 经历升级 / 闪避值升级选项：特殊处理
-                        if (isAttributeUpgradeOption(option.label) || isExperienceUpgradeOption(option.label) || isDodgeUpgradeOption(option.label)) {
+                        if (["attribute", "experience", "evasion"].includes(option.action)) {
                           const isChecked = isUpgradeChecked(checkKey, optionStateIndex)
                           if (!isChecked) {
                             // 空白复选框 → 打开气泡编辑器
@@ -403,8 +372,8 @@ export function UpgradeSection({
               <div className="flex-1 ml-2">
                 <span className="text-gray-800 dark:text-gray-200 mr-1">{option.label}</span>
                 {/* 其他需要编辑按钮的选项 */}
-                {needsEditButton(option.label) && (
-                  shouldDirectlyOpenModal(option.label) ? (
+                {needsEditButton(option) && (
+                  shouldDirectlyOpenModal(option) ? (
                     // Direct modal open button (no popover)
                     <button
                       onClick={() => handleDirectModalOpen(option)}
@@ -450,14 +419,14 @@ export function UpgradeSection({
           })}
         </div>
 
-        {formData.ruleSetId !== "rhodes-island" && <div className="mt-3 !text-xs">
+        {formData.ruleSetId !== "rhodes-island" && tierDomainOption && <div className="mt-3 !text-xs">
           {tier === 1 && (
             <>
               <span className="text-gray-800 dark:text-gray-200 mr-1">
                 将伤害阈值+1，选择一张不高于你当前等级(上限4级)的领域卡加入卡组。
               </span>
               <button
-                onClick={() => handleDirectModalOpen({ label: "领域卡加入卡组" })}
+                onClick={() => handleDirectModalOpen(tierDomainOption)}
                 className="inline-flex items-center justify-center p-0.5 hover:bg-gray-100 rounded transition-colors print:hidden"
                 title="选择领域卡"
               >
@@ -471,7 +440,7 @@ export function UpgradeSection({
                 将伤害阈值+1，选择一张不高于你当前等级(上限7级)的领域卡加入卡组。
               </span>
               <button
-                onClick={() => handleDirectModalOpen({ label: "领域卡加入卡组" })}
+                onClick={() => handleDirectModalOpen(tierDomainOption)}
                 className="inline-flex items-center justify-center p-0.5 hover:bg-gray-100 rounded transition-colors print:hidden"
                 title="选择领域卡"
               >
@@ -485,7 +454,7 @@ export function UpgradeSection({
                 将伤害阈值+1，选择一张不高于你当前等级(上限10级)的领域卡加入卡组。
               </span>
               <button
-                onClick={() => handleDirectModalOpen({ label: "领域卡加入卡组" })}
+                onClick={() => handleDirectModalOpen(tierDomainOption)}
                 className="inline-flex items-center justify-center p-0.5 hover:bg-gray-100 rounded transition-colors print:hidden"
                 title="选择领域卡"
               >
@@ -496,62 +465,19 @@ export function UpgradeSection({
         </div>}
 
         {moduleOption && (() => {
-          const branch = getRhodesBranch(formData.subclassRef?.id)
           const moduleStateIndex = moduleOption.stateIndex ?? moduleOptionIndex
           const moduleCheckKey = `${tierKey}-${moduleStateIndex}-0`
           const moduleChecked = isUpgradeChecked(moduleCheckKey, moduleStateIndex)
 
           return (
-            <div
-              data-module-upgrade-section
-              className="mt-3 border-t-2 border-cyan-700 pt-2"
-            >
-              <div className="flex items-start text-[10px] leading-[1.6]">
-                <span className="mt-px flex min-w-[3.2em] flex-shrink-0 items-center justify-end">
-                  <button
-                    type="button"
-                    data-testid={`checkbox-${moduleCheckKey}`}
-                    aria-label={moduleOption.label}
-                    aria-pressed={moduleChecked}
-                    className={`h-3 w-3 cursor-pointer border border-gray-800 ${moduleChecked ? "bg-gray-800" : "bg-white"}`}
-                    onClick={() => handleUpgradeCheck(moduleCheckKey, moduleStateIndex)}
-                  />
-                </span>
-                <span className="ml-2 flex-1 text-gray-800 dark:text-gray-200">
-                  {moduleOption.label}
-                </span>
-              </div>
-
-              {branch && moduleChecked && (
-                <div className="mt-2 border-l-4 border-cyan-700 bg-slate-50 p-2 print:border-slate-500">
-                  <div className="grid grid-cols-2 gap-1">
-                    {(["x", "y"] as const).map(moduleId => {
-                      const module = branch.modules[moduleId]
-                      const selected = formData.selectedModule === moduleId
-                      return (
-                        <button
-                          key={moduleId}
-                          type="button"
-                          aria-pressed={selected}
-                          className={`border px-1 py-1 text-[9px] font-bold transition-colors ${selected ? "border-cyan-800 bg-cyan-800 text-white" : "border-slate-400 bg-white text-slate-700"}`}
-                          title={module.description}
-                          onClick={() => {
-                            setSheetData({ selectedModule: moduleId })
-                          }}
-                        >
-                          {module.name}
-                        </button>
-                      )
-                    })}
-                  </div>
-                  {formData.selectedModule && (
-                    <p className="mt-1 whitespace-pre-line text-[8px] leading-snug text-slate-600">
-                      {branch.modules[formData.selectedModule].description}
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
+            <RhodesIslandModuleUpgrade
+              branchId={formData.subclassRef?.id}
+              option={moduleOption}
+              checked={moduleChecked}
+              selectedModule={formData.selectedModule}
+              onToggle={() => handleUpgradeCheck(moduleCheckKey, moduleStateIndex)}
+              onSelect={(selectedModule) => setSheetData({ selectedModule })}
+            />
           )
         })()}
 

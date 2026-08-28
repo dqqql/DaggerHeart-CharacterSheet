@@ -628,6 +628,8 @@ Expected: PASS，且 `hooks/use-export-handlers.ts` 不再 import 罗德岛文�
 
 ### Task 6: 用稳定 action ID 替代中文文案驱动的升级逻辑
 
+> **实施说明（2026-08-28）：** 当前规则数据仅在 tier1/tier2 各有一次“提升武器原型”，tier3 的同一持久化索引用于“所选模组”，且 `branchUpgradeCount` 上限为 2。为遵守“不改变规则结果和页面外观”的总约束，本任务按现有两次升级建立 `branch-upgrade` action，不新增第三个升级项。
+
 **Files:**
 - Modify: `data/list/upgrade.ts`
 - Modify: `components/character-sheet-page-two.tsx:164-223`
@@ -636,11 +638,11 @@ Expected: PASS，且 `hooks/use-export-handlers.ts` 不再 import 罗德岛文�
 - Create: `tests/unit/upgrade-option-actions.test.ts`
 - Modify: `tests/unit/upgrade-section-layout.test.tsx`
 
-- [ ] **Step 1: 写升级配置合同测试**
+- [x] **Step 1: 写升级配置合同测试**
 
-测试每个 option 都有唯一 `id` 和明确 `action`；所有 `stateIndex` 在同一 tier 内唯一；罗德岛三次“提升武器原型”都使用 `action: "branch-upgrade"`；模组使用 `action: "select-module"`。测试不得断言中文文案来推导行为。
+测试每个 option 都有唯一 `id` 和明确 `action`；所有 `stateIndex` 在同一 tier 内唯一；罗德岛现有两次“提升武器原型”都使用 `action: "branch-upgrade"`；模组使用 `action: "select-module"`。测试不得断言中文文案来推导行为。
 
-- [ ] **Step 2: 定义稳定配置类型并补齐所有现有项**
+- [x] **Step 2: 定义稳定配置类型并补齐所有现有项**
 
 ```ts
 export type UpgradeAction =
@@ -669,13 +671,13 @@ export interface UpgradeOption {
 
 `id` 只用于 React key/测试/行为识别，`checkedUpgrades` 的持久化 key 继续使用现有 `tier/stateIndex/boxIndex`，从而不迁移旧存档。
 
-- [ ] **Step 3: 将 handler 改成 `switch (option.action)`**
+- [x] **Step 3: 将 handler 改成 `switch (option.action)`**
 
 `handleUpgradeCheck`、`needsEditButton`、`shouldDirectlyOpenModal`、`renderEditor` 和 domain level cap 都读取结构化字段。删除以下行为判断：`label.includes("提升武器原型")`、`label.includes("所选模组")`、`label.includes("角色属性+1")` 等。
 
 文案只用于显示和 aria-label，不再控制行为。
 
-- [ ] **Step 4: 提取罗德岛模组选择块**
+- [x] **Step 4: 提取罗德岛模组选择块**
 
 `RhodesIslandModuleUpgrade` 接收以下明确 props：
 
@@ -692,7 +694,7 @@ interface RhodesIslandModuleUpgradeProps {
 
 组件内部可以 import 罗德岛 `getRhodesBranch`；共享 `UpgradeSection` 不再 import 罗德岛 automation/catalog。
 
-- [ ] **Step 5: 运行升级与罗德岛 UI 回归**
+- [x] **Step 5: 运行升级与罗德岛 UI 回归**
 
 ```powershell
 pnpm exec vitest run tests/unit/upgrade-option-actions.test.ts tests/unit/upgrade-section-layout.test.tsx tests/unit/rhodes-multiclass-modal.test.tsx tests/unit/rhodes-island-automation.test.ts
@@ -701,7 +703,7 @@ pnpm exec tsc --noEmit
 
 Expected: PASS；`rg -n "label\.includes" components/character-sheet-page-two.tsx components/character-sheet-page-two-sections/upgrade-section.tsx` 不再返回规则行为判断。
 
-- [ ] **Step 6: 提交**
+- [x] **Step 6: 提交**
 
 ```powershell
 git add data/list/upgrade.ts components/character-sheet-page-two.tsx components/character-sheet-page-two-sections/upgrade-section.tsx components/rulesets/rhodes-island-module-upgrade.tsx tests/unit

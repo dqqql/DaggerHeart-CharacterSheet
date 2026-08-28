@@ -2,7 +2,11 @@
 
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
-import { rhodesIslandUpgradeOptionsData, upgradeOptionsData } from "@/data/list/upgrade"
+import {
+  rhodesIslandUpgradeOptionsData,
+  upgradeOptionsData,
+  type UpgradeOption,
+} from "@/data/list/upgrade"
 import { useSheetStore, useSafeSheetData } from "@/lib/sheet-store"
 import { createEmptyCard, isEmptyCard, type StandardCard } from "@/card/card-types"
 import { showFadeNotification } from "@/components/ui/fade-notification"
@@ -169,26 +173,25 @@ export default function CharacterSheetPageTwo() {
 
     const tierNum = parseInt(tier.replace("tier", ""))
     const options = getUpgradeOptions(tierNum)
-    const option = options.find(
-      (item, optionIndex) => ((item as { stateIndex?: number }).stateIndex ?? optionIndex) === index,
-    )
+    const option = options.find((item, optionIndex) => (item.stateIndex ?? optionIndex) === index)
 
     if (option) {
-      const label = option.label
-
-      if (safeFormData.ruleSetId === "rhodes-island" && label.includes("提升武器原型")) {
-        setFormData(prev => ({
+      switch (option.action) {
+      case "branch-upgrade":
+        setFormData((prev) => ({
           ...prev,
           branchUpgradeCount: Math.max(0, Math.min(2, (prev.branchUpgradeCount ?? 0) + (newCheckedState ? 1 : -1))),
         }))
         toggleUpgradeCheckbox(checkKeyOrTier, index, newCheckedState)
         return
-      }
 
-      if (safeFormData.ruleSetId === "rhodes-island" && label.includes("兼职")) {
-        const branchIndex = options.findIndex(item => item.label.includes("升级分支"))
+      case "multiclass": {
+        if (safeFormData.ruleSetId !== "rhodes-island") break
+
+        const branchOption = options.find((item) => item.action === "subclass-upgrade")
+        const branchIndex = branchOption?.stateIndex
         const branchKey = `${tier}-${branchIndex}-0`
-        if (newCheckedState && branchIndex >= 0 && isUpgradeChecked(branchKey, branchIndex)) {
+        if (newCheckedState && branchIndex !== undefined && isUpgradeChecked(branchKey, branchIndex)) {
           showFadeNotification({ message: "本位阶的“兼职”与“升级分支”互斥", type: "error", position: "middle" })
           return
         }
@@ -214,15 +217,15 @@ export default function CharacterSheetPageTwo() {
         return
       }
 
-      if (safeFormData.ruleSetId === "rhodes-island" && label.includes("所选模组")) {
+      case "select-module":
         if (currentlyChecked) {
           setFormData({ selectedModule: undefined })
         }
         toggleUpgradeCheckbox(checkKeyOrTier, index, newCheckedState)
         return
-      }
 
-      if (label.includes("角色属性+1") && currentlyChecked) {
+      case "attribute":
+        if (!currentlyChecked) break
         const rollbackAttributeUpgrade = useSheetStore.getState().rollbackAttributeUpgrade
         const result = rollbackAttributeUpgrade(checkKeyOrTier)
 
@@ -248,9 +251,9 @@ export default function CharacterSheetPageTwo() {
 
         toggleUpgradeCheckbox(checkKeyOrTier, index, false)
         return
-      }
 
-      if ((label.includes("经历获得额外") || label.includes("发展规划")) && currentlyChecked) {
+      case "experience": {
+        if (!currentlyChecked) break
         const restoreExperienceValuesSnapshot = useSheetStore.getState().restoreExperienceValuesSnapshot
         const result = restoreExperienceValuesSnapshot()
 
@@ -278,7 +281,8 @@ export default function CharacterSheetPageTwo() {
         return
       }
 
-      if (label.includes("闪避值") && currentlyChecked) {
+      case "evasion": {
+        if (!currentlyChecked) break
         const restoreEvasionSnapshot = useSheetStore.getState().restoreEvasionSnapshot
         const result = restoreEvasionSnapshot()
 
@@ -306,7 +310,7 @@ export default function CharacterSheetPageTwo() {
         return
       }
 
-      if (label.includes("生命槽")) {
+      case "hp": {
         const currentHP = displayedHpMax
         if (newCheckedState) {
           const newValue = Math.min(currentHP + 1, 18)
@@ -325,9 +329,10 @@ export default function CharacterSheetPageTwo() {
             position: "middle",
           })
         }
+        break
       }
 
-      if (label.includes("压力槽")) {
+      case "stress": {
         const currentStress = displayedStressMax
         if (newCheckedState) {
           const newValue = Math.min(currentStress + 1, 18)
@@ -346,9 +351,10 @@ export default function CharacterSheetPageTwo() {
             position: "middle",
           })
         }
+        break
       }
 
-      if (label.includes("熟练值+1")) {
+      case "proficiency": {
         const currentProficiency = Array.isArray(safeFormData.proficiency)
           ? safeFormData.proficiency
           : Array(6).fill(false)
@@ -375,6 +381,12 @@ export default function CharacterSheetPageTwo() {
             position: "middle",
           })
         }
+        break
+      }
+
+      case "domain-card":
+      case "subclass-upgrade":
+        break
       }
     }
 
@@ -385,14 +397,16 @@ export default function CharacterSheetPageTwo() {
     return !!safeFormData.checkedUpgrades?.[tier as keyof typeof safeFormData.checkedUpgrades]?.[index]
   }
 
-  const getUpgradeOptions = (tier: number) => {
-    const baseUpgrades = [...upgradeOptionsData.baseUpgrades]
+  const getUpgradeOptions = (tier: number): UpgradeOption[] => {
+    const baseUpgrades: UpgradeOption[] = [...upgradeOptionsData.baseUpgrades]
     const tierKey = `tier${tier}` as keyof typeof upgradeOptionsData.tierLevelCaps
     const levelCap = upgradeOptionsData.tierLevelCaps[tierKey] || ""
+    const domainLevelCap = upgradeOptionsData.domainLevelCaps[tierKey] || 10
 
     const processedBaseUpgrades = baseUpgrades.map((option) => ({
       ...option,
       label: option.label.replace("{LEVEL_CAP}", levelCap),
+      domainLevelCap: option.action === "domain-card" ? domainLevelCap : option.domainLevelCap,
     }))
 
     if (safeFormData.ruleSetId === "rhodes-island") {
