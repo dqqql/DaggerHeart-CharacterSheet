@@ -5,7 +5,7 @@ import type { StandardCard } from "@/card/card-types"
 import { createEmptyCard } from "@/card/card-types"
 import { defaultSheetData } from "@/lib/default-sheet-data"
 import { rhodesIslandCards, rhodesIslandCatalog } from "@/data/rhodes-island"
-import { applyRhodesIslandAutomation } from "@/lib/rhodes-island-automation"
+import { applyRhodesIslandAutomation } from "@/lib/rulesets/rhodes-island/automation"
 import { WeaponSection } from "@/components/character-sheet-sections/weapon-section"
 import { HopeSection } from "@/components/character-sheet-sections/hope-section"
 

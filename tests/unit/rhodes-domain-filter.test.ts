@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest"
 import {
   getRhodesDomainFilterOptions,
   getRhodesSecondaryDomainSelectionOptions,
-} from "@/lib/rhodes-domain-filter"
+} from "@/lib/rulesets/rhodes-island/domain-filter"
 
 describe("getRhodesDomainFilterOptions", () => {
   it("orders primary and secondary domains and marks their boundary", () => {

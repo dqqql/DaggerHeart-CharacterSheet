@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import type { StandardCard } from "@/card/card-types"
-import { formatRhodesSubclassDomainRecommendation } from "@/lib/rhodes-island-card-display"
+import { formatRhodesSubclassDomainRecommendation } from "@/lib/rulesets/rhodes-island/card-display"
 
 function createBranchCard(item3: string): StandardCard {
   return {

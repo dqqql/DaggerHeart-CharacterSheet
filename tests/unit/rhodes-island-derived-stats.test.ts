@@ -9,7 +9,7 @@ import {
   calculateHpMaxBreakdown,
   calculateStressMaxBreakdown,
 } from "@/lib/domain-card-derived-stats"
-import { getRhodesDerivedStatSources } from "@/lib/rhodes-island-derived-stats"
+import { getRhodesDerivedStatSources } from "@/lib/rulesets/rhodes-island/derived-stats"
 
 function createBranchData(
   branchName: string,
@@ -131,4 +131,3 @@ describe("罗德岛分支常驻属性自动化", () => {
     expect(getRhodesDerivedStatSources(data).evasion).toEqual([])
   })
 })
-

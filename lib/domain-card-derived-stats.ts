@@ -12,7 +12,7 @@ import type { CharacterAttributeKey } from "@/types/preset-equipment"
 import {
   getRhodesDerivedStatSources,
   type RhodesDerivedStatsInput,
-} from "@/lib/rhodes-island-derived-stats"
+} from "@/lib/rulesets/rhodes-island/derived-stats"
 
 export interface DamageThresholdBreakdown {
   minor: DerivedStatBreakdown

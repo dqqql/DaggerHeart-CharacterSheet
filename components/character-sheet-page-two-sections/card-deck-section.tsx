@@ -16,7 +16,7 @@ import { usePinnedCardsStore } from "@/lib/pinned-cards-store"
 import { useCardActions } from "@/lib/sheet-store"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { getDisplayedCharacterCards } from "@/lib/ancestry-utils"
-import { formatRhodesSubclassDomainRecommendation } from "@/lib/rhodes-island-card-display"
+import { formatRhodesSubclassDomainRecommendation } from "@/lib/rulesets/rhodes-island/card-display"
 
 interface CardDeckSectionProps {
   formData: SheetData

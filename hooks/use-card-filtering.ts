@@ -8,7 +8,7 @@ import { isVariantType, CARD_LEVEL_OPTIONS } from "@/card/card-types"
 import { cardBelongsToRuleSet } from "@/lib/ruleset"
 import { useSheetStore } from "@/lib/sheet-store"
 import { getRuleSetBatchOptions } from "@/lib/ruleset-card-batches"
-import { getRhodesDomainFilterOptions } from "@/lib/rhodes-domain-filter"
+import { getRhodesDomainFilterOptions } from "@/lib/rulesets/rhodes-island/domain-filter"
 
 /**
  * 筛选状态

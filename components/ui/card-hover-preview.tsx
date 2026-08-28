@@ -8,7 +8,7 @@ import { getCardImageUrl, getCardImageUrlAsync } from "@/lib/utils"
 import { SelectableCard } from "@/components/ui/selectable-card"
 import { CardMarkdown } from "@/components/ui/card-markdown"
 import { getCardRuleSetId } from "@/lib/ruleset"
-import { formatRhodesSubclassDomainRecommendation } from "@/lib/rhodes-island-card-display"
+import { formatRhodesSubclassDomainRecommendation } from "@/lib/rulesets/rhodes-island/card-display"
 import {
     getRhodesDomainEnglish,
     isRhodesDomainName,

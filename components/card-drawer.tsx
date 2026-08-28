@@ -19,7 +19,7 @@ import { useTextModeStore } from "@/lib/text-mode-store"
 import { getOfficialImageUrl } from "@/lib/official-image-pack"
 import { getBasePath } from "@/lib/utils"
 import { getCardRuleSetId } from "@/lib/ruleset"
-import { formatRhodesSubclassDomainRecommendation } from "@/lib/rhodes-island-card-display"
+import { formatRhodesSubclassDomainRecommendation } from "@/lib/rulesets/rhodes-island/card-display"
 
 interface CardDrawerProps {
   cards: Array<StandardCard>

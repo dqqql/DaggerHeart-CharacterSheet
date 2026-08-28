@@ -4,7 +4,7 @@ import React from "react"
 import { CardType, StandardCard } from "@/card/card-types"
 import { getCardTypeName } from "@/card/card-ui-config"
 import { CardMarkdown } from "@/components/ui/card-markdown"
-import { formatRhodesSubclassDomainRecommendation } from "@/lib/rhodes-island-card-display"
+import { formatRhodesSubclassDomainRecommendation } from "@/lib/rulesets/rhodes-island/card-display"
 
 interface CardContentProps {
     card: StandardCard

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import { rhodesIslandCatalog } from "@/data/rhodes-island"
-import { withRhodesIslandDefaultAncestryExperience } from "@/lib/rhodes-island-experience"
+import { withRhodesIslandDefaultAncestryExperience } from "@/lib/rulesets/rhodes-island/experience"
 import type { SheetData } from "@/lib/sheet-data"
 
 function makeSheet(overrides: Partial<SheetData> = {}): SheetData {

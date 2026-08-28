@@ -16,7 +16,7 @@ import {
 import type { RhodesSecondaryDomainName } from "@/lib/sheet-data"
 import {
   getRhodesSecondaryDomainSelectionOptions,
-} from "@/lib/rhodes-domain-filter"
+} from "@/lib/rulesets/rhodes-island/domain-filter"
 import {
   DropdownMenu,
   DropdownMenuContent,

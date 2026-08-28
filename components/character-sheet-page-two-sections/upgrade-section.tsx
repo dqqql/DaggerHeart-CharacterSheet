@@ -15,7 +15,7 @@ import { SubclassCardSelector } from "@/components/upgrade-popover/subclass-card
 import { NewExperienceEditor } from "@/components/upgrade-popover/new-experience-editor"
 import { showFadeNotification } from "@/components/ui/fade-notification"
 import type { StandardCard } from "@/card/card-types"
-import { getRhodesBranch } from "@/lib/rhodes-island-automation"
+import { getRhodesBranch } from "@/lib/rulesets/rhodes-island/automation"
 
 interface UpgradeSectionProps {
   tier: number

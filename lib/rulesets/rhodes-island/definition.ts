@@ -1,22 +1,12 @@
-import type { SheetData } from "@/lib/sheet-data"
-import type { RuleSetDerivedSources, RuleSetModule } from "@/lib/rulesets/types"
+import {
+  applyRhodesIslandAutomation,
+  getRhodesProfessionHopeFeature,
+} from "@/lib/rulesets/rhodes-island/automation"
+import { getRhodesDerivedStatSources } from "@/lib/rulesets/rhodes-island/derived-stats"
+import { withRhodesIslandDefaultAncestryExperience } from "@/lib/rulesets/rhodes-island/experience"
+import type { RuleSetModule } from "@/lib/rulesets/types"
 
-function identity(data: SheetData): SheetData {
-  return data
-}
-
-function getEmptyDerivedStatSources(): RuleSetDerivedSources {
-  return {
-    evasion: [],
-    armorValue: [],
-    minorThreshold: [],
-    majorThreshold: [],
-    hpMax: [],
-    stressMax: [],
-  }
-}
-
-export const rhodesIslandRuleSet = {
+export const rhodesIslandRuleSet: RuleSetModule = {
   id: "rhodes-island",
   label: "共赴明日：罗德岛旅记",
   capabilities: {
@@ -43,8 +33,8 @@ export const rhodesIslandRuleSet = {
     professionFeaturePlacement: "right",
     hiddenFocusedCardSlots: [3],
   },
-  normalizeSheetData: identity,
-  prepareForExport: identity,
-  getDerivedStatSources: getEmptyDerivedStatSources,
-  getProfessionHopeFeature: () => "",
-} satisfies RuleSetModule
+  normalizeSheetData: applyRhodesIslandAutomation,
+  prepareForExport: withRhodesIslandDefaultAncestryExperience,
+  getDerivedStatSources: getRhodesDerivedStatSources,
+  getProfessionHopeFeature: getRhodesProfessionHopeFeature,
+}

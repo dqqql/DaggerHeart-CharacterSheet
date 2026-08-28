@@ -6,7 +6,7 @@ import Image from "next/image"
 import { CardType, StandardCard, getVariantRealType, isVariantCard } from "@/card/card-types"
 import { getCardTypeName } from "@/card/card-ui-config"
 import { getCardImageUrl, getCardImageUrlAsync } from "@/lib/utils"
-import { formatRhodesSubclassDomainRecommendation } from "@/lib/rhodes-island-card-display"
+import { formatRhodesSubclassDomainRecommendation } from "@/lib/rulesets/rhodes-island/card-display"
 import { getCardRuleSetId } from "@/lib/ruleset"
 
 const getDisplayTypeName = (card: StandardCard) => {

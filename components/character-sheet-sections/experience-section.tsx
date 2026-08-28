@@ -3,7 +3,7 @@
 import { useSheetStore } from "@/lib/sheet-store";
 import { useAutoResizeFont } from "@/hooks/use-auto-resize-font"
 import type { StandardCard } from "@/card/card-types"
-import { getRhodesIslandRecommendedExperiences } from "@/lib/rhodes-island-experience"
+import { getRhodesIslandRecommendedExperiences } from "@/lib/rulesets/rhodes-island/experience"
 
 type RhodesIslandAncestryCard = StandardCard & {
   rhodesIsland?: {

@@ -4,7 +4,7 @@ import { defaultSheetData } from "@/lib/default-sheet-data"
 import {
   applyRhodesIslandAutomation,
   RHODES_ISLAND_AUTOMATION_VERSION,
-} from "@/lib/rhodes-island-automation"
+} from "@/lib/rulesets/rhodes-island/automation"
 import { rhodesIslandCards, rhodesIslandCatalog } from "@/data/rhodes-island"
 
 function createBranchSheet(

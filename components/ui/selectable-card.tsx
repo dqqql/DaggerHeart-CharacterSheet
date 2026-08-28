@@ -8,7 +8,7 @@ import { getStandardCardById } from "@/card"
 import React, { memo, useMemo } from "react"
 import { CardMarkdown } from "@/components/ui/card-markdown"
 import { getCardRuleSetId } from "@/lib/ruleset"
-import { formatRhodesSubclassDomainRecommendation } from "@/lib/rhodes-island-card-display"
+import { formatRhodesSubclassDomainRecommendation } from "@/lib/rulesets/rhodes-island/card-display"
 
 // Helper function to get display type name, moved outside of the component
 const getDisplayTypeName = (card: StandardCard) => {

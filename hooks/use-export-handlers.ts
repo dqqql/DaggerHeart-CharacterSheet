@@ -1,7 +1,7 @@
 import { useCallback } from "react"
 import { exportCharacterCode } from "@/lib/character-code"
 import { exportCharacterData } from "@/lib/storage"
-import { withRhodesIslandDefaultAncestryExperience } from "@/lib/rhodes-island-experience"
+import { withRhodesIslandDefaultAncestryExperience } from "@/lib/rulesets/rhodes-island/experience"
 import { useSheetStore } from "@/lib/sheet-store"
 
 const WAIT_TIMEOUT = 10000

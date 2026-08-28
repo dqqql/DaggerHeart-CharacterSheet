@@ -17,7 +17,7 @@ import {
     calculateEvasionBreakdown,
     convertDisplayedEvasionToManualModifier,
 } from "@/lib/domain-card-derived-stats";
-import { applyRhodesIslandAutomation } from "@/lib/rhodes-island-automation";
+import { applyRhodesIslandAutomation } from "@/lib/rulesets/rhodes-island/automation";
 import { splitTextAtBoundary } from "@/lib/text-layout";
 
 // 施法属性映射关系

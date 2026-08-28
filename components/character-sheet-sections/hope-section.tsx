@@ -3,7 +3,7 @@
 import { useSheetStore } from "@/lib/sheet-store";
 import { StandardCard } from "@/card/card-types";
 import ReactMarkdown from 'react-markdown';
-import { getRhodesProfessionHopeFeature } from "@/lib/rhodes-island-automation";
+import { getRhodesProfessionHopeFeature } from "@/lib/rulesets/rhodes-island/automation";
 import { highlightTextChanges } from "@/lib/text-change-highlighter";
 
 export function HopeSection() {

@@ -6,7 +6,7 @@ import React from "react"
 import Image from "next/image"
 import { getCardImageUrl, getCardImageUrlAsync } from "@/lib/utils"
 import { CardMarkdown } from "@/components/ui/card-markdown"
-import { formatRhodesSubclassDomainRecommendation } from "@/lib/rhodes-island-card-display"
+import { formatRhodesSubclassDomainRecommendation } from "@/lib/rulesets/rhodes-island/card-display"
 import { getCardRuleSetId } from "@/lib/ruleset"
 
 const getDisplayTypeName = (card: StandardCard) => {
