@@ -1,10 +1,7 @@
 import type { StandardCard } from "@/card/card-types"
 import type { RuleSetId, SheetData } from "@/lib/sheet-data"
 
-export const RULE_SET_LABELS: Record<RuleSetId, string> = {
-  daggerheart: "原版匕首之心",
-  "rhodes-island": "共赴明日：罗德岛旅记",
-}
+export { getRuleSetModule, RULE_SET_LABELS } from "@/lib/rulesets/registry"
 
 export function isRhodesIsland(data: Pick<SheetData, "ruleSetId"> | undefined | null): boolean {
   return data?.ruleSetId === "rhodes-island"
