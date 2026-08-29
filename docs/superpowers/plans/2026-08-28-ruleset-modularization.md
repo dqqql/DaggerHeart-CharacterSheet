@@ -739,7 +739,7 @@ git commit -m "refactor: use stable upgrade action identifiers"
 - Modify: `tests/unit/export-preview-shell.test.tsx`
 - Modify: `tests/unit/character-creation-guide.test.tsx`
 
-- [ ] **Step 1: 扩展页面定义并写失败测试**
+- [x] **Step 1: 扩展页面定义并写失败测试**
 
 `PageDefinition` 加入可选字段：
 
@@ -749,7 +749,7 @@ ruleSetIds?: readonly RuleSetId[]
 
 `isPageVisible` 先检查 `ruleSetIds`，再检查现有 `always/config/data`。测试必须证明：第一页/第二页两套规则都可见；关系页只对罗德岛可见；游侠伙伴、武装表、冒险笔记只对 SRD 可见；切换规则后 tab 不保留不可见页。
 
-- [ ] **Step 2: 搬出 `app/page.tsx:246` 的模块级页面注册数组**
+- [x] **Step 2: 搬出 `app/page.tsx:246` 的模块级页面注册数组**
 
 `components/layout/character-sheet-pages.ts` 导出完整 `CHARACTER_SHEET_PAGES`；`app/page.tsx` 只执行一次 `registerPages(CHARACTER_SHEET_PAGES)`。关系页使用：
 
@@ -760,7 +760,7 @@ visibility: { type: "config", configKey: "relationshipQuestions" },
 
 同步把 `PageDefinition.visibility.configKey` 联合类型补上 `relationshipQuestions`，删除 `page-registry.ts` 中“罗德岛一律隐藏 config 页”的特判。
 
-- [ ] **Step 3: 用 definition 的 capabilities/labels 替换 UI 字符串判断**
+- [x] **Step 3: 用 definition 的 capabilities/labels 替换 UI 字符串判断**
 
 在每个顶层组件只取一次：
 
@@ -779,11 +779,11 @@ const setSheetData = useSheetStore(state => state.setSheetData)
 
 不要再调用无 selector 的 `useSheetStore()`。
 
-- [ ] **Step 4: 保留合理的 per-card 判断**
+- [x] **Step 4: 保留合理的 per-card 判断**
 
 `image-card.tsx`、`print-image-card.tsx`、`selectable-card.tsx` 等根据卡牌自身规则决定布局，继续使用 `getCardRuleSetId(card)` 是合理边界；不要强行让这些纯卡片组件读取当前角色规则。
 
-- [ ] **Step 5: 运行 UI 回归与静态扫描**
+- [x] **Step 5: 运行 UI 回归与静态扫描**
 
 ```powershell
 pnpm exec vitest run tests/unit/page-registry-rulesets.test.ts tests/unit/rhodes-island-export-menu.test.tsx tests/unit/rhodes-island-home-fields.test.tsx tests/unit/rhodes-island-relationship-questions.test.tsx tests/unit/export-preview-shell.test.tsx tests/unit/character-creation-guide.test.tsx
@@ -793,7 +793,7 @@ rg -n "ruleSetId\s*[!=]==?\s*[\"']rhodes-island[\"']|activeRuleSetId\s*[!=]==?\s
 
 Expected: 测试 PASS；最后的 `rg` 只允许命中 per-card 布局或尚未纳入本任务的纯展示细节，不应再命中 `app/page.tsx`、底栏、页面 registry、页面设置和卡牌侧栏的功能开关。
 
-- [ ] **Step 6: 提交**
+- [x] **Step 6: 提交**
 
 ```powershell
 git add app/page.tsx components/layout components/ui/page-visibility-dropdown.tsx components/modals/card-selection/CardTypeSidebar.tsx components/character-sheet.tsx components/character-sheet-selection-modals.tsx components/character-sheet-page-two.tsx components/character-sheet-sections components/character-sheet-page-two-sections lib/page-registry.ts tests/unit
