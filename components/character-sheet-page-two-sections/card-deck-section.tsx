@@ -17,6 +17,7 @@ import { useCardActions } from "@/lib/sheet-store"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { getDisplayedCharacterCards } from "@/lib/ancestry-utils"
 import { formatRhodesSubclassDomainRecommendation } from "@/lib/rulesets/rhodes-island/card-display"
+import { getRuleSetModule } from "@/lib/rulesets/registry"
 
 interface CardDeckSectionProps {
   formData: SheetData
@@ -31,12 +32,12 @@ const getBorderColor = (isSpecial = false): string => {
 }
 
 // Utility function for special slot label
-const getSpecialSlotLabel = (index: number, isRhodesIsland = false): string => {
+const getSpecialSlotLabel = (index: number, subclassLabel: string): string => {
   switch (index) {
     case 0:
       return "职业";
     case 1:
-      return isRhodesIsland ? "分支" : "子职业";
+      return subclassLabel;
     case 2:
       return "种族";
     case 3:
@@ -63,7 +64,8 @@ interface CardProps {
   isTextMode: boolean;
   isMobile: boolean;
   isSuppressed?: boolean;
-  isRhodesIsland?: boolean;
+  useRulesetCardLayout?: boolean;
+  subclassLabel: string;
 }
 
 function Card({
@@ -81,13 +83,14 @@ function Card({
   isTextMode,
   isMobile,
   isSuppressed = false,
-  isRhodesIsland = false,
+  useRulesetCardLayout = false,
+  subclassLabel,
 }: CardProps) {
   // Optimize: avoid unnecessary conversion if already StandardCard
   const standardCard = card && typeof card === 'object' && 'type' in card && 'name' in card 
     ? card as StandardCard 
     : convertToStandardCard(card);
-  const usesRhodesSubclassLayout = isRhodesIsland && standardCard?.type === "subclass"
+  const usesRhodesSubclassLayout = useRulesetCardLayout && standardCard?.type === "subclass"
 
   // Enhanced card type name display for variants
   const displayTypeName = (() => {
@@ -112,7 +115,7 @@ function Card({
 
   return (
     <div
-      data-ri-card-slot={isRhodesIsland ? "" : undefined}
+      data-ri-card-slot={useRulesetCardLayout ? "" : undefined}
       className={`relative cursor-pointer transition-colors rounded-md p-1 h-16 group ${isSelected ? "border-3" : "border"
         } ${getBorderColor(isSpecial)} ${isSuppressed ? "border-dashed opacity-60" : ""}`}
       onClick={() => onCardClick(index)}
@@ -189,7 +192,7 @@ function Card({
       {isSpecial && (
         <div className="absolute -top-4 left-0 right-0 text-center">
           <span className="text-[10px] font-medium bg-yellow-100 px-1 py-0 rounded-t-sm border border-yellow-300 border-b-0">
-            {getSpecialSlotLabel(index, isRhodesIsland)}
+            {getSpecialSlotLabel(index, subclassLabel)}
           </span>
         </div>
       )}
@@ -236,6 +239,7 @@ export function CardDeckSection({
   onCardChange,
   onInventoryCardChange,
 }: CardDeckSectionProps) {
+  const ruleSet = getRuleSetModule(formData.ruleSetId)
   // 钉住卡牌功能
   const { pinCard } = usePinnedCardsStore();
   // 卡牌操作方法
@@ -480,7 +484,7 @@ export function CardDeckSection({
         {cards &&
           Array.isArray(cards) &&
           cards.map((card: StandardCard, index: number) => {
-            if (formData.ruleSetId === "rhodes-island" && activeDeck === "focused" && index === 3) {
+            if (activeDeck === "focused" && ruleSet.layout.hiddenFocusedCardSlots.includes(index)) {
               return null
             }
             if (!card) {
@@ -513,7 +517,8 @@ export function CardDeckSection({
                   isTextMode={isTextMode}
                   isMobile={isMobile}
                   isSuppressed={isSuppressed}
-                  isRhodesIsland={formData.ruleSetId === "rhodes-island"}
+                  useRulesetCardLayout={ruleSet.capabilities.ancestryExperience}
+                  subclassLabel={ruleSet.labels.subclass}
                 />
               </div>
             );

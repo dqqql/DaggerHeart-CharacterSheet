@@ -11,11 +11,15 @@ import {
   RHODES_ISLAND_RELATIONSHIP_PROMPTS,
 } from "@/data/rhodes-island/relationship-questions"
 import { rhodesIslandCatalog } from "@/data/rhodes-island"
+import { CHARACTER_SHEET_PAGES } from "@/components/layout/character-sheet-pages"
+import { clearRegistry, registerPages } from "@/lib/page-registry"
 
 const originalSheetData = useSheetStore.getState().sheetData
 
 describe("Rhodes Island relationship questions page", () => {
   beforeEach(() => {
+    clearRegistry()
+    registerPages(CHARACTER_SHEET_PAGES)
     const profession = rhodesIslandCatalog.professions.find(
       (item) => item.name === "先锋",
     )!

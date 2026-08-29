@@ -2,18 +2,11 @@
 
 import { useState, useEffect, useMemo, useRef } from "react"
 import dynamic from "next/dynamic"
-import CharacterSheet from "@/components/character-sheet"
-import CharacterSheetPageTwo from "@/components/character-sheet-page-two"
-import CharacterSheetPageThree from "@/components/character-sheet-page-ranger-companion"
-import CharacterSheetPageAdventureNotes from "@/components/character-sheet-page-adventure-notes"
-import CharacterSheetPageRhodesRelationships from "@/components/character-sheet-page-rhodes-relationships"
-import { isEmptyCard, type StandardCard } from "@/card/card-types"
+import type { StandardCard } from "@/card/card-types"
 import { CardDrawer } from "@/components/card-drawer"
 import { showFadeNotification } from "@/components/ui/fade-notification"
 import { confirm, promptDialog } from "@/components/ui/confirm-dialog"
 import { CardSelectionModal } from "@/components/modals/card-selection-modal"
-import { CharacterSheetPageFour, CharacterSheetPageFive } from "@/components/character-sheet-page-card-print"
-import ArmorTemplatePage from "@/components/character-sheet-page-iknis"
 import { useSheetStore, useCardActions } from "@/lib/sheet-store"
 import { useShallow } from "zustand/react/shallow"
 import { PrintReadyChecker } from "@/components/print/print-ready-checker"
@@ -23,7 +16,8 @@ import { usePinnedCardsStore } from "@/lib/pinned-cards-store"
 import { PinnedCardWindow } from "@/components/ui/pinned-card-window"
 import { useTextModeStore } from "@/lib/text-mode-store"
 import { useDualPageStore } from "@/lib/dual-page-store"
-import { registerPages, getTabPages } from "@/lib/page-registry"
+import { registerPages, getTabPages, resolveVisibleTabValue } from "@/lib/page-registry"
+import { CHARACTER_SHEET_PAGES } from "@/components/layout/character-sheet-pages"
 import { PageDisplay } from "@/components/layout/page-display"
 import { BottomDock } from "@/components/layout/bottom-dock"
 import { PrintPageRenderer } from "@/components/print/print-page-renderer"
@@ -41,6 +35,8 @@ import {
 import { useOfficialImagePackStore } from "@/lib/official-image-pack-store"
 import { CardSystemInitializer } from "@/components/card-system-initializer"
 import { RULE_SET_LABELS } from "@/lib/ruleset"
+import { getRuleSetModule } from "@/lib/rulesets/registry"
+import { RULE_SET_IDS } from "@/lib/sheet-data"
 import { validateJSONCharacterData } from "@/lib/character-data-validator"
 import { defaultSheetData } from "@/lib/default-sheet-data"
 
@@ -244,99 +240,7 @@ function StoreConnectedCardDrawer({
 }
 
 // 注册所有页面
-registerPages([
-  {
-    id: 'page1',
-    label: '第一页',
-    component: CharacterSheet,
-    printClass: 'page-one',
-    visibility: { type: 'always' },
-    printOrder: 1,
-    showInTabs: true
-  },
-  {
-    id: 'page2',
-    label: '第二页',
-    component: CharacterSheetPageTwo,
-    printClass: 'page-two',
-    visibility: { type: 'always' },
-    printOrder: 2,
-    showInTabs: true
-  },
-  {
-    id: 'rhodes-relationships',
-    label: '关系与问题',
-    component: CharacterSheetPageRhodesRelationships,
-    printClass: 'page-rhodes-relationships',
-    visibility: {
-      type: 'data',
-      dataCheck: (data) =>
-        data.ruleSetId === 'rhodes-island' &&
-        !!data.pageVisibility?.relationshipQuestions
-    },
-    printOrder: 3,
-    showInTabs: true
-  },
-  {
-    id: 'page3',
-    label: '游侠伙伴',
-    component: CharacterSheetPageThree,
-    printClass: 'page-three',
-    visibility: { type: 'config', configKey: 'rangerCompanion' },
-    printOrder: 4,
-    showInTabs: true
-  },
-  {
-    id: 'page4',
-    label: '主板扩展',
-    component: ArmorTemplatePage,
-    printClass: 'page-iknis',
-    visibility: { type: 'config', configKey: 'armorTemplate' },
-    printOrder: 5,
-    showInTabs: true
-  },
-  {
-    id: 'adventure-notes',
-    label: '冒险笔记',
-    component: CharacterSheetPageAdventureNotes,
-    printClass: 'page-adventure-notes',
-    visibility: { type: 'config', configKey: 'adventureNotes' },
-    printOrder: 6,
-    showInTabs: true
-  },
-  {
-    id: 'focused-cards',
-    label: '配置卡组',
-    component: CharacterSheetPageFour,
-    printClass: 'page-four',
-    visibility: {
-      type: 'data',
-      dataCheck: (data) => {
-        // 检查聚焦卡组（排除第一张卡）
-        return data.cards && data.cards.length > 1 &&
-          data.cards.slice(1).some(card => card && !isEmptyCard(card))
-      }
-    },
-    printOrder: 7,
-    showInTabs: false  // 不在Tab中显示
-  },
-  {
-    id: 'inventory-cards',
-    label: '宝库卡组',
-    component: CharacterSheetPageFive,
-    printClass: 'page-five',
-    visibility: {
-      type: 'data',
-      dataCheck: (data) => {
-        // 检查库存卡组
-        return !!(data.inventory_cards && data.inventory_cards.length > 0 &&
-          data.inventory_cards.some(card => card && !isEmptyCard(card)))
-      }
-    },
-    printOrder: 8,
-    showInTabs: false  // 不在Tab中显示
-  }
-])
+registerPages(CHARACTER_SHEET_PAGES)
 
 export default function Home() {
   const setFormData = useSheetStore((state) => state.setSheetData)
@@ -423,14 +327,21 @@ export default function Home() {
   const announcements = useMemo(() => getAnnouncements(), [])
   const latestAnnouncementId = useMemo(() => getLatestAnnouncementId(), [])
   const hasOfficialImagePack = !!officialImagePackMetadata?.available
-  const isRhodesIsland = activeRuleSetId === "rhodes-island"
-  const hasCardImages = isRhodesIsland || hasOfficialImagePack
+  const ruleSet = getRuleSetModule(activeRuleSetId)
+  const nextRuleSetId = RULE_SET_IDS.find(id => id !== ruleSet.id) || ruleSet.id
+  const hasCardImages = !ruleSet.capabilities.officialImagePack || hasOfficialImagePack
   const officialImagePackProgressView = officialImagePackImportProgress
     ? getOfficialImagePackProgressView(officialImagePackImportProgress)
     : null
   const visibleTabs = useMemo(() => {
     return getTabPages({ ...defaultSheetData, ...navigationData })
   }, [navigationData])
+
+  useEffect(() => {
+    setCurrentTabValue(current => resolveVisibleTabValue(current, visibleTabs))
+    setLeftTab(resolveVisibleTabValue(leftTabValue, visibleTabs))
+    setRightTab(resolveVisibleTabValue(rightTabValue, visibleTabs))
+  }, [leftTabValue, rightTabValue, setLeftTab, setRightTab, visibleTabs])
 
   // 使用导出功能Hook
   const {
@@ -505,10 +416,10 @@ export default function Home() {
       return
     }
 
-    if (!isRhodesIsland && !hasOfficialImagePack) {
+    if (ruleSet.capabilities.officialImagePack && !hasOfficialImagePack) {
       setTextMode(true)
     }
-  }, [hasOfficialImagePack, isRhodesIsland, officialImagePackHydrated, setTextMode])
+  }, [hasOfficialImagePack, officialImagePackHydrated, ruleSet.capabilities.officialImagePack, setTextMode])
 
   useEffect(() => {
     if (!isClient || !announcementHydrated || !latestAnnouncementId) {
@@ -857,7 +768,7 @@ export default function Home() {
       )
 
       // 页面切换快捷键（无修饰键）
-      if (!event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey && !isPrintingAll && !characterManagementModalOpen && !isGuideOpen && !isInputFocused) {
+      if (ruleSet.capabilities.keyboardPageNavigation && !event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey && !isPrintingAll && !characterManagementModalOpen && !isGuideOpen && !isInputFocused) {
         switch (event.key) {
           case 'ArrowLeft':
             event.preventDefault()
@@ -917,7 +828,7 @@ export default function Home() {
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [characterList, currentCharacterId, characterManagementModalOpen, isPrintingAll, isGuideOpen, currentTabValue, visibleTabs])
+  }, [characterList, currentCharacterId, characterManagementModalOpen, isPrintingAll, isGuideOpen, currentTabValue, visibleTabs, ruleSet.capabilities.keyboardPageNavigation])
 
   // 已移除聚焦卡牌变更处理函数 - 功能由双卡组系统取代
 
@@ -967,7 +878,7 @@ export default function Home() {
               >
                 <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
                   <span className="export-preview-ruleset-label text-xs font-semibold tracking-[0.14em]">
-                    {activeRuleSetId === "rhodes-island" ? "罗德岛终端 · 导出预览" : "DAGGERHEART · 导出预览"}
+                    {ruleSet.labels.exportPreview}
                   </span>
                   <span className="text-sm">
                     按 <kbd className="export-preview-kbd px-2 py-1 rounded text-xs mx-1">ESC</kbd> 键或点击此处退出预览
@@ -1036,8 +947,7 @@ export default function Home() {
   return (
     <main
       data-ruleset={activeRuleSetId}
-      data-ri-app={isRhodesIsland ? "terminal" : undefined}
-      className={`min-w-0 w-full max-w-full mx-auto px-0 container ${isRhodesIsland ? 'rhodes-island-shell' : ''} ${isMobile ? 'pb-32' : 'pb-20'
+      className={`min-w-0 w-full max-w-full mx-auto px-0 container ${ruleSet.capabilities.keyboardPageNavigation ? 'rhodes-island-shell' : ''} ${isMobile ? 'pb-32' : 'pb-20'
       }`}
     >
       <CardSystemInitializer />
@@ -1065,8 +975,8 @@ export default function Home() {
                   size="sm"
                   variant="outline"
                   className="h-8 w-auto px-3 text-[13px]"
-                  onClick={() => switchRuleSetHandler(isRhodesIsland ? "daggerheart" : "rhodes-island")}
-                  aria-label={`切换到${RULE_SET_LABELS[isRhodesIsland ? "daggerheart" : "rhodes-island"]}`}
+                  onClick={() => switchRuleSetHandler(nextRuleSetId)}
+                  aria-label={`切换到${RULE_SET_LABELS[nextRuleSetId]}`}
                   title={`当前：${RULE_SET_LABELS[activeRuleSetId]}`}
                 >
                   切换规则
@@ -1112,9 +1022,11 @@ export default function Home() {
             <div data-ri-mode-card className="flex items-start justify-between gap-3 rounded-xl border border-slate-200 bg-white/95 px-4 py-3 shadow-sm">
               <div className="min-w-0">
                 <div className="text-sm font-semibold text-slate-800">
-                  {isRhodesIsland ? "罗德岛离线卡库" : hasOfficialImagePack ? "卡图包已导入" : "当前为 SRD 纯文字模式"}
+                  {ruleSet.capabilities.officialImagePack
+                    ? hasOfficialImagePack ? "卡图包已导入" : "当前为 SRD 纯文字模式"
+                    : ruleSet.labels.cardLibrary}
                 </div>
-                {!isRhodesIsland && (
+                {ruleSet.capabilities.officialImagePack && (
                   <div className="text-xs text-slate-500">
                     {hasOfficialImagePack
                       ? `版本 ${officialImagePackMetadata?.version}，共 ${officialImagePackMetadata?.imageCount} 张`
@@ -1167,7 +1079,7 @@ export default function Home() {
             </div>
 
             <div className="flex flex-wrap justify-end gap-2">
-              {!isRhodesIsland && <Button
+              {ruleSet.capabilities.officialImagePack && <Button
                 size="sm"
                 onClick={handleOpenOfficialImagePackPicker}
                 disabled={isImportingOfficialImagePack}
@@ -1176,7 +1088,7 @@ export default function Home() {
                   ? `导入中 ${officialImagePackProgressView.percent}%`
                   : "导入卡图"}
               </Button>}
-              {!isRhodesIsland && <Button
+              {ruleSet.capabilities.officialImagePack && <Button
                 size="sm"
                 variant="outline"
                 onClick={handleClearOfficialImagePack}
@@ -1264,7 +1176,7 @@ export default function Home() {
         />
       )}
 
-      {isGuideOpen && (
+      {ruleSet.capabilities.guide && isGuideOpen && (
         <CharacterCreationGuide
           isOpen={isGuideOpen}
           onClose={() => setIsGuideOpen(false)}

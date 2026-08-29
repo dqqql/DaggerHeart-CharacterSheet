@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { PageVisibilityDropdown } from "@/components/ui/page-visibility-dropdown"
 import type { PageDefinition } from "@/lib/page-registry"
 import type { RuleSetId } from "@/lib/sheet-data"
+import { getRuleSetModule } from "@/lib/rulesets/registry"
 
 interface PageDisplayProps {
   isDualPageMode: boolean
@@ -39,7 +40,8 @@ export function PageDisplay({
   onSwitchToNextPage,
 }: PageDisplayProps) {
   const showPageSettings = true
-  const isRhodesIsland = ruleSetId === "rhodes-island"
+  const ruleSet = getRuleSetModule(ruleSetId)
+  const keyboardPageNavigation = ruleSet.capabilities.keyboardPageNavigation
 
   return (
     <div data-ri-page-display className={`relative w-full mx-auto transition-[opacity,transform] duration-300 ${isDualPageMode && !isMobile ? 'md:max-w-[425mm]' : 'md:max-w-[210mm]'}`}>
@@ -179,13 +181,13 @@ export function PageDisplay({
       {!isDualPageMode && (
         <div
           data-ri-page-arrow="previous"
-          role={isRhodesIsland ? "button" : undefined}
-          tabIndex={isRhodesIsland ? 0 : undefined}
-          aria-label={isRhodesIsland ? "上一页" : undefined}
+          role={keyboardPageNavigation ? "button" : undefined}
+          tabIndex={keyboardPageNavigation ? 0 : undefined}
+          aria-label={keyboardPageNavigation ? "上一页" : undefined}
           className="print:hidden hidden md:block absolute -left-20 w-16 flex items-center justify-center cursor-pointer group z-20"
           style={{ top: '48px', bottom: 0 }}
           onClick={onSwitchToPrevPage}
-          onKeyDown={isRhodesIsland ? (event) => {
+          onKeyDown={keyboardPageNavigation ? (event) => {
             if (event.key === "Enter" || event.key === " ") {
               event.preventDefault()
               onSwitchToPrevPage()
@@ -208,13 +210,13 @@ export function PageDisplay({
       {!isDualPageMode && (
         <div
           data-ri-page-arrow="next"
-          role={isRhodesIsland ? "button" : undefined}
-          tabIndex={isRhodesIsland ? 0 : undefined}
-          aria-label={isRhodesIsland ? "下一页" : undefined}
+          role={keyboardPageNavigation ? "button" : undefined}
+          tabIndex={keyboardPageNavigation ? 0 : undefined}
+          aria-label={keyboardPageNavigation ? "下一页" : undefined}
           className="print:hidden hidden md:block absolute -right-20 w-16 flex items-center justify-center cursor-pointer group z-20"
           style={{ top: '48px', bottom: 0 }}
           onClick={onSwitchToNextPage}
-          onKeyDown={isRhodesIsland ? (event) => {
+          onKeyDown={keyboardPageNavigation ? (event) => {
             if (event.key === "Enter" || event.key === " ") {
               event.preventDefault()
               onSwitchToNextPage()

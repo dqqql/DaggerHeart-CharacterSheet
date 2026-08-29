@@ -4,6 +4,7 @@ import type React from "react"
 import { useState } from "react"
 import { ContentEditableField } from "@/components/ui/content-editable-field"
 import { useSheetStore } from "@/lib/sheet-store"
+import { getRuleSetModule } from "@/lib/rulesets/registry"
 
 interface WeaponSectionProps {
   isPrimary?: boolean
@@ -53,7 +54,8 @@ export function WeaponSection({
   const { sheetData: formData, setSheetData } = useSheetStore()
   const [isEditingName, setIsEditingName] = useState(false)
   const weaponFields = getWeaponFields(fieldPrefix)
-  const isBoundRhodesWeapon = formData.ruleSetId === "rhodes-island" && isPrimary
+  const ruleSet = getRuleSetModule(formData.ruleSetId)
+  const isManagedPrimaryWeapon = ruleSet.capabilities.managedPrimaryWeapon && isPrimary
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -116,17 +118,17 @@ export function WeaponSection({
               <button
                 type="button"
                 onClick={() => {
-                  if (!isBoundRhodesWeapon) {
+                  if (!isManagedPrimaryWeapon) {
                     onOpenWeaponModal(weaponFields.name, isPrimary ? "primary" : "secondary")
                   }
                 }}
-                aria-readonly={isBoundRhodesWeapon}
+                aria-readonly={isManagedPrimaryWeapon}
                 className="flex-1 text-sm text-left px-2 py-0.5 hover:bg-gray-50 focus:outline-none"
               >
                 {formData[weaponFields.name] || <span className="print:hidden">选择武器</span>}
               </button>
-              {!isBoundRhodesWeapon && <div className="w-px bg-gray-300 hidden group-hover:block" />}
-              {!isBoundRhodesWeapon && <button
+              {!isManagedPrimaryWeapon && <div className="w-px bg-gray-300 hidden group-hover:block" />}
+              {!isManagedPrimaryWeapon && <button
                 type="button"
                 onClick={() => setIsEditingName(true)}
                 className="w-8 hidden group-hover:flex items-center justify-center hover:bg-gray-50 focus:outline-none print:hidden"
@@ -165,7 +167,7 @@ export function WeaponSection({
           name={weaponFields.feature}
           value={formData[weaponFields.feature] || ""}
           onChange={handleInputChange}
-          placeholder={isBoundRhodesWeapon
+          placeholder={isManagedPrimaryWeapon
             ? "和游戏主持人共同商讨，并在此处填写武器原型的形制"
             : ""}
           maxLines={isPrimary ? 3 : 2}

@@ -3,7 +3,7 @@
  */
 
 import type { ComponentType } from 'react'
-import type { SheetData } from './sheet-data'
+import type { RuleSetId, SheetData } from './sheet-data'
 
 export interface PageDefinition {
   id: string
@@ -11,11 +11,12 @@ export interface PageDefinition {
   component: ComponentType
   printClass: string
   tabValue?: string  // Tab值，如果与id不同
+  ruleSetIds?: readonly RuleSetId[]
   
   // 显示条件
   visibility: 
     | { type: 'always' }
-    | { type: 'config'; configKey: 'rangerCompanion' | 'armorTemplate' | 'adventureNotes' }
+    | { type: 'config'; configKey: 'rangerCompanion' | 'armorTemplate' | 'adventureNotes' | 'relationshipQuestions' }
     | { type: 'data'; dataCheck: (data: SheetData) => boolean }
   
   // 打印顺序（数字越小越靠前）
@@ -38,7 +39,7 @@ export function registerPage(page: PageDefinition) {
 /**
  * 批量注册页面
  */
-export function registerPages(pages: PageDefinition[]) {
+export function registerPages(pages: readonly PageDefinition[]) {
   pages.forEach(page => registerPage(page))
 }
 
@@ -60,10 +61,7 @@ export function getAllPages(): PageDefinition[] {
  * 判断页面是否可见
  */
 export function isPageVisible(page: PageDefinition, sheetData: SheetData): boolean {
-  if (
-    sheetData.ruleSetId === 'rhodes-island' &&
-    page.visibility.type === 'config'
-  ) {
+  if (page.ruleSetIds && !page.ruleSetIds.includes(sheetData.ruleSetId)) {
     return false
   }
 
@@ -77,6 +75,14 @@ export function isPageVisible(page: PageDefinition, sheetData: SheetData): boole
     default:
       return false
   }
+}
+
+export function resolveVisibleTabValue(
+  selectedTabValue: string,
+  visiblePages: readonly PageDefinition[],
+): string {
+  const tabValues = visiblePages.map(page => page.tabValue || page.id)
+  return tabValues.includes(selectedTabValue) ? selectedTabValue : (tabValues[0] || "")
 }
 
 /**

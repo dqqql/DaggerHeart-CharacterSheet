@@ -11,9 +11,13 @@ import {
 import { cn } from "@/lib/utils"
 import { useSheetStore } from "@/lib/sheet-store"
 import { getOptionalPageConfigs } from "@/data/list/pages"
+import { getAllPages } from "@/lib/page-registry"
+
+type PageVisibilityKey = "rangerCompanion" | "armorTemplate" | "adventureNotes" | "relationshipQuestions"
 
 export function PageVisibilityDropdown() {
-  const { sheetData, setSheetData } = useSheetStore()
+  const sheetData = useSheetStore(state => state.sheetData)
+  const setSheetData = useSheetStore(state => state.setSheetData)
   
   // 如果sheetData不存在，显示占位符按钮（不可交互）
   if (!sheetData) {
@@ -31,31 +35,38 @@ export function PageVisibilityDropdown() {
     )
   }
 
-  const isRhodesIsland = sheetData.ruleSetId === "rhodes-island"
-  const pageOptions = isRhodesIsland
-    ? [{
-        id: "relationshipQuestions" as const,
-        label: "关系与问题",
-        description: "职业背景问题与同伴关系",
-        visible: sheetData.pageVisibility?.relationshipQuestions || false,
-      }]
-    : getOptionalPageConfigs().map(config => ({
-        id: config.visibilityKey!,
-        label: config.label,
-        description: config.description,
-        visible: sheetData.pageVisibility?.[config.visibilityKey!] || false
-      }))
+  const descriptions = new Map<PageVisibilityKey, string>(
+    getOptionalPageConfigs().map(config => [config.visibilityKey!, config.description]),
+  )
+  descriptions.set("relationshipQuestions", "职业背景问题与同伴关系")
+  const pageOptions = getAllPages()
+    .flatMap(page => {
+      if (
+        page.visibility.type !== "config" ||
+        (page.ruleSetIds && !page.ruleSetIds.includes(sheetData.ruleSetId))
+      ) {
+        return []
+      }
+      const id = page.visibility.configKey
+      return {
+        id,
+        label: page.label,
+        description: descriptions.get(id) || "",
+        visible: sheetData.pageVisibility?.[id] || false,
+      }
+    })
 
   const togglePageVisibility = (
-    pageId: 'rangerCompanion' | 'armorTemplate' | 'adventureNotes' | 'relationshipQuestions',
+    pageId: PageVisibilityKey,
   ) => {
     const currentValue = sheetData.pageVisibility?.[pageId]
     setSheetData({
       pageVisibility: {
-        rangerCompanion: pageId === 'rangerCompanion' ? !currentValue : (sheetData.pageVisibility?.rangerCompanion ?? false),
-        armorTemplate: pageId === 'armorTemplate' ? !currentValue : (sheetData.pageVisibility?.armorTemplate ?? false),
-        adventureNotes: pageId === 'adventureNotes' ? !currentValue : (sheetData.pageVisibility?.adventureNotes ?? false),
-        relationshipQuestions: pageId === 'relationshipQuestions' ? !currentValue : (sheetData.pageVisibility?.relationshipQuestions ?? false),
+        rangerCompanion: sheetData.pageVisibility?.rangerCompanion ?? false,
+        armorTemplate: sheetData.pageVisibility?.armorTemplate ?? false,
+        adventureNotes: sheetData.pageVisibility?.adventureNotes ?? false,
+        relationshipQuestions: sheetData.pageVisibility?.relationshipQuestions ?? false,
+        [pageId]: !currentValue,
       }
     })
   }

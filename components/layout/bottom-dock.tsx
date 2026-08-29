@@ -30,6 +30,7 @@ import {
 import { DualPageToggle } from "@/components/ui/dual-page-toggle"
 import { cn, navigateToPage } from "@/lib/utils"
 import type { RuleSetId } from "@/lib/sheet-data"
+import { getRuleSetModule } from "@/lib/rulesets/registry"
 
 const MAX_CHARACTERS = 10
 
@@ -72,7 +73,7 @@ type BottomDockProps = MainModeProps | PreviewModeProps
 
 function MainModeContent(props: MainModeProps) {
   const { isMobile } = props
-  const isRhodesIsland = props.ruleSetId === "rhodes-island"
+  const ruleSet = getRuleSetModule(props.ruleSetId || "daggerheart")
 
   return (
     <>
@@ -106,7 +107,7 @@ function MainModeContent(props: MainModeProps) {
           </TooltipContent>
         </Tooltip>
 
-        {!isRhodesIsland && <Tooltip>
+        {ruleSet.capabilities.guide && <Tooltip>
           <TooltipTrigger asChild>
             <Button
               onClick={props.onToggleGuide}
@@ -125,7 +126,7 @@ function MainModeContent(props: MainModeProps) {
           </TooltipContent>
         </Tooltip>}
 
-        {!isRhodesIsland && <Tooltip>
+        {ruleSet.capabilities.gmPanel && <Tooltip>
           <TooltipTrigger asChild>
             <Button
               onClick={() => navigateToPage("/gm-panel")}
@@ -186,17 +187,17 @@ function MainModeContent(props: MainModeProps) {
             <TooltipContent side="top">
               <p>导出角色卡</p>
               <p className="mt-1 text-xs text-muted-foreground">
-                {isRhodesIsland ? "导出为 PDF、HTML 或 JSON" : "导出为 PDF、HTML、JSON 或角色码"}
+                {ruleSet.capabilities.characterCode ? "导出为 PDF、HTML、JSON 或角色码" : "导出为 PDF、HTML 或 JSON"}
               </p>
             </TooltipContent>
           </Tooltip>
           <DropdownMenuContent align="end" side="top" className={cn("w-56", isMobile && "text-base")}>
-            {!isRhodesIsland && <DropdownMenuItem onClick={props.onPrintAll} className={cn(isMobile && "px-4 py-3")}>
+            {ruleSet.capabilities.printPreview && <DropdownMenuItem onClick={props.onPrintAll} className={cn(isMobile && "px-4 py-3")}>
               <FileText className={cn("mr-2", isMobile ? "h-5 w-5" : "h-4 w-4")} />
               打开导出预览界面
             </DropdownMenuItem>}
-            {!isRhodesIsland && <DropdownMenuSeparator />}
-            {!isRhodesIsland && <DropdownMenuItem
+            {ruleSet.capabilities.printPreview && <DropdownMenuSeparator />}
+            {ruleSet.capabilities.characterCode && <DropdownMenuItem
               data-testid="export-character-code-item"
               onClick={props.onOpenCharacterCodeExport}
               className={cn(isMobile && "px-4 py-3")}
@@ -204,7 +205,7 @@ function MainModeContent(props: MainModeProps) {
               <KeyRound className={cn("mr-2", isMobile ? "h-5 w-5" : "h-4 w-4")} />
               导出角色码
             </DropdownMenuItem>}
-            {!isRhodesIsland && <DropdownMenuItem onClick={props.onOpenSealDiceExport} className={cn(isMobile && "px-4 py-3")}>
+            {ruleSet.capabilities.characterCode && <DropdownMenuItem onClick={props.onOpenSealDiceExport} className={cn(isMobile && "px-4 py-3")}>
               <Dice5 className={cn("mr-2", isMobile ? "h-5 w-5" : "h-4 w-4")} />
               导出到骰子
             </DropdownMenuItem>}
@@ -282,7 +283,7 @@ function MainModeContent(props: MainModeProps) {
       <Separator orientation="vertical" className="h-5 bg-slate-500/30" />
 
       <div className="flex items-center gap-1.5">
-        {!isRhodesIsland && <Tooltip>
+        {ruleSet.capabilities.officialImagePack && <Tooltip>
           <TooltipTrigger asChild>
             <Button
               onClick={() => navigateToPage("/card-manager")}
@@ -309,7 +310,7 @@ function MainModeContent(props: MainModeProps) {
 
 function PreviewModeContent(props: PreviewModeProps) {
   const { isMobile } = props
-  const isRhodesIsland = props.ruleSetId === "rhodes-island"
+  const ruleSet = getRuleSetModule(props.ruleSetId || "daggerheart")
 
   return (
     <div className="flex items-center gap-4">
@@ -340,7 +341,7 @@ function PreviewModeContent(props: PreviewModeProps) {
       >
         导出为 JSON
       </Button>
-      {!isRhodesIsland && <Button
+      {ruleSet.capabilities.characterCode && <Button
         onClick={props.onOpenCharacterCodeExport}
         className={cn(
           "whitespace-nowrap bg-primary text-primary-foreground hover:bg-primary/90 focus:outline-none",
@@ -349,7 +350,7 @@ function PreviewModeContent(props: PreviewModeProps) {
       >
         导出角色码
       </Button>}
-      {!isRhodesIsland && <Button
+      {ruleSet.capabilities.characterCode && <Button
         onClick={props.onOpenSealDiceExport}
         className={cn(
           "whitespace-nowrap bg-primary text-primary-foreground hover:bg-primary/90 focus:outline-none",

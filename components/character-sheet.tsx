@@ -52,6 +52,7 @@ import {
   convertDisplayedArmorValueToManualModifier,
   convertDisplayedEvasionToManualModifier,
 } from "@/lib/domain-card-derived-stats"
+import { getRuleSetModule } from "@/lib/rulesets/registry"
 
 export default function CharacterSheet() {
   const { sheetData: formData, setSheetData: setFormData, updateArmorBox, updateProficiency, selectArmor, handleProfessionChange: autofillProfessionData } = useSheetStore();
@@ -60,7 +61,7 @@ export default function CharacterSheet() {
   const safeFormData = useSafeSheetData();
   const evasionBreakdown = calculateEvasionBreakdown(safeFormData)
   const armorValueBreakdown = calculateArmorValueBreakdown(safeFormData)
-  const isRhodesIsland = safeFormData.ruleSetId === "rhodes-island"
+  const ruleSet = getRuleSetModule(safeFormData.ruleSetId)
 
   // 添加一个安全的表达式计算函数
   const safeEvaluateExpression = (expression: string): number => {
@@ -364,7 +365,7 @@ export default function CharacterSheet() {
       const ancestryCard = store.getCardById(value);
       if (ancestryCard && ancestryCard.type === CardType.Ancestry) {
         setFormData((prev) => {
-          const updatedFormData = prev.ruleSetId === "rhodes-island"
+          const updatedFormData = ruleSet.capabilities.ancestryExperience
             ? {
               ...prev,
               ancestry1: ancestryCard.id,
@@ -800,7 +801,7 @@ export default function CharacterSheet() {
                 <ExperienceSection />
 
                 {/* Standard rules keep the profession description in the left column. */}
-                {!isRhodesIsland && (
+                {ruleSet.layout.professionFeaturePlacement === "left" && (
                   <div className="mt-auto">
                     <h3 className="text-xs font-bold text-center">职业特性</h3>
                     <ProfessionDescriptionSection description={safeFormData.cards[0]?.description} />
@@ -834,7 +835,7 @@ export default function CharacterSheet() {
                     onOpenWeaponModal={openWeaponModal}
                   />
 
-                  {!isRhodesIsland && <WeaponSection
+                  {ruleSet.capabilities.secondaryWeapon && <WeaponSection
                     isPrimary={false}
                     fieldPrefix="secondaryWeapon"
                     onOpenWeaponModal={openWeaponModal}
@@ -848,24 +849,24 @@ export default function CharacterSheet() {
                 <InventorySection />
 
                 {/* Inventory Weapons */}
-                {!isRhodesIsland && <h3 className="text-xs font-bold text-center">备用武器</h3>}
-                {!isRhodesIsland && <InventoryWeaponSection
+                {ruleSet.capabilities.inventoryWeapons && <h3 className="text-xs font-bold text-center">备用武器</h3>}
+                {ruleSet.capabilities.inventoryWeapons && <InventoryWeaponSection
                   index={1}
                   onOpenWeaponModal={openWeaponModal}
                 />}
 
-                {!isRhodesIsland && <InventoryWeaponSection
+                {ruleSet.capabilities.inventoryWeapons && <InventoryWeaponSection
                   index={2}
                   onOpenWeaponModal={openWeaponModal}
                 />}
 
                 {/* Gold sits directly below inventory in the tttri layout. */}
-                <div className={isRhodesIsland ? undefined : "mt-auto"}>
+                <div className={ruleSet.layout.professionFeaturePlacement === "right" ? undefined : "mt-auto"}>
                   <GoldSection />
                 </div>
 
                 {/* tttri moves the profession description below gold. */}
-                {isRhodesIsland && (
+                {ruleSet.layout.professionFeaturePlacement === "right" && (
                   <div>
                     <h3 className="text-xs font-bold text-center">职业特性</h3>
                     <ProfessionDescriptionSection
@@ -883,7 +884,7 @@ export default function CharacterSheet() {
 
       <CharacterSheetSelectionModals
         ref={selectionModalsRef}
-        isRhodesIsland={isRhodesIsland}
+        ruleSetId={ruleSet.id}
         onWeaponSelect={handleWeaponChange}
         onArmorSelect={handleArmorChange}
         onGenericSelect={(request, cardId, field) => {

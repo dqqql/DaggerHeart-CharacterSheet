@@ -17,6 +17,7 @@ import { showFadeNotification } from "@/components/ui/fade-notification"
 import type { StandardCard } from "@/card/card-types"
 import type { UpgradeOption } from "@/data/list/upgrade"
 import { RhodesIslandModuleUpgrade } from "@/components/rulesets/rhodes-island-module-upgrade"
+import { getRuleSetModule } from "@/lib/rulesets/registry"
 
 interface UpgradeSectionProps {
   tier: number
@@ -45,6 +46,7 @@ export function UpgradeSection({
   onOpenCardModal,
   onOpenSubclassModal,
 }: UpgradeSectionProps) {
+  const ruleSet = getRuleSetModule(formData.ruleSetId)
   const tierKey = `tier${tier}`
   const updateLevel = useSheetStore(state => state.updateLevel)
   const setSheetData = useSheetStore(state => state.setSheetData)
@@ -247,7 +249,7 @@ export function UpgradeSection({
       </div>
       <div className="p-1">
         <p className="!text-xs mb-2">
-          {formData.ruleSetId === "rhodes-island"
+          {ruleSet.capabilities.ancestryExperience
             ? <>每升1级便从下面列表中选择两个选项格子并标记它们</>
             : tier === 1
               ? <>更新你的等级，从下方的升级列表中选择并标记<strong>两个</strong>选项。</>
@@ -419,7 +421,7 @@ export function UpgradeSection({
           })}
         </div>
 
-        {formData.ruleSetId !== "rhodes-island" && tierDomainOption && <div className="mt-3 !text-xs">
+        {!ruleSet.capabilities.ancestryExperience && tierDomainOption && <div className="mt-3 !text-xs">
           {tier === 1 && (
             <>
               <span className="text-gray-800 dark:text-gray-200 mr-1">

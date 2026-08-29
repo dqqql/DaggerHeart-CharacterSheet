@@ -3,11 +3,12 @@
 import { useSheetStore } from "@/lib/sheet-store";
 import { StandardCard } from "@/card/card-types";
 import ReactMarkdown from 'react-markdown';
-import { getRhodesProfessionHopeFeature } from "@/lib/rulesets/rhodes-island/automation";
 import { highlightTextChanges } from "@/lib/text-change-highlighter";
+import { getRuleSetModule } from "@/lib/rulesets/registry";
 
 export function HopeSection() {
   const { sheetData: formData, updateHope, setSheetData } = useSheetStore();
+  const ruleSet = getRuleSetModule(formData.ruleSetId)
 
   // 获取当前值和最大值
   const currentHope = typeof formData.hope === 'number' ? formData.hope : 0
@@ -42,23 +43,22 @@ export function HopeSection() {
   }
 
   // 获取希望特性
-  let hopeTrait = ""
+  let cardHopeTrait = ""
   let professionCard: StandardCard | undefined
   if (formData && formData.professionRef?.id && formData.cards && Array.isArray(formData.cards)) {
     professionCard = formData.cards.find(
       (card: StandardCard | null) => card && card.id === formData.professionRef?.id && card.type === "profession"
     ) as StandardCard | undefined;
     if (professionCard && professionCard.professionSpecial && professionCard.professionSpecial["希望特性"]) {
-      hopeTrait = String(professionCard.professionSpecial["希望特性"])
+      cardHopeTrait = String(professionCard.professionSpecial["希望特性"])
     }
   }
-  const baseHopeTrait = formData.ruleSetId === "rhodes-island"
-    ? getRhodesProfessionHopeFeature(formData.professionRef?.id)
-    : ""
-  const highlightedHopeTrait = formData.ruleSetId === "rhodes-island"
+  const baseHopeTrait = ruleSet.getProfessionHopeFeature(formData.professionRef?.id)
+  const hopeTrait = baseHopeTrait || cardHopeTrait
+  const highlightedHopeTrait = !!baseHopeTrait
     && formData.selectedModule === "x"
-    && hopeTrait !== baseHopeTrait
-    ? highlightTextChanges(baseHopeTrait, hopeTrait)
+    && cardHopeTrait !== baseHopeTrait
+    ? highlightTextChanges(baseHopeTrait, cardHopeTrait)
     : null
 
   return (

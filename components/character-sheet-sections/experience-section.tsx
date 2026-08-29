@@ -4,6 +4,7 @@ import { useSheetStore } from "@/lib/sheet-store";
 import { useAutoResizeFont } from "@/hooks/use-auto-resize-font"
 import type { StandardCard } from "@/card/card-types"
 import { getRhodesIslandRecommendedExperiences } from "@/lib/rulesets/rhodes-island/experience"
+import { getRuleSetModule } from "@/lib/rulesets/registry"
 
 type RhodesIslandAncestryCard = StandardCard & {
   rhodesIsland?: {
@@ -13,6 +14,7 @@ type RhodesIslandAncestryCard = StandardCard & {
 
 export function ExperienceSection() {
   const { sheetData: formData, setSheetData, updateExperience, updateExperienceValues } = useSheetStore();
+  const ruleSet = getRuleSetModule(formData.ruleSetId)
   
   const { getElementProps } = useAutoResizeFont({
     maxFontSize: 14,
@@ -35,7 +37,7 @@ export function ExperienceSection() {
 
   return (
     <div className="py-1">
-      {formData.ruleSetId === "rhodes-island" && (
+      {ruleSet.capabilities.ancestryExperience && (
         <div className="mb-2 border border-slate-300 bg-slate-50 p-1">
           <h3 className="mb-1 text-center text-[10px] font-bold text-slate-700">种族经历</h3>
           <div className="flex items-center">

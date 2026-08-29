@@ -3,9 +3,11 @@
 import { useSheetStore } from "@/lib/sheet-store";
 import { useAutoResizeFont } from "@/hooks/use-auto-resize-font"
 import { RHODES_ISLAND_STARTING_INVENTORY } from "@/data/rhodes-island/starting-inventory"
+import { getRuleSetModule } from "@/lib/rulesets/registry"
 
 export function InventorySection() {
   const { sheetData: formData, setSheetData } = useSheetStore();
+  const ruleSet = getRuleSetModule(formData.ruleSetId)
   
   const { getElementProps } = useAutoResizeFont({
     maxFontSize: 14,
@@ -15,7 +17,7 @@ export function InventorySection() {
   // 确保 inventory 是一个包含5个元素的数组
   const safeInventory =
     Array.isArray(formData.inventory) && formData.inventory.length >= 5 ? formData.inventory : ["", "", "", "", ""]
-  const visibleRowCount = formData.ruleSetId === "rhodes-island" ? 4 : 5
+  const visibleRowCount = ruleSet.layout.inventoryRows
 
   // 检测是否有内容
   const hasContent = safeInventory.some(item => item.trim() !== "");
@@ -27,11 +29,11 @@ export function InventorySection() {
       setSheetData((prev) => ({ ...prev, inventory: newInventory }));
     } else {
       // 无内容则自动填充
-      const newInventory = formData.ruleSetId === "rhodes-island"
+      const newInventory = ruleSet.capabilities.managedPrimaryWeapon
         ? [...RHODES_ISLAND_STARTING_INVENTORY]
         : ["", "", "", "", ""];
 
-      if (formData.ruleSetId !== "rhodes-island") {
+      if (!ruleSet.capabilities.managedPrimaryWeapon) {
         // 第一行：基本装备
         newInventory[0] = "一支火把、50 英尺长的绳索、基本补给品。";
 

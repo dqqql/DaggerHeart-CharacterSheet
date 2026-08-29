@@ -17,6 +17,7 @@ import type { RhodesSecondaryDomainName } from "@/lib/sheet-data"
 import {
   getRhodesSecondaryDomainSelectionOptions,
 } from "@/lib/rulesets/rhodes-island/domain-filter"
+import { getRuleSetModule } from "@/lib/rulesets/registry"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -47,9 +48,9 @@ export function HeaderSection({
   const [editingValue, setEditingValue] = useState("")
   const [editingStartLevel, setEditingStartLevel] = useState<string | null>(null)
   const [secondaryDomainReplayKey, setSecondaryDomainReplayKey] = useState(0)
-  const isRhodesIsland = formData.ruleSetId === "rhodes-island"
+  const ruleSet = getRuleSetModule(formData.ruleSetId)
   const isTextMode = useTextModeStore((state) => state.isTextMode)
-  const professionDomain = isRhodesIsland
+  const professionDomain = ruleSet.capabilities.ancestryExperience
     ? getRhodesProfessionDomain(formData.professionRef?.id, formData.professionRef?.name)
     : undefined
   const secondaryDomainOptions = useMemo(
@@ -236,7 +237,7 @@ export function HeaderSection({
             </div>
           )}
         </div>
-        {isRhodesIsland && (
+        {ruleSet.capabilities.ancestryExperience && (
           <div className="mt-1 flex min-h-0 flex-1 print:hidden">
             <DualDomainAnimation
               professionId={formData.professionRef?.id}
@@ -311,7 +312,7 @@ export function HeaderSection({
           <div className="flex flex-col">
             <div className="flex items-center justify-between">
               <label className="text-[9px] text-gray-300">种族</label>
-              <label className={`${isRhodesIsland ? "hidden" : "flex"} items-center gap-1 text-[9px] text-gray-200 print:hidden`}>
+              <label className={`${ruleSet.capabilities.mixedAncestry ? "flex" : "hidden"} items-center gap-1 text-[9px] text-gray-200 print:hidden`}>
                 <input
                   type="checkbox"
                   checked={!!formData.mixedAncestryEnabled}
@@ -359,7 +360,7 @@ export function HeaderSection({
                   )}
                 </div>
               )}
-              <span className={`${isRhodesIsland ? "hidden" : "flex"} items-center text-white text-xs`}>+</span>
+              <span className={`${ruleSet.capabilities.mixedAncestry ? "flex" : "hidden"} items-center text-white text-xs`}>+</span>
               {editingField === 'ancestry2Ref' ? (
                 <input
                   type="text"
@@ -367,12 +368,12 @@ export function HeaderSection({
                   onChange={(e) => setEditingValue(e.target.value)}
                   onKeyDown={handleEditKeyDown}
                   onBlur={saveEditingName}
-                  className={`${isRhodesIsland ? "hidden" : ""} w-24 bg-white border border-gray-400 text-gray-800 rounded p-1 h-7 text-xs px-2 focus:outline-none focus:border-blue-500`}
+                  className={`${ruleSet.capabilities.mixedAncestry ? "" : "hidden"} w-24 bg-white border border-gray-400 text-gray-800 rounded p-1 h-7 text-xs px-2 focus:outline-none focus:border-blue-500`}
                   autoFocus
                 />
               ) : (
                   <div
-                    className={`group relative ${isRhodesIsland ? "hidden" : "flex"} w-24 border border-gray-400 rounded h-7 bg-white overflow-hidden ${
+                    className={`group relative ${ruleSet.capabilities.mixedAncestry ? "flex" : "hidden"} w-24 border border-gray-400 rounded h-7 bg-white overflow-hidden ${
                       formData.mixedAncestryEnabled ? "" : "opacity-60"
                     }`}
                     onMouseEnter={(e) => {
@@ -413,7 +414,7 @@ export function HeaderSection({
             </div>
           </div>
           <div className="flex flex-col">
-            <label className="text-[9px] text-gray-300">{isRhodesIsland ? "分支" : "子职业"}</label>
+            <label className="text-[9px] text-gray-300">{ruleSet.labels.subclass}</label>
             {editingField === 'subclassRef' ? (
               <input
                 type="text"
@@ -433,7 +434,7 @@ export function HeaderSection({
                     onMouseLeave={handleMouseLeave}
                     className="flex-1 text-gray-800 text-xs text-left px-2 py-0.5 hover:bg-gray-50 focus:outline-none"
                   >
-                    {formData.subclassRef?.name || <span className="print:hidden">{isRhodesIsland ? "选择分支" : "选择子职业"}</span>}
+                    {formData.subclassRef?.name || <span className="print:hidden">选择{ruleSet.labels.subclass}</span>}
                   </button>
                 {formData.subclassRef?.name && (
                   <>
@@ -453,7 +454,7 @@ export function HeaderSection({
               </div>
             )}
           </div>
-          {isRhodesIsland && (
+          {ruleSet.capabilities.ancestryExperience && (
             <div className="flex flex-col print:hidden">
               <label className="text-[9px] text-gray-300">次选领域</label>
               <DropdownMenu>

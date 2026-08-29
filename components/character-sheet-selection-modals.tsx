@@ -3,6 +3,8 @@
 import dynamic from "next/dynamic"
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react"
 import { CardType } from "@/card"
+import type { RuleSetId } from "@/lib/sheet-data"
+import { getRuleSetModule } from "@/lib/rulesets/registry"
 
 const loadWeaponSelectionModal = () =>
   import("@/components/modals/weapon-selection-modal")
@@ -48,7 +50,7 @@ export interface CharacterSheetSelectionModalsHandle {
 }
 
 interface CharacterSheetSelectionModalsProps {
-  isRhodesIsland: boolean
+  ruleSetId: RuleSetId
   onWeaponSelect: (
     field: string,
     weaponId: string,
@@ -81,11 +83,12 @@ export const CharacterSheetSelectionModals = forwardRef<
   CharacterSheetSelectionModalsHandle,
   CharacterSheetSelectionModalsProps
 >(function CharacterSheetSelectionModals({
-  isRhodesIsland,
+  ruleSetId,
   onWeaponSelect,
   onArmorSelect,
   onGenericSelect,
 }, ref) {
+  const ruleSet = getRuleSetModule(ruleSetId)
   const [weaponRequest, setWeaponRequest] = useState<{
     field: string
     slotType: "primary" | "secondary" | "inventory"
@@ -142,7 +145,7 @@ export const CharacterSheetSelectionModals = forwardRef<
             setArmorOpen(false)
           }}
           title="选择护甲"
-          isRhodesIsland={isRhodesIsland}
+          isRhodesIsland={ruleSet.capabilities.managedPrimaryWeapon}
         />
       )}
 
@@ -161,7 +164,7 @@ export const CharacterSheetSelectionModals = forwardRef<
                 ? "选择种族"
                 : genericRequest.type === "community"
                   ? "选择社群"
-                  : isRhodesIsland ? "选择分支" : "选择子职业"
+                  : `选择${ruleSet.labels.subclass}`
           }
           cardType={getModalCardType(genericRequest.type)}
           field={genericRequest.field}
