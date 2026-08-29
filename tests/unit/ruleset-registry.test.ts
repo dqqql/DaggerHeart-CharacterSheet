@@ -34,7 +34,7 @@ describe("ruleset registry", () => {
       characterCode: true,
       officialImagePack: true,
       printPreview: true,
-      keyboardPageNavigation: false,
+      keyboardPageNavigation: true,
     })
     expect(rhodesIsland.capabilities).toEqual({
       mixedAncestry: false,

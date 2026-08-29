@@ -40,6 +40,11 @@ import { RULE_SET_IDS } from "@/lib/sheet-data"
 import { validateJSONCharacterData } from "@/lib/character-data-validator"
 import { defaultSheetData } from "@/lib/default-sheet-data"
 
+const RULE_SET_SHELL_CLASSES = {
+  daggerheart: "",
+  "rhodes-island": "rhodes-island-shell",
+} as const
+
 // EyeIcon和EyeOffIcon已移除 - 现在使用PageVisibilityDropdown
 
 // 文字模式图标
@@ -947,7 +952,7 @@ export default function Home() {
   return (
     <main
       data-ruleset={activeRuleSetId}
-      className={`min-w-0 w-full max-w-full mx-auto px-0 container ${ruleSet.capabilities.keyboardPageNavigation ? 'rhodes-island-shell' : ''} ${isMobile ? 'pb-32' : 'pb-20'
+      className={`min-w-0 w-full max-w-full mx-auto px-0 container ${RULE_SET_SHELL_CLASSES[ruleSet.id]} ${isMobile ? 'pb-32' : 'pb-20'
       }`}
     >
       <CardSystemInitializer />
@@ -1153,7 +1158,7 @@ export default function Home() {
       />
 
       {/* 快捷键提示 */}
-      {showShortcutHint && (
+      {ruleSet.capabilities.keyboardPageNavigation && showShortcutHint && (
         <div className="print:hidden fixed top-4 right-4 z-40 animate-in slide-in-from-top duration-300">
           <div className="bg-black/90 text-white px-4 py-3 rounded-lg text-sm">
             <div className="font-medium mb-2">⌨️ 快捷键提示</div>
