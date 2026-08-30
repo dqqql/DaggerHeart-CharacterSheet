@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest"
 
 import { createStoreActions } from "@/card/stores/store-actions"
+import { useUnifiedCardStore } from "@/card/stores/unified-card-store"
 
 function deferred<T>() {
   let resolve!: (value: T) => void
@@ -11,6 +12,13 @@ function deferred<T>() {
 }
 
 describe("unified card store initialization", () => {
+  it("starts with empty rebuildable card indexes", () => {
+    const initialState = useUnifiedCardStore.getInitialState()
+
+    expect(initialState.cardsByType).toEqual(new Map())
+    expect(initialState.cardsByRuleSetAndType).toEqual(new Map())
+  })
+
   it("shares one in-flight promise across concurrent callers", async () => {
     const migration = deferred<null>()
     let state: any

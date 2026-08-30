@@ -5,7 +5,6 @@ import { useUnifiedCardStore, CardType } from "@/card/stores/unified-card-store"
 import { useCardFilterStore } from "@/lib/card-filter-store"
 import type { ExtendedStandardCard } from "@/card/card-types"
 import { isVariantType, CARD_LEVEL_OPTIONS } from "@/card/card-types"
-import { cardBelongsToRuleSet } from "@/lib/ruleset"
 import { useSheetStore } from "@/lib/sheet-store"
 import { getRuleSetBatchOptions } from "@/lib/ruleset-card-batches"
 import { getRuleSetModule } from "@/lib/rulesets/registry"
@@ -71,7 +70,7 @@ export function useCardFiltering(initialTab?: string, enabled = true): UseCardFi
   const error = useUnifiedCardStore((store) => store.error)
   const cards = useUnifiedCardStore((store) => store.cards)
   const batches = useUnifiedCardStore((store) => store.batches)
-  const cardsByType = useUnifiedCardStore((store) => store.cardsByType)
+  const cardsByRuleSetAndType = useUnifiedCardStore((store) => store.cardsByRuleSetAndType)
   const activeTab = useCardFilterStore((store) => store.activeTab)
   const selectedBatches = useCardFilterStore((store) => store.selectedBatches)
   const selectedClasses = useCardFilterStore((store) => store.selectedClasses)
@@ -122,8 +121,10 @@ export function useCardFiltering(initialTab?: string, enabled = true): UseCardFi
 
     const isVariant = isVariantType(state.activeTab)
     const targetType = isVariant ? CardType.Variant : (state.activeTab as CardType)
-    const typeCards = useUnifiedCardStore.getState().loadCardsByType(targetType)
-      .filter(card => cardBelongsToRuleSet(card, ruleSetId))
+    const typeCards = useUnifiedCardStore.getState().loadCardsByRuleSetAndType(
+      ruleSetId,
+      targetType,
+    )
 
     // 如果是变体类型，需要进一步筛选 realType
     if (isVariant) {
@@ -133,7 +134,7 @@ export function useCardFiltering(initialTab?: string, enabled = true): UseCardFi
     }
 
     return typeCards
-  }, [cards, cardsByType, initialized, state.activeTab, ruleSetId])
+  }, [cardsByRuleSetAndType, initialized, state.activeTab, ruleSetId])
 
   // === 卡包过滤后的卡牌（用于计算选项） ===
   const batchFilteredCards = useMemo(() => {

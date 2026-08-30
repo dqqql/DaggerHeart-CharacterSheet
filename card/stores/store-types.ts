@@ -13,6 +13,14 @@ import {
 
 // Import CardType and CardSource to be re-exported
 import { CardType, CardSource } from '../card-types';
+import type { RuleSetId } from '../../lib/sheet-data';
+
+export function createRuleSetTypeKey(
+  ruleSetId: RuleSetId,
+  type: CardType,
+): string {
+  return `${ruleSetId}:${type}`;
+}
 
 export type BatchSourceKind = 'builtin' | 'json' | 'archive' | 'unknown';
 export type BatchHealthStatus = 'normal' | 'abnormal';
@@ -230,6 +238,7 @@ export interface UnifiedCardState {
 
   // 按类型预构建的卡牌ID Map，包含所有卡牌ID（不管启用禁用状态）
   cardsByType: Map<CardType, string[]>;
+  cardsByRuleSetAndType: Map<string, string[]>;
 
   // Index data
   index: CustomCardIndex;
@@ -274,6 +283,10 @@ export interface UnifiedCardActions {
   // Core data operations
   loadAllCards: () => ExtendedStandardCard[];
   loadCardsByType: (type: CardType) => ExtendedStandardCard[];
+  loadCardsByRuleSetAndType: (
+    ruleSetId: RuleSetId,
+    type: CardType,
+  ) => ExtendedStandardCard[];
   getCardById: (cardId: string) => ExtendedStandardCard | null;
   reloadCustomCards: () => void;
   

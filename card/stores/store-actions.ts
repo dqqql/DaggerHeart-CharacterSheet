@@ -27,8 +27,11 @@ import {
   BatchSourceKind,
   BatchHealthStatus,
   BatchManagementRow,
-  BatchDetail
+  BatchDetail,
+  createRuleSetTypeKey
 } from './store-types';
+import type { RuleSetId } from '../../lib/sheet-data';
+import { getCardRuleSetId } from '../../lib/ruleset';
 import { isVariantCard } from '../card-types';
 import { normalizeImportMetadata } from '../import-metadata-normalizer';
 import builtinCardPackJson from '../../data/cards/builtin-base.json';
@@ -303,6 +306,7 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
       cards: new Map(),
       batches: new Map(),
       cardsByType: new Map(),
+      cardsByRuleSetAndType: new Map(),
       index: {
         batches: {},
         totalCards: 0,
@@ -341,6 +345,24 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
 
     // 通过ID获取卡牌并筛选禁用批次的卡牌
     return typeCardIds
+      .map(cardId => state.cards.get(cardId))
+      .filter(card => {
+        if (!card) return false;
+        if (card.batchId) {
+          const batch = state.batches.get(card.batchId);
+          return !batch?.disabled;
+        }
+        return true;
+      }) as ExtendedStandardCard[];
+  },
+
+  loadCardsByRuleSetAndType: (ruleSetId: RuleSetId, type: CardType) => {
+    const state = get();
+    const cardIds = state.cardsByRuleSetAndType.get(
+      createRuleSetTypeKey(ruleSetId, type),
+    ) || [];
+
+    return cardIds
       .map(cardId => state.cards.get(cardId))
       .filter(card => {
         if (!card) return false;
@@ -712,6 +734,7 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
     });
 
     get()._syncToLocalStorage();
+    get()._rebuildCardsByType();
   },
 
   getAllBatches: () => {
@@ -1313,6 +1336,7 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
   _rebuildCardsByType: () => {
     const state = get();
     const newCardsByType = new Map<CardType, string[]>();
+    const newCardsByRuleSetAndType = new Map<string, string[]>();
 
     // 初始化所有类型的空数组
     Object.values(CardType).forEach(type => {
@@ -1321,32 +1345,53 @@ export const createStoreActions = (set: SetFunction, get: GetFunction): UnifiedC
 
     // 遍历所有卡牌，按类型分组卡牌ID
     for (const card of state.cards.values()) {
-      const typeCardIds = newCardsByType.get(card.type as CardType) || [];
+      const type = card.type as CardType;
+      const typeCardIds = newCardsByType.get(type) || [];
       typeCardIds.push(card.id);
-      newCardsByType.set(card.type as CardType, typeCardIds);
+      newCardsByType.set(type, typeCardIds);
+
+      const ruleSetTypeKey = createRuleSetTypeKey(getCardRuleSetId(card), type);
+      const ruleSetTypeCardIds = newCardsByRuleSetAndType.get(ruleSetTypeKey) || [];
+      ruleSetTypeCardIds.push(card.id);
+      newCardsByRuleSetAndType.set(ruleSetTypeKey, ruleSetTypeCardIds);
     }
 
-    set({ cardsByType: newCardsByType });
+    set({
+      cardsByType: newCardsByType,
+      cardsByRuleSetAndType: newCardsByRuleSetAndType,
+    });
   },
 
   _addCardToTypeMap: (card: ExtendedStandardCard) => {
     const state = get();
-    const typeCardIds = state.cardsByType.get(card.type as CardType) || [];
-    typeCardIds.push(card.id);
-
+    const type = card.type as CardType;
     const newCardsByType = new Map(state.cardsByType);
-    newCardsByType.set(card.type as CardType, typeCardIds);
-    set({ cardsByType: newCardsByType });
+    newCardsByType.set(type, [...(newCardsByType.get(type) || []), card.id]);
+
+    const ruleSetTypeKey = createRuleSetTypeKey(getCardRuleSetId(card), type);
+    const newCardsByRuleSetAndType = new Map(state.cardsByRuleSetAndType);
+    newCardsByRuleSetAndType.set(ruleSetTypeKey, [
+      ...(newCardsByRuleSetAndType.get(ruleSetTypeKey) || []),
+      card.id,
+    ]);
+
+    set({ cardsByType: newCardsByType, cardsByRuleSetAndType: newCardsByRuleSetAndType });
   },
 
   _removeCardFromTypeMap: (card: ExtendedStandardCard) => {
     const state = get();
-    const typeCardIds = state.cardsByType.get(card.type as CardType) || [];
-    const filteredCardIds = typeCardIds.filter(id => id !== card.id);
-
+    const type = card.type as CardType;
     const newCardsByType = new Map(state.cardsByType);
-    newCardsByType.set(card.type as CardType, filteredCardIds);
-    set({ cardsByType: newCardsByType });
+    newCardsByType.set(type, (newCardsByType.get(type) || []).filter(id => id !== card.id));
+
+    const ruleSetTypeKey = createRuleSetTypeKey(getCardRuleSetId(card), type);
+    const newCardsByRuleSetAndType = new Map(state.cardsByRuleSetAndType);
+    newCardsByRuleSetAndType.set(
+      ruleSetTypeKey,
+      (newCardsByRuleSetAndType.get(ruleSetTypeKey) || []).filter(id => id !== card.id),
+    );
+
+    set({ cardsByType: newCardsByType, cardsByRuleSetAndType: newCardsByRuleSetAndType });
   },
 
   _recomputeAggregations: () => {

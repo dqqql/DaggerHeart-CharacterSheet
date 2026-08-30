@@ -22,6 +22,7 @@ export const useUnifiedCardStore = create<UnifiedCardStore>()(
         cards: new Map(),
         batches: new Map(),
         cardsByType: new Map(),
+        cardsByRuleSetAndType: new Map(),
         index: {
           batches: {},
           totalCards: 0,
