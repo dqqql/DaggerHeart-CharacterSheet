@@ -812,7 +812,7 @@ git commit -m "refactor: centralize ruleset ui capabilities"
 - Create: `tests/unit/ruleset-card-index.test.ts`
 - Modify: `tests/unit/unified-card-store-initialization.test.ts`
 
-- [ ] **Step 1: 写索引合同测试**
+- [x] **Step 1: 写索引合同测试**
 
 构造 SRD、罗德岛和无 ruleset 标签（按现状归 SRD）的卡牌，断言 `loadCardsByRuleSetAndType(ruleSetId, type)`：
 
@@ -822,7 +822,7 @@ git commit -m "refactor: centralize ruleset ui capabilities"
 - import/remove/reload 后索引同步；
 - 不修改 `loadCardsByType` 的现有结果。
 
-- [ ] **Step 2: 在 store state 增加内存索引与查询 action**
+- [x] **Step 2: 在 store state 增加内存索引与查询 action**
 
 ```ts
 cardsByRuleSetAndType: Map<string, string[]>
@@ -842,11 +842,11 @@ export function createRuleSetTypeKey(ruleSetId: RuleSetId, type: CardType): stri
 
 不要把该 Map 持久化到 localStorage；它与 `cardsByType` 一样属于可重建缓存。
 
-- [ ] **Step 3: 在统一重建入口同时生成两个索引**
+- [x] **Step 3: 在统一重建入口同时生成两个索引**
 
 遍历卡牌一次，同时写入 `cardsByType` 和 `cardsByRuleSetAndType`；ruleset 通过 `getCardRuleSetId(card)` 取得。所有增删/import 路径最终必须调用同一个重建入口，避免维护两套增量逻辑。如果当前 `_addCardToTypeMap`/`_removeCardFromTypeMap` 被外部路径使用，则让它们也同步两个 Map，并由测试覆盖。
 
-- [ ] **Step 4: 简化 hook 热路径并收窄订阅**
+- [x] **Step 4: 简化 hook 热路径并收窄订阅**
 
 `use-card-filtering.ts` 的 `baseCards` 改为调用：
 
@@ -856,7 +856,7 @@ useUnifiedCardStore.getState().loadCardsByRuleSetAndType(ruleSetId, targetType)
 
 删除紧随其后的 `.filter(card => cardBelongsToRuleSet(...))`。保留 variant 的 `realType` 二次筛选；这是另一维数据，不要过度索引。
 
-- [ ] **Step 5: 测试、类型检查和对照扫描**
+- [x] **Step 5: 测试、类型检查和对照扫描**
 
 ```powershell
 pnpm exec vitest run tests/unit/ruleset-card-index.test.ts tests/unit/unified-card-store-initialization.test.ts tests/unit/ruleset-card-batches.test.ts tests/unit/card-system-init-scope.test.ts tests/unit/virtualized-card-grid.test.tsx
@@ -866,7 +866,7 @@ rg -n "loadCardsByType\(targetType\).*cardBelongsToRuleSet" hooks/use-card-filte
 
 Expected: 测试 PASS；最后一条无匹配。不要加入基于毫秒的脆弱 benchmark。
 
-- [ ] **Step 6: 提交**
+- [x] **Step 6: 提交**
 
 ```powershell
 git add card/stores/store-types.ts card/stores/store-actions.ts card/stores/unified-card-store.ts hooks/use-card-filtering.ts tests/unit/ruleset-card-index.test.ts tests/unit/unified-card-store-initialization.test.ts
