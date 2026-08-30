@@ -1,7 +1,7 @@
 import type { StandardCard } from "@/card/card-types"
 import type { RuleSetId, SheetData } from "@/lib/sheet-data"
 
-export { getRuleSetModule, RULE_SET_LABELS } from "@/lib/rulesets/registry"
+export { RULE_SET_LABELS } from "@/lib/rulesets/registry"
 
 export function isRhodesIsland(data: Pick<SheetData, "ruleSetId"> | undefined | null): boolean {
   return data?.ruleSetId === "rhodes-island"

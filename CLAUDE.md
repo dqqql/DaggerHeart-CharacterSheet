@@ -62,6 +62,11 @@ pnpm test:integration # Run only integration tests
 - **Character data validation** with Zod schemas
 - **Default data** structures in `lib/default-sheet-data.ts`
 
+### Ruleset Architecture
+- `lib/rulesets/registry.ts` is the shared entry point for ruleset modules; definitions live under `lib/rulesets/daggerheart/` and `lib/rulesets/rhodes-island/`.
+- Read `docs/architecture/rulesets.md` before adding ruleset behavior, fields, migrations, card indexing, or export handling.
+- Shared UI must use registry capabilities, policies, labels, and layout. Do not add bare functional `ruleSetId === "..."` branches there; per-card layout based on the card's own ruleset is the narrow exception.
+
 ## Build Configuration
 
 - **Next.js** with static export (`output: 'export'`)
@@ -76,6 +81,9 @@ pnpm test:integration # Run only integration tests
 - **Testing Library** for React component testing
 - **Happy DOM** for browser environment simulation
 - Test files organized in `tests/unit/` and `tests/integration/`
+- Fast required gates: `pnpm exec tsc --noEmit` and `pnpm test:review-gates`
+- Full verification: `pnpm test:run -- --reporter=dot` followed by `pnpm build`
+- For ruleset changes, cover registry/defaults, migration and recent-save recovery, finalization, capabilities/pages, card isolation/order, exports, and print layout as described in `docs/architecture/rulesets.md`.
 
 ## Important Notes
 
