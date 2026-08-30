@@ -43,7 +43,7 @@ Every normal sheet edit through `setSheetData` and every whole-sheet replacement
 
 Do not reorder these stages. Ruleset automation must see the updated subclass state, and shared derived calculations must see the normalized ruleset data.
 
-Migration is not a replacement for finalization. `migrateSheetData()` repairs persisted structure and historical fields; `replaceSheetData()` then finalizes the migrated or imported result when it enters the live store.
+Migration is not a replacement for finalization. `migrateSheetData()` repairs persisted structure and historical fields. A stored character loaded through `hooks/use-character-management.ts` enters the live store through `replaceSheetData()`, which finalizes it and increments `sheetDataGeneration`. The current import handlers follow a different path described below.
 
 ## Character data flow
 
@@ -55,7 +55,9 @@ Migration is not a replacement for finalization. `migrateSheetData()` repairs pe
 
 On startup, `hooks/use-character-management.ts` first runs legacy multi-character migration, recovers metadata when possible, and selects the active save for the active ruleset. `loadCharacterById()` reads `dh_character_<id>`, uses metadata as a ruleset fallback only when the payload has no `ruleSetId`, and runs `migrateSheetData()`. Migration normalizes unknown/missing IDs to `daggerheart`, overlays `createDefaultSheetData(ruleSetId)`, applies field migrations in dependency order, and removes deprecated fields. If serialization changed, the migrated payload is written back. `replaceSheetData()` then puts it into Zustand and runs finalization.
 
-JSON import uses `validateJSONCharacterData()` / `validateAndProcessCharacterData()` in `lib/character-data-validator.ts`; HTML import extracts `window.characterData` in `lib/html-importer.ts` and uses the same validator. Validation cleans data, merges compatibility defaults, and runs `migrateSheetData()`. `app/page.tsx` rejects an import whose ruleset differs from the active ruleset, creates a save, and replaces the live sheet; the autosave bridge persists subsequent edits.
+JSON import uses `validateJSONCharacterData()` / `validateAndProcessCharacterData()` in `lib/character-data-validator.ts`; HTML import extracts `window.characterData` in `lib/html-importer.ts` and uses the same validator. Validation cleans data, merges compatibility defaults, and runs `migrateSheetData()`. In `app/page.tsx`, only the JSON handler rejects validated data whose ruleset differs from `activeRuleSetId`; the HTML handler has no equivalent mismatch check.
+
+Both current handlers create and switch to a blank save through `createNewCharacterHandler()`, then pass the complete validated data to `setFormData`, which is the `setSheetData` action from `lib/sheet-store.ts`. `setSheetData` shallow-merges that data over the blank live sheet and runs `finalizeSheetData()`; it does not use the whole-sheet `replaceSheetData` path or increment `sheetDataGeneration`. The autosave bridge therefore observes this assignment as an ordinary edit and persists the finalized sheet after its debounce.
 
 ### Save and export
 
@@ -82,11 +84,13 @@ These Maps are in-memory derived state only. `card/stores/unified-card-store.ts`
 
 At minimum:
 
-1. Add the stable ID to `RULE_SET_IDS` in `lib/sheet-data.ts` without renaming existing IDs or storage keys.
+1. Extend `RULE_SET_IDS` and its derived `RuleSetId` in `lib/sheet-data.ts`, and update `normalizeRuleSetId()`: it currently recognizes only `rhodes-island` and maps every other value to `daggerheart`. Do not rename existing IDs or storage keys, and preserve the intended fallback for historical missing/unknown values.
 2. Add a definition implementing every field of `RuleSetModule`, plus focused implementation files under `lib/rulesets/<id>/` and ruleset-only UI under `components/rulesets/` when needed.
 3. Register the definition in `lib/rulesets/registry.ts`; derive labels from the registry rather than creating another map.
 4. Add fresh defaults and migration-safe optional fields to `createDefaultSheetData()` / `SheetData`, including automation-version state if the normalizer needs it. Preserve old field names and the default-to-Daggerheart behavior for untagged historical data and cards.
-5. Express shared UI differences through capabilities, policies, labels, layout, and page `ruleSetIds`; do not add bare shared-UI ID branches.
-6. Tag and convert that ruleset's cards consistently so `getCardRuleSetId()` and `cardsByRuleSetAndType` can isolate them without changing existing card IDs.
-7. Cover registry contract, default isolation, migration/load/save recovery, finalization order and results, page/capability visibility, card index/filter/order, and JSON/HTML/PDF export behavior.
-8. Run `pnpm exec tsc --noEmit`, `pnpm test:review-gates`, `pnpm test:run -- --reporter=dot`, and `pnpm build`, then perform the manual creation/edit/import/export/print checks for every ruleset.
+5. Generalize active-save handling in `lib/multi-character-storage.ts`. Its character-list normalization, per-ruleset `activeCharacterIds`, active-record fallback, legacy migration, and recovery code currently normalize or construct only the two known rulesets.
+6. Generalize the switcher in `app/page.tsx`. `nextRuleSetId = RULE_SET_IDS.find(id => id !== ruleSet.id)` is a two-way toggle rather than a three-or-more ruleset cycle; associated labels and shell-class mappings must also accept the new registered ID.
+7. Express shared UI differences through capabilities, policies, labels, layout, and page `ruleSetIds`; do not add bare shared-UI ID branches.
+8. Update card classification as well as card conversion. `getCardRuleSetId()` in `lib/ruleset.ts` currently returns `rhodes-island` only for that explicit tag and maps every other tagged or untagged card to `daggerheart`; teach it the new stable ID while preserving untagged-card compatibility. Then verify `cardsByRuleSetAndType` isolates the new cards without changing existing card IDs.
+9. Cover registry contract, default isolation, migration/load/save recovery, finalization order and results, page/capability visibility, switcher cycling, card classification/index/filter/order, and JSON/HTML/PDF export behavior.
+10. Run `pnpm exec tsc --noEmit`, `pnpm test:review-gates`, `pnpm test:run -- --reporter=dot`, and `pnpm build`, then perform the manual creation/edit/import/export/print checks for every ruleset.
