@@ -882,7 +882,7 @@ git commit -m "perf: index cards by ruleset and type"
 - Create: `docs/architecture/rulesets.md`
 - Modify: `CLAUDE.md` 的架构与测试说明
 
-- [ ] **Step 1: 清理失效 import、重复 helper 和无调用导出**
+- [x] **Step 1: 清理失效 import、重复 helper 和无调用导出**
 
 ```powershell
 rg -n "rhodes-island-automation|rhodes-island-derived-stats|rhodes-island-experience|rhodes-island-card-display|rhodes-domain-filter" app card components hooks lib tests
@@ -891,7 +891,7 @@ rg -n "RULE_SET_LABELS|isRhodesIsland|getRuleSetModule" app card components hook
 
 逐项确认调用方。只删除无调用兼容导出；不要因为名字旧就批量改 public API。
 
-- [ ] **Step 2: 写维护者文档**
+- [x] **Step 2: 写维护者文档**
 
 `docs/architecture/rulesets.md` 必须完整说明：
 
@@ -905,7 +905,7 @@ rg -n "RULE_SET_LABELS|isRhodesIsland|getRuleSetModule" app card components hook
 - 新增第三套规则时的最小检查清单；
 - 明确禁止在共享 UI 中新增裸 `ruleSetId === "..."` 功能判断，per-card 布局判断除外。
 
-- [ ] **Step 3: 运行格式和快速审查门**
+- [x] **Step 3: 运行格式和快速审查门**
 
 先只格式化本计划涉及的 TS/TSX/Markdown 文件，不要格式化全仓库：
 
@@ -918,13 +918,13 @@ pnpm test:review-gates
 
 Expected: 全部 PASS。若 Prettier 命令触及大量不相关文件，立即恢复那些纯格式 diff，只保留本计划文件。
 
-- [ ] **Step 4: 运行完整测试**
+- [x] **Step 4: 运行完整测试**
 
 Run: `pnpm test:run -- --reporter=dot`
 
 Expected: 至少原有 68 个测试文件、357 个测试加上本计划新增测试全部 PASS；不得减少测试数。
 
-- [ ] **Step 5: 运行生产构建并检查工作树**
+- [x] **Step 5: 运行生产构建并检查工作树**
 
 ```powershell
 pnpm build
@@ -935,7 +935,7 @@ git diff --check
 
 Expected: build 成功；`git diff --check` 无空白错误。`scripts/build-static.js` 可能更新生成文件，执行者必须检查这些 diff 是否确由源码变化引起；不得盲目提交无关构建产物。
 
-- [ ] **Step 6: 人工验收清单（由用户启动开发服务器后执行）**
+- [x] **Step 6: 人工验收清单（由用户启动开发服务器后执行）**
 
 不要自动执行 `pnpm dev`。告知用户启动后检查：
 
@@ -948,7 +948,7 @@ Expected: build 成功；`git diff --check` 无空白错误。`scripts/build-sta
 7. 旧 JSON 存档可导入，localStorage 中原有角色可加载，保存后字段名不发生整体重排或丢失。
 8. 打印预览页数、A4 布局、罗德岛卡片图片布局保持不变。
 
-- [ ] **Step 7: 最终提交**
+- [x] **Step 7: 最终提交**
 
 ```powershell
 git add docs/architecture/rulesets.md CLAUDE.md
