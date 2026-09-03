@@ -61,7 +61,7 @@ Both current handlers create and switch to a blank save through `createNewCharac
 
 ### Save and export
 
-`lib/sheet-auto-save-bridge.ts` debounces ordinary sheet edits and deliberately cancels pending writes on whole-sheet generation changes such as load, switch, or import. `hooks/use-sheet-auto-save.ts` resolves the active character for the sheet's ruleset and calls `saveCharacterById()`. That save entry normalizes only `ruleSetId` and preserves the existing payload shape and localStorage keys; structural migration remains a read/import concern.
+`lib/sheet-auto-save-bridge.ts` debounces ordinary sheet edits and deliberately cancels pending writes on whole-sheet generation changes such as load or character switch. The current JSON and HTML import handlers use `setSheetData`, so their finalized assignment is observed as an ordinary edit and saved after the debounce. `hooks/use-sheet-auto-save.ts` resolves the active character for the sheet's ruleset and calls `saveCharacterById()`. That save entry normalizes only `ruleSetId` and preserves the existing payload shape and localStorage keys; structural migration remains a read/import concern.
 
 `hooks/use-export-handlers.ts` calls the active module's `prepareForExport()` before JSON and HTML export. Rhodes Island uses this hook to materialize the default ancestry experience in exported data without mutating the saved sheet. PDF export does not call this hook: it prints the live DOM, where `components/character-sheet-sections/experience-section.tsx` exposes the recommendation as the empty input's placeholder and `data-export-default-value` metadata. Daggerheart's export hook is identity.
 
