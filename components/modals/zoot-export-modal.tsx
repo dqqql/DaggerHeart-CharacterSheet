@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -155,22 +154,22 @@ export function ZootExportModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && !isSending && onClose()}>
-      <DialogContent className="max-w-md" onKeyDown={handleKeyDown}>
+      <DialogContent
+        className="max-w-md"
+        aria-describedby={undefined}
+        onKeyDown={handleKeyDown}
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-lg font-bold">
             <Send className="h-5 w-5 text-primary" />
             发送角色到 ZOOT
           </DialogTitle>
-          <DialogDescription>
-            填入 GM 提供的 8 位房间码，将角色卡直接投递到对应房间。
-          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-2">
           {/* 角色提示 */}
-          <div className="rounded-md bg-muted/60 p-2.5 text-xs text-muted-foreground flex items-center justify-between">
-            <span>当前角色：<strong className="text-foreground">{characterName || "（未命名角色）"}</strong></span>
-            <span className="text-[11px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-medium">罗德岛规则</span>
+          <div className="rounded-md border border-primary/30 bg-primary/10 p-2.5 text-sm text-foreground">
+            <span>当前角色：<strong className="font-semibold">{characterName || "（未命名角色）"}</strong></span>
           </div>
 
           {!characterName && (
@@ -196,9 +195,6 @@ export function ZootExportModal({
               maxLength={9}
               className="font-mono text-center tracking-widest uppercase text-base h-11"
             />
-            <p className="text-[11px] text-muted-foreground text-center">
-              支持直接粘贴，自动过滤空格与连字符
-            </p>
           </div>
 
           {/* 错误提示 */}

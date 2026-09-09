@@ -31,6 +31,9 @@ describe("ZootExportModal", () => {
 
     expect(screen.getByText("发送角色到 ZOOT")).toBeInTheDocument()
     expect(screen.getByText("德克萨斯")).toBeInTheDocument()
+    expect(screen.queryByText(/填入 GM 提供的 8 位房间码/)).not.toBeInTheDocument()
+    expect(screen.queryByText("罗德岛规则")).not.toBeInTheDocument()
+    expect(screen.queryByText(/支持直接粘贴/)).not.toBeInTheDocument()
     expect(screen.getByTestId("zoot-room-code-input")).toBeInTheDocument()
     expect(screen.getByTestId("zoot-cancel-button")).toBeInTheDocument()
     expect(screen.getByTestId("zoot-send-button")).toBeInTheDocument()
