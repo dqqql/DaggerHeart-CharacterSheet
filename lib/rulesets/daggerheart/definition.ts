@@ -63,6 +63,7 @@ export const daggerheartRuleSet = {
     officialImagePack: true,
     printPreview: true,
     keyboardPageNavigation: true,
+    zootExport: false,
   },
   labels: {
     subclass: "子职业",

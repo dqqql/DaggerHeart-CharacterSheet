@@ -28,6 +28,7 @@ export interface RuleSetCapabilities {
   officialImagePack: boolean
   printPreview: boolean
   keyboardPageNavigation: boolean
+  zootExport: boolean
 }
 
 export interface RuleSetLabels {

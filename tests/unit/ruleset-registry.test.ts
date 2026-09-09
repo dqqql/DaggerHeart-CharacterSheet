@@ -35,6 +35,7 @@ describe("ruleset registry", () => {
       officialImagePack: true,
       printPreview: true,
       keyboardPageNavigation: true,
+      zootExport: false,
     })
     expect(rhodesIsland.capabilities).toEqual({
       mixedAncestry: false,
@@ -49,6 +50,7 @@ describe("ruleset registry", () => {
       officialImagePack: false,
       printPreview: false,
       keyboardPageNavigation: true,
+      zootExport: true,
     })
     expect(daggerheart.labels).toEqual({
       subclass: "子职业",

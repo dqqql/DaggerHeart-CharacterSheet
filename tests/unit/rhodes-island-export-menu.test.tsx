@@ -5,8 +5,9 @@ import { describe, expect, it, vi } from "vitest"
 import { BottomDock } from "@/components/layout/bottom-dock"
 
 describe("Rhodes Island export menu", () => {
-  it("only offers JSON, PDF, and HTML exports", async () => {
+  it("offers JSON, PDF, HTML, and ZOOT exports, but not daggerheart-only options", async () => {
     const user = userEvent.setup()
+    const onOpenZootExport = vi.fn()
     render(
       <BottomDock
         mode="main"
@@ -20,6 +21,7 @@ describe("Rhodes Island export menu", () => {
         onPrintAll={() => {}}
         onOpenSealDiceExport={() => {}}
         onOpenCharacterCodeExport={() => {}}
+        onOpenZootExport={onOpenZootExport}
         onQuickExportJSON={() => {}}
         onQuickExportPDF={() => {}}
         onQuickExportHTML={() => {}}
@@ -35,9 +37,13 @@ describe("Rhodes Island export menu", () => {
     expect(await screen.findByText("导出 JSON")).toBeInTheDocument()
     expect(screen.getByText("导出 PDF")).toBeInTheDocument()
     expect(screen.getByText("导出 HTML")).toBeInTheDocument()
+    expect(screen.getByText("发送到 ZOOT")).toBeInTheDocument()
     expect(screen.queryByText("导出角色码")).not.toBeInTheDocument()
     expect(screen.queryByText("导出到骰子")).not.toBeInTheDocument()
     expect(screen.queryByText("打开导出预览界面")).not.toBeInTheDocument()
+
+    await user.click(screen.getByTestId("export-zoot-item"))
+    expect(onOpenZootExport).toHaveBeenCalledTimes(1)
   })
 
   it("offers quick JSON import from the archive menu", async () => {

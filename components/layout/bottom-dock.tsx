@@ -23,6 +23,7 @@ import {
   Layers,
   Package,
   Plus,
+  Send,
   Sparkles,
   Upload,
   UsersRound,
@@ -52,6 +53,7 @@ interface MainModeProps extends BottomDockBaseProps {
   onQuickExportJSON: () => void
   onQuickExportPDF: () => void
   onQuickExportHTML: () => void
+  onOpenZootExport?: () => void
   onOpenCharacterManagement: () => void
   onQuickCreateArchive: () => void
   onQuickImportFromJSON: () => void
@@ -66,6 +68,7 @@ interface PreviewModeProps extends BottomDockBaseProps {
   onExportJSON: () => void
   onOpenSealDiceExport: () => void
   onOpenCharacterCodeExport: () => void
+  onOpenZootExport?: () => void
   onClose: () => void
 }
 
@@ -187,7 +190,11 @@ function MainModeContent(props: MainModeProps) {
             <TooltipContent side="top">
               <p>导出角色卡</p>
               <p className="mt-1 text-xs text-muted-foreground">
-                {ruleSet.capabilities.characterCode ? "导出为 PDF、HTML、JSON 或角色码" : "导出为 PDF、HTML 或 JSON"}
+                {ruleSet.capabilities.characterCode
+                  ? "导出为 PDF、HTML、JSON 或角色码"
+                  : ruleSet.capabilities.zootExport
+                    ? "导出为 PDF、HTML、JSON 或发送到 ZOOT"
+                    : "导出为 PDF、HTML 或 JSON"}
               </p>
             </TooltipContent>
           </Tooltip>
@@ -221,6 +228,16 @@ function MainModeContent(props: MainModeProps) {
               <Code className={cn("mr-2", isMobile ? "h-5 w-5" : "h-4 w-4")} />
               导出 HTML
             </DropdownMenuItem>
+            {ruleSet.capabilities.zootExport && (
+              <DropdownMenuItem
+                data-testid="export-zoot-item"
+                onClick={props.onOpenZootExport}
+                className={cn(isMobile && "px-4 py-3")}
+              >
+                <Send className={cn("mr-2", isMobile ? "h-5 w-5" : "h-4 w-4")} />
+                发送到 ZOOT
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
 
@@ -358,6 +375,16 @@ function PreviewModeContent(props: PreviewModeProps) {
         )}
       >
         导出到骰子
+      </Button>}
+      {ruleSet.capabilities.zootExport && <Button
+        data-testid="preview-export-zoot-button"
+        onClick={props.onOpenZootExport}
+        className={cn(
+          "whitespace-nowrap bg-primary text-primary-foreground hover:bg-primary/90 focus:outline-none",
+          isMobile ? "px-6 py-3 text-base" : "px-4 py-2 text-sm",
+        )}
+      >
+        发送到 ZOOT
       </Button>}
       <Button
         onClick={props.onClose}

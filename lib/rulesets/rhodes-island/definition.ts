@@ -42,6 +42,7 @@ export const rhodesIslandRuleSet: RuleSetModule = {
     officialImagePack: false,
     printPreview: false,
     keyboardPageNavigation: true,
+    zootExport: true,
   },
   labels: {
     subclass: "分支",
