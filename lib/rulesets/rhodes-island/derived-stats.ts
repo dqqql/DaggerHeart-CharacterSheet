@@ -4,7 +4,7 @@ import type { DerivedStatSourceLine } from "@/lib/preset-equipment"
 export type RhodesDerivedStatsInput = Partial<
   Pick<
     SheetData,
-    "ruleSetId" | "subclassRef" | "branchUpgradeCount" | "level" | "selectedModule" | "cards"
+    "ruleSetId" | "subclassRef" | "level" | "selectedModule" | "cards"
   >
 >
 
@@ -106,8 +106,11 @@ function getBranchId(data: RhodesDerivedStatsInput): string {
   return data.subclassRef?.id || data.cards?.[1]?.id || ""
 }
 
-function getStageIndex(branchUpgradeCount: number | undefined): 0 | 1 | 2 {
-  return Math.max(0, Math.min(2, branchUpgradeCount ?? 0)) as 0 | 1 | 2
+function getStageIndex(levelValue: string | undefined): 0 | 1 | 2 {
+  const level = Math.max(1, Math.min(10, Number.parseInt(levelValue || "1", 10) || 1))
+  if (level >= 5) return 2
+  if (level >= 2) return 1
+  return 0
 }
 
 function addEffects(
@@ -132,7 +135,7 @@ export function getRhodesDerivedStatSources(
   const rule = RHODES_BRANCH_STAT_RULES[getBranchId(data)]
   if (!rule) return sources
 
-  const stageIndex = getStageIndex(data.branchUpgradeCount)
+  const stageIndex = getStageIndex(data.level)
   addEffects(sources, rule.stages[stageIndex] ?? EMPTY_EFFECTS, rule.stageLabels[stageIndex])
 
   const level = Number.parseInt(data.level || "1", 10) || 1

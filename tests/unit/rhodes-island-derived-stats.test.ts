@@ -13,7 +13,6 @@ import { getRhodesDerivedStatSources } from "@/lib/rulesets/rhodes-island/derive
 
 function createBranchData(
   branchName: string,
-  branchUpgradeCount = 0,
   options: { level?: string; selectedModule?: "x" | "y" } = {},
 ) {
   const branch = rhodesIslandCatalog.branches.find(item => item.name === branchName)
@@ -23,7 +22,6 @@ function createBranchData(
     ...defaultSheetData,
     ruleSetId: "rhodes-island" as const,
     subclassRef: { id: branch.id, name: branch.name },
-    branchUpgradeCount,
     level: options.level ?? "1",
     selectedModule: options.selectedModule,
   }
@@ -57,20 +55,30 @@ describe("罗德岛分支常驻属性自动化", () => {
   })
 
   it.each([
-    [0, 1, "灵敏格斗"],
-    [1, 1, "灵敏格斗+"],
-    [2, 2, "灵敏格斗++"],
-  ] as const)("斗士阶段 %i 自动提供 %i 点常驻闪避", (stage, bonus, label) => {
-    const result = calculateEvasionBreakdown(createBranchData("斗士", stage))
+    [1, 1, "灵敏格斗"],
+    [2, 1, "灵敏格斗+"],
+    [5, 2, "灵敏格斗++"],
+  ] as const)("斗士在 %i 级自动提供 %i 点常驻闪避", (level, bonus, label) => {
+    const result = calculateEvasionBreakdown(createBranchData("斗士", { level: String(level) }))
 
     expect(result.total).toBe(bonus)
     expect(result.sources).toContainEqual({ label, value: bonus })
   })
 
+  it("忽略旧存档中的手动分支升级计数", () => {
+    const result = calculateEvasionBreakdown({
+      ...createBranchData("斗士", { level: "1" }),
+      branchUpgradeCount: 2,
+    })
+
+    expect(result.total).toBe(1)
+    expect(result.sources).toContainEqual({ label: "灵敏格斗", value: 1 })
+  })
+
   it("无畏者 Y 模组在阶段生命槽之外再提供一个生命槽", () => {
-    const base = calculateHpMaxBreakdown(createBranchData("无畏者", 2))
+    const base = calculateHpMaxBreakdown(createBranchData("无畏者", { level: "5" }))
     const withModule = calculateHpMaxBreakdown(
-      createBranchData("无畏者", 2, { level: "8", selectedModule: "y" }),
+      createBranchData("无畏者", { level: "8", selectedModule: "y" }),
     )
 
     expect(base.total).toBe(7)
@@ -80,11 +88,11 @@ describe("罗德岛分支常驻属性自动化", () => {
   })
 
   it.each([
-    [0, 8, 7],
     [1, 8, 7],
-    [2, 9, 9],
-  ] as const)("重剑手阶段 %i 自动调整生命与压力上限", (stage, hpMax, stressMax) => {
-    const data = createBranchData("重剑手", stage)
+    [2, 8, 7],
+    [5, 9, 9],
+  ] as const)("重剑手在 %i 级自动调整生命与压力上限", (level, hpMax, stressMax) => {
+    const data = createBranchData("重剑手", { level: String(level) })
 
     expect(calculateHpMaxBreakdown(data).total).toBe(hpMax)
     expect(calculateStressMaxBreakdown(data).total).toBe(stressMax)
@@ -92,7 +100,7 @@ describe("罗德岛分支常驻属性自动化", () => {
 
   it("铁卫阶段与 Y 模组叠加护甲值，且只提高重度伤害阈值", () => {
     const data = {
-      ...createBranchData("铁卫", 2, { level: "8", selectedModule: "y" }),
+      ...createBranchData("铁卫", { level: "8", selectedModule: "y" }),
       armorBaseScore: "3",
       armorThreshold: "5/11",
     }
@@ -111,7 +119,7 @@ describe("罗德岛分支常驻属性自动化", () => {
 
   it("决战者按当前分支阶段提高两档伤害阈值", () => {
     const data = {
-      ...createBranchData("决战者", 2, { level: "5" }),
+      ...createBranchData("决战者", { level: "5" }),
       armorThreshold: "5/11",
     }
     const result = calculateDamageThresholdBreakdown(data)
@@ -124,7 +132,7 @@ describe("罗德岛分支常驻属性自动化", () => {
 
   it("非罗德岛规则不会应用同名分支引用", () => {
     const data = {
-      ...createBranchData("斗士", 2),
+      ...createBranchData("斗士", { level: "5" }),
       ruleSetId: "daggerheart" as const,
     }
 

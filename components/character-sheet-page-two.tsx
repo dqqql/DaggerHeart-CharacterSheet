@@ -179,14 +179,6 @@ export default function CharacterSheetPageTwo() {
 
     if (option) {
       switch (option.action) {
-      case "branch-upgrade":
-        setFormData((prev) => ({
-          ...prev,
-          branchUpgradeCount: Math.max(0, Math.min(2, (prev.branchUpgradeCount ?? 0) + (newCheckedState ? 1 : -1))),
-        }))
-        toggleUpgradeCheckbox(checkKeyOrTier, index, newCheckedState)
-        return
-
       case "multiclass": {
         if (!ruleSet.capabilities.ancestryExperience) break
 

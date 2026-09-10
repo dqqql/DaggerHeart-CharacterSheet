@@ -19,6 +19,7 @@ export interface UpgradeOption {
   boxCount: number
   stateIndex?: number
   domainLevelCap?: number
+  automatic?: boolean
 }
 
 // 升级选项数据
@@ -72,7 +73,7 @@ export const rhodesIslandUpgradeOptionsData = {
     { id: "rhodes-tier1-domain-card", action: "domain-card", label: "技艺专精：选择一张等级小于或等于你干员等级的领域卡（最高为4级）", doubleBox: false, boxCount: 1, stateIndex: 4, domainLevelCap: 4 },
     { id: "rhodes-tier1-evasion", action: "evasion", label: "机动训练：闪避值+1", doubleBox: false, boxCount: 1, stateIndex: 5 },
     { id: "rhodes-tier1-cross-domain-card", action: "domain-card", label: "技艺交流：从你不具有的领域中选择一张等级小于或等于你干员等级一半的领域卡（最高为2级）", doubleBox: false, boxCount: 1, stateIndex: 8, domainLevelCap: 2 },
-    { id: "rhodes-tier1-branch-upgrade", action: "branch-upgrade", label: "提升武器原型：将你的武器原型等级提升至正式干员级别", doubleBox: false, boxCount: 1, stateIndex: 6 },
+    { id: "rhodes-tier1-branch-upgrade", action: "branch-upgrade", label: "提升武器原型：将你的武器原型等级提升至正式干员级别", doubleBox: false, boxCount: 0, stateIndex: 6, automatic: true },
   ],
   tier2: [
     { id: "rhodes-tier2-attribute", action: "attribute", label: "专项课程：两项未标记的角色属性+1，然后标记它们", doubleBox: false, boxCount: 3, stateIndex: 0 },
@@ -82,8 +83,8 @@ export const rhodesIslandUpgradeOptionsData = {
     { id: "rhodes-tier2-domain-card", action: "domain-card", label: "技艺专精：选择一张等级小于或等于你干员等级的领域卡（最高为7级）", doubleBox: false, boxCount: 1, stateIndex: 4, domainLevelCap: 7 },
     { id: "rhodes-tier2-evasion", action: "evasion", label: "机动训练：闪避值+1", doubleBox: false, boxCount: 1, stateIndex: 5 },
     { id: "rhodes-tier2-cross-domain-card", action: "domain-card", label: "技艺交流：从你不具有的领域中选择一张等级小于或等于你干员等级一半的领域卡（最高为4级）", doubleBox: false, boxCount: 1, stateIndex: 9, domainLevelCap: 4 },
-    { id: "rhodes-tier2-branch-upgrade", action: "branch-upgrade", label: "提升武器原型：将你的武器原型等级提升至资深干员级别", doubleBox: false, boxCount: 1, stateIndex: 6 },
     { id: "rhodes-tier2-proficiency", action: "proficiency", label: "实战模拟：熟练值+1", doubleBox: true, boxCount: 2, stateIndex: 7 },
+    { id: "rhodes-tier2-branch-upgrade", action: "branch-upgrade", label: "提升武器原型：将你的武器原型等级提升至资深干员级别", doubleBox: false, boxCount: 0, stateIndex: 6, automatic: true },
   ],
   tier3: [
     { id: "rhodes-tier3-attribute", action: "attribute", label: "专项课程：两项未标记的角色属性+1，然后标记它们", doubleBox: false, boxCount: 3, stateIndex: 0 },

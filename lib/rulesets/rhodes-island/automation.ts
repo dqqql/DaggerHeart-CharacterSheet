@@ -62,9 +62,15 @@ function stageForLevel(branch: RhodesBranch, level: number): RhodesStage {
   return eligibleStages[eligibleStages.length - 1] ?? branch.stages[0]
 }
 
-function stageForBranchUpgrades(branch: RhodesBranch, count: number): RhodesStage {
-  // 分支升级最多从预备→正式→资深；精英阶段由 8 级模组表达。
-  return branch.stages[Math.max(0, Math.min(2, count))] ?? branch.stages[0]
+function latestFeatureStageForLevel(
+  branch: RhodesBranch,
+  level: number,
+  field: "branchFeature" | "professionFeature",
+): RhodesStage | undefined {
+  return [...branch.stages]
+    .sort((a, b) => a.level - b.level)
+    .filter(stage => level >= stage.level && stage[field])
+    .at(-1)
 }
 
 function moduleContent(description: string): string {
@@ -152,13 +158,14 @@ export function applyRhodesIslandAutomation(data: SheetData): SheetData {
 
   const level = Math.max(1, Math.min(10, Number.parseInt(data.level || "1", 10) || 1))
   const weaponStage = stageForLevel(branch, level)
-  const rankStage = stageForBranchUpgrades(branch, data.branchUpgradeCount ?? 0)
+  const branchFeatureStage = latestFeatureStageForLevel(branch, level, "branchFeature") ?? branch.stages[0]
+  const professionFeatureStage = latestFeatureStageForLevel(branch, level, "professionFeature")
   const profession = catalog.professions.find(item => item.id === branch.professionId)
   const selectedModule = level >= 8 && data.selectedModule
     ? branch.modules[data.selectedModule]
     : undefined
-  const professionFeature = level >= 5 && weaponStage.professionFeature
-    ? weaponStage.professionFeature
+  const professionFeature = professionFeatureStage?.professionFeature
+    ? professionFeatureStage.professionFeature
     : profession?.classFeature ?? ""
   const selectedModuleContent = selectedModule ? moduleContent(selectedModule.description) : ""
   const hopeFeature = data.selectedModule === "x" && selectedModule
@@ -166,7 +173,7 @@ export function applyRhodesIslandAutomation(data: SheetData): SheetData {
     : profession?.hopeFeature ?? ""
   const professionDescription = [
     professionFeature,
-    rankStage.branchFeature,
+    branchFeatureStage.branchFeature,
     data.selectedModule === "y" && selectedModule
       ? `${selectedModule.name}：${selectedModuleContent}`
       : "",
@@ -179,7 +186,11 @@ export function applyRhodesIslandAutomation(data: SheetData): SheetData {
   const cards = [...(data.cards ?? [])]
   cards[0] = replaceCardDescription(cards[0], professionDescription || cards[0]?.description || "") as StandardCard
   cards[0] = replaceCardHopeFeature(cards[0], hopeFeature) as StandardCard
-  cards[1] = replaceCardDescription(cards[1], rankStage.branchFeature, rankStage.rank) as StandardCard
+  cards[1] = replaceCardDescription(
+    cards[1],
+    branchFeatureStage.branchFeature,
+    branchFeatureStage.rank,
+  ) as StandardCard
 
   return {
     ...data,

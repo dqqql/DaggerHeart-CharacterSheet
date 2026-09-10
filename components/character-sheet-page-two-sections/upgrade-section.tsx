@@ -262,15 +262,20 @@ export function UpgradeSection({
 
             const optionStateIndex = option.stateIndex ?? index
             const needsPopover = ["attribute", "experience", "evasion"].includes(option.action)
-            const isRhodesSpecialOption = option.action === "branch-upgrade" || option.id.includes("cross-domain")
             return (
               <Fragment key={option.id}>
               {option.action === "branch-upgrade" && (
-                <div className="mt-3 border-t border-gray-300 pt-2" />
+                <div data-automatic-upgrade-divider className="mt-3 border-t border-gray-300 pt-2" />
               )}
               <div className="flex items-start !text-[10px] leading-[1.6]">
               {/* 属性升级 / 经历升级 / 闪避值升级：包裹 Popover 以便定位 */}
-              {needsPopover ? (
+              {option.automatic ? (
+                <span
+                  data-automatic-upgrade
+                  className="flex flex-shrink-0"
+                  style={{ minWidth: '3.2em' }}
+                />
+              ) : needsPopover ? (
                 <Popover
                   open={openPopoverIndex !== null && openPopoverIndex.startsWith(`${tierKey}-${optionStateIndex}-`)}
                   onOpenChange={(open) => {
@@ -377,7 +382,7 @@ export function UpgradeSection({
                 </span>
               )}
               <div className="flex-1 ml-2">
-                <span className={`${isRhodesSpecialOption ? "text-amber-600" : "text-gray-800 dark:text-gray-200"} mr-1`}>{option.label}</span>
+                <span className="text-gray-800 dark:text-gray-200 mr-1">{option.label}</span>
                 {/* 其他需要编辑按钮的选项 */}
                 {needsEditButton(option) && (
                   shouldDirectlyOpenModal(option) ? (

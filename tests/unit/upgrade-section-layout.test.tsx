@@ -46,7 +46,7 @@ describe("UpgradeSection Rhodes Island layout", () => {
     expect(screen.queryByText(/将伤害阈值\+1/)).not.toBeInTheDocument()
   })
 
-  it("defines the screenshot text and checkbox counts for all three Rhodes Island tiers", () => {
+  it("defines the screenshot text and automatic upgrades for all three Rhodes Island tiers", () => {
     expect(rhodesIslandUpgradeOptionsData.tier1).toMatchObject([
       { label: "强化训练：两项未标记的角色属性+1，然后标记它们", boxCount: 3 },
       { label: "体能训练：获得一个生命槽", boxCount: 2 },
@@ -55,24 +55,49 @@ describe("UpgradeSection Rhodes Island layout", () => {
       { label: expect.stringContaining("最高为4级"), boxCount: 1 },
       { label: "机动训练：闪避值+1", boxCount: 1 },
       { label: expect.stringContaining("最高为2级"), boxCount: 1 },
-      { label: "提升武器原型：将你的武器原型等级提升至正式干员级别", boxCount: 1 },
+      { label: "提升武器原型：将你的武器原型等级提升至正式干员级别", boxCount: 0, automatic: true },
     ])
-    expect(rhodesIslandUpgradeOptionsData.tier2.at(-1)).toMatchObject({
+    expect(rhodesIslandUpgradeOptionsData.tier2.at(-2)).toMatchObject({
       label: "实战模拟：熟练值+1",
       doubleBox: true,
       boxCount: 2,
     })
-    expect(rhodesIslandUpgradeOptionsData.tier2).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ label: "提升武器原型：将你的武器原型等级提升至资深干员级别" }),
-      ]),
-    )
+    expect(rhodesIslandUpgradeOptionsData.tier2.at(-1)).toMatchObject({
+      label: "提升武器原型：将你的武器原型等级提升至资深干员级别",
+      boxCount: 0,
+      automatic: true,
+    })
     expect(rhodesIslandUpgradeOptionsData.tier3).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ label: expect.stringContaining("最高为10级") }),
         expect.objectContaining({ label: expect.stringContaining("最高为5级") }),
       ]),
     )
+  })
+
+  it("places combat simulation above the divider and renders the automatic weapon upgrade without a checkbox or highlight", () => {
+    const { container } = render(
+      <UpgradeSection
+        tier={2}
+        title="T3："
+        description="当你到达 5 级时自动提升"
+        formData={{ ...defaultSheetData, ruleSetId: "rhodes-island", subclassRef: { id: rhodesIslandCatalog.branches[0].id, name: rhodesIslandCatalog.branches[0].name } }}
+        isUpgradeChecked={() => false}
+        handleUpgradeCheck={vi.fn()}
+        toggleUpgradeCheckbox={vi.fn()}
+        getUpgradeOptions={() => [...rhodesIslandUpgradeOptionsData.tier2]}
+      />,
+    )
+
+    const proficiency = screen.getByText("实战模拟：熟练值+1")
+    const weaponUpgrade = screen.getByText("提升武器原型：将你的武器原型等级提升至资深干员级别")
+    const divider = container.querySelector("[data-automatic-upgrade-divider]")!
+
+    expect(proficiency.compareDocumentPosition(divider)).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
+    expect(divider.compareDocumentPosition(weaponUpgrade)).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
+    expect(screen.queryByRole("button", { name: /提升武器原型/ })).not.toBeInTheDocument()
+    expect(weaponUpgrade).toHaveClass("text-gray-800")
+    expect(screen.getByText(/技艺交流/)).toHaveClass("text-gray-800")
   })
 
   it("keeps legacy persisted indices attached to their original automation", () => {

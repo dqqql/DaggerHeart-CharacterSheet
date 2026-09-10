@@ -115,12 +115,12 @@ describe("罗德岛规则幂等自动化", () => {
     expect(downgraded.primaryWeaponDamage).toBe(tierTwo.weapon.damage)
   })
 
-  it("分支升级可逆切换预备、正式和资深特性", () => {
-    const base = createBranchSheet(5)
+  it("按等级自动切换预备、正式和资深子职特性，并忽略旧版手动升级计数", () => {
     const branch = rhodesIslandCatalog.branches[0]
-    const trainee = applyRhodesIslandAutomation({ ...base, branchUpgradeCount: 0 })
-    const operator = applyRhodesIslandAutomation({ ...base, branchUpgradeCount: 1 })
-    const senior = applyRhodesIslandAutomation({ ...base, branchUpgradeCount: 2 })
+    const trainee = applyRhodesIslandAutomation({ ...createBranchSheet(1), branchUpgradeCount: 2 })
+    const operator = applyRhodesIslandAutomation({ ...createBranchSheet(2), branchUpgradeCount: 0 })
+    const senior = applyRhodesIslandAutomation({ ...createBranchSheet(5), branchUpgradeCount: 0 })
+    const elite = applyRhodesIslandAutomation({ ...createBranchSheet(8), branchUpgradeCount: 0 })
 
     expect(trainee.cards[1].description).toBe(branch.stages[0].branchFeature)
     expect(operator.cards[1].description).toBe(branch.stages[1].branchFeature)
@@ -130,6 +130,9 @@ describe("罗德岛规则幂等自动化", () => {
     expect(operator.cards[0].description).not.toContain(branch.stages[0].branchFeature)
     expect(senior.cards[0].description).toContain(branch.stages[2].branchFeature)
     expect(senior.cards[0].description).not.toContain(branch.stages[1].branchFeature)
+    expect(elite.cards[0].description).toContain(branch.stages[2].branchFeature)
+    expect(elite.cards[0].description).toContain(branch.stages[2].professionFeature)
+    expect(elite.cards[1].description).toBe(branch.stages[2].branchFeature)
   })
 
   it("X 模组替换希望特性，并保留玩家填写的武器原型", () => {
@@ -171,7 +174,7 @@ describe("罗德岛规则幂等自动化", () => {
     (_professionName, _branchName, branch) => {
       const profession = rhodesIslandCatalog.professions.find(item => item.id === branch.professionId)!
       const base = createBranchSheet(8, branch)
-      const rankStage = branch.stages[0]
+      const rankStage = branch.stages[2]
       const xContent = branch.modules.x.description.split(/\r?\n/).slice(1).join("\n").trim()
       const yContent = branch.modules.y.description.split(/\r?\n/).slice(1).join("\n").trim()
 
@@ -179,13 +182,13 @@ describe("罗德岛规则幂等自动化", () => {
       expect(x.cards[0].professionSpecial?.希望特性).toBe(
         xContent.replace(`-${branch.name}：`, "："),
       )
-      expect(x.cards[0].description).toContain(profession.classFeature)
+      expect(x.cards[0].description).toContain(rankStage.professionFeature || profession.classFeature)
       expect(x.cards[0].description).toContain(rankStage.branchFeature)
       expect(x.cards[1].description).toBe(rankStage.branchFeature)
 
       const y = applyRhodesIslandAutomation({ ...base, selectedModule: "y" })
       expect(y.cards[0].professionSpecial?.希望特性).toBe(profession.hopeFeature)
-      expect(y.cards[0].description).toContain(profession.classFeature)
+      expect(y.cards[0].description).toContain(rankStage.professionFeature || profession.classFeature)
       expect(y.cards[0].description).toContain(rankStage.branchFeature)
       expect(y.cards[0].description).toContain(`${branch.modules.y.name}：${yContent}`)
       expect(y.cards[1].description).toBe(rankStage.branchFeature)
