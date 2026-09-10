@@ -48,9 +48,11 @@ describe("upgrade option action contract", () => {
     const branchUpgrades = rhodesOptions.filter((option) => option.action === "branch-upgrade")
     const moduleUpgrades = rhodesOptions.filter((option) => option.action === "select-module")
     const domainUpgrades = rhodesOptions.filter((option) => option.action === "domain-card")
+    const crossDomainUpgrades = rhodesOptions.filter((option) => option.id.includes("cross-domain"))
 
     expect(branchUpgrades).toHaveLength(2)
     expect(moduleUpgrades).toHaveLength(1)
     expect(domainUpgrades.map((option) => option.domainLevelCap)).toEqual([4, 2, 7, 4, 10, 5])
+    expect(crossDomainUpgrades.every((option) => option.doubleBox && option.boxCount === 2)).toBe(true)
   })
 })

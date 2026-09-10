@@ -54,7 +54,7 @@ describe("UpgradeSection Rhodes Island layout", () => {
       { label: "发展规划：选择你的两项经历+1", boxCount: 1 },
       { label: expect.stringContaining("最高为4级"), boxCount: 1 },
       { label: "机动训练：闪避值+1", boxCount: 1 },
-      { label: expect.stringContaining("最高为2级"), boxCount: 1 },
+      { label: expect.stringContaining("最高为2级"), doubleBox: true, boxCount: 2 },
       { label: "提升武器原型：将你的武器原型等级提升至正式干员级别", boxCount: 0, automatic: true },
     ])
     expect(rhodesIslandUpgradeOptionsData.tier2.at(-2)).toMatchObject({
@@ -73,6 +73,15 @@ describe("UpgradeSection Rhodes Island layout", () => {
         expect.objectContaining({ label: expect.stringContaining("最高为5级") }),
       ]),
     )
+    expect(
+      Object.values(rhodesIslandUpgradeOptionsData)
+        .flat()
+        .filter(option => option.id.includes("cross-domain")),
+    ).toEqual([
+      expect.objectContaining({ doubleBox: true, boxCount: 2 }),
+      expect.objectContaining({ doubleBox: true, boxCount: 2 }),
+      expect.objectContaining({ doubleBox: true, boxCount: 2 }),
+    ])
   })
 
   it("places combat simulation above the divider and renders the automatic weapon upgrade without a checkbox or highlight", () => {
