@@ -21,6 +21,8 @@ const sourceFiles = {
   communityImages: process.env.RHODES_COMMUNITY_IMAGES_ROOT || join(dirname(communitySourceFile), "图片和附件"),
   domains: [join(sourceRoot, "主领域"), join(sourceRoot, "次领域")],
 }
+const professionSnapshotFile = process.env.RHODES_PROFESSION_SNAPSHOT_FILE || "D:\\Dql\\Desktop\\2026_09_08职业分支新增内容快照.md"
+const professionTextPreviewFile = process.env.RHODES_PROFESSION_TEXT_PREVIEW_FILE || "D:\\Dql\\Desktop\\2026_08_03修改文本预览.md"
 
 const professionFiles = ["先锋", "近卫", "狙击", "术师", "特种", "重装", "辅助"]
 const domainNames = ["奥术", "攻坚", "坚阵", "精准", "秘行", "迅攻", "支柱", "工业", "奇迹", "心界", "远见"]
@@ -34,6 +36,14 @@ const professionImageUrls = {
   重装: "/rhodes-island/domain-icons/bulwark.png",
   辅助: "/rhodes-island/domain-icons/pillar.png",
 }
+
+// These corrections are maintained here as source-level overrides because the
+// profession manuscripts are external to this repository. Keeping them in the
+// rebuild pipeline prevents a data rebuild from restoring the old wording.
+const professionContentCorrections = new Map([
+  ["术师/阵法术师/stage-3", "法术聚焦-阵法术师：每次休息一次，花费 1 希望点，使自身一次施法掷骰的难度降低 2 点。若你自上一次聚焦后未离开过当前位置，此次施法掷骰可以进行一次重掷（你可以在此次重掷中单独重掷希望骰或恐惧骰）。"],
+  ["特种/钩索师/module-y", "追加第二职业特性\n\n紧急机动：每场景限一次，你可以花费 1 希望点，反向启动推击装置，使你立即被推动至你远距离内的一处位置上。你可以在反应中使用本特性，此时推动范围缩减至中距离。\n\n外置捕网：每次休息一次，你可以花费 2 希望点，立即向攻击范围内的一处指定位置弹射出钩索装置单独配置的捕网（或其他用于捕获目标的设备），该位置中距离范围内的所有敌人进行一次敏捷反应掷骰（17）。失败的目标暂时处于缚地状态。除了束缚状态带来的限制，缚地状态还会使得目标失去飞行能力，被束缚在地面上。"],
+])
 const communityFeatureAppendices = new Map([
   ["失乡之民", "在任何时候，当你发现自己曾经所属的社群，或者加入了一个新的社群时，你可以永久地用那张社群卡替换这张社群卡。"],
 ])
@@ -66,7 +76,7 @@ function cleanMarkdown(value = "") {
     .replace(/\[([^\]]+)\]\(https?:\/\/[^)]+\)/g, "$1")
     .replace(/https?:\/\/[^\s)>]+/g, "")
     .replace(/<[^>]+>/g, "\n")
-    .replace(/\\([+&~\[\]])/g, "$1")
+    .replace(/\\([+&~\[\]\-*])/g, "$1")
     .replace(/\*+/g, "")
     .replace(/\r/g, "")
     .replace(/[ \t]+\n/g, "\n")
@@ -82,6 +92,25 @@ function cleanHtml(value = "") {
       .replace(/&nbsp;/g, " ")
       .replace(/&amp;/g, "&")
   )
+}
+
+async function readOptionalText(filePath) {
+  try {
+    return await readFile(filePath, "utf8")
+  } catch (error) {
+    if (error?.code === "ENOENT") return ""
+    throw error
+  }
+}
+
+async function fileExists(filePath) {
+  try {
+    await readFile(filePath)
+    return true
+  } catch (error) {
+    if (error?.code === "ENOENT") return false
+    throw error
+  }
 }
 
 function addThreeToDamage(damage) {
@@ -155,7 +184,14 @@ async function parseProfessions() {
         const branchFeature = contentAfterHeading(raw, /<h3><b>【?子职特性[^<】]*】?<\/b><\/h3>/i, [/<h3>/i, /<hr/i])
           || contentAfterHeading(raw, /<h3><b>子职特性[^<]*<\/b><\/h3>/i, [/<h3>/i, /<hr/i])
         const professionFeature = contentAfterHeading(raw, /<h3><b>职业特性提升\s*<\/b><\/h3>/i, [/<h3>/i, /<hr/i])
-        return { tier: index + 1, level: [1, 2, 5, 8][index], rank, weapon, branchFeature, professionFeature }
+        return {
+          tier: index + 1,
+          level: [1, 2, 5, 8][index],
+          rank,
+          weapon,
+          branchFeature,
+          professionFeature: professionContentCorrections.get(`${professionName}/${branchName}/stage-${index + 1}`) || professionFeature,
+        }
       })
       const eliteRaw = table.slice(table.indexOf("<h2>精英干员</h2>"))
       const xRaw = eliteRaw.match(/【X模组】[\s\S]*?(?=<hr\/?>)/)?.[0] || ""
@@ -164,6 +200,8 @@ async function parseProfessions() {
         x: { id: stableId("module", `${professionName}/${branchName}/x`), name: "X模组", description: cleanHtml(xRaw.replace(/^.*?【X模组】/, "")) },
         y: { id: stableId("module", `${professionName}/${branchName}/y`), name: "Y模组", description: cleanHtml(yRaw.replace(/^.*?【Y模组】/, "")) },
       }
+      const correctedYModule = professionContentCorrections.get(`${professionName}/${branchName}/module-y`)
+      if (correctedYModule) modules.y.description = correctedYModule
       branches.push({
         id: stableId("branch", `${professionName}/${branchName}`),
         ruleset: "rhodes-island",
@@ -176,6 +214,151 @@ async function parseProfessions() {
         imageUrl: professionImageUrls[professionName] || placeholderImage,
       })
     }
+  }
+  return { professions, branches }
+}
+
+function snapshotSectionContent(raw, headingPattern) {
+  const heading = raw.match(headingPattern)
+  if (!heading) return ""
+  const afterHeading = raw.slice(heading.index + heading[0].length)
+  const end = afterHeading.search(/<br>###|<br>####|<br>---|\|(?:\r?\n|$)/)
+  return cleanHtml((end >= 0 ? afterHeading.slice(0, end) : afterHeading).replace(/\|[ \t]*\r?$/, ""))
+}
+
+function parseSnapshotBranchSection(section, professionName, branchName, existingBranch, profession) {
+  const tableStart = section.indexOf("|##")
+  if (tableStart < 0) return undefined
+  const metadata = section.slice(0, tableStart)
+  const recommendedDomains = [...metadata.matchAll(/【([^】]+)】/g)].map((item) => item[1].trim())
+  const rankPattern = /\|## (预备干员|正式干员|资深干员|精英干员)([\s\S]*?)(?=\n\|## |\n\|---\||\n\|\||\n---)/g
+  const rankMatches = [...section.slice(tableStart).matchAll(rankPattern)]
+  if (rankMatches.length !== 4) return undefined
+
+  let previousWeapon = null
+  const stages = rankMatches.map((match, index) => {
+    const rank = match[1]
+    const raw = match[2].replace(/\|[ \t]*\r?$/, "")
+    const weapon = parseWeapon(cleanHtml(raw), previousWeapon)
+    previousWeapon = weapon || previousWeapon
+    return {
+      tier: index + 1,
+      level: [1, 2, 5, 8][index],
+      rank,
+      weapon,
+      branchFeature: index < 3
+        ? snapshotSectionContent(raw, /### \*\*(?:【)?子职特性[^*]*\*\*<br>/)
+        : "",
+      professionFeature: index === 2
+        ? snapshotSectionContent(raw, /### \*\*职业特性提升\s*\*\*<br>/)
+        : "",
+    }
+  })
+
+  const eliteRaw = rankMatches[3][2].replace(/\|[ \t]*\r?$/, "")
+  const xFeature = snapshotSectionContent(eliteRaw, /#### 希望特性提升<br>/)
+  const yFeature = snapshotSectionContent(eliteRaw, /#### 追加第二职业特性<br>/)
+  const branchId = stableId("branch", `${professionName}/${branchName}`)
+  return {
+    id: existingBranch?.id || branchId,
+    ruleset: "rhodes-island",
+    professionId: existingBranch?.professionId || profession?.id,
+    profession: professionName,
+    name: branchName,
+    recommendedDomains: recommendedDomains.length > 0 ? recommendedDomains : (existingBranch?.recommendedDomains || []),
+    stages,
+    modules: {
+      x: {
+        id: existingBranch?.modules?.x?.id || stableId("module", `${professionName}/${branchName}/x`),
+        name: "X模组",
+        description: `希望特性提升${xFeature ? `\n\n${xFeature}` : ""}`,
+      },
+      y: {
+        id: existingBranch?.modules?.y?.id || stableId("module", `${professionName}/${branchName}/y`),
+        name: "Y模组",
+        description: `追加第二职业特性${yFeature ? `\n\n${yFeature}` : ""}`,
+      },
+    },
+    imageUrl: existingBranch?.imageUrl || profession?.imageUrl || placeholderImage,
+  }
+}
+
+function parseBranchSnapshot(markdown, existingCatalog, mode) {
+  if (!markdown) return []
+  const headings = [...markdown.matchAll(/^# (.+?)\s*$/gm)]
+  const branches = []
+  for (const [index, headingMatch] of headings.entries()) {
+    const heading = headingMatch[1].trim()
+    const nextHeading = headings[index + 1]?.index ?? markdown.length
+    const section = markdown.slice(headingMatch.index, nextHeading)
+    let professionName = ""
+    let branchName = ""
+    if (mode === "new-branches") {
+      const delimiter = heading.indexOf("〖")
+      if (delimiter < 0) continue
+      professionName = heading.slice(0, delimiter).replace(/\\-$/, "").trim()
+      branchName = heading.slice(delimiter + 1, heading.indexOf("〗", delimiter)).trim()
+    } else {
+      if (!heading.startsWith("〖") || !heading.endsWith("〗")) continue
+      branchName = heading.slice(1, -1).trim()
+      const existingBranch = existingCatalog.branches.find((branch) => branch.name === branchName)
+      professionName = existingBranch?.profession || ""
+    }
+    const profession = existingCatalog.professions.find((item) => item.name === professionName)
+    const existingBranch = existingCatalog.branches.find((branch) => branch.name === branchName && branch.profession === professionName)
+    const parsed = parseSnapshotBranchSection(section, professionName, branchName, existingBranch, profession)
+    if (parsed) branches.push(parsed)
+  }
+  return branches
+}
+
+function parseProfessionTextPreview(markdown, existingCatalog) {
+  if (!markdown) return new Map()
+  const headings = [...markdown.matchAll(/^# (.+?)\s*$/gm)]
+  const corrections = new Map()
+  for (const [index, headingMatch] of headings.entries()) {
+    const professionName = headingMatch[1].trim()
+    const nextHeading = headings[index + 1]?.index ?? markdown.length
+    const section = markdown.slice(headingMatch.index, nextHeading)
+    if (!existingCatalog.professions.some((profession) => profession.name === professionName)) continue
+    const feature = section.match(/### \*\*【职业特性】\*\*\s*\n+([\s\S]*?)(?=\n+---)/)
+    if (feature) corrections.set(professionName, cleanMarkdown(feature[1]))
+  }
+  return corrections
+}
+
+function mergeProfessionSnapshot(existingCatalog, baseData, snapshotMarkdown, previewMarkdown) {
+  const professions = baseData.professions.map((profession) => ({ ...profession }))
+  const branchesByKey = new Map(baseData.branches.map((branch) => [`${branch.profession}/${branch.name}`, branch]))
+  const newBranches = parseBranchSnapshot(snapshotMarkdown, existingCatalog, "new-branches")
+  const previewBranches = parseBranchSnapshot(previewMarkdown, existingCatalog, "text-preview")
+
+  for (const branch of newBranches) {
+    const key = `${branch.profession}/${branch.name}`
+    branchesByKey.set(key, { ...branchesByKey.get(key), ...branch })
+  }
+  for (const branch of previewBranches) {
+    const key = `${branch.profession}/${branch.name}`
+    const existing = branchesByKey.get(key)
+    if (!existing) continue
+    branchesByKey.set(key, {
+      ...existing,
+      recommendedDomains: branch.recommendedDomains.length > 0 ? branch.recommendedDomains : existing.recommendedDomains,
+      stages: branch.stages,
+    })
+  }
+
+  const professionFeatureCorrections = parseProfessionTextPreview(previewMarkdown, existingCatalog)
+  for (const profession of professions) {
+    const correction = professionFeatureCorrections.get(profession.name)
+    if (correction) profession.classFeature = correction
+  }
+
+  const branches = baseData.branches.map((branch) => branchesByKey.get(`${branch.profession}/${branch.name}`) || branch)
+  const baseKeys = new Set(baseData.branches.map((branch) => `${branch.profession}/${branch.name}`))
+  for (const branch of newBranches) {
+    const key = `${branch.profession}/${branch.name}`
+    if (!baseKeys.has(key)) branches.push(branch)
   }
   return { professions, branches }
 }
@@ -399,7 +582,15 @@ async function main() {
   }
   if (process.env.RHODES_ONLY_PROFESSIONS === "1") {
     const existingCatalog = JSON.parse(await readFile(join(outputRoot, "catalog.json"), "utf8"))
-    const parsed = await parseProfessions()
+    const [snapshotMarkdown, previewMarkdown] = await Promise.all([
+      readOptionalText(professionSnapshotFile),
+      readOptionalText(professionTextPreviewFile),
+    ])
+    const hasProfessionSource = await fileExists(join(sourceFiles.professions, `${professionFiles[0]}.md`))
+    const baseData = hasProfessionSource
+      ? await parseProfessions()
+      : { professions: existingCatalog.professions, branches: existingCatalog.branches }
+    const parsed = mergeProfessionSnapshot(existingCatalog, baseData, snapshotMarkdown, previewMarkdown)
     validateProfessionContent(parsed.professions, parsed.branches)
     // Keep the locally imported art for existing entries. New branches use the
     // same profession icon, matching the visual treatment of existing branches.
@@ -426,7 +617,7 @@ async function main() {
     }
     // This focused update must preserve every non-profession collection exactly
     // as it exists in the installed data set.
-    const expected = { professions: 7, branches: 48 }
+    const expected = { professions: 7, branches: snapshotMarkdown ? 56 : 48 }
     for (const [key, value] of Object.entries(expected)) if (counts[key] !== value) throw new Error(`${key}: expected ${value}, got ${counts[key]}`)
     await writeFile(join(outputRoot, "catalog.json"), `${JSON.stringify(catalog, null, 2)}\n`, "utf8")
     await writeFile(join(outputRoot, "cards.json"), `${JSON.stringify(makeStandardCards(catalog), null, 2)}\n`, "utf8")
@@ -444,14 +635,24 @@ async function main() {
     cards: installedCatalog.domainCards,
     unpublishedSourceEntries: installedCatalog.unpublishedSourceEntries || [],
   }
-  const [{ professions, branches }, ancestries, communities, { domains, cards: domainCards, unpublishedSourceEntries }] = await Promise.all([
+  const [snapshotMarkdown, previewMarkdown] = await Promise.all([
+    readOptionalText(professionSnapshotFile),
+    readOptionalText(professionTextPreviewFile),
+  ])
+  const [{ professions: sourceProfessions, branches: sourceBranches }, ancestries, communities, { domains, cards: domainCards, unpublishedSourceEntries }] = await Promise.all([
     parseProfessions(), parseAncestries(), parseCommunities(), Promise.resolve(installedDomains),
   ])
+  const { professions, branches } = mergeProfessionSnapshot(
+    { professions: sourceProfessions, branches: sourceBranches },
+    { professions: sourceProfessions, branches: sourceBranches },
+    snapshotMarkdown,
+    previewMarkdown,
+  )
   validateProfessionContent(professions, branches)
   const catalog = { schemaVersion: 1, ruleset: "rhodes-island", source: "共赴明日：罗德岛旅记", placeholderImage, professions, branches, ancestries, communities, domains, domainCards, unpublishedSourceEntries }
   validateCommunityContent(communities)
   const counts = { professions: professions.length, branches: branches.length, ancestries: ancestries.length, communities: communities.length, domains: domains.length, domainCards: domainCards.length }
-  const expected = { professions: 7, branches: 48, ancestries: 35, communities: 15, domains: 11, domainCards: 236 }
+  const expected = { professions: 7, branches: snapshotMarkdown ? 56 : 48, ancestries: 35, communities: 15, domains: 11, domainCards: 236 }
   for (const [key, value] of Object.entries(expected)) if (counts[key] !== value) throw new Error(`${key}: expected ${value}, got ${counts[key]}`)
   await writeFile(join(outputRoot, "catalog.json"), `${JSON.stringify(catalog, null, 2)}\n`, "utf8")
   await writeFile(join(outputRoot, "cards.json"), `${JSON.stringify(makeStandardCards(catalog), null, 2)}\n`, "utf8")

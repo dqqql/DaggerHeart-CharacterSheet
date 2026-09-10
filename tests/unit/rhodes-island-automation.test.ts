@@ -27,6 +27,24 @@ function createBranchSheet(
 }
 
 describe("罗德岛规则幂等自动化", () => {
+  it("同步阵法术师职业特性勘误和钩索师 Y 模组追加特性", () => {
+    const arraymage = rhodesIslandCatalog.branches.find(branch => branch.name === "阵法术师")!
+    const hookmaster = rhodesIslandCatalog.branches.find(branch => branch.name === "钩索师")!
+    const correctedArraymageFeature = "法术聚焦-阵法术师：每次休息一次，花费 1 希望点，使自身一次施法掷骰的难度降低 2 点。若你自上一次聚焦后未离开过当前位置，此次施法掷骰可以进行一次重掷（你可以在此次重掷中单独重掷希望骰或恐惧骰）。"
+    const externalNetFeature = "外置捕网：每次休息一次，你可以花费 2 希望点，立即向攻击范围内的一处指定位置弹射出钩索装置单独配置的捕网（或其他用于捕获目标的设备），该位置中距离范围内的所有敌人进行一次敏捷反应掷骰（17）。失败的目标暂时处于缚地状态。除了束缚状态带来的限制，缚地状态还会使得目标失去飞行能力，被束缚在地面上。"
+
+    expect(arraymage.stages[2].professionFeature).toBe(correctedArraymageFeature)
+    expect(hookmaster.modules.y.description).toContain(externalNetFeature)
+
+    const migrated = applyRhodesIslandAutomation({
+      ...createBranchSheet(8, hookmaster),
+      selectedModule: "y",
+      rulesetAutomationVersions: { "rhodes-island": 4 },
+    })
+    expect(migrated.rulesetAutomationVersions?.["rhodes-island"]).toBe(RHODES_ISLAND_AUTOMATION_VERSION)
+    expect(migrated.cards[0].description).toContain(externalNetFeature)
+  })
+
   it("首次加载时补齐初始物资，且不覆盖已有库存", () => {
     const initial = applyRhodesIslandAutomation(createBranchSheet(1))
     expect(initial.inventory).toEqual([

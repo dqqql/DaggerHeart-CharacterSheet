@@ -6,7 +6,7 @@ import {
 import type { StandardCard } from "@/card/card-types"
 import type { SheetData } from "@/lib/sheet-data"
 
-export const RHODES_ISLAND_AUTOMATION_VERSION = 4
+export const RHODES_ISLAND_AUTOMATION_VERSION = 5
 
 interface RhodesWeapon {
   name: string

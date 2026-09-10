@@ -100,7 +100,7 @@ async function main() {
   }
 
   invariant(catalog.professions.length === 7, "catalog: expected 7 professions")
-  invariant(catalog.branches.length === 48, "catalog: expected 48 branches")
+  invariant(catalog.branches.length === 56, "catalog: expected 56 branches")
   invariant(catalog.ancestries.length === 35, "catalog: expected 35 ancestries")
   invariant(catalog.communities.length === 15, "catalog: expected 15 communities")
   invariant(catalog.domains.length === 11, "catalog: expected 11 domains")
@@ -174,7 +174,7 @@ async function main() {
   }
 
   const runtimeDomainCards = cards.filter((card) => card.ruleset === "rhodes-island" && card.type === "domain")
-  invariant(cards.length === 341, `runtime: expected 341 cards, got ${cards.length}`)
+  invariant(cards.length === 349, `runtime: expected 349 cards, got ${cards.length}`)
   invariant(runtimeDomainCards.length === 236, `runtime: expected 236 domain entries, got ${runtimeDomainCards.length}`)
   invariant(
     JSON.stringify(runtimeDomainCards.map((card) => card.id))

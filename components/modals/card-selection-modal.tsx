@@ -20,6 +20,7 @@ interface CardSelectionModalProps {
   onSelect: (card: StandardCard) => void
   selectedCardIndex: number
   initialTab?: string
+  initialLevels?: string[]
 }
 
 /**
@@ -37,6 +38,7 @@ export function CardSelectionModal({
   onSelect,
   selectedCardIndex,
   initialTab,
+  initialLevels,
 }: CardSelectionModalProps) {
   // === 使用简化的筛选 Hook ===
   const {
@@ -49,6 +51,12 @@ export function CardSelectionModal({
     loading,
     error,
   } = useCardFiltering(initialTab, isOpen)
+
+  useEffect(() => {
+    if (isOpen && initialLevels) {
+      actions.setLevels(initialLevels)
+    }
+  }, [actions, initialLevels, isOpen])
 
 
   // 本地搜索词（modal 关闭后自动清空）

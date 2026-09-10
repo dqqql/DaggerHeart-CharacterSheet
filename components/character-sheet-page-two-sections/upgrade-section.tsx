@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { Fragment, useState } from "react"
 import { Edit } from "lucide-react"
 import type { SheetData } from "@/lib/sheet-data"
 import { useSheetStore } from "@/lib/sheet-store"
@@ -262,8 +262,13 @@ export function UpgradeSection({
 
             const optionStateIndex = option.stateIndex ?? index
             const needsPopover = ["attribute", "experience", "evasion"].includes(option.action)
+            const isRhodesSpecialOption = option.action === "branch-upgrade" || option.id.includes("cross-domain")
             return (
-              <div key={option.id} className="flex items-start !text-[10px] leading-[1.6]">
+              <Fragment key={option.id}>
+              {option.action === "branch-upgrade" && (
+                <div className="mt-3 border-t border-gray-300 pt-2" />
+              )}
+              <div className="flex items-start !text-[10px] leading-[1.6]">
               {/* 属性升级 / 经历升级 / 闪避值升级：包裹 Popover 以便定位 */}
               {needsPopover ? (
                 <Popover
@@ -372,7 +377,7 @@ export function UpgradeSection({
                 </span>
               )}
               <div className="flex-1 ml-2">
-                <span className="text-gray-800 dark:text-gray-200 mr-1">{option.label}</span>
+                <span className={`${isRhodesSpecialOption ? "text-amber-600" : "text-gray-800 dark:text-gray-200"} mr-1`}>{option.label}</span>
                 {/* 其他需要编辑按钮的选项 */}
                 {needsEditButton(option) && (
                   shouldDirectlyOpenModal(option) ? (
@@ -417,6 +422,7 @@ export function UpgradeSection({
                 )}
               </div>
               </div>
+              </Fragment>
             )
           })}
         </div>
@@ -466,22 +472,14 @@ export function UpgradeSection({
           )}
         </div>}
 
-        {moduleOption && (() => {
-          const moduleStateIndex = moduleOption.stateIndex ?? moduleOptionIndex
-          const moduleCheckKey = `${tierKey}-${moduleStateIndex}-0`
-          const moduleChecked = isUpgradeChecked(moduleCheckKey, moduleStateIndex)
-
-          return (
-            <RhodesIslandModuleUpgrade
-              branchId={formData.subclassRef?.id}
-              option={moduleOption}
-              checked={moduleChecked}
-              selectedModule={formData.selectedModule}
-              onToggle={() => handleUpgradeCheck(moduleCheckKey, moduleStateIndex)}
-              onSelect={(selectedModule) => setSheetData({ selectedModule })}
-            />
-          )
-        })()}
+        {moduleOption && (
+          <RhodesIslandModuleUpgrade
+            branchId={formData.subclassRef?.id}
+            option={moduleOption}
+            selectedModule={formData.selectedModule}
+            onSelect={(selectedModule) => setSheetData({ selectedModule })}
+          />
+        )}
 
         {tier === 1 && (
           <div

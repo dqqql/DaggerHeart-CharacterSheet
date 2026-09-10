@@ -14,14 +14,14 @@ describe("Rhodes Island static rules data", () => {
   it("matches the normalized release inventory", () => {
     expect(rhodesIslandManifest.counts).toEqual({
       professions: 7,
-      branches: 48,
+      branches: 56,
       ancestries: 35,
       communities: 15,
       domains: 11,
       domainCards: 236,
     })
     expect(rhodesIslandCatalog.professions).toHaveLength(7)
-    expect(rhodesIslandCatalog.branches).toHaveLength(48)
+    expect(rhodesIslandCatalog.branches).toHaveLength(56)
     expect(rhodesIslandCatalog.ancestries).toHaveLength(35)
     expect(rhodesIslandCatalog.communities).toHaveLength(15)
     expect(rhodesIslandCatalog.domains).toHaveLength(11)
@@ -43,13 +43,13 @@ describe("Rhodes Island static rules data", () => {
     for (const branch of rhodesIslandCatalog.branches) expect(professionIds.has(branch.professionId)).toBe(true)
     for (const card of rhodesIslandCatalog.domainCards) expect(domainIds.has(card.domainId)).toBe(true)
     const expectedBranchCounts: Record<string, number> = {
-      先锋: 6,
-      近卫: 7,
-      狙击: 7,
-      术师: 7,
-      特种: 7,
-      重装: 7,
-      辅助: 7,
+      先锋: 8,
+      近卫: 8,
+      狙击: 8,
+      术师: 8,
+      特种: 8,
+      重装: 8,
+      辅助: 8,
     }
     for (const profession of rhodesIslandCatalog.professions) {
       expect(getRhodesIslandBranchesForProfession(profession.id)).toHaveLength(expectedBranchCounts[profession.name])
@@ -90,7 +90,7 @@ describe("Rhodes Island static rules data", () => {
   })
 
   it("marks every runtime card for this ruleset and contains no remote dependency", () => {
-    expect(rhodesIslandCards).toHaveLength(341)
+    expect(rhodesIslandCards).toHaveLength(349)
     expect(rhodesIslandCards.every((card) => card.ruleset === "rhodes-island")).toBe(true)
     const serialized = readFileSync(join(process.cwd(), "data", "rhodes-island", "cards.json"), "utf8")
     expect(serialized).not.toMatch(/https?:\/\//)
@@ -210,5 +210,33 @@ describe("Rhodes Island static rules data", () => {
     expect(heavyBlade?.stages[0].weapon.damage).toBe("d20-3")
     expect(curseHealer?.stages[1].branchFeature).toContain("治疗伤害：不会迫使友方角色标记生命点")
     expect(curseHealer?.stages[2].branchFeature).toContain("治疗伤害：不会迫使友方角色标记生命点")
+  })
+
+  it("contains the September branch additions and August text preview updates", () => {
+    const addedBranches = [
+      ["先锋", "排陷手"],
+      ["先锋", "破术者"],
+      ["近卫", "收割者"],
+      ["重装", "卫盟者"],
+      ["狙击", "回环射手"],
+      ["术师", "塑灵术师"],
+      ["辅助", "游击手"],
+      ["特种", "行商"],
+    ] as const
+
+    for (const [profession, name] of addedBranches) {
+      const branch = rhodesIslandCatalog.branches.find((item) => item.profession === profession && item.name === name)
+      expect(branch, `${profession}/${name}`).toBeDefined()
+      expect(branch?.stages[2].professionFeature).not.toBe("")
+      expect(branch?.modules.x.description).toContain("希望特性提升")
+      expect(branch?.modules.y.description).toContain("追加第二职业特性")
+    }
+
+    expect(rhodesIslandCatalog.professions.find((item) => item.name === "近卫")?.classFeature)
+      .toContain("狭路相逢：每次休息一次")
+    expect(rhodesIslandCatalog.branches.find((item) => item.name === "速射手")?.stages[2].branchFeature)
+      .toContain("花费 1 希望点或标记 1 压力点")
+    expect(rhodesIslandCatalog.branches.find((item) => item.name === "召唤师")?.stages[2].branchFeature)
+      .toContain("至多同时有5张领域卡")
   })
 })
