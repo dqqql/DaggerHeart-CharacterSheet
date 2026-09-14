@@ -6,9 +6,10 @@ import { useAutoResizeFont } from "@/hooks/use-auto-resize-font"
 import { useSheetStore } from "@/lib/sheet-store"
 import { ContentEditableField } from "@/components/ui/content-editable-field"
 import { showFadeNotification } from "@/components/ui/fade-notification"
+import { swapInventoryWeapon, type InventoryWeaponIndex } from "@/lib/inventory-weapon-swap"
 
 interface InventoryWeaponSectionProps {
-  index: number
+  index: InventoryWeaponIndex
   onOpenWeaponModal: (fieldName: string, slotType: "primary" | "secondary" | "inventory") => void;
 }
 
@@ -66,30 +67,7 @@ export function InventoryWeaponSection({
     }
 
     // 情况 2: 执行武器交换
-    const targetPrefix = targetType === 'primary' ? 'primaryWeapon' : 'secondaryWeapon'
-    const inventoryPrefix = `inventoryWeapon${index}`
-
-    setSheetData((prev) => {
-      const newData = { ...prev }
-
-      // 交换所有武器字段
-      const fieldsToSwap = ['Name', 'Trait', 'Damage', 'Feature']
-
-      for (const fieldName of fieldsToSwap) {
-        const inventoryField = `${inventoryPrefix}${fieldName}` as keyof typeof prev
-        const targetField = `${targetPrefix}${fieldName}` as keyof typeof prev
-
-        // 执行字段交换
-        const temp = (prev as any)[inventoryField]
-        ;(newData as any)[inventoryField] = (prev as any)[targetField]
-        ;(newData as any)[targetField] = temp
-      }
-
-      // 保持 checkbox 为 false（不持久化选中状态）
-      (newData as any)[field] = false
-
-      return newData
-    })
+    setSheetData((prev) => swapInventoryWeapon(prev, index, targetType))
 
     // 显示交换成功通知
     showFadeNotification({

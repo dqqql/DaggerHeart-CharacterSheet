@@ -473,7 +473,7 @@ export default function CharacterSheet() {
 
     const applyWeaponFields = (weaponDetails: { name: string; trait: string; damage: string; feature: string }, selectionMode: "preset" | "custom") => {
       const selection = selectionField
-        ? { [selectionField]: { mode: selectionMode, id: weaponDetails.name } }
+        ? { [selectionField]: { mode: selectionMode, id: weaponDetails.name, weaponType } }
         : {}
 
       if (field === "primaryWeaponName") {

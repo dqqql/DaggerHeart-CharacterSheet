@@ -11,6 +11,7 @@ export type EquipmentSelectionMode = "none" | "preset" | "custom"
 export interface EquipmentSelectionState {
   mode: EquipmentSelectionMode
   id?: string
+  weaponType?: "primary" | "secondary"
 }
 
 export type EquipmentAttributeModifiers = Partial<Record<CharacterAttributeKey, number>>

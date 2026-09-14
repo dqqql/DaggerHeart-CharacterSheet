@@ -257,7 +257,7 @@ export function getPresetEquipmentEffectSources(
 
   const primarySelection = inferWeaponSelection(data, "primary")
   if (primarySelection.mode === "preset") {
-    const weapon = resolvePresetWeapon(primarySelection.id, "primary")
+    const weapon = resolvePresetWeapon(primarySelection.id, primarySelection.weaponType ?? "primary")
     if (weapon?.effects) {
       sources.push({
         slot: "primaryWeapon",
@@ -269,7 +269,7 @@ export function getPresetEquipmentEffectSources(
 
   const secondarySelection = inferWeaponSelection(data, "secondary")
   if (secondarySelection.mode === "preset") {
-    const weapon = resolvePresetWeapon(secondarySelection.id, "secondary")
+    const weapon = resolvePresetWeapon(secondarySelection.id, secondarySelection.weaponType ?? "secondary")
     if (weapon?.effects) {
       sources.push({
         slot: "secondaryWeapon",

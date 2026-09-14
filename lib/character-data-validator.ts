@@ -448,6 +448,9 @@ function normalizeEquipmentSelection(selection: any): EquipmentSelectionState | 
 
   return {
     mode,
-    id: selection.id ? String(selection.id) : undefined
+    id: selection.id ? String(selection.id) : undefined,
+    weaponType: selection.weaponType === 'primary' || selection.weaponType === 'secondary'
+      ? selection.weaponType
+      : undefined,
   }
 }
