@@ -3,8 +3,15 @@
 import type React from "react"
 import { useState, useRef, memo, useCallback } from "react"
 import { createPortal } from "react-dom"
+import { CirclePlus, RotateCcw, RotateCw, Vault } from "lucide-react"
 import { getCardTypeName, convertToStandardCard } from "@/card"
-import { createEmptyCard, StandardCard, isEmptyCard } from "@/card/card-types"
+import {
+  createEmptyCard,
+  StandardCard,
+  isEmptyCard,
+  type RhodesIslandCounter,
+  type RhodesIslandCounterColor,
+} from "@/card/card-types"
 import { isVariantCard, getVariantRealType } from "@/card/card-types"
 import { CardSelectionModal } from "@/components/modals/card-selection-modal"
 import { CardHoverPreview } from "@/components/ui/card-hover-preview"
@@ -18,6 +25,18 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { getDisplayedCharacterCards } from "@/lib/ancestry-utils"
 import { formatRhodesSubclassDomainRecommendation } from "@/lib/rulesets/rhodes-island/card-display"
 import { getRuleSetModule } from "@/lib/rulesets/registry"
+import {
+  addRhodesIslandCounter,
+  canAddRhodesIslandCounter,
+  changeRhodesIslandCounter,
+  toggleRhodesIslandCardFace,
+} from "@/lib/rulesets/rhodes-island/card-play-state"
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu"
 
 interface CardDeckSectionProps {
   formData: SheetData
@@ -55,7 +74,8 @@ interface CardProps {
   isSelected: boolean;
   isSpecial: boolean;
   onCardClick: (index: number) => void;
-  onCardRightClick: (index: number, e: MouseEvent<HTMLDivElement>) => void;
+  onCardRightClick?: (index: number, e: MouseEvent<HTMLDivElement>) => void;
+  onCounterChange?: (index: number, counterId: string, delta: 1 | -1) => void;
   onHover: (index: number | null) => void;
   getPreviewPosition: (index: number) => CSSProperties;
   hoveredCard: number | null;
@@ -65,7 +85,60 @@ interface CardProps {
   isMobile: boolean;
   isSuppressed?: boolean;
   useRulesetCardLayout?: boolean;
+  enableRhodesIslandPlayState?: boolean;
   subclassLabel: string;
+}
+
+const COUNTER_COLOR_CLASSES: Record<RhodesIslandCounterColor, string> = {
+  red: "border-red-700 bg-red-600",
+  amber: "border-amber-700 bg-amber-500",
+  emerald: "border-emerald-700 bg-emerald-600",
+  sky: "border-sky-700 bg-sky-500",
+  violet: "border-violet-700 bg-violet-600",
+  pink: "border-pink-700 bg-pink-500",
+  orange: "border-orange-700 bg-orange-500",
+  slate: "border-slate-700 bg-slate-600",
+}
+
+const COUNTER_COLOR_LABELS: Record<RhodesIslandCounterColor, string> = {
+  red: "红色",
+  amber: "琥珀色",
+  emerald: "翠绿色",
+  sky: "天蓝色",
+  violet: "紫色",
+  pink: "粉色",
+  orange: "橙色",
+  slate: "灰色",
+}
+
+function RhodesIslandCounterToken({
+  counter,
+  onChange,
+}: {
+  counter: RhodesIslandCounter
+  onChange: (delta: 1 | -1) => void
+}) {
+  const label = `${COUNTER_COLOR_LABELS[counter.color]}指示物，当前数值 ${counter.value}`
+
+  return (
+    <button
+      type="button"
+      aria-label={`${label}；左键增加，右键减少`}
+      title={`${label}（左键 +1，右键 -1）`}
+      className={`flex h-6 min-w-6 items-center justify-center rounded-full border-2 px-1 text-[11px] font-bold leading-none text-white shadow-sm transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-1 ${COUNTER_COLOR_CLASSES[counter.color]}`}
+      onClick={(event) => {
+        event.stopPropagation()
+        onChange(1)
+      }}
+      onContextMenu={(event) => {
+        event.preventDefault()
+        event.stopPropagation()
+        onChange(-1)
+      }}
+    >
+      {counter.value}
+    </button>
+  )
 }
 
 function Card({
@@ -75,6 +148,7 @@ function Card({
   isSpecial,
   onCardClick,
   onCardRightClick,
+  onCounterChange,
   onHover,
   getPreviewPosition,
   hoveredCard,
@@ -84,6 +158,7 @@ function Card({
   isMobile,
   isSuppressed = false,
   useRulesetCardLayout = false,
+  enableRhodesIslandPlayState = false,
   subclassLabel,
 }: CardProps) {
   // Optimize: avoid unnecessary conversion if already StandardCard
@@ -117,9 +192,9 @@ function Card({
     <div
       data-ri-card-slot={useRulesetCardLayout ? "" : undefined}
       className={`relative cursor-pointer transition-colors rounded-md p-1 h-16 group ${isSelected ? "border-3" : "border"
-        } ${getBorderColor(isSpecial)} ${isSuppressed ? "border-dashed opacity-60" : ""}`}
+      } ${getBorderColor(isSpecial)} ${isSuppressed ? "border-dashed opacity-60" : ""}`}
       onClick={() => onCardClick(index)}
-      onContextMenu={(e) => onCardRightClick(index, e)}
+      onContextMenu={onCardRightClick ? (e) => onCardRightClick(index, e) : undefined}
       onMouseEnter={() => {
         if (card?.name) {
           onHover(index);
@@ -221,6 +296,29 @@ function Card({
         </div>
       )}
 
+      {enableRhodesIslandPlayState && standardCard?.rhodesIslandState?.flipped && card?.name && (
+        <div
+          className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center overflow-hidden rounded-[5px] bg-slate-950/85 text-slate-100"
+          aria-hidden="true"
+        >
+          <div className="absolute h-16 w-16 rotate-45 border border-cyan-300/25" />
+          <div className="absolute h-9 w-9 rotate-45 border border-cyan-200/35" />
+          <span className="relative text-[10px] font-semibold tracking-[0.24em] text-cyan-100/90">已翻面</span>
+        </div>
+      )}
+
+      {enableRhodesIslandPlayState && !!standardCard?.rhodesIslandState?.counters?.length && (
+        <div className="absolute bottom-0.5 left-1 right-1 z-20 flex flex-wrap items-end gap-0.5" aria-label="卡牌指示物">
+          {standardCard.rhodesIslandState.counters.map((counter) => (
+            <RhodesIslandCounterToken
+              key={counter.id}
+              counter={counter}
+              onChange={(delta) => onCounterChange?.(index, counter.id, delta)}
+            />
+          ))}
+        </div>
+      )}
+
       {/* Hover preview */}
       {hoveredCard === index && card?.name && typeof document !== "undefined" && createPortal(
         <div className="pointer-events-none" style={getPreviewPosition(index)}>
@@ -298,7 +396,11 @@ export function CardDeckSection({
   // 处理卡牌右键点击事件 - 使用 store 方法
   const handleCardRightClick = (index: number, e: React.MouseEvent) => {
     e.preventDefault(); // 阻止默认右键菜单
-    
+
+    handleMoveCard(index)
+  }
+
+  const handleMoveCard = (index: number) => {
     const isFromFocused = activeDeck === 'focused';
     const fromInventory = activeDeck === 'inventory';
     const toInventory = !fromInventory;
@@ -307,7 +409,7 @@ export function CardDeckSection({
     
     if (success) {
       showFadeNotification({
-        message: `卡牌已移动到${isFromFocused ? '库存' : '聚焦'}卡组`,
+        message: `卡牌已移动到${isFromFocused ? '宝库' : '配置'}卡组`,
         type: "success"
       });
     } else {
@@ -323,6 +425,25 @@ export function CardDeckSection({
           type: "error"
         });
       }
+    }
+  }
+
+  const updateRhodesIslandCard = (
+    displayedIndex: number,
+    updater: (card: StandardCard) => StandardCard,
+  ) => {
+    const displayedCard = cards[displayedIndex]
+    if (isEmptyCard(displayedCard)) return
+
+    const actualCards = getActualDeckCards(activeDeck)
+    const actualIndex = actualCards.findIndex((candidate) => candidate?.id === displayedCard.id)
+    if (actualIndex < 0) return
+
+    const updatedCard = updater(actualCards[actualIndex])
+    if (activeDeck === "focused") {
+      onCardChange(actualIndex, updatedCard)
+    } else {
+      onInventoryCardChange(actualIndex, updatedCard)
     }
   }
 
@@ -476,7 +597,7 @@ export function CardDeckSection({
 
         {/* 操作提示 */}
         <div className="!text-xs text-gray-500">
-          💡 左键进入卡牌选择，右键移动卡牌到其他卡组
+          💡 左键选择卡牌，右键打开卡牌操作
         </div>
       </div>
 
@@ -495,9 +616,8 @@ export function CardDeckSection({
             const isSelected = false; // 移除选中状态，双卡组系统不需要此功能
             const isSuppressed = activeDeck === 'focused' && !formData.mixedAncestryEnabled && index === 3
 
-            return (
+            const cardElement = (
               <div
-                key={`card-${activeDeck}-${index}`}
                 ref={(el) => {
                   cardRefs.current[index] = el;
                 }}
@@ -508,7 +628,13 @@ export function CardDeckSection({
                   isSelected={isSelected}
                   isSpecial={isSpecial}
                   onCardClick={handleCardClick}
-                  onCardRightClick={handleCardRightClick}
+                  onCardRightClick={formData.ruleSetId === "rhodes-island" ? undefined : handleCardRightClick}
+                  onCounterChange={formData.ruleSetId === "rhodes-island"
+                    ? (cardIndex, counterId, delta) => updateRhodesIslandCard(
+                        cardIndex,
+                        (currentCard) => changeRhodesIslandCounter(currentCard, counterId, delta),
+                      )
+                    : undefined}
                   onHover={handleCardHover}
                   getPreviewPosition={getPreviewPosition}
                   hoveredCard={hoveredCard}
@@ -518,10 +644,56 @@ export function CardDeckSection({
                   isMobile={isMobile}
                   isSuppressed={isSuppressed}
                   useRulesetCardLayout={ruleSet.capabilities.ancestryExperience}
+                  enableRhodesIslandPlayState={formData.ruleSetId === "rhodes-island"}
                   subclassLabel={ruleSet.labels.subclass}
                 />
               </div>
-            );
+            )
+
+            if (formData.ruleSetId !== "rhodes-island" || isEmptyCard(card)) {
+              return <div key={`card-${activeDeck}-${index}`}>{cardElement}</div>
+            }
+
+            const isFlipped = !!card.rhodesIslandState?.flipped
+            const cannotMove = isSpecial || isSuppressed
+
+            return (
+              <ContextMenu
+                key={`card-${activeDeck}-${index}`}
+                onOpenChange={(open) => {
+                  if (open) handleCardHover(null)
+                }}
+              >
+                <ContextMenuTrigger asChild>{cardElement}</ContextMenuTrigger>
+                <ContextMenuContent className="z-[10000] min-w-[10rem] border-slate-700 bg-slate-900 text-slate-100 shadow-xl">
+                  <ContextMenuItem
+                    disabled={cannotMove}
+                    className="gap-2 focus:bg-cyan-950 focus:text-cyan-100"
+                    onSelect={() => handleMoveCard(index)}
+                  >
+                    <Vault className="h-4 w-4 text-cyan-300" />
+                    {activeDeck === "focused" ? "移动到宝库" : "移动到配置卡组"}
+                  </ContextMenuItem>
+                  <ContextMenuItem
+                    className="gap-2 focus:bg-cyan-950 focus:text-cyan-100"
+                    onSelect={() => updateRhodesIslandCard(index, toggleRhodesIslandCardFace)}
+                  >
+                    {isFlipped
+                      ? <RotateCcw className="h-4 w-4 text-cyan-300" />
+                      : <RotateCw className="h-4 w-4 text-cyan-300" />}
+                    {isFlipped ? "翻回正面" : "翻面"}
+                  </ContextMenuItem>
+                  <ContextMenuItem
+                    disabled={!canAddRhodesIslandCounter(card)}
+                    className="gap-2 focus:bg-cyan-950 focus:text-cyan-100"
+                    onSelect={() => updateRhodesIslandCard(index, addRhodesIslandCounter)}
+                  >
+                    <CirclePlus className="h-4 w-4 text-amber-300" />
+                    添加指示物
+                  </ContextMenuItem>
+                </ContextMenuContent>
+              </ContextMenu>
+            )
           })}
       </div>
 

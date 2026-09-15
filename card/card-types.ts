@@ -14,6 +14,27 @@ export const SUBCLASS_LEVEL_NAMES: string[] = [
 export type AttributeClass = typeof ATTRIBUTE_CLASS_NAMES[number];
 export type SubClassLevel = typeof SUBCLASS_LEVEL_NAMES[number];
 
+export type RhodesIslandCounterColor =
+  | "red"
+  | "amber"
+  | "emerald"
+  | "sky"
+  | "violet"
+  | "pink"
+  | "orange"
+  | "slate"
+
+export interface RhodesIslandCounter {
+  id: string
+  color: RhodesIslandCounterColor
+  value: number
+}
+
+export interface RhodesIslandCardState {
+  flipped?: boolean
+  counters?: RhodesIslandCounter[]
+}
+
 export interface StandardCard {
   standarized: boolean
   /** 内置卡所属规则；历史卡缺失时视为 daggerheart。 */
@@ -26,6 +47,8 @@ export interface StandardCard {
   description?: string
   hint?: string
   imageUrl?: string
+  /** Character-specific tabletop state used by the Rhodes Island deck UI. */
+  rhodesIslandState?: RhodesIslandCardState
   /** Rhodes Island explanation card linked to, but distinct from, a normal domain card. */
   isSupplemental?: boolean
   parentCardId?: string
