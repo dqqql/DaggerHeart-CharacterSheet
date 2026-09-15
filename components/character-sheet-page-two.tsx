@@ -608,7 +608,7 @@ export default function CharacterSheetPageTwo() {
             <UpgradeSection
               tier={1}
               title={ruleSet.capabilities.ancestryExperience ? "T2：等级2-4" : "位阶2 等级 2-4"}
-              description={ruleSet.capabilities.ancestryExperience ? "当你到达 2 级时，获得一项额外+2经验，将你的熟练值+1，并提升你的武器原型至正式干员级别（升级你的子职特性）。" : "当你到达 2 级时：获得一项额外 +2 经历，熟练值 +1。"}
+              description={ruleSet.capabilities.ancestryExperience ? "当你到达 2 级时，获得一项额外+2经历，将你的熟练值+1，并提升你的武器原型至正式干员级别（升级你的子职特性）。" : "当你到达 2 级时：获得一项额外 +2 经历，熟练值 +1。"}
               formData={safeFormData}
               isUpgradeChecked={isUpgradeChecked}
               handleUpgradeCheck={handleUpgradeCheck}
@@ -621,8 +621,8 @@ export default function CharacterSheetPageTwo() {
 
             <UpgradeSection
               tier={2}
-              title={ruleSet.capabilities.ancestryExperience ? "T3：" : "位阶3 等级 5-7"}
-              description={ruleSet.capabilities.ancestryExperience ? "当你到达 5 级时，获得一项额外+2经验，清除你所有角色属性上的标记，将你的熟练值+1，并提升你的武器原型至资深干员级别（升级你的子职特性）。" : "当你到达 5 级时：获得一项额外 +2 经历，清除所有属性升级标记，熟练值 +1。"}
+              title={ruleSet.capabilities.ancestryExperience ? "T3：等级5-7" : "位阶3 等级 5-7"}
+              description={ruleSet.capabilities.ancestryExperience ? "当你到达 5 级时，获得一项额外+2经历，清除你所有角色属性上的标记，将你的熟练值+1，并提升你的武器原型至资深干员级别（升级你的子职特性）。" : "当你到达 5 级时：获得一项额外 +2 经历，清除所有属性升级标记，熟练值 +1。"}
               formData={safeFormData}
               isUpgradeChecked={isUpgradeChecked}
               handleUpgradeCheck={handleUpgradeCheck}
@@ -635,8 +635,8 @@ export default function CharacterSheetPageTwo() {
 
             <UpgradeSection
               tier={3}
-              title={ruleSet.capabilities.ancestryExperience ? "T4：" : "位阶4 等级 8-10"}
-              description={ruleSet.capabilities.ancestryExperience ? "当你到达 8 级时，获得一项额外+2经验，清除你所有角色属性上的标记，将你的熟练值+1，并提升你的武器调整值+3，解锁一项专属模组器）。" : "当你到达 8 级时：获得一项额外 +2 经历，清除所有属性升级标记，熟练值 +1。"}
+              title={ruleSet.capabilities.ancestryExperience ? "T4：等级8-10" : "位阶4 等级 8-10"}
+              description={ruleSet.capabilities.ancestryExperience ? "当你到达 8 级时，获得一项额外+2经历，清除你所有角色属性上的标记，将你的熟练值+1，并提升你的武器调整值+3，解锁一项专属模组器）。" : "当你到达 8 级时：获得一项额外 +2 经历，清除所有属性升级标记，熟练值 +1。"}
               formData={safeFormData}
               isUpgradeChecked={isUpgradeChecked}
               handleUpgradeCheck={handleUpgradeCheck}
