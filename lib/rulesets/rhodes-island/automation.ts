@@ -4,9 +4,15 @@ import {
   RHODES_ISLAND_STARTING_INVENTORY,
 } from "@/data/rhodes-island/starting-inventory"
 import type { StandardCard } from "@/card/card-types"
+import { createEmptyCard } from "@/card/card-types"
 import type { SheetData } from "@/lib/sheet-data"
+import {
+  createRhodesElementalDamageCards,
+  isRhodesDamageCard,
+  RHODES_ELEMENTAL_DAMAGE_BRANCH_ID,
+} from "@/lib/rulesets/rhodes-island/damage-cards"
 
-export const RHODES_ISLAND_AUTOMATION_VERSION = 5
+export const RHODES_ISLAND_AUTOMATION_VERSION = 6
 
 interface RhodesWeapon {
   name: string
@@ -119,6 +125,75 @@ function isLegacyXModuleWeaponFeature(value: string): boolean {
   ))
 }
 
+function removeElementalDamageCards(cards: StandardCard[]): StandardCard[] {
+  const result = [...cards]
+  let damageCardIndex = result.findIndex((card, index) => index >= 5 && isRhodesDamageCard(card))
+
+  while (damageCardIndex >= 5) {
+    for (let index = damageCardIndex; index < result.length - 1; index += 1) {
+      result[index] = result[index + 1]
+    }
+    result[result.length - 1] = createEmptyCard()
+    damageCardIndex = result.findIndex((card, index) => index >= 5 && isRhodesDamageCard(card))
+  }
+
+  for (let index = 0; index < result.length; index += 1) {
+    if (isRhodesDamageCard(result[index])) {
+      result[index] = createEmptyCard()
+    }
+  }
+
+  return result
+}
+
+function addElementalDamageCards(cards: StandardCard[]): {
+  cards: StandardCard[]
+  displacedCards: StandardCard[]
+} {
+  const [firstDamageCard, secondDamageCard] = createRhodesElementalDamageCards()
+
+  if (cards[5]?.id === firstDamageCard.id && cards[6]?.id === secondDamageCard.id) {
+    const result = [...cards]
+    result[5] = { ...firstDamageCard, rhodesIslandState: cards[5].rhodesIslandState }
+    result[6] = { ...secondDamageCard, rhodesIslandState: cards[6].rhodesIslandState }
+    return { cards: result, displacedCards: [] }
+  }
+
+  const result = removeElementalDamageCards(cards)
+  const displacedCards: StandardCard[] = []
+
+  while (result.length < 20) result.push(createEmptyCard())
+
+  const insertCard = (targetIndex: number, card: StandardCard) => {
+    if (result[targetIndex]?.name) {
+      const emptyIndex = result.findIndex((candidate, index) => index > targetIndex && !candidate?.name)
+      if (emptyIndex >= 0) {
+        for (let index = emptyIndex; index > targetIndex; index -= 1) {
+          result[index] = result[index - 1]
+        }
+      } else {
+        const displacedCard = result[result.length - 1]
+        if (displacedCard?.name) displacedCards.unshift(displacedCard)
+        for (let index = result.length - 1; index > targetIndex; index -= 1) {
+          result[index] = result[index - 1]
+        }
+      }
+    }
+    result[targetIndex] = card
+  }
+
+  insertCard(5, firstDamageCard)
+  insertCard(6, secondDamageCard)
+
+  for (let index = 0; index < result.length; index += 1) {
+    if (index !== 5 && index !== 6 && isRhodesDamageCard(result[index])) {
+      result[index] = createEmptyCard()
+    }
+  }
+
+  return { cards: result, displacedCards }
+}
+
 /**
  * 罗德岛数值均由当前选择派生，不做累加，因此反复加载、跨级和降级都是幂等的。
  */
@@ -140,11 +215,13 @@ export function applyRhodesIslandAutomation(data: SheetData): SheetData {
     && (!hasInventoryContent || hasLegacyStartingInventory)
     ? [...RHODES_ISLAND_STARTING_INVENTORY]
     : data.inventory
+  const cardsWithoutDamageCards = removeElementalDamageCards(data.cards ?? [])
 
   if (!branch) {
     return {
       ...data,
       inventory,
+      cards: cardsWithoutDamageCards,
       mixedAncestryEnabled: false,
       ancestry2: "",
       ancestry2Ref: { id: "", name: "" },
@@ -183,7 +260,17 @@ export function applyRhodesIslandAutomation(data: SheetData): SheetData {
     ? ""
     : data.primaryWeaponFeature ?? ""
 
-  const cards = [...(data.cards ?? [])]
+  const damageCardSync = branch.id === RHODES_ELEMENTAL_DAMAGE_BRANCH_ID
+    ? addElementalDamageCards(data.cards ?? [])
+    : { cards: cardsWithoutDamageCards, displacedCards: [] }
+  const cards = damageCardSync.cards
+  const inventoryCards = [...(data.inventory_cards ?? [])]
+
+  for (const displacedCard of damageCardSync.displacedCards) {
+    const emptyIndex = inventoryCards.findIndex(card => !card?.name)
+    if (emptyIndex >= 0) inventoryCards[emptyIndex] = displacedCard
+    else inventoryCards.push(displacedCard)
+  }
   cards[0] = replaceCardDescription(cards[0], professionDescription || cards[0]?.description || "") as StandardCard
   cards[0] = replaceCardHopeFeature(cards[0], hopeFeature) as StandardCard
   cards[1] = replaceCardDescription(
@@ -196,6 +283,7 @@ export function applyRhodesIslandAutomation(data: SheetData): SheetData {
     ...data,
     inventory,
     cards,
+    inventory_cards: inventoryCards,
     mixedAncestryEnabled: false,
     ancestry2: "",
     ancestry2Ref: { id: "", name: "" },

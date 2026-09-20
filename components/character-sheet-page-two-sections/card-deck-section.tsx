@@ -31,6 +31,7 @@ import {
   changeRhodesIslandCounter,
   toggleRhodesIslandCardFace,
 } from "@/lib/rulesets/rhodes-island/card-play-state"
+import { isRhodesDamageCard } from "@/lib/rulesets/rhodes-island/damage-cards"
 import {
   ContextMenu,
   ContextMenuContent,
@@ -51,7 +52,9 @@ const getBorderColor = (isSpecial = false): string => {
 }
 
 // Utility function for special slot label
-const getSpecialSlotLabel = (index: number, subclassLabel: string): string => {
+const getSpecialSlotLabel = (index: number, subclassLabel: string, card?: StandardCard): string => {
+  if (isRhodesDamageCard(card)) return "损伤"
+
   switch (index) {
     case 0:
       return "职业";
@@ -267,7 +270,7 @@ function Card({
       {isSpecial && (
         <div className="absolute -top-4 left-0 right-0 text-center">
           <span className="text-[10px] font-medium bg-yellow-100 px-1 py-0 rounded-t-sm border border-yellow-300 border-b-0">
-            {getSpecialSlotLabel(index, subclassLabel)}
+            {getSpecialSlotLabel(index, subclassLabel, standardCard)}
           </span>
         </div>
       )}
@@ -388,9 +391,9 @@ export function CardDeckSection({
 
   // 移除：Alt键监听逻辑，已不需要
 
-  // 检查是否是特殊卡位（聚焦卡组的前五个位置）
-  const isSpecialSlot = (index: number): boolean => {
-    return activeDeck === 'focused' && index < 5;
+  // 聚焦卡组的前五个位置，以及规则自动加入的损伤卡，都是只读特殊卡位。
+  const isSpecialSlot = (index: number, card?: StandardCard): boolean => {
+    return activeDeck === 'focused' && (index < 5 || isRhodesDamageCard(card));
   }
 
   // 处理卡牌右键点击事件 - 使用 store 方法
@@ -450,7 +453,7 @@ export function CardDeckSection({
   // 处理卡牌点击事件
   const handleCardClick = (index: number) => {
     // 特殊卡位不允许修改
-    if (isSpecialSlot(index)) return
+    if (isSpecialSlot(index, cards[index])) return
 
     // 对于普通卡牌，打开卡牌选择模态框
     setSelectedCardIndex(index)
@@ -473,7 +476,7 @@ export function CardDeckSection({
   // 处理卡牌删除 - 使用 store 方法
   const handleCardDelete = (index: number) => {
     // 特殊卡位不允许删除
-    if (isSpecialSlot(index)) return
+    if (isSpecialSlot(index, cards[index])) return
 
     deleteCard(index, activeDeck === 'inventory');
   }
@@ -612,9 +615,11 @@ export function CardDeckSection({
               card = createEmptyCard();
             }
 
-            const isSpecial = isSpecialSlot(index);
+            const isSpecial = isSpecialSlot(index, card);
             const isSelected = false; // 移除选中状态，双卡组系统不需要此功能
-            const isSuppressed = activeDeck === 'focused' && !formData.mixedAncestryEnabled && index === 3
+            const isSuppressed = activeDeck === 'focused'
+              && !formData.mixedAncestryEnabled
+              && index === 3
 
             const cardElement = (
               <div

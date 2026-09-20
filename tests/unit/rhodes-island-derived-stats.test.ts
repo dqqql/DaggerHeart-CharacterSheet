@@ -45,7 +45,7 @@ describe("罗德岛分支常驻属性自动化", () => {
     }
 
     expect([...auditedBranchNames].sort()).toEqual(
-      ["无畏者", "斗士", "重剑手", "铁卫", "决战者"].sort(),
+      ["无畏者", "斗士", "重剑手", "铁卫", "决战者", "教官", "巡卫"].sort(),
     )
 
     for (const branchName of auditedBranchNames) {
@@ -128,6 +128,20 @@ describe("罗德岛分支常驻属性自动化", () => {
     expect(result.major.total).toBe(19)
     expect(result.minor.sources).toContainEqual({ label: "终战姿态++", value: 3 })
     expect(result.major.sources).toContainEqual({ label: "终战姿态++", value: 3 })
+  })
+
+  it.each([
+    ["教官", 1, 7, "临战指导"],
+    ["教官", 2, 8, "临战指导+"],
+    ["教官", 5, 8, "临战指导++"],
+    ["巡卫", 1, 8, "义无反顾"],
+    ["巡卫", 2, 8, "义无反顾+"],
+    ["巡卫", 5, 9, "义无反顾++"],
+  ] as const)("%s 在 %i 级同步压力槽上限", (branch, level, total, label) => {
+    const result = calculateStressMaxBreakdown(createBranchData(branch, { level: String(level) }))
+
+    expect(result.total).toBe(total)
+    expect(result.sources.some(source => source.label === label)).toBe(true)
   })
 
   it("非罗德岛规则不会应用同名分支引用", () => {

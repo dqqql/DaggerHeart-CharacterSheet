@@ -6,6 +6,7 @@ import {
   RHODES_ISLAND_AUTOMATION_VERSION,
 } from "@/lib/rulesets/rhodes-island/automation"
 import { rhodesIslandCards, rhodesIslandCatalog } from "@/data/rhodes-island"
+import { isRhodesDamageCard } from "@/lib/rulesets/rhodes-island/damage-cards"
 
 function createBranchSheet(
   level: number,
@@ -227,5 +228,46 @@ describe("罗德岛规则幂等自动化", () => {
 
     expect(migrated.primaryWeaponFeature).toBe("")
     expect(migrated.rulesetAutomationVersions?.["rhodes-island"]).toBe(RHODES_ISLAND_AUTOMATION_VERSION)
+  })
+
+  it("为本源铁卫加入两张不可滚动拆分的损伤卡，并在切换分支后移除", () => {
+    const ironGuard = rhodesIslandCatalog.branches.find(branch => branch.name === "本源铁卫")!
+    const source = createBranchSheet(1, ironGuard)
+    const ancestryCard = rhodesIslandCards.find(card => card.type === "ancestry") as StandardCard
+    source.cards[3] = ancestryCard
+    source.cards[5] = rhodesIslandCards.find(card => card.type === "domain") as StandardCard
+
+    const applied = applyRhodesIslandAutomation(source)
+    const damageCards = applied.cards.filter(isRhodesDamageCard)
+
+    expect(damageCards).toHaveLength(2)
+    expect(applied.cards[3]).toEqual(ancestryCard)
+    expect(applied.cards[5].name).toBe("元素损伤 1/2")
+    expect(applied.cards[6].name).toBe("元素损伤 2/2")
+    expect(applied.cards[7].type).toBe("domain")
+    expect(damageCards.map(card => card.description).join("\n")).toContain("神经损伤")
+    expect(damageCards.map(card => card.description).join("\n")).toContain("元素伤害")
+    expect(applied.cards[0].description).not.toContain("神经损伤：")
+    expect(applyRhodesIslandAutomation(applied)).toEqual(applied)
+
+    const otherBranch = rhodesIslandCatalog.branches.find(branch => branch.name === "铁卫")!
+    const switched = applyRhodesIslandAutomation({
+      ...applied,
+      subclassRef: { id: otherBranch.id, name: otherBranch.name },
+    })
+    expect(switched.cards.some(isRhodesDamageCard)).toBe(false)
+  })
+
+  it("配置已满时把损伤卡挤出的卡牌移入宝库而不丢失", () => {
+    const ironGuard = rhodesIslandCatalog.branches.find(branch => branch.name === "本源铁卫")!
+    const source = createBranchSheet(1, ironGuard)
+    const domainCards = rhodesIslandCards.filter(card => card.type === "domain") as StandardCard[]
+    for (let index = 2; index < 20; index += 1) source.cards[index] = domainCards[index]
+
+    const expectedDisplacedIds = [source.cards[18].id, source.cards[19].id]
+    const applied = applyRhodesIslandAutomation(source)
+
+    expect(applied.cards.filter(isRhodesDamageCard)).toHaveLength(2)
+    expect(applied.inventory_cards?.slice(0, 2).map(card => card.id)).toEqual(expectedDisplacedIds)
   })
 })

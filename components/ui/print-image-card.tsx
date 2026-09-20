@@ -8,6 +8,7 @@ import { getCardImageUrl, getCardImageUrlAsync } from "@/lib/utils"
 import { CardMarkdown } from "@/components/ui/card-markdown"
 import { formatRhodesSubclassDomainRecommendation } from "@/lib/rulesets/rhodes-island/card-display"
 import { getCardRuleSetId } from "@/lib/ruleset"
+import { isRhodesDamageCard } from "@/lib/rulesets/rhodes-island/damage-cards"
 
 const getDisplayTypeName = (card: StandardCard) => {
     if (isVariantCard(card)) {
@@ -65,6 +66,7 @@ export function PrintImageCard({ card }: PrintImageCardProps) {
         getCardRuleSetId(card) === "rhodes-island"
         && card.type === CardType.Domain
         && card.imageUrl?.startsWith("/rhodes-island/domains/")
+    const isDamageCard = isRhodesDamageCard(card)
 
     if (hasRhodesIslandDomainCardFace) {
         return (
@@ -85,9 +87,9 @@ export function PrintImageCard({ card }: PrintImageCardProps) {
     }
 
     return (
-        <div className="flex flex-col overflow-hidden rounded-lg border border-gray-400 bg-white h-full shadow-sm print-card">
+        <div className={`flex flex-col rounded-lg border bg-white h-full shadow-sm print-card ${isDamageCard ? "overflow-visible border-amber-400" : "overflow-hidden border-gray-400"}`}>
             {/* 图片容器 */}
-            <div className="relative w-full aspect-[1.6] overflow-hidden bg-gray-100">
+            {!isDamageCard && <div className="relative w-full aspect-[1.6] overflow-hidden bg-gray-100">
                 {imageSrc && (
                     <Image
                         src={imageSrc}
@@ -99,7 +101,7 @@ export function PrintImageCard({ card }: PrintImageCardProps) {
                         priority
                     />
                 )}
-            </div>
+            </div>}
 
             {/* 标题栏 */}
             <div className="px-2 py-1.5 border-b border-gray-200 bg-gray-50 print-card-header">
@@ -119,7 +121,7 @@ export function PrintImageCard({ card }: PrintImageCardProps) {
 
             {/* 内容区域 */}
             <div className="flex flex-1 flex-col p-2">
-                <div className="flex-1 text-xs text-gray-700 overflow-hidden card-description print-card-description">
+                <div className={`flex-1 text-xs text-gray-700 card-description print-card-description ${isDamageCard ? "overflow-visible" : "overflow-hidden"}`}>
                     <CardMarkdown
                         className="text-[10px]"
                         customComponents={{

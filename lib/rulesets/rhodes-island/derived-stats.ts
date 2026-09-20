@@ -32,10 +32,19 @@ interface RhodesBranchStatRule {
 const EMPTY_EFFECTS: RhodesStageEffects = {}
 
 /**
- * 全量审计罗德岛 48 个分支后确认的常驻角色卡数值。
+ * 全量审计罗德岛 70 个分支后确认的常驻角色卡数值。
  * 临时状态、单次掷骰加值和触发式阈值变化不在此处持久化。
  */
 const RHODES_BRANCH_STAT_RULES: Record<string, RhodesBranchStatRule> = {
+  // 近卫 / 教官。
+  "ri-branch-dcb2660eeda4": {
+    stages: [
+      { stressMax: 1 },
+      { stressMax: 2 },
+      { stressMax: 2 },
+    ],
+    stageLabels: ["临战指导", "临战指导+", "临战指导++"],
+  },
   // 近卫 / 无畏者：各阶段固定 +1 生命槽；Y 模组再 +1。
   "ri-branch-e1682fc4bea1": {
     stages: [
@@ -88,6 +97,15 @@ const RHODES_BRANCH_STAT_RULES: Record<string, RhodesBranchStatRule> = {
       { minorThreshold: 3, majorThreshold: 3 },
     ],
     stageLabels: ["终战姿态", "终战姿态+", "终战姿态++"],
+  },
+  // 重装 / 巡卫。
+  "ri-branch-b3775d66589c": {
+    stages: [
+      { stressMax: 2 },
+      { stressMax: 2 },
+      { stressMax: 3 },
+    ],
+    stageLabels: ["义无反顾", "义无反顾+", "义无反顾++"],
   },
 }
 

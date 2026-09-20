@@ -15,6 +15,7 @@ import {
     RhodesDomainIcon,
     type RhodesDomainName,
 } from "@/components/rhodes-island/domain-icon"
+import { isRhodesDamageCard } from "@/lib/rulesets/rhodes-island/damage-cards"
 
 interface CardHoverPreviewProps {
     card: StandardCard
@@ -76,6 +77,20 @@ export function CardHoverPreview({ card, isTextMode = false }: CardHoverPreviewP
     }, [imageError, card, imageSrc]);
     
     if (!card) return null
+
+    if (isRhodesDamageCard(card)) {
+        return (
+            <article className="w-[420px] max-w-[calc(100vw-20px)] rounded-lg border border-amber-300 bg-white p-4 text-gray-800 shadow-xl">
+                <header className="mb-3 flex items-center justify-between border-b border-amber-200 pb-2">
+                    <h3 className="font-bold">{card.name}</h3>
+                    <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-900">损伤卡</span>
+                </header>
+                <div className="text-sm leading-relaxed">
+                    <CardMarkdown>{card.description || ""}</CardMarkdown>
+                </div>
+            </article>
+        )
+    }
 
     // 领域卡图本身已经包含完整规则信息，悬浮时无需再重复拼接卡名和说明。
     if (card.type === CardType.Domain) {
