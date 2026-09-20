@@ -266,4 +266,14 @@ describe("Rhodes Island static rules data", () => {
     expect(ironGuard.stages.every(stage => !stage.branchFeature.includes("神经损伤："))).toBe(true)
     expect(ironGuard.stages.every(stage => !stage.branchFeature.includes("元素伤害："))).toBe(true)
   })
+
+  it("uses colons instead of Markdown strikethrough markers in 陷阱师 text", () => {
+    const trapmaster = rhodesIslandCatalog.branches.find(branch => branch.name === "陷阱师")!
+    const trapmasterCard = rhodesIslandCards.find(card => card.name === "陷阱师")!
+
+    expect(trapmaster.stages.every(stage => !stage.branchFeature.includes("~"))).toBe(true)
+    expect(trapmaster.stages[2].branchFeature).toContain("·法术化：其将造成法术伤害")
+    expect(trapmaster.stages[2].branchFeature).toContain("·纠缠化：其将迫使目标")
+    expect(trapmasterCard.description).not.toContain("~")
+  })
 })
