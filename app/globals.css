@@ -1333,6 +1333,13 @@ body[data-ruleset="rhodes-island"] [data-ri-archive-manager] .border-t {
     margin: 5mm 5mm 0mm 5mm;
   }
 
+  /* The Daggerheart sheet is authored at the full 210 mm A4 width, while the
+     page margins leave a 200 mm printable area. Match that printable width so
+     Chromium keeps the complete first sheet on one physical PDF page. */
+  .export-preview-shell--daggerheart .page-one .a4-page {
+    zoom: 0.95;
+  }
+
   .a4-page {
     width: 210mm;
     margin: 0;

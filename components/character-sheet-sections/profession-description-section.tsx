@@ -13,7 +13,7 @@ const ProfessionDescriptionSection: React.FC<ProfessionDescriptionSectionProps> 
     description,
     subclassDescription,
     heightClassName = 'h-[250px]',
-    printHeightClassName = 'print:h-[50mm]',
+    printHeightClassName = 'print:h-[55mm]',
 }) => {
     const subclassStart = description && subclassDescription
         ? description.indexOf(subclassDescription)
