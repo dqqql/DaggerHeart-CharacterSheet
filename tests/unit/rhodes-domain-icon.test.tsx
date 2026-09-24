@@ -208,4 +208,35 @@ describe("Rhodes Island domain icons", () => {
     expect(screen.queryByText("不应在卡图旁重复展示的规则文本")).not.toBeInTheDocument()
     expect(screen.queryByText("奥术")).not.toBeInTheDocument()
   })
+
+  it("shows the image and rules text for a standard domain card in text mode", async () => {
+    render(
+      <CardHoverPreview
+        card={{
+          standarized: true,
+          ruleset: "daggerheart",
+          id: "domain-forceful-push",
+          name: "有力推击",
+          type: "domain",
+          class: "勇气",
+          level: 1,
+          description: "命中后，将目标击退至近距离范围内。",
+          imageUrl: "/api/placeholder/300/400",
+          cardSelectDisplay: {
+            item1: "勇气",
+            item2: "能力",
+            item3: "RC.0",
+          },
+        }}
+        isTextMode
+      />,
+    )
+
+    await waitFor(() => {
+      expect(screen.getByRole("img", { name: "Image for 有力推击" })).toBeInTheDocument()
+      expect(screen.getByText("有力推击")).toBeInTheDocument()
+      expect(screen.getByText("命中后，将目标击退至近距离范围内。")).toBeInTheDocument()
+    })
+    expect(screen.queryByTestId("domain-card-image-preview")).not.toBeInTheDocument()
+  })
 })

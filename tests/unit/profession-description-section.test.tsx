@@ -11,7 +11,7 @@ describe("ProfessionDescriptionSection", () => {
 
     const description = container.querySelector("[data-profession-description]")
 
-    expect(description).toHaveClass("print:h-[55mm]")
+    expect(description).toHaveClass("print:h-[50mm]")
     expect(description).toHaveClass("print:overflow-hidden")
   })
 

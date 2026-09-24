@@ -92,8 +92,8 @@ export function CardHoverPreview({ card, isTextMode = false }: CardHoverPreviewP
         )
     }
 
-    // 领域卡图本身已经包含完整规则信息，悬浮时无需再重复拼接卡名和说明。
-    if (card.type === CardType.Domain) {
+    // 罗德岛领域卡图本身已经包含完整规则信息，悬浮时无需再重复拼接卡名和说明。
+    if (isRhodesIslandCard && card.type === CardType.Domain) {
         return (
             <div
                 className="relative aspect-[5/7] w-[240px] max-w-[calc(100vw-20px)] overflow-hidden rounded-lg bg-white shadow-xl ring-1 ring-black/10"
@@ -114,7 +114,7 @@ export function CardHoverPreview({ card, isTextMode = false }: CardHoverPreviewP
     }
 
     // 文字模式下使用 SelectableCard 组件
-    if (isTextMode) {
+    if (isTextMode && card.type !== CardType.Domain) {
         return (
             <div className="shadow-lg">
                 <SelectableCard
