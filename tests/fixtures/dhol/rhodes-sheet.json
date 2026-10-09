@@ -1,0 +1,14 @@
+{
+  "ruleSetId": "rhodes-island", "name": "霜叶", "level": "2", "profession": "先锋",
+  "hope": 2, "hopeMax": 6, "hp": [false, false, true, false, false, false], "hpMax": 6,
+  "stress": [false, true, false, false, false, false], "stressMax": 6,
+  "armorBoxes": [false, false, false], "armorMax": 3,
+  "evasion": "10", "armorValue": "1", "minorThreshold": "6", "majorThreshold": "12",
+  "agility": {"checked": false, "value": "+1"}, "strength": {"checked": true, "value": "+2"},
+  "finesse": {"checked": false, "value": "0"}, "instinct": {"checked": false, "value": "0"},
+  "presence": {"checked": false, "value": "+1"}, "knowledge": {"checked": false, "value": "-1"},
+  "primaryWeaponName": "战术刀", "primaryWeaponDamage": "1d8", "secondaryWeaponDamage": "",
+  "cards": [{"id": "custom-rhodes", "name": "自定义战术卡", "description": "测试全文"}],
+  "inventory_cards": [], "rhodesIslandRelationshipAnswers": {"ally": {"answer": "测试"}},
+  "iknisArmorTemplate": {"weaponName": "原型装备"}, "optionalField": ""
+}

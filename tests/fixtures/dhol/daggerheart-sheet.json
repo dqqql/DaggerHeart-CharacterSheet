@@ -1,0 +1,14 @@
+{
+  "ruleSetId": "daggerheart", "name": "阿岚", "level": "3", "profession": "游侠",
+  "hope": 5, "hopeMax": 6, "hp": [false, true, false, false, false, false], "hpMax": 6,
+  "stress": [false, false, false, false, false, false], "stressMax": 6,
+  "armorBoxes": [false, true, false], "armorMax": 3,
+  "evasion": "11", "armorValue": "2", "minorThreshold": "7", "majorThreshold": "13",
+  "agility": {"checked": true, "value": "+2"}, "strength": {"checked": false, "value": "0"},
+  "finesse": {"checked": false, "value": "+1"}, "instinct": {"checked": false, "value": "+1"},
+  "presence": {"checked": false, "value": "-1"}, "knowledge": {"checked": false, "value": "0"},
+  "primaryWeaponName": "短弓", "primaryWeaponDamage": "1d8+2", "secondaryWeaponDamage": "1d6",
+  "cards": [{"id": "custom-1", "name": "自定义领域卡", "description": "测试全文"}],
+  "inventory_cards": [], "companionName": "夜鸦", "companionStress": [false, true],
+  "adventureNotes": {"background": "测试背景"}, "optionalField": null
+}
