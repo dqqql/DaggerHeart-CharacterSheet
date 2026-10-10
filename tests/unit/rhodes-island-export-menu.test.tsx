@@ -22,6 +22,7 @@ describe("Rhodes Island export menu", () => {
         onOpenSealDiceExport={() => {}}
         onOpenCharacterCodeExport={() => {}}
         onOpenZootExport={onOpenZootExport}
+        onOpenDholExport={() => {}}
         onQuickExportJSON={() => {}}
         onQuickExportPDF={() => {}}
         onQuickExportHTML={() => {}}
@@ -63,6 +64,7 @@ describe("Rhodes Island export menu", () => {
         onPrintAll={() => {}}
         onOpenSealDiceExport={() => {}}
         onOpenCharacterCodeExport={() => {}}
+        onOpenDholExport={() => {}}
         onQuickExportJSON={() => {}}
         onQuickExportPDF={() => {}}
         onQuickExportHTML={() => {}}

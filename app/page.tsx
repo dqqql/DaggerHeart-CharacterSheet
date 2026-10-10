@@ -155,6 +155,8 @@ const loadSealDiceExportModal = () =>
   import("@/components/modals/seal-dice-export-modal")
 const loadZootExportModal = () =>
   import("@/components/modals/zoot-export-modal")
+const loadDholExportModal = () =>
+  import("@/components/modals/dhol-export-modal")
 
 function DeferredModalSkeleton() {
   return (
@@ -190,6 +192,10 @@ const ZootExportModal = dynamic(
     loadZootExportModal().then(
       (mod) => mod.ZootExportModal,
     ),
+  { ssr: false, loading: DeferredModalSkeleton },
+)
+const DholExportModal = dynamic(
+  () => loadDholExportModal().then((mod) => mod.DholExportModal),
   { ssr: false, loading: DeferredModalSkeleton },
 )
 const FloatingNotebook = dynamic(
@@ -229,6 +235,23 @@ function StoreConnectedZootExportModal({
   const sheetData = useSheetStore((state) => state.sheetData)
   return (
     <ZootExportModal
+      isOpen={isOpen}
+      onClose={onClose}
+      sheetData={sheetData}
+    />
+  )
+}
+
+function StoreConnectedDholExportModal({
+  isOpen,
+  onClose,
+}: {
+  isOpen: boolean
+  onClose: () => void
+}) {
+  const sheetData = useSheetStore((state) => state.sheetData)
+  return (
+    <DholExportModal
       isOpen={isOpen}
       onClose={onClose}
       sheetData={sheetData}
@@ -321,6 +344,7 @@ export default function Home() {
   const [characterCodeExportModalOpen, setCharacterCodeExportModalOpen] = useState(false)
   const [sealDiceExportModalOpen, setSealDiceExportModalOpen] = useState(false)
   const [zootExportModalOpen, setZootExportModalOpen] = useState(false)
+  const [dholExportModalOpen, setDholExportModalOpen] = useState(false)
   const [currentTabValue, setCurrentTabValue] = useState("page1")
   const [showShortcutHint, setShowShortcutHint] = useState(false)
   const [isCardDrawerOpen, setIsCardDrawerOpen] = useState(false)
@@ -418,6 +442,7 @@ export default function Home() {
       void loadCharacterCodeExportModal()
       void loadSealDiceExportModal()
       void loadZootExportModal()
+      void loadDholExportModal()
     }
     const idleWindow = window as Window & {
       requestIdleCallback?: (callback: IdleRequestCallback) => number
@@ -940,6 +965,10 @@ export default function Home() {
                 setZootExportModalOpen(true)
                 setIsPrintingAll(false)
               }}
+              onOpenDholExport={() => {
+                setDholExportModalOpen(true)
+                setIsPrintingAll(false)
+              }}
               onClose={() => setIsPrintingAll(false)}
             />
 
@@ -1181,6 +1210,7 @@ export default function Home() {
         onOpenCharacterCodeExport={() => setCharacterCodeExportModalOpen(true)}
         onOpenSealDiceExport={() => setSealDiceExportModalOpen(true)}
         onOpenZootExport={() => setZootExportModalOpen(true)}
+        onOpenDholExport={() => setDholExportModalOpen(true)}
         onQuickExportJSON={handleQuickExportJSON}
         onQuickExportPDF={handleQuickExportPDF}
         onQuickExportHTML={handleQuickExportHTML}
@@ -1218,6 +1248,12 @@ export default function Home() {
         <StoreConnectedZootExportModal
           isOpen={zootExportModalOpen}
           onClose={() => setZootExportModalOpen(false)}
+        />
+      )}
+      {dholExportModalOpen && (
+        <StoreConnectedDholExportModal
+          isOpen={dholExportModalOpen}
+          onClose={() => setDholExportModalOpen(false)}
         />
       )}
       {ruleSet.capabilities.guide && isGuideOpen && (

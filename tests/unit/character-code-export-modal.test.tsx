@@ -22,6 +22,7 @@ function TestHarness() {
         onPrintAll={() => {}}
         onOpenSealDiceExport={() => {}}
         onOpenCharacterCodeExport={() => setOpen(true)}
+        onOpenDholExport={() => {}}
         onQuickExportJSON={() => {}}
         onQuickExportPDF={() => {}}
         onQuickExportHTML={() => {}}

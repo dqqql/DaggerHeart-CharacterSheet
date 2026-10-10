@@ -54,6 +54,7 @@ interface MainModeProps extends BottomDockBaseProps {
   onQuickExportPDF: () => void
   onQuickExportHTML: () => void
   onOpenZootExport?: () => void
+  onOpenDholExport: () => void
   onOpenCharacterManagement: () => void
   onQuickCreateArchive: () => void
   onQuickImportFromJSON: () => void
@@ -69,6 +70,7 @@ interface PreviewModeProps extends BottomDockBaseProps {
   onOpenSealDiceExport: () => void
   onOpenCharacterCodeExport: () => void
   onOpenZootExport?: () => void
+  onOpenDholExport: () => void
   onClose: () => void
 }
 
@@ -228,6 +230,14 @@ function MainModeContent(props: MainModeProps) {
               <Code className={cn("mr-2", isMobile ? "h-5 w-5" : "h-4 w-4")} />
               导出 HTML
             </DropdownMenuItem>
+            <DropdownMenuItem
+              data-testid="export-dhol-item"
+              onClick={props.onOpenDholExport}
+              className={cn(isMobile && "px-4 py-3")}
+            >
+              <Send className={cn("mr-2", isMobile ? "h-5 w-5" : "h-4 w-4")} />
+              发送到桌面房间
+            </DropdownMenuItem>
             {ruleSet.capabilities.zootExport && (
               <DropdownMenuItem
                 data-testid="export-zoot-item"
@@ -386,6 +396,16 @@ function PreviewModeContent(props: PreviewModeProps) {
       >
         发送到 ZOOT
       </Button>}
+      <Button
+        data-testid="preview-export-dhol-button"
+        onClick={props.onOpenDholExport}
+        className={cn(
+          "whitespace-nowrap bg-primary text-primary-foreground hover:bg-primary/90 focus:outline-none",
+          isMobile ? "px-6 py-3 text-base" : "px-4 py-2 text-sm",
+        )}
+      >
+        发送到桌面房间
+      </Button>
       <Button
         onClick={props.onClose}
         className={cn(
