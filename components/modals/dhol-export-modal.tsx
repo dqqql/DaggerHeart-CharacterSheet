@@ -81,7 +81,7 @@ export function DholExportModal({ isOpen, onClose, sheetData }: DholExportModalP
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-lg font-bold">
             <Send className="h-5 w-5 text-primary" />
-            发送到桌面房间
+            发送到在线面板
           </DialogTitle>
         </DialogHeader>
 
@@ -89,9 +89,6 @@ export function DholExportModal({ isOpen, onClose, sheetData }: DholExportModalP
           <div className="border border-primary/30 bg-primary/10 p-2.5 text-sm">
             当前角色：<strong>{characterName || '（未命名角色）'}</strong>
           </div>
-          <p className="text-xs leading-5 text-muted-foreground">
-            同名角色的全部数据和资源都会被本次角色卡完整覆盖；桌面会采用点击发送时车卡器显示的数值。
-          </p>
 
           <div className="space-y-2">
             <Label htmlFor="dhol-room-code">房间码</Label>

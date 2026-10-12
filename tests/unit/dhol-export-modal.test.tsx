@@ -14,11 +14,11 @@ describe('DholExportModal', () => {
     vi.restoreAllMocks()
   })
 
-  it('shows the room code, character name, and permanent overwrite explanation', () => {
+  it('shows the room code, character name, and modal title', () => {
     render(<DholExportModal isOpen onClose={() => {}} sheetData={{ ...createDefaultSheetData('daggerheart'), name: '阿岚' }} />)
-    expect(screen.getByText('发送到桌面房间')).toBeInTheDocument()
+    expect(screen.getByText('发送到在线面板')).toBeInTheDocument()
     expect(screen.getByText('阿岚')).toBeInTheDocument()
-    expect(screen.getByText(/全部数据和资源.*覆盖/)).toBeInTheDocument()
+    expect(screen.queryByText(/全部数据和资源.*覆盖/)).not.toBeInTheDocument()
     expect(screen.getByLabelText('房间码')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: '发送' })).toBeDisabled()
     expect(screen.queryByRole('button', { name: '自定义服务器地址' })).not.toBeInTheDocument()
