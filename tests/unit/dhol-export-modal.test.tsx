@@ -21,18 +21,12 @@ describe('DholExportModal', () => {
     expect(screen.getByText(/全部数据和资源.*覆盖/)).toBeInTheDocument()
     expect(screen.getByLabelText('房间码')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: '发送' })).toBeDisabled()
-    const disclosure = screen.getByRole('button', { name: '自定义服务器地址' })
-    expect(disclosure).toHaveAttribute('aria-expanded', 'false')
-    expect(disclosure).toHaveAttribute('aria-controls', 'dhol-server-settings')
-  })
-
-  it('exposes the expanded server settings panel to assistive technology', async () => {
-    const user = userEvent.setup()
-    render(<DholExportModal isOpen onClose={() => {}} sheetData={{ ...createDefaultSheetData('daggerheart'), name: '阿岚' }} />)
-    const disclosure = screen.getByRole('button', { name: '自定义服务器地址' })
-    await user.click(disclosure)
-    expect(screen.getByRole('button', { name: '收起服务器设置' })).toHaveAttribute('aria-expanded', 'true')
-    expect(document.getElementById('dhol-server-settings')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: '自定义服务器地址' })).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('桌面房间服务器地址')).not.toBeInTheDocument()
+    expect(screen.getByRole('dialog')).toHaveClass('rounded-none', 'sm:rounded-none')
+    expect(screen.getByLabelText('房间码')).toHaveClass('rounded-none')
+    expect(screen.getByRole('button', { name: '关闭' })).toHaveClass('rounded-none')
+    expect(screen.getByRole('button', { name: '发送' })).toHaveClass('rounded-none')
   })
 
   it('treats malformed 2xx data as failure without saving or rotating the retry ID', async () => {
@@ -100,12 +94,11 @@ describe('DholExportModal', () => {
     expect(await screen.findByText('无法连接到桌面房间')).toBeInTheDocument()
     expect(screen.getByLabelText('房间码')).toHaveValue('ABC123')
     expect(localStorage.getItem('dhol_last_room_code')).toBeNull()
-    expect(localStorage.getItem('dhol_server_url')).toBeNull()
 
     await user.click(screen.getByRole('button', { name: '发送' }))
     expect(await screen.findByText('已覆盖：阿岚')).toBeInTheDocument()
     expect(localStorage.getItem('dhol_last_room_code')).toBe('ABC123')
-    expect(localStorage.getItem('dhol_server_url')).toBe(dholClient.DEFAULT_DHOL_BASE_URL)
+    expect(send.mock.calls[1][0].baseUrl).toBe(dholClient.DEFAULT_DHOL_BASE_URL)
     expect(send.mock.calls[1][0].idempotencyKey).toBe(send.mock.calls[0][0].idempotencyKey)
 
     await user.click(screen.getByRole('button', { name: '发送' }))
