@@ -5,6 +5,7 @@ import {
   normalizeDholRoomCode,
   sendCharacterToDhol,
 } from '@/lib/dhol-client'
+import { buildDholDesktopView } from '@/lib/dhol-desktop-view'
 
 describe('dhol-client', () => {
   const originalFetch = globalThis.fetch
@@ -50,10 +51,26 @@ describe('dhol-client', () => {
           'Content-Type': 'application/json',
           'Idempotency-Key': 'send-1',
         },
-        body: JSON.stringify({ schemaVersion: 1, sheet }),
+        body: JSON.stringify({ schemaVersion: 2, sheet: { ...sheet, desktopView: buildDholDesktopView(sheet) } }),
       }),
     )
     expect(result).toEqual({ ok: true, action: 'created', name: '测试角色', generation: 4, seq: 4 })
+  })
+
+  it('sends edited text and the currently displayed manual threshold value', async () => {
+    vi.mocked(globalThis.fetch).mockResolvedValueOnce(Response.json({ ok: true, action: 'updated', name: '阿岚', generation: 5, seq: 5 }))
+    const sheet = {
+      ...createDefaultSheetData('daggerheart'), name: '阿岚', minorThresholdManualModifier: '5',
+      characterBackground: '发送前刚改的背景', hpMax: 7, stressMax: 7,
+    }
+    await sendCharacterToDhol({ roomCode: 'ABC123', idempotencyKey: 'changed-1', sheetData: sheet })
+    const body = JSON.parse(String(vi.mocked(globalThis.fetch).mock.calls[0][1]?.body))
+    expect(body.schemaVersion).toBe(2)
+    expect(body.sheet.characterBackground).toBe('发送前刚改的背景')
+    expect(body.sheet.desktopView.minorThreshold).toBe(buildDholDesktopView(sheet).minorThreshold)
+    expect(body.sheet.desktopView.minorThreshold).not.toBe(sheet.minorThreshold)
+    expect(body.sheet.desktopView.hpMax).toBe(7)
+    expect(body.sheet.desktopView.stressMax).toBe(7)
   })
 
   it('rejects non-six-character codes before making a request', async () => {

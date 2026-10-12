@@ -1,4 +1,5 @@
 import type { SheetData } from '@/lib/sheet-data'
+import { buildDholDesktopView } from '@/lib/dhol-desktop-view'
 
 export const DEFAULT_DHOL_BASE_URL =
   process.env.NEXT_PUBLIC_DHOL_URL || 'https://dhol-realtime.gooole-dql.workers.dev'
@@ -69,7 +70,7 @@ export async function sendCharacterToDhol({
         'Content-Type': 'application/json',
         'Idempotency-Key': idempotencyKey,
       },
-      body: JSON.stringify({ schemaVersion: 1, sheet: sheetData }),
+      body: JSON.stringify({ schemaVersion: 2, sheet: { ...sheetData, desktopView: buildDholDesktopView(sheetData) } }),
     })
   } catch (error) {
     const detail = error instanceof Error ? error.message : String(error)

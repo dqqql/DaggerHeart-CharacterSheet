@@ -28,7 +28,7 @@ export function DholExportModal({ isOpen, onClose, sheetData }: DholExportModalP
   const [isSending, setIsSending] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<string | null>(null)
-  const retryId = useRef<string | null>(null)
+  const retryId = useRef<{ id: string; fingerprint: string } | null>(null)
 
   useEffect(() => {
     if (!isOpen) return
@@ -47,13 +47,14 @@ export function DholExportModal({ isOpen, onClose, sheetData }: DholExportModalP
 
   const handleSend = async () => {
     if (isSending || !canSend) return
-    const requestId = retryId.current ?? crypto.randomUUID()
-    retryId.current = requestId
+    const prepared = getRuleSetModule(sheetData.ruleSetId).prepareForExport(sheetData)
+    const fingerprint = JSON.stringify(prepared)
+    const requestId = retryId.current?.fingerprint === fingerprint ? retryId.current.id : crypto.randomUUID()
+    retryId.current = { id: requestId, fingerprint }
     setIsSending(true)
     setError(null)
     setResult(null)
     try {
-      const prepared = getRuleSetModule(sheetData.ruleSetId).prepareForExport(sheetData)
       const response = await sendCharacterToDhol({
         baseUrl: DEFAULT_DHOL_BASE_URL,
         roomCode: normalizedCode,
@@ -89,7 +90,7 @@ export function DholExportModal({ isOpen, onClose, sheetData }: DholExportModalP
             当前角色：<strong>{characterName || '（未命名角色）'}</strong>
           </div>
           <p className="text-xs leading-5 text-muted-foreground">
-            同名角色的全部数据和资源都会被本次角色卡完整覆盖。
+            同名角色的全部数据和资源都会被本次角色卡完整覆盖；桌面会采用点击发送时车卡器显示的数值。
           </p>
 
           <div className="space-y-2">
