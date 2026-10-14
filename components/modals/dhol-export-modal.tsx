@@ -81,7 +81,7 @@ export function DholExportModal({ isOpen, onClose, sheetData }: DholExportModalP
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-lg font-bold">
             <Send className="h-5 w-5 text-primary" />
-            发送到在线面板
+            发送到匕首港
           </DialogTitle>
         </DialogHeader>
 

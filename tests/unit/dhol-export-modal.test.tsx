@@ -16,7 +16,7 @@ describe('DholExportModal', () => {
 
   it('shows the room code, character name, and modal title', () => {
     render(<DholExportModal isOpen onClose={() => {}} sheetData={{ ...createDefaultSheetData('daggerheart'), name: '阿岚' }} />)
-    expect(screen.getByText('发送到在线面板')).toBeInTheDocument()
+    expect(screen.getByText('发送到匕首港')).toBeInTheDocument()
     expect(screen.getByText('阿岚')).toBeInTheDocument()
     expect(screen.queryByText(/全部数据和资源.*覆盖/)).not.toBeInTheDocument()
     expect(screen.getByLabelText('房间码')).toBeInTheDocument()

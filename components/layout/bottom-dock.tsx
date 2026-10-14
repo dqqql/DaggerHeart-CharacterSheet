@@ -236,7 +236,7 @@ function MainModeContent(props: MainModeProps) {
               className={cn(isMobile && "px-4 py-3")}
             >
               <Send className={cn("mr-2", isMobile ? "h-5 w-5" : "h-4 w-4")} />
-              发送到在线面板
+              发送到匕首港
             </DropdownMenuItem>
             {ruleSet.capabilities.zootExport && (
               <DropdownMenuItem
@@ -404,7 +404,7 @@ function PreviewModeContent(props: PreviewModeProps) {
           isMobile ? "px-6 py-3 text-base" : "px-4 py-2 text-sm",
         )}
       >
-        发送到在线面板
+        发送到匕首港
       </Button>
       <Button
         onClick={props.onClose}
