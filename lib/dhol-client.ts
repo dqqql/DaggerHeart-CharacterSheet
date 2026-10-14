@@ -2,7 +2,7 @@ import type { SheetData } from '@/lib/sheet-data'
 import { buildDholDesktopView } from '@/lib/dhol-desktop-view'
 
 export const DEFAULT_DHOL_BASE_URL =
-  process.env.NEXT_PUBLIC_DHOL_URL || 'https://dhol-realtime.gooole-dql.workers.dev'
+  process.env.NEXT_PUBLIC_DHOL_URL || 'https://screenol.pages.dev'
 export const DHOL_ROOM_CODE_LENGTH = 6
 
 export interface DholSendResult {
