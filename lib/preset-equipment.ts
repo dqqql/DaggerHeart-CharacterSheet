@@ -1,6 +1,7 @@
 import type { ArmorItem } from "@/data/list/armor"
 import { primaryWeapons, type Weapon } from "@/data/list/primary-weapon"
 import { secondaryWeapons } from "@/data/list/secondary-weapon"
+import { hopeFearPrimaryWeapons, hopeFearSecondaryWeapons, hopeFearArmorItems } from "@/data/list/hope-fear-equipment"
 import { getRuleSetModule } from "@/lib/rulesets/registry"
 import {
   normalizeRuleSetId,
@@ -99,6 +100,7 @@ const armorByRuleSet = Object.fromEntries(
     new Map(
       getRuleSetModule(ruleSetId)
         .getArmorCatalog()
+        .concat(ruleSetId === "daggerheart" ? hopeFearArmorItems : [])
         .map(item => [item.名称, item]),
     ),
   ]),
@@ -109,8 +111,8 @@ const armorNameAliasesByRuleSet: Partial<
 > = {
   daggerheart: DAGGERHEART_ARMOR_NAME_ALIASES,
 }
-const primaryWeaponById = new Map(primaryWeapons.map((item) => [item.名称, item]))
-const secondaryWeaponById = new Map(secondaryWeapons.map((item) => [item.名称, item]))
+const primaryWeaponById = new Map([...primaryWeapons, ...hopeFearPrimaryWeapons].map((item) => [item.名称, item]))
+const secondaryWeaponById = new Map([...secondaryWeapons, ...hopeFearSecondaryWeapons].map((item) => [item.名称, item]))
 
 export function createEmptyAttributeModifiers(): Record<CharacterAttributeKey, number> {
   return {

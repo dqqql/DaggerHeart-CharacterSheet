@@ -1,5 +1,7 @@
 "use client"
-import { allWeapons } from "@/data/list/all-weapons";
+import { getAllWeapons } from "@/data/list/all-weapons";
+import { isHopeFearPackActive } from "@/data/list/hope-fear-equipment";
+import { useUnifiedCardStore } from "@/card/stores/unified-card-store";
 import { Button } from "@/components/ui/button";
 import { useMemo, useEffect, useState, useRef } from 'react'; // Added useRef
 import { createPortal } from "react-dom";
@@ -16,7 +18,7 @@ const LEVEL_LABELS: Record<Level, string> = {
   T4: "位阶4",
 };
 const CHECKS = ["敏捷", "灵巧", "知识", "力量", "本能", "风度"] as const;
-const ATTRIBUTES = ["物理", "魔法"] as const;
+const ATTRIBUTES = ["物理", "魔法", "物理 / 魔法"] as const;
 const RANGES = ["近战", "邻近", "近距离", "远距离", "极远"] as const;
 const LOADS = ["单手", "双手"] as const;
 
@@ -49,6 +51,8 @@ interface Weapon {
 }
 
 export function WeaponSelectionModal({ isOpen, onClose, onSelect, title, weaponSlotType }: WeaponModalProps) {
+  const batches = useUnifiedCardStore(state => state.batches);
+  const includeHopeFear = isHopeFearPackActive(batches);
   useBodyScrollLock(isOpen);
   const [customName, setCustomName] = useState("");
   const [customLevel, setCustomLevel] = useState<Level | "">("");
@@ -77,11 +81,12 @@ export function WeaponSelectionModal({ isOpen, onClose, onSelect, title, weaponS
 
 
   const availableWeapons: Weapon[] = useMemo(() => {
+    const allWeapons = getAllWeapons(includeHopeFear);
     if (weaponSlotType === "inventory") {
       return allWeapons; // Use allWeapons directly
     }
     return allWeapons.filter(w => w.weaponType === weaponSlotType);
-  }, [weaponSlotType]);
+  }, [weaponSlotType, includeHopeFear]);
 
   // 组合筛选逻辑
   const filteredWeapons = useMemo(() => {

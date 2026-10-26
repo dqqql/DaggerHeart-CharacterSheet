@@ -5,6 +5,7 @@ import type React from "react"
 import { useState, useEffect, useRef } from "react"
 import { primaryWeapons, Weapon } from "@/data/list/primary-weapon"
 import { secondaryWeapons } from "@/data/list/secondary-weapon"
+import { hopeFearPrimaryWeapons, hopeFearSecondaryWeapons } from "@/data/list/hope-fear-equipment"
 import {
   CardType, // Import CardType
   getStandardCardsByType,
@@ -462,7 +463,7 @@ export default function CharacterSheet() {
   }
 
   const handleWeaponChange = (field: string, weaponId: string, weaponType: "primary" | "secondary") => {
-    const weaponList = weaponType === "primary" ? primaryWeapons : secondaryWeapons
+    const weaponList = weaponType === "primary" ? [...primaryWeapons, ...hopeFearPrimaryWeapons] : [...secondaryWeapons, ...hopeFearSecondaryWeapons]
     const weapon = weaponList.find((w: Weapon) => w.名称 === weaponId)
     const selectionField =
       field === "primaryWeaponName"

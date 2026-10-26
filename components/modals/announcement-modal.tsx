@@ -79,6 +79,16 @@ export function AnnouncementModal({
                     strong: ({ children }) => (
                       <strong className="font-semibold text-slate-900">{children}</strong>
                     ),
+                    a: ({ href, children }) => (
+                      <a
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium text-blue-600 underline hover:text-blue-700"
+                      >
+                        {children}
+                      </a>
+                    ),
                     code: ({ children }) => (
                       <code className="rounded bg-slate-200 px-1 py-0.5 text-[0.9em] text-slate-800">
                         {children}

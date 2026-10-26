@@ -5,8 +5,10 @@ import { createPortal } from "react-dom"
 
 import { Button } from "@/components/ui/button"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { type ArmorItem, armorItems } from "@/data/list/armor"
+import { type ArmorItem } from "@/data/list/armor"
 import { armorItems as rhodesIslandArmorItems } from "@/data/list/rhodes-island-armor"
+import { getDaggerheartArmorCatalog, isHopeFearPackActive } from "@/data/list/hope-fear-equipment"
+import { useUnifiedCardStore } from "@/card/stores/unified-card-store"
 import { useBodyScrollLock } from "@/hooks/use-body-scroll-lock"
 
 interface ArmorModalProps {
@@ -36,6 +38,8 @@ export function ArmorSelectionModal({
   title,
   isRhodesIsland = false,
 }: ArmorModalProps) {
+  const batches = useUnifiedCardStore(state => state.batches)
+  const includeHopeFear = isHopeFearPackActive(batches)
   useBodyScrollLock(isOpen)
   const [customName, setCustomName] = useState("")
   const [customLevel, setCustomLevel] = useState<Level | "">("")
@@ -50,11 +54,11 @@ export function ArmorSelectionModal({
 
   const processedArmorItems = useMemo<ProcessedArmorItem[]>(
     () =>
-      (isRhodesIsland ? rhodesIslandArmorItems : armorItems).map((armor) => ({
+      (isRhodesIsland ? rhodesIslandArmorItems : getDaggerheartArmorCatalog(includeHopeFear)).map((armor) => ({
         ...armor,
         id: armor.名称,
       })),
-    [isRhodesIsland],
+    [isRhodesIsland, includeHopeFear],
   )
 
   const filteredArmorItems = useMemo(() => {

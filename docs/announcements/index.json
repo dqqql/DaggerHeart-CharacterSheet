@@ -1,5 +1,12 @@
 [
   {
+    "id": "2026-10-26-hope-fear",
+    "title": "希望与恐惧内容更新",
+    "file": "2026-10-26-hope-fear.md",
+    "publishedAt": "2026-10-26",
+    "priority": 1
+  },
+  {
     "id": "2026-10-15-dagger-port-integration",
     "title": "V2.4.0",
     "file": "2026-10-15-dagger-port-integration.md",
